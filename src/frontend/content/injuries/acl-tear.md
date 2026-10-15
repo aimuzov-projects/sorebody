@@ -1,5 +1,5 @@
 ---
-title: Разрыв передней крестообразной связки
+title: Разрыв передней крестообразной связки (ПКС)
 titleEn: Anterior cruciate ligament tear
 region: knee
 frequency: common

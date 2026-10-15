@@ -10,7 +10,7 @@ const { entry } = Astro.props
 const { data } = entry
 ---
 
-<a class="card" href={`/injuries/${entry.id}`}>
+<a class="card" href={`/injuries/${entry.id}/`}>
 	<span class="card__region">
 		{regionLabel(data.region)}
 		{data.frequency === 'rare' && ' · редко'}

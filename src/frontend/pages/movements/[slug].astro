@@ -18,13 +18,19 @@ export async function getStaticPaths() {
 const { movement, injuries } = Astro.props
 ---
 
-<Base title={movement.title} description={`Какие травмы случаются на движении «${movement.title}» и как их избежать.`}>
+<Base
+	title={movement.title}
+	index={injuries.length > 0}
+	description={`Какие травмы случаются на движении «${movement.title}» и как их избежать.`}
+>
 	<main class="movement container">
 		<p>
 			<a href="/">Все травмы</a>
 		</p>
 		<h1>{movement.title}</h1>
-		<p class="movement__en">{movement.titleEn}</p>
+		<p class="movement__en" lang="en">
+			{movement.titleEn}
+		</p>
 		{injuries.length > 0 ? (
 			<div class="movement__grid">
 				{injuries.map((entry) => (

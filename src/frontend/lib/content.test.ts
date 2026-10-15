@@ -33,6 +33,26 @@ function parseFrontmatter(file: string, front: string) {
 	}
 }
 
+/** Размер JPEG из заголовка: идём по маркерам до SOF0/SOF2, где лежат высота и ширина. */
+function jpegSize(buffer: Buffer) {
+	assert.equal(buffer.readUInt16BE(0), 0xffd8, 'не JPEG')
+
+	let offset = 2
+
+	while (offset + 9 < buffer.length) {
+		assert.equal(buffer[offset], 0xff, 'битый маркер JPEG')
+
+		const marker = buffer[offset + 1]!
+
+		if (marker === 0xc0 || marker === 0xc2)
+			return { width: buffer.readUInt16BE(offset + 7), height: buffer.readUInt16BE(offset + 5) }
+
+		offset += 2 + buffer.readUInt16BE(offset + 2)
+	}
+
+	assert.fail('в JPEG нет SOF0/SOF2')
+}
+
 /** Ссылки Markdown `[текст](url)`: для сносок на PubMed текст — номер источника в `sources`. */
 const LINK = /\[([^\]]*)\]\(([^)\s]+)\)/g
 
@@ -98,6 +118,14 @@ for (const { slug, data, body } of articles) {
 
 	test(`${slug}: images exist in public/`, () => {
 		for (const { src } of data.images) assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
+	})
+
+	test(`${slug}: images are 1200x669 JPEG`, () => {
+		for (const { src } of data.images) {
+			const size = jpegSize(readFileSync(new URL(`.${src}`, `${PUBLIC}/`)))
+
+			assert.deepEqual(size, { width: 1200, height: 669 }, src)
+		}
 	})
 }
 

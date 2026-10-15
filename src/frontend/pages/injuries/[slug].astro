@@ -32,7 +32,7 @@ const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(
 
 		{data.images.map((image) => (
 			<figure class="injury__figure">
-				<img class="injury__image" src={image.src} alt={image.alt} width="1200" height="670" loading="lazy" />
+				<img class="injury__image" src={image.src} alt={image.alt} width="1200" height="669" loading="lazy" />
 				<figcaption class="injury__caption">{image.caption}</figcaption>
 			</figure>
 		))}
@@ -47,7 +47,7 @@ const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(
 				<ul class="injury__movements">
 					{movements.map((m) => (
 						<li>
-							<a href={`/movements/${m.slug}`}>{m.title}</a>
+							<a href={`/movements/${m.slug}/`}>{m.title}</a>
 						</li>
 					))}
 				</ul>

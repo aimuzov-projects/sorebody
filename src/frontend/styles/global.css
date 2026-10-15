@@ -57,6 +57,6 @@ img {
 }
 
 /* Заголовки внутри Markdown-статьи без классов: отступ задаём по тегу. */
-article h2 {
+.injury__body h2 {
 	margin-top: 1.6em;
 }

@@ -55,8 +55,7 @@ groups = [
     {'name': 'muscles', 'files': sorted(muscles), 'ratio': float(m_ratio), 'error': 0.01},
 ]
 if '--skin' in flags:
-    # neuter: половые органы на коже стягиваются в гладкий пах манекена (см. build.mjs)
-    groups.append({'name': 'skin', 'files': sorted(by['skin'] & set(names)), 'ratio': 0.3, 'error': 0.01, 'neuter': True})
+    groups.append({'name': 'skin', 'files': sorted(by['skin'] & set(names)), 'ratio': 0.3, 'error': 0.01})
 
 json.dump({'objDirs': [obj_dir], 'groups': groups, 'anchors': anchors}, open(out, 'w'), indent=1)
 print({g['name']: len(g['files']) for g in groups})

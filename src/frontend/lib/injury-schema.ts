@@ -3,8 +3,11 @@ import { z } from 'astro/zod'
 import { MOVEMENT_SLUGS } from '#frontend/data/movements.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
 
-/** Frontmatter статьи. Общая для `content.config.ts` и тестов контента, чтобы правила не разъехались. */
-export const injurySchema = z.object({
+/**
+ * Frontmatter статьи. Общая для `content.config.ts` и тестов контента, чтобы правила не разъехались.
+ * Строгая: glob-лоадер берёт id из поля `slug`, если оно есть, — slug статьи только имя файла.
+ */
+export const injurySchema = z.strictObject({
 	title: z.string().min(3),
 	titleEn: z.string().min(3),
 	region: z.enum(REGION_SLUGS),

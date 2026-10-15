@@ -49,3 +49,8 @@ test('schema rejects malformed pmid', () => {
 		assert.equal(injurySchema.safeParse({ ...valid, sources: [{ pmid, label: 'Источник' }] }).success, false)
 	}
 })
+
+test('schema rejects unknown fields, including slug: the slug is the file name', () => {
+	assert.equal(injurySchema.safeParse({ ...valid, slug: 'meniscus' }).success, false)
+	assert.equal(injurySchema.safeParse({ ...valid, tags: ['knee'] }).success, false)
+})

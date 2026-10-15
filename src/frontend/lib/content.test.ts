@@ -16,10 +16,25 @@ const articles = readdirSync(DIR)
 	.filter((f) => f.endsWith('.md'))
 	.map((file) => {
 		const raw = readFileSync(new URL(file, DIR), 'utf8')
-		const [, front = '', body = ''] = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/) ?? []
+		const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
 
-		return { slug: file.replace(/\.md$/, ''), data: parse(front), body }
+		assert.ok(match, `${file}: нет frontmatter между строками «---»`)
+
+		const [, front = '', body = ''] = match
+
+		return { slug: file.replace(/\.md$/, ''), data: parseFrontmatter(file, front), body }
 	})
+
+function parseFrontmatter(file: string, front: string) {
+	try {
+		return parse(front)
+	} catch (error) {
+		throw new Error(`${file}: frontmatter не разбирается как YAML`, { cause: error })
+	}
+}
+
+/** Ссылки Markdown `[текст](url)`: для сносок на PubMed текст — номер источника в `sources`. */
+const LINK = /\[([^\]]*)\]\(([^)\s]+)\)/g
 
 const REQUIRED_SECTIONS = [
 	'## Что это',
@@ -47,16 +62,10 @@ for (const { slug, data, body } of articles) {
 		assert.ok(result.success, JSON.stringify(result.error?.issues))
 	})
 
-	test(`${slug}: body has every template section in order`, () => {
-		const positions = REQUIRED_SECTIONS.map((h) => `\n${body}`.indexOf(`\n${h}\n`))
+	test(`${slug}: body has exactly the template sections in order`, () => {
+		const headings = body.split('\n').filter((line) => line.startsWith('## '))
 
-		for (const [i, pos] of positions.entries()) assert.ok(pos >= 0, `нет раздела «${REQUIRED_SECTIONS[i]}»`)
-
-		assert.deepEqual(
-			[...positions].sort((a, b) => a - b),
-			positions,
-			'разделы не по порядку',
-		)
+		assert.deepEqual(headings, REQUIRED_SECTIONS)
 	})
 
 	test(`${slug}: every cited PMID is listed in sources and every source is cited`, () => {
@@ -74,6 +83,17 @@ for (const { slug, data, body } of articles) {
 			[],
 			'в sources, но не цитируется',
 		)
+	})
+
+	test(`${slug}: footnote number matches the source position`, () => {
+		const pmids: string[] = data.sources.map((s: { pmid: string }) => s.pmid)
+
+		for (const [link, text, url] of body.matchAll(LINK)) {
+			const [pmid] = citedPmids(url!)
+
+			if (pmid)
+				assert.equal(text, String(pmids.indexOf(pmid) + 1), `${link}: номер не совпадает с позицией в sources`)
+		}
 	})
 
 	test(`${slug}: images exist in public/`, () => {

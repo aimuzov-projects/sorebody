@@ -9,6 +9,7 @@ export const MOVEMENTS = [
 	{ slug: 'clean-and-jerk', title: 'Взятие на грудь и толчок', titleEn: 'Clean and jerk' },
 	{ slug: 'overhead-press', title: 'Жимы и швунги над головой', titleEn: 'Press, push press, push jerk' },
 	{ slug: 'thruster', title: 'Трастеры', titleEn: 'Thruster' },
+	{ slug: 'bench-press', title: 'Жим лёжа', titleEn: 'Bench press' },
 	{ slug: 'kipping-pull-up', title: 'Подтягивания с кипом', titleEn: 'Kipping pull-up' },
 	{ slug: 'muscle-up', title: 'Выход силой', titleEn: 'Muscle-up' },
 	{ slug: 'ring-dip', title: 'Отжимания на кольцах', titleEn: 'Ring dip' },

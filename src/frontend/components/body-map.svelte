@@ -68,7 +68,7 @@
 				role="button"
 				tabindex="0"
 				aria-pressed={selected === spot.region}
-				aria-label={`${regionLabel(spot.region)}: ${counts[spot.region] ?? 0}`}
+				aria-label={`${regionLabel(spot.region)}, травм: ${counts[spot.region] ?? 0}`}
 				onclick={() => toggle(spot.region)}
 				onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggle(spot.region))}
 			>
@@ -92,9 +92,20 @@
 		justify-items: center;
 		margin: 0;
 
+		/* Без скриптов зоны не нажимаются, а полный список ниже и так виден. */
+		@media (--no-scripting) {
+			display: none;
+		}
+
 		&__svg {
 			width: min(220px, 60vw);
 			height: auto;
+
+			/* На телефоне карта не съедает первый экран: под ней должен начинаться список. */
+			@media (--below-md) {
+				width: auto;
+				height: 220px;
+			}
 		}
 
 		&__body {
@@ -117,13 +128,17 @@
 				stroke-width: 2;
 			}
 
-			&--active {
-				fill-opacity: 0.9;
-			}
-
 			&--empty {
 				fill: var(--muted);
 				fill-opacity: 0.2;
+			}
+
+			/* Последним и с тем же весом, что у :hover и :focus-visible: выбранная зона заметна всегда, даже пустая. */
+			&--active,
+			&--active:hover,
+			&--active:focus-visible {
+				fill: var(--accent);
+				fill-opacity: 0.9;
 			}
 		}
 

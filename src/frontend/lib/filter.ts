@@ -1,5 +1,5 @@
 import type { Movement } from '#frontend/data/movements.ts'
-import type { Region } from '#frontend/data/regions.ts'
+import { regionLabel, type Region } from '#frontend/data/regions.ts'
 
 /** Что нужно острову главной от статьи: без тела статьи, чтобы не раздувать HTML. */
 export type InjuryListItem = {
@@ -29,6 +29,6 @@ export function filterInjuries(list: InjuryListItem[], { region, frequency, move
 			(!region || i.region === region) &&
 			(!frequency || i.frequency === frequency) &&
 			(!movement || i.movements.includes(movement)) &&
-			(!q || normalize(`${i.title} ${i.titleEn} ${i.summary}`).includes(q)),
+			(!q || normalize(`${i.title} ${i.titleEn} ${i.summary} ${regionLabel(i.region)}`).includes(q)),
 	)
 }

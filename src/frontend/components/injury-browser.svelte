@@ -18,6 +18,24 @@
 		if (fromUrl && (REGION_SLUGS as string[]).includes(fromUrl)) region = fromUrl as Region
 	})
 
+	/** Зона живёт и в адресе, чтобы выбор можно было скопировать ссылкой и пережить перезагрузку. */
+	function selectRegion(next?: Region) {
+		region = next
+		const url = new URL(location.href)
+
+		if (next) url.searchParams.set('region', next)
+		else url.searchParams.delete('region')
+
+		history.replaceState(history.state, '', url)
+	}
+
+	function reset() {
+		selectRegion(undefined)
+		frequency = undefined
+		movement = undefined
+		query = ''
+	}
+
 	const visible = $derived(filterInjuries(injuries, { region, frequency, movement, query }))
 	const counts = $derived(
 		injuries.reduce<Partial<Record<Region, number>>>(
@@ -29,7 +47,7 @@
 </script>
 
 <div class="browser">
-	<BodyMap selected={region} {counts} onselect={(r) => (region = r)} />
+	<BodyMap selected={region} {counts} onselect={selectRegion} />
 
 	<div class="browser__list">
 		<div class="browser__filters">
@@ -53,21 +71,14 @@
 			</select>
 		</div>
 
-		<p class="browser__count" aria-live="polite">
-			{region ? `${regionLabel(region)}: ` : ''}{visible.length} из {injuries.length}
+		<div class="browser__status">
+			<p class="browser__count" aria-live="polite">
+				{region ? `${regionLabel(region)}: ` : ''}{visible.length} из {injuries.length}
+			</p>
 			{#if region || frequency || movement || query}
-				<button
-					class="browser__reset"
-					type="button"
-					onclick={() => (
-						(region = undefined),
-						(frequency = undefined),
-						(movement = undefined),
-						(query = '')
-					)}>Сбросить</button
-				>
+				<button class="browser__reset" type="button" onclick={reset}>Сбросить</button>
 			{/if}
-		</p>
+		</div>
 
 		<ul class="browser__cards">
 			{#each visible as i (i.slug)}
@@ -90,7 +101,7 @@
 		display: grid;
 		gap: 24px;
 
-		@media (--md) {
+		@media (--md) and (--scripting) {
 			grid-template-columns: 240px 1fr;
 			align-items: start;
 		}
@@ -99,6 +110,11 @@
 			display: flex;
 			flex-wrap: wrap;
 			gap: 8px;
+
+			/* Без скриптов фильтры мертвы, остаётся полный список ссылок. */
+			@media (--no-scripting) {
+				display: none;
+			}
 		}
 
 		&__search {
@@ -114,10 +130,14 @@
 			background: var(--bg);
 		}
 
-		&__count {
+		&__status {
 			display: flex;
 			gap: 12px;
 			align-items: center;
+		}
+
+		&__count {
+			margin: 0;
 			color: var(--muted);
 		}
 
@@ -138,6 +158,7 @@
 		}
 	}
 
+	/* Повторяет components/injury-card.astro: остров Svelte не может отрисовать Astro-компонент. */
 	.card {
 		display: grid;
 		gap: 6px;

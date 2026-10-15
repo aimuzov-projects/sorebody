@@ -53,3 +53,26 @@ test('query matches Russian and English titles case-insensitively, ё = е', () 
 		['pectoralis-major-rupture'],
 	)
 })
+
+test('query matches the region label', () => {
+	assert.deepEqual(
+		filterInjuries(list, { query: 'плечо' }).map((i) => i.slug),
+		['pectoralis-major-rupture'],
+	)
+})
+
+test('ё and е are interchangeable in both query and text', () => {
+	const withYo: InjuryListItem[] = [{ ...list[0]!, slug: 'yo', summary: 'Ушиб при падении на тёмном полу' }]
+
+	assert.deepEqual(
+		filterInjuries(withYo, { query: 'темном' }).map((i) => i.slug),
+		['yo'],
+	)
+
+	assert.deepEqual(
+		filterInjuries([{ ...withYo[0]!, summary: 'Ушиб при падении на темном полу' }], { query: 'тёмном' }).map(
+			(i) => i.slug,
+		),
+		['yo'],
+	)
+})

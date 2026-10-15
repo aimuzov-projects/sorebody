@@ -2,9 +2,12 @@
 import { getCollection } from 'astro:content'
 
 import Body3d from '#frontend/components/lab/body-3d.svelte'
-import Base from '#frontend/layouts/base.astro'
+import { site } from '#frontend/data/site.ts'
+import '#frontend/styles/global.css'
 import { buildZones } from '#frontend/lab/zones.ts'
+import { pageTitle } from '#frontend/lib/title.ts'
 
+// Эксперимент: сцена на весь экран, поэтому без общего макета с подвалом.
 // meshopt-декодер модели -- WebAssembly, общей CSP сайта он не нужен
 Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
 
@@ -16,63 +19,76 @@ const injuries = (await getCollection('injuries')).map(({ id, data }) => ({
 const { zones, whole } = buildZones(injuries)
 ---
 
-<Base title="3D-фигура (эксперимент)" index={false}>
-	<main class="lab container">
-		<h1 class="lab__title">Где болит?</h1>
-		<p class="lab__lead">
-			Наведите на точку на теле или коснитесь её: мышцы растворятся, а рядом откроется круг с травмами этой зоны.
-			Фигуру можно вращать.
-		</p>
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>{pageTitle('3D-фигура (эксперимент)')}</title>
+		<meta name="description" content={site.description} />
+		<meta name="robots" content="noindex" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	</head>
+	<body class="lab">
+		<h1 class="lab__title">{site.name}: где болит?</h1>
 		<Body3d client:only="svelte" {zones} {whole} modelUrl="/lab/body.glb" />
-		<details class="lab__list">
-			<summary>Все зоны списком</summary>
-			{[...zones, whole].map((zone) => (
-				<section>
-					<h2 class="lab__zone">{zone.label}</h2>
-					<ul>
-						{zone.injuries.map((injury) => (
-							<li>
-								<a href={`/injuries/${injury.slug}/`}>{injury.title}</a>
-							</li>
-						))}
-					</ul>
-				</section>
-			))}
-		</details>
+		<noscript>
+			<ul>
+				{injuries.map((injury) => (
+					<li>
+						<a href={`/injuries/${injury.slug}/`}>{injury.title}</a>
+					</li>
+				))}
+			</ul>
+		</noscript>
 		<p class="lab__credit">
-			Модель: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">BodyParts3D</a>, © The Database Center
-			for Life Science, <a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">CC BY-SA 2.1 JP</a>.
-			Мышцы и кости упрощены и сжаты для сайта.
+			Модель{' '}
+			<a class="lab__credit-link" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">
+				BodyParts3D
+			</a>{' '}
+			© DBCLS ·{' '}
+			<a class="lab__credit-link" href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">
+				CC BY-SA 2.1 JP
+			</a>
 		</p>
-	</main>
-</Base>
+	</body>
+</html>
 
 <style>
 	.lab {
-		display: grid;
-		gap: 20px;
-		padding-block: var(--section-y);
+		overflow: hidden;
+		height: 100dvh;
+		background: #ebe8e3;
 
 		&__title {
-			margin: 0;
-			font-size: clamp(2.2rem, 6vw, 3.4rem);
-		}
-
-		&__lead {
-			max-width: 60ch;
-			margin: 0;
-			color: var(--muted);
-		}
-
-		&__zone {
-			margin-bottom: 4px;
-			font-size: 1.05rem;
+			position: absolute;
+			overflow: hidden;
+			width: 1px;
+			height: 1px;
+			white-space: nowrap;
+			clip-path: inset(50%);
 		}
 
 		&__credit {
+			position: fixed;
+			z-index: 3;
+			right: 12px;
+			bottom: 8px;
 			margin: 0;
-			font-size: 0.8rem;
-			color: var(--muted);
+			font-size: 0.7rem;
+			color: #8a847b;
+
+			/* На телефоне панель статьи занимает низ экрана: подпись уходит в полоску сцены сверху */
+			@media (--below-sm) {
+				.lab:has(.panel) & {
+					top: 8px;
+					bottom: auto;
+				}
+			}
+		}
+
+		&__credit-link {
+			color: inherit;
 		}
 	}
 </style>

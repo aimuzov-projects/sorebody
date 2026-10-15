@@ -12,7 +12,7 @@
 </script>
 
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 
 	import type { BodyScene } from '#frontend/lab/body-scene.ts'
 	import type { LabZone } from '#frontend/lab/zones.ts'
@@ -43,11 +43,25 @@
 	let spotEls = $state<HTMLButtonElement[]>([])
 
 	let hovered = $state<Spot | null>(null)
-	let open = $state<{ zone: LabZone; x: number; y: number } | null>(null)
+	let open = $state<{ zone: LabZone; point: LabZone['points'][number]; x: number; y: number } | null>(null)
 	let activeSector = $state(-1)
 	let hoverTimer: ReturnType<typeof setTimeout> | undefined
 
+	type Article = { zone: LabZone; point: LabZone['points'][number]; slug: string; title: string }
+
+	let article = $state<Article | null>(null)
+	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
+	let articleBody = $state<HTMLDivElement>()
+	let closeButton = $state<HTMLButtonElement>()
+	// Своя запись в истории: тогда крестик и Esc закрывают статью через history.back()
+	let pushed = false
+	let loadToken = 0
+	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+
 	onMount(() => {
+		openFromHash()
+		window.addEventListener('popstate', openFromHash)
+
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
@@ -76,6 +90,8 @@
 			}
 
 			status = 'ready'
+
+			if (article) recede(article)
 		})
 
 		ready.catch((error) => {
@@ -92,6 +108,7 @@
 		visibility.observe(canvas)
 
 		return () => {
+			window.removeEventListener('popstate', openFromHash)
 			disposed = true
 			resizer.disconnect()
 			visibility.disconnect()
@@ -177,8 +194,8 @@
 		body.focus(point.position, clamp(0.3 / zone.radius, 1, 2.4), at)
 
 		open = wide
-			? { zone, x: clamp(w / 2 + at.x * w + RING_OUTER + 90, margin, w - margin), y: h / 2 }
-			: { zone, x: w / 2, y: h - margin }
+			? { zone, point, x: clamp(w / 2 + at.x * w + RING_OUTER + 90, margin, w - margin), y: h / 2 }
+			: { zone, point, x: w / 2, y: h - margin }
 
 		activeSector = -1
 	}
@@ -196,6 +213,145 @@
 		body.controls.autoRotate = true
 	}
 
+	function findInjury(slug: string) {
+		for (const zone of [...zones, whole]) {
+			const injury = zone.injuries.find((i) => i.slug === slug)
+
+			if (injury) return { zone, injury }
+		}
+	}
+
+	/** Хеш адреса -- источник правды: статья открыта, пока в нём её slug. */
+	function openFromHash() {
+		const found = findInjury(decodeURIComponent(location.hash.slice(1)))
+
+		if (found) {
+			const point = article?.zone === found.zone ? article.point : found.zone.points[0]
+
+			openArticle(found.zone, point, found.injury, false)
+		} else if (article) {
+			pushed = false
+			closeArticle()
+		}
+	}
+
+	function openArticle(
+		zone: LabZone,
+		point: LabZone['points'][number],
+		injury: { slug: string; title: string },
+		push = true,
+	) {
+		if (article?.slug === injury.slug) return
+
+		clearTimeout(hoverTimer)
+		open = null
+		hovered = null
+		article = { zone, point, ...injury }
+
+		if (push) {
+			history.pushState(null, '', `#${injury.slug}`)
+			pushed = true
+		}
+
+		recede(article)
+		void loadArticle(injury.slug)
+	}
+
+	/** Сцена уходит вглубь: зона остаётся раскрытой, камера отъезжает, фигура медленно крутится. */
+	function recede({ zone, point }: Article) {
+		if (!body) return
+
+		const { width: w } = wrap.getBoundingClientRect()
+
+		body.dissolve(point.position, zone.radius)
+		body.controls.enabled = false
+		body.controls.autoRotate = true
+		body.controls.autoRotateSpeed = 0.35
+
+		if (reduceMotion) return body.focus(null)
+
+		// Широкий экран: панель справа, фигура видна слева. Телефон: зона в полоске над панелью
+		if (w >= 1000) body.focus([0, 0.9, 0], 0.9, { x: -0.34, y: 0 })
+		else if (w < 600) body.focus(point.position, 1.6, { x: 0, y: 0.44 })
+		else body.focus([0, 0.9, 0], 0.85)
+	}
+
+	async function loadArticle(slug: string) {
+		const token = ++loadToken
+
+		articleStatus = 'loading'
+
+		try {
+			const response = await fetch(`/injuries/${slug}/`)
+
+			if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+			// Разбираем только main: стили из head страницы статьи Chrome сверяет с CSP этой
+			// страницы даже в инертном документе DOMParser и сыплет ошибками в консоль
+			const html = await response.text()
+			const from = html.indexOf('<main')
+			const to = html.lastIndexOf('</main>')
+
+			if (from < 0 || to < from) throw new Error('no <main> in article page')
+
+			const doc = new DOMParser().parseFromString(html.slice(from, to + '</main>'.length), 'text/html')
+			const main = doc.querySelector('main')
+
+			if (!main) throw new Error('no <main> in article page')
+
+			await tick()
+
+			if (token !== loadToken || !articleBody) return
+
+			articleBody.replaceChildren(document.importNode(main, true))
+			articleBody.parentElement?.scrollTo(0, 0)
+			articleStatus = 'ready'
+			closeButton?.focus({ preventScroll: true })
+		} catch (error) {
+			if (token !== loadToken) return
+
+			console.error(error)
+			articleStatus = 'error'
+		}
+	}
+
+	/** Крестик и Esc: если запись в истории наша -- назад, popstate закроет статью. */
+	function requestCloseArticle() {
+		if (pushed) {
+			history.back()
+
+			return
+		}
+
+		history.replaceState(null, '', location.pathname + location.search)
+		closeArticle()
+	}
+
+	function closeArticle() {
+		article = null
+		loadToken++
+
+		if (!body) return
+
+		body.controls.autoRotateSpeed = 0.6
+		closeMenu()
+	}
+
+	/**
+	 * Панель выезжает снизу; при reduced motion только проявляется. Через `tick`, а не `css`:
+	 * `css` вставляет в страницу тег стилей с keyframes, а CSP сайта такое блокирует.
+	 */
+	function panelIn(node: HTMLElement) {
+		return {
+			duration: reduceMotion ? 200 : 520,
+			easing: (t: number) => 1 - (1 - t) ** 3,
+			tick: (t: number) => {
+				node.style.opacity = String(t)
+				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 56}px)`
+			},
+		}
+	}
+
 	function clamp(v: number, min: number, max: number) {
 		return Math.max(min, Math.min(max, v))
 	}
@@ -207,7 +363,7 @@
 	}
 
 	function onPointerMove(event: PointerEvent) {
-		if (event.pointerType !== 'mouse' || status !== 'ready') return
+		if (event.pointerType !== 'mouse' || status !== 'ready' || article) return
 
 		const { x, y } = local(event)
 
@@ -240,6 +396,9 @@
 
 		if (moved) return
 
+		// Видимый край сцены за панелью работает как подложка: клик по нему закрывает статью
+		if (article) return requestCloseArticle()
+
 		if (open) {
 			// Ссылка сама откроет статью, остальное кольцо -- тоже сектор, мимо кольца -- закрыть
 			if ((event.target as Element).closest('a')) return
@@ -249,7 +408,7 @@
 			if (d > RING_INNER * 0.6 && d < RING_OUTER + 30) {
 				const injury = open.zone.injuries[sectorAt(x - open.x, y - open.y)]
 
-				if (injury) location.assign(`/injuries/${injury.slug}/`)
+				if (injury) pickInjury(injury)
 
 				return
 			}
@@ -265,7 +424,24 @@
 	}
 
 	function onKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && open) closeMenu()
+		if (event.key !== 'Escape') return
+
+		if (article) requestCloseArticle()
+		else if (open) closeMenu()
+	}
+
+	function pickInjury(injury: { slug: string; title: string }) {
+		if (!open) return
+
+		openArticle(open.zone, open.point, injury)
+	}
+
+	/** Ссылка в кольце открывает статью поверх сцены; с модификаторами -- как обычная ссылка. */
+	function onItemClick(event: MouseEvent, injury: { slug: string; title: string }) {
+		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+		event.preventDefault()
+		pickInjury(injury)
 	}
 
 	function sectorAt(dx: number, dy: number) {
@@ -308,6 +484,7 @@
 <div
 	class="body3d"
 	class:body3d--open={open}
+	class:body3d--receded={article}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
 	onpointerdown={onPointerDown}
@@ -367,6 +544,7 @@
 					class="body3d__item"
 					class:body3d__item--active={i === activeSector}
 					href="/injuries/{injury.slug}/"
+					onclick={(event) => onItemClick(event, injury)}
 					style:transform="translate(calc({pos.x}px - 50%), calc({pos.y}px - 50%))"
 					style:--delay="{i * 30}ms"
 					onfocus={() => (activeSector = i)}
@@ -386,6 +564,26 @@
 	{/if}
 </div>
 
+{#if article}
+	<section class="panel" transition:panelIn aria-label={article.title} aria-busy={articleStatus === 'loading'}>
+		<header class="panel__bar">
+			<a class="panel__standalone" href="/injuries/{article.slug}/">Открыть отдельной страницей</a>
+			<button class="panel__close" type="button" bind:this={closeButton} onclick={requestCloseArticle}>
+				<span class="panel__close-icon" aria-hidden="true">×</span>
+				<span class="panel__close-label">Закрыть</span>
+			</button>
+		</header>
+		{#if articleStatus === 'loading'}
+			<p class="panel__status">Загружаем статью…</p>
+		{:else if articleStatus === 'error'}
+			<p class="panel__status">
+				Не получилось загрузить статью. <a href="/injuries/{article.slug}/">Открыть отдельно</a>
+			</p>
+		{/if}
+		<div class="panel__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>
+	</section>
+{/if}
+
 <style>
 	.body3d {
 		--porcelain-bg: #ebe8e3;
@@ -393,11 +591,9 @@
 		touch-action: pan-y;
 		user-select: none;
 
-		position: relative;
+		position: fixed;
+		inset: 0;
 		overflow: hidden;
-		height: min(82dvh, 760px);
-		min-height: 520px;
-		border-radius: 24px;
 		background: radial-gradient(ellipse at 50% 40%, #f6f4f0 0%, var(--porcelain-bg) 70%);
 
 		&__canvas {
@@ -405,10 +601,39 @@
 			display: block;
 			width: 100%;
 			height: 100%;
+			transition:
+				transform 0.8s cubic-bezier(0.22, 0.8, 0.25, 1),
+				filter 0.8s ease,
+				opacity 0.4s ease;
 
 			&:active {
 				cursor: grabbing;
 			}
+		}
+
+		/* Сцена под статьёй: отъехала, уменьшилась, размылась и потемнела */
+		&--receded &__canvas {
+			cursor: default;
+			transform: scale(0.82);
+			filter: blur(3px) brightness(0.86) saturate(0.9);
+
+			@media (--below-sm) {
+				transform: scale(0.94);
+				filter: blur(1.5px) brightness(0.9);
+			}
+
+			@media (--reduced-motion) {
+				transform: none;
+				opacity: 0.5;
+				filter: none;
+				transition: opacity 0.2s ease;
+			}
+		}
+
+		&--receded &__spot,
+		&--receded &__whole {
+			pointer-events: none;
+			opacity: 0;
 		}
 
 		&__status {
@@ -564,6 +789,159 @@
 				600 0.8rem/1 ui-monospace,
 				monospace;
 			color: var(--muted);
+		}
+	}
+
+	/* Стекло поверх ушедшей вглубь сцены. Широкий экран: справа, фигура видна слева.
+	   Средний: по центру. Телефон: почти весь экран, сверху полоска сцены */
+	.panel {
+		position: fixed;
+		z-index: 2;
+		inset: 4dvh 4vw 4dvh auto;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		width: min(720px, 56vw);
+		border: 1px solid #ffffff99;
+		border-radius: 20px;
+		background: #faf8f5b3;
+		backdrop-filter: blur(18px) saturate(1.2);
+		box-shadow: 0 24px 80px #2b221a33;
+
+		@media (--below-lg) {
+			inset-inline: 0;
+			width: min(720px, 92vw);
+			margin-inline: auto;
+		}
+
+		@media (--below-sm) {
+			inset: 16dvh 0 0;
+			width: auto;
+			border-radius: 20px 20px 0 0;
+		}
+
+		&__bar {
+			position: sticky;
+			z-index: 1;
+			top: 0;
+			display: flex;
+			gap: 12px;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 16px 12px 24px;
+			border-bottom: 1px solid #00000010;
+			font-size: 0.85rem;
+			background: #faf8f5d9;
+			backdrop-filter: blur(12px);
+		}
+
+		&__standalone {
+			color: var(--muted);
+		}
+
+		&__close {
+			cursor: pointer;
+			display: inline-flex;
+			gap: 6px;
+			align-items: center;
+			padding: 6px 12px;
+			border: 1px solid #d8d2c8;
+			border-radius: 999px;
+			font: inherit;
+			color: var(--fg);
+			background: #ffffffcc;
+		}
+
+		&__close-icon {
+			font-size: 1.2rem;
+			line-height: 1;
+		}
+
+		&__status {
+			margin: 0;
+			padding: 32px 24px;
+			color: var(--muted);
+		}
+
+		/* Разметка статьи приходит с /injuries/<slug>/ без её scoped-стилей, повторяем главное */
+		&__body {
+			padding: 8px 24px 32px;
+
+			& :global(.injury) {
+				display: grid;
+				gap: 18px;
+				max-width: none;
+				padding: 0;
+			}
+
+			/* У заголовка статьи нет своего класса, а разметку правит не эта страница */
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(h1) {
+				margin: 0;
+				font-size: clamp(1.6rem, 4vw, 2.2rem);
+				line-height: 1.15;
+			}
+
+			& :global(.injury__meta) {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				align-items: center;
+				margin: 0;
+				font-size: 0.9rem;
+			}
+
+			& :global(.injury__lead) {
+				margin: 0;
+				font-size: 1.1rem;
+				color: var(--muted);
+			}
+
+			& :global(.injury__figure) {
+				margin: 0;
+			}
+
+			& :global(.injury__image) {
+				border-radius: 12px;
+				background: #ffffff;
+			}
+
+			& :global(.injury__caption) {
+				margin-top: 6px;
+				font-size: 0.85rem;
+				color: var(--muted);
+			}
+
+			& :global(.injury__movements) {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px 16px;
+				padding: 0;
+				list-style: none;
+			}
+
+			& :global(.injury__sources) {
+				font-size: 0.9rem;
+			}
+
+			& :global(.badge) {
+				padding: 2px 8px;
+				border-radius: 999px;
+				font-size: 0.8rem;
+				background: var(--surface);
+			}
+
+			& :global(.badge--rare) {
+				color: #ffffff;
+				background: var(--danger);
+			}
+
+			& :global(.disclaimer) {
+				padding: 12px 16px;
+				border-radius: 12px;
+				font-size: 0.9rem;
+				color: var(--muted);
+				background: #ffffff99;
+			}
 		}
 	}
 

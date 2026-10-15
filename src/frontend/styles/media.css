@@ -1,0 +1,19 @@
+/* Брейкпоинты для @media (--md) и т. п. PostCSS подмешивает файл в каждый блок стилей,
+   в бандл он сам не попадает. Пары --below-* закрывают ровно до следующего порога. */
+@custom-media --sm (width >= 600px);
+@custom-media --md (width >= 900px);
+@custom-media --lg (width >= 1000px);
+
+@custom-media --below-sm (width < 600px);
+@custom-media --below-md (width < 900px);
+@custom-media --below-lg (width < 1000px);
+@custom-media --below-xl (width < 1280px);
+
+@custom-media --reduced-motion (prefers-reduced-motion: reduce);
+
+/* Палец вместо мыши: телефоны и планшеты. */
+@custom-media --touch (pointer: coarse);
+
+/* Что проявляет скрипт, прячем только когда скрипты есть: без них страница видна сразу. */
+@custom-media --scripting (scripting: enabled);
+@custom-media --no-scripting (scripting: none);

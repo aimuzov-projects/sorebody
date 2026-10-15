@@ -1,0 +1,47 @@
+{
+	"name": "__PROJECT__",
+	"type": "module",
+	"version": "1.0.0",
+	"private": true,
+	"license": "MIT",
+	"engines": {
+		"node": "26.11.1"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"check": "astro check && svelte-check",
+		"test": "node --test 'src/**/*.test.ts'",
+		"test:e2e": "playwright test",
+		"astro": "astro",
+		"format": "oxlint --fix && prettier --write .",
+		"format:check": "prettier --check .",
+		"lint:css": "stylelint \"src/**/*.{css,astro,svelte}\"",
+		"lint:js": "oxlint --deny-warnings",
+		"lint:fix": "oxlint --fix"
+	},
+	"dependencies": {
+		"@astrojs/sitemap": "3.7.4",
+		"@astrojs/svelte": "9.0.1",
+		"astro": "7.3.7",
+		"svelte": "5.57.2"
+	},
+	"devDependencies": {
+		"@aimuzov-projects/infra-site-kit": "github:aimuzov-projects/infra-site-kit#v1.8.0",
+		"@astrojs/check": "0.9.10",
+		"@csstools/postcss-global-data": "4.0.0",
+		"@playwright/test": "1.64.0",
+		"@types/node": "26.6.5",
+		"oxlint": "1.87.0",
+		"postcss-custom-media": "12.0.3",
+		"postcss-nested": "8.0.1",
+		"prettier": "3.9.9",
+		"stylelint": "17.16.0",
+		"svelte-check": "4.7.6",
+		"typescript": "6.0.3"
+	},
+	"imports": {
+		"#frontend/*": "./src/frontend/*"
+	}
+}

@@ -1,0 +1,55 @@
+:root {
+	--font-sans: system-ui, sans-serif;
+
+	--container: 1180px;
+	--gutter: 20px;
+	--section-y: clamp(32px, 3.5vw, 52px);
+
+	--bg: #ffffff;
+	--fg: #1d1d1f;
+	--muted: #6e6e73;
+	--accent: #0066cc;
+
+	color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* Колонка не ниже экрана, чтобы на короткой странице подвал оставался внизу. */
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100dvh;
+	margin: 0;
+	font-family: var(--font-sans);
+	line-height: 1.5;
+	color: var(--fg);
+	background: var(--bg);
+}
+
+/* Safari на iPhone приближает страницу к полю с текстом мельче 16px, стоит в нём встать.
+   Класс компонента перебивает это правило, поэтому своё поле на телефоне — тоже от 1rem. */
+input,
+textarea,
+select {
+	@media (--touch) {
+		font-size: max(1rem, 1em);
+	}
+}
+
+img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.container {
+	width: 100%;
+	max-width: calc(var(--container) + var(--gutter) * 2);
+	margin-inline: auto;
+	padding-inline: var(--gutter);
+}

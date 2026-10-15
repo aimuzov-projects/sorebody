@@ -1,0 +1,62 @@
+name: Deploy
+
+# Мёрж в main только обновляет релизный PR. Мёрж этого PR выпускает релиз,
+# и уже релиз уезжает на сервер. Ручной запуск деплоит любой релизный тег,
+# например, чтобы откатиться.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to deploy, e.g. v1.2.0. Empty deploys the newest main.
+        required: false
+
+# Деплои идут по одному, новый не прерывает уже начатую сборку.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    outputs:
+      created: ${{ steps.release.outputs.created }}
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - id: release
+        uses: aimuzov-projects/infra-site-kit/release@v1
+
+  check:
+    needs: release
+    if: needs.release.outputs.created == 'true'
+    uses: ./.github/workflows/check.yml
+
+  # Пока сервер не готов (ключ, клон в /srv, сайт в Caddy), деплой пропускается.
+  # Включается переменной репозитория `DEPLOY_ENABLED=true`,
+  # которой у самого infra-site-template нет.
+  deploy:
+    needs: [release, check]
+    if: >-
+      always() && vars.DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' || needs.check.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://__DOMAIN__
+    steps:
+      - uses: aimuzov-projects/infra-site-kit/deploy@v1
+        with:
+          ssh-key: ${{ secrets.DEPLOY_SSH_KEY }}
+          url: https://__DOMAIN__
+          ref: ${{ needs.release.outputs.tag || inputs.tag }}

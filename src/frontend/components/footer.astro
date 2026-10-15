@@ -1,0 +1,23 @@
+---
+import Credit from '@aimuzov-projects/infra-site-kit/credit.astro'
+
+import { site } from '#frontend/data/site.ts'
+---
+
+<footer class="footer">
+	<div class="container">
+		<Credit repo={site.repo} />
+	</div>
+</footer>
+
+<style>
+	.footer {
+		/* Ссылки подписи из infra-site-kit при наведении подсвечиваются цветом текста. */
+		--credit-hover: var(--fg);
+
+		margin-top: auto;
+		padding-block: 24px;
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+</style>

@@ -1,0 +1,47 @@
+---
+import Metrika from '@aimuzov-projects/infra-site-kit/metrika.astro'
+import MetrikaPixel from '@aimuzov-projects/infra-site-kit/metrika-pixel.astro'
+
+import Footer from '#frontend/components/footer.astro'
+import '#frontend/styles/global.css'
+import { site } from '#frontend/data/site.ts'
+import { pageTitle } from '#frontend/lib/title.ts'
+
+type Props = {
+	/** Название страницы, к нему добавится название сайта. У главной не задаётся. */
+	title?: string
+	/** `meta description` и `og:description`, по умолчанию `site.description`. */
+	description?: string
+	/** `false` у служебных страниц вроде 404: без canonical и с запретом индексации. */
+	index?: boolean
+}
+
+const { title, description = site.description, index = true } = Astro.props
+const fullTitle = pageTitle(title)
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		{index ? <link rel="canonical" href={canonical} /> : <meta name="robots" content="noindex" />}
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={site.name} />
+		<meta property="og:locale" content="ru_RU" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		{Number.isInteger(site.metrikaId) && <Metrika id={site.metrikaId} />}
+		<slot name="head" />
+	</head>
+	<body>
+		{Number.isInteger(site.metrikaId) && <MetrikaPixel id={site.metrikaId} />}
+		<slot />
+		<Footer />
+	</body>
+</html>

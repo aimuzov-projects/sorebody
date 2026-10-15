@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content'
+
+import Body3d from '#frontend/components/lab/body-3d.svelte'
+import Base from '#frontend/layouts/base.astro'
+import { buildZones } from '#frontend/lab/zones.ts'
+
+// meshopt-декодер модели -- WebAssembly, общей CSP сайта он не нужен
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
+
+const injuries = (await getCollection('injuries')).map(({ id, data }) => ({
+	slug: id,
+	title: data.title,
+	region: data.region,
+}))
+const { zones, whole } = buildZones(injuries)
+---
+
+<Base title="3D-фигура (эксперимент)" index={false}>
+	<main class="lab container">
+		<h1 class="lab__title">Где болит?</h1>
+		<p class="lab__lead">
+			Наведите на точку на теле или коснитесь её: мышцы растворятся, а рядом откроется круг с травмами этой зоны.
+			Фигуру можно вращать.
+		</p>
+		<Body3d client:only="svelte" {zones} {whole} modelUrl="/lab/body.glb" />
+		<details class="lab__list">
+			<summary>Все зоны списком</summary>
+			{[...zones, whole].map((zone) => (
+				<section>
+					<h2 class="lab__zone">{zone.label}</h2>
+					<ul>
+						{zone.injuries.map((injury) => (
+							<li>
+								<a href={`/injuries/${injury.slug}/`}>{injury.title}</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			))}
+		</details>
+		<p class="lab__credit">
+			Модель: <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">BodyParts3D</a>, © The Database Center
+			for Life Science, <a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">CC BY-SA 2.1 JP</a>.
+			Мышцы и кости упрощены и сжаты для сайта.
+		</p>
+	</main>
+</Base>
+
+<style>
+	.lab {
+		display: grid;
+		gap: 20px;
+		padding-block: var(--section-y);
+
+		&__title {
+			margin: 0;
+			font-size: clamp(2.2rem, 6vw, 3.4rem);
+		}
+
+		&__lead {
+			max-width: 60ch;
+			margin: 0;
+			color: var(--muted);
+		}
+
+		&__zone {
+			margin-bottom: 4px;
+			font-size: 1.05rem;
+		}
+
+		&__credit {
+			margin: 0;
+			font-size: 0.8rem;
+			color: var(--muted);
+		}
+	}
+</style>

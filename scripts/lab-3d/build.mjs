@@ -1,0 +1,184 @@
+// Сборка GLB из OBJ BodyParts3D: группы (skin / muscles / bones) сливаются в один меш каждая,
+// упрощаются meshoptimizer и пишутся с квантованием + EXT_meshopt_compression.
+// usage: node build.mjs <config.json> <out.glb>
+import fs from 'node:fs'
+import path from 'node:path'
+import { Document, NodeIO } from '@gltf-transform/core'
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
+import { dedup, meshopt, prune, quantize, reorder, simplifyPrimitive, weld } from '@gltf-transform/functions'
+import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
+
+const [cfgPath, outPath] = process.argv.slice(2)
+const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
+
+function readObj(file) {
+	const text = fs.readFileSync(file, 'utf8')
+	const v = []
+	const f = []
+
+	for (const line of text.split('\n')) {
+		if (line.startsWith('v ')) {
+			const [, x, y, z] = line.trim().split(/\s+/)
+
+			// мм, Z вверх, перед = -Y  ->  метры, Y вверх, перед = +Z
+			v.push(+x / 1000, +z / 1000, -y / 1000)
+		} else if (line.startsWith('f ')) {
+			const idx = line
+				.trim()
+				.split(/\s+/)
+				.slice(1)
+				.map((t) => parseInt(t, 10) - 1)
+
+			for (let i = 1; i + 1 < idx.length; i++) f.push(idx[0], idx[i], idx[i + 1])
+		}
+	}
+
+	return { v, f }
+}
+
+function findObj(id) {
+	for (const dir of cfg.objDirs) {
+		const p = path.join(dir, id + '.obj')
+
+		if (fs.existsSync(p)) return p
+	}
+
+	return null
+}
+
+const doc = new Document()
+const buffer = doc.createBuffer()
+const scene = doc.createScene('body')
+let missing = 0
+
+for (const group of cfg.groups) {
+	const pos = []
+	const idx = []
+
+	for (const id of group.files) {
+		const p = findObj(id)
+
+		if (!p) {
+			missing++
+			continue
+		}
+
+		const { v, f } = readObj(p)
+		const base = pos.length / 3
+
+		for (const x of v) pos.push(x)
+
+		for (const i of f) idx.push(i + base)
+	}
+
+	console.log(group.name, 'files', group.files.length, 'verts', pos.length / 3, 'tris', idx.length / 3)
+	const prim = doc
+		.createPrimitive()
+		.setAttribute(
+			'POSITION',
+			doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer),
+		)
+		.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(idx)).setBuffer(buffer))
+	const mesh = doc.createMesh(group.name).addPrimitive(prim)
+
+	mesh.setExtras({ ratio: group.ratio, error: group.error })
+	scene.addChild(doc.createNode(group.name).setMesh(mesh))
+}
+
+console.log('missing files', missing)
+
+// Центрируем по X/Z, ставим стопы на y = 0
+{
+	let min = [Infinity, Infinity, Infinity]
+	let max = [-Infinity, -Infinity, -Infinity]
+
+	for (const acc of doc.getRoot().listAccessors()) {
+		if (acc.getType() !== 'VEC3') continue
+
+		const a = acc.getArray()
+
+		for (let i = 0; i < a.length; i += 3)
+			for (let k = 0; k < 3; k++) {
+				min[k] = Math.min(min[k], a[i + k])
+				max[k] = Math.max(max[k], a[i + k])
+			}
+	}
+
+	const off = [-(min[0] + max[0]) / 2, -min[1], -(min[2] + max[2]) / 2]
+
+	console.log('bounds', min, max)
+
+	for (const acc of doc.getRoot().listAccessors()) {
+		if (acc.getType() !== 'VEC3') continue
+
+		const a = acc.getArray()
+
+		for (let i = 0; i < a.length; i += 3) for (let k = 0; k < 3; k++) a[i + k] += off[k]
+	}
+
+	const anchors = []
+
+	for (const an of cfg.anchors ?? []) {
+		const v = []
+
+		for (const id of an.files) {
+			const p = findObj(id)
+
+			if (p) v.push(...readObj(p).v)
+		}
+
+		for (let i = 0; i < v.length; i += 3) for (let k = 0; k < 3; k++) v[i + k] += off[k]
+
+		let lo = Infinity
+		let hi = -Infinity
+
+		for (let i = 1; i < v.length; i += 3) {
+			lo = Math.min(lo, v[i])
+			hi = Math.max(hi, v[i])
+		}
+
+		const keep = (y) => (an.mode === 'top' ? y > hi - an.band : an.mode === 'bottom' ? y < lo + an.band : true)
+		const bmin = [Infinity, Infinity, Infinity]
+		const bmax = [-Infinity, -Infinity, -Infinity]
+
+		for (let i = 0; i < v.length; i += 3) {
+			if (!keep(v[i + 1])) continue
+
+			for (let k = 0; k < 3; k++) {
+				bmin[k] = Math.min(bmin[k], v[i + k])
+				bmax[k] = Math.max(bmax[k], v[i + k])
+			}
+		}
+
+		const c = bmin.map((m, k) => +((m + bmax[k]) / 2).toFixed(3))
+
+		anchors.push({ zone: an.zone, side: an.side, position: c })
+	}
+
+	fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
+}
+
+await MeshoptSimplifier.ready
+await MeshoptEncoder.ready
+await doc.transform(weld({}))
+
+for (const mesh of doc.getRoot().listMeshes()) {
+	const { ratio, error } = mesh.getExtras()
+
+	for (const prim of mesh.listPrimitives()) {
+		simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio, error, lockBorder: false })
+		console.log(mesh.getName(), 'tris after', prim.getIndices().getCount() / 3)
+	}
+
+	mesh.setExtras({})
+}
+
+await doc.transform(weld({}), dedup(), prune())
+await doc.transform(reorder({ encoder: MeshoptEncoder }), quantize({ quantizePosition: 14, quantizeNormal: 8 }))
+
+if (!cfg.noMeshopt) await doc.transform(meshopt({ encoder: MeshoptEncoder, level: 'medium' }))
+
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder })
+
+await io.write(outPath, doc)
+console.log('written', outPath, fs.statSync(outPath).size)

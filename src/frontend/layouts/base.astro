@@ -38,5 +38,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 	<body>
 		<slot />
 		<Footer />
+		<script>
+			import '#frontend/lib/telegram.ts'
+		</script>
 	</body>
 </html>

@@ -21,7 +21,8 @@ export default defineConfig({
 	// через `X-Frame-Options`.
 	security: {
 		csp: {
-			scriptDirective: { resources: ["'self'"] },
+			// SDK Mini App грузится с telegram.org, как в wodlog.
+			scriptDirective: { resources: ["'self'", 'https://telegram.org'] },
 			directives: [
 				"default-src 'self'",
 				"img-src 'self' data:",

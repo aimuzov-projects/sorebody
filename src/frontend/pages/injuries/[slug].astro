@@ -1,0 +1,133 @@
+---
+// src/frontend/pages/injuries/[slug].astro
+import { getCollection, render } from 'astro:content'
+
+import Disclaimer from '#frontend/components/disclaimer.astro'
+import { MOVEMENTS } from '#frontend/data/movements.ts'
+import { regionLabel } from '#frontend/data/regions.ts'
+import Base from '#frontend/layouts/base.astro'
+import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+
+export async function getStaticPaths() {
+	const injuries = await getCollection('injuries')
+
+	return injuries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+const { data } = entry
+const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(m.slug))
+---
+
+<Base title={data.title} description={data.summary}>
+	<main class="injury container">
+		<p class="injury__meta">
+			<a href={`/?region=${data.region}`}>{regionLabel(data.region)}</a>
+			{data.frequency === 'rare' && <span class="badge badge--rare">Редко, но опасно</span>}
+			{data.draft && <span class="badge">Черновик: врач не проверял</span>}
+		</p>
+		<h1>{data.title}</h1>
+		<p class="injury__lead">{data.summary}</p>
+
+		{data.images.map((image) => (
+			<figure class="injury__figure">
+				<img class="injury__image" src={image.src} alt={image.alt} width="1200" height="670" loading="lazy" />
+				<figcaption class="injury__caption">{image.caption}</figcaption>
+			</figure>
+		))}
+
+		<article class="injury__body">
+			<Content />
+		</article>
+
+		{movements.length > 0 && (
+			<section>
+				<h2>Связанные движения</h2>
+				<ul class="injury__movements">
+					{movements.map((m) => (
+						<li>
+							<a href={`/movements/${m.slug}`}>{m.title}</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		)}
+
+		<section>
+			<h2>Источники</h2>
+			<ol class="injury__sources">
+				{data.sources.map((s) => (
+					<li>
+						<a href={pubmedUrl(s.pmid)}>{s.label}</a> · PMID {s.pmid}
+					</li>
+				))}
+			</ol>
+		</section>
+
+		<Disclaimer />
+	</main>
+</Base>
+
+<style>
+	.injury {
+		display: grid;
+		gap: 20px;
+		max-width: calc(72ch + var(--gutter) * 2);
+		padding-block: var(--section-y);
+
+		&__meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			align-items: center;
+			margin: 0;
+			font-size: 0.9rem;
+		}
+
+		&__lead {
+			margin: 0;
+			font-size: 1.15rem;
+			color: var(--muted);
+		}
+
+		&__figure {
+			margin: 0;
+		}
+
+		&__image {
+			border-radius: 12px;
+			background: #ffffff;
+		}
+
+		&__caption {
+			margin-top: 6px;
+			font-size: 0.85rem;
+			color: var(--muted);
+		}
+
+		&__movements {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 16px;
+			padding: 0;
+			list-style: none;
+		}
+
+		&__sources {
+			font-size: 0.9rem;
+		}
+	}
+
+	.badge {
+		padding: 2px 8px;
+		border-radius: 999px;
+		font-size: 0.8rem;
+		background: var(--surface);
+
+		&--rare {
+			color: #ffffff;
+			background: var(--danger);
+		}
+	}
+</style>

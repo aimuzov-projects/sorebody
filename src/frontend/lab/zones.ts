@@ -9,7 +9,7 @@ export type LabZone = {
 	radius: number
 	/** Точки зоны на модели: обе стороны тела у парных зон. `normal` -- куда точка "смотрит". */
 	points: { position: Vec3; normal: Vec3 }[]
-	injuries: { slug: string; title: string }[]
+	injuries: { slug: string; title: string; summary: string }[]
 }
 
 /**
@@ -37,11 +37,11 @@ function pair([x, y, z]: Vec3, side: number, front: number) {
 /** "Всё тело": растворение от груди на всю фигуру. */
 const WHOLE = { radius: 1.3, points: [{ position: [0, 1.25, 0.05] as Vec3, normal: [0, 0, 1] as Vec3 }] }
 
-export function buildZones(injuries: { slug: string; title: string; region: Region }[]) {
+export function buildZones(injuries: { slug: string; title: string; summary: string; region: Region }[]) {
 	const byRegion = (slug: Region) =>
 		injuries
 			.filter((i) => i.region === slug)
-			.map(({ slug, title }) => ({ slug, title }))
+			.map(({ slug, title, summary }) => ({ slug, title, summary }))
 			.sort((a, b) => a.title.localeCompare(b.title, 'ru'))
 	const zones: LabZone[] = REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
 		slug: r.slug,

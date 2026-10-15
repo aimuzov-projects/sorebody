@@ -14,6 +14,7 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
 const injuries = (await getCollection('injuries')).map(({ id, data }) => ({
 	slug: id,
 	title: data.title,
+	summary: data.summary,
 	region: data.region,
 }))
 const { zones, whole } = buildZones(injuries)

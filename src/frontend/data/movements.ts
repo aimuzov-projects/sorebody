@@ -5,6 +5,7 @@
 export const MOVEMENTS = [
 	{ slug: 'squat', title: 'Приседания со штангой', titleEn: 'Back/front squat' },
 	{ slug: 'deadlift', title: 'Становая тяга', titleEn: 'Deadlift' },
+	{ slug: 'hip-thrust', title: 'Ягодичный мост со штангой', titleEn: 'Barbell hip thrust' },
 	{ slug: 'snatch', title: 'Рывок', titleEn: 'Snatch' },
 	{ slug: 'clean-and-jerk', title: 'Взятие на грудь и толчок', titleEn: 'Clean and jerk' },
 	{ slug: 'overhead-press', title: 'Жимы и швунги над головой', titleEn: 'Press, push press, push jerk' },

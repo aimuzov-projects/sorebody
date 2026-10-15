@@ -7,7 +7,7 @@ export default defineConfig({
 	// и `src/shared`, когда проекту понадобится своё API.
 	srcDir: './src/frontend',
 	// Абсолютные URL в canonical, og:url и sitemap.
-	site: 'https://__DOMAIN__',
+	site: 'https://wodcare.aimuzov.online',
 	// CSS немного, и встроенный в HTML он не блокирует первую отрисовку
 	// отдельным запросом.
 	build: { inlineStylesheets: 'always' },
@@ -17,7 +17,6 @@ export default defineConfig({
 	// Подсветка Shiki несовместима с CSP.
 	markdown: { syntaxHighlight: false },
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
-	// Компонент Яндекс Метрики из infra-site-kit сам добавляет свой хеш и источники.
 	// `frame-ancestors` в `<meta>` не работает, встраивание блокирует Caddy
 	// через `X-Frame-Options`.
 	security: {

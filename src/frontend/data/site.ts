@@ -1,10 +1,9 @@
 export const site = {
 	/** Название сайта: `<title>` главной, `og:site_name`, хвост заголовков остальных страниц. */
-	name: '__NAME__',
+	name: 'Wodcare',
 	/** `meta description` и `og:description` по умолчанию. */
-	description: '__DESCRIPTION__',
-	/** Номер счётчика Яндекс Метрики. В самом шаблоне это `NaN`, и тогда счётчика на странице нет. */
-	metrikaId: Number('__METRIKA_ID__'),
+	description:
+		'Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования.',
 	/** Репозиторий проекта, на него ведёт ссылка "Исходный код" в подписи автора в подвале. */
-	repo: 'https://github.com/aimuzov-projects/__PROJECT__',
+	repo: 'https://github.com/aimuzov-projects/wodcare',
 }

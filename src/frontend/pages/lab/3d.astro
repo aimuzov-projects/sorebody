@@ -41,16 +41,6 @@ const { zones, whole } = buildZones(injuries)
 				))}
 			</ul>
 		</noscript>
-		<p class="lab__credit">
-			Модель{' '}
-			<a class="lab__credit-link" href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">
-				BodyParts3D
-			</a>{' '}
-			© DBCLS ·{' '}
-			<a class="lab__credit-link" href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">
-				CC BY-SA 2.1 JP
-			</a>
-		</p>
 	</body>
 </html>
 
@@ -67,28 +57,6 @@ const { zones, whole } = buildZones(injuries)
 			height: 1px;
 			white-space: nowrap;
 			clip-path: inset(50%);
-		}
-
-		&__credit {
-			position: fixed;
-			z-index: 3;
-			right: 12px;
-			bottom: 8px;
-			margin: 0;
-			font-size: 0.7rem;
-			color: #8a847b;
-
-			/* На телефоне панель статьи занимает низ экрана: подпись уходит в полоску сцены сверху */
-			@media (--below-sm) {
-				.lab:has(.panel) & {
-					top: 8px;
-					bottom: auto;
-				}
-			}
-		}
-
-		&__credit-link {
-			color: inherit;
 		}
 	}
 </style>

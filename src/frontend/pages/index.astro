@@ -1,27 +1,54 @@
 ---
-import Base from '#frontend/layouts/base.astro'
+import { getCollection } from 'astro:content'
+
+import Disclaimer from '#frontend/components/disclaimer.astro'
+import InjuryBrowser from '#frontend/components/injury-browser.svelte'
 import { site } from '#frontend/data/site.ts'
+import Base from '#frontend/layouts/base.astro'
+import type { InjuryListItem } from '#frontend/lib/filter.ts'
+
+const injuries: InjuryListItem[] = (await getCollection('injuries'))
+	.map(({ id, data }) => ({
+		slug: id,
+		title: data.title,
+		titleEn: data.titleEn,
+		summary: data.summary,
+		region: data.region,
+		frequency: data.frequency,
+		movements: data.movements,
+	}))
+	.sort(
+		(a, b) =>
+			Number(a.frequency === 'rare') - Number(b.frequency === 'rare') || a.title.localeCompare(b.title, 'ru'),
+	)
 ---
 
 <Base>
-	<main class="home">
-		<div class="container">
-			<h1 class="home__title">{site.name}</h1>
-			<p class="home__lead">{site.description}</p>
-		</div>
+	<main class="home container">
+		<h1 class="home__title">{site.name}</h1>
+		<p class="home__lead">{site.description}</p>
+		<InjuryBrowser client:load {injuries} />
+		<p>
+			<a href="/about/">Как сделан справочник и откуда цифры</a>
+		</p>
+		<Disclaimer />
 	</main>
 </Base>
 
 <style>
 	.home {
+		display: grid;
+		gap: 20px;
 		padding-block: var(--section-y);
 
 		&__title {
+			margin: 0;
 			font-size: clamp(2.4rem, 6vw, 3.6rem);
 		}
 
 		&__lead {
 			max-width: 60ch;
+			margin: 0;
 			color: var(--muted);
 		}
 	}

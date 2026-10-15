@@ -1,4 +1,4 @@
-const LINK = /https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/(\d+)\//g
+const LINK = /https?:\/\/(?:pubmed\.ncbi\.nlm\.nih\.gov|(?:www\.)?ncbi\.nlm\.nih\.gov\/pubmed)\/(\d+)(?!\d)/g
 
 export function pubmedUrl(pmid: string) {
 	return `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`

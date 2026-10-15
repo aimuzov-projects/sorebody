@@ -53,10 +53,10 @@ jobs:
     timeout-minutes: 20
     environment:
       name: production
-      url: https://__DOMAIN__
+      url: https://wodcare.aimuzov.online
     steps:
       - uses: aimuzov-projects/infra-site-kit/deploy@v1
         with:
           ssh-key: ${{ secrets.DEPLOY_SSH_KEY }}
-          url: https://__DOMAIN__
+          url: https://wodcare.aimuzov.online
           ref: ${{ needs.release.outputs.tag || inputs.tag }}

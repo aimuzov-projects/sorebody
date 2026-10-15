@@ -1,0 +1,38 @@
+---
+import Disclaimer from '#frontend/components/disclaimer.astro'
+import Base from '#frontend/layouts/base.astro'
+import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+---
+
+<Base title="О справочнике" description="Как собран Wodcare: источники, методика и ограничения.">
+	<main class="about container">
+		<h1>О справочнике</h1>
+		<p>
+			Список травм и цифры взяты из систематических обзоров и исследований травматизма в кроссфите и
+			функциональном тренинге высокой интенсивности, найденных на PubMed. Главный ориентир — метаанализ
+			<a href={pubmedUrl('35278328')}>Knapik 2022</a>: 28 исследований, 11 089 человек, в среднем 4,3 травмы на
+			1000 часов тренировок.
+		</p>
+		<p>
+			Цифры взяты из аннотаций статей, а большинство исследований — ретроспективные опросы, поэтому оценки частоты
+			сильно расходятся. У каждой цифры в статье есть ссылка на источник.
+		</p>
+		<p>
+			Тексты написаны с помощью ИИ и помечены как черновики, пока их не проверил врач. Иллюстрации сгенерированы
+			нейросетью Nano Banana и проверены на явные анатомические ошибки, но остаются схемами.
+		</p>
+		<p>
+			Исходный код и тексты — <a href="https://github.com/aimuzov-projects/wodcare">на GitHub</a>.
+		</p>
+		<Disclaimer />
+	</main>
+</Base>
+
+<style>
+	.about {
+		display: grid;
+		gap: 16px;
+		max-width: calc(72ch + var(--gutter) * 2);
+		padding-block: var(--section-y);
+	}
+</style>

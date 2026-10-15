@@ -6,6 +6,9 @@ import { site } from '#frontend/data/site.ts'
 
 <footer class="footer">
 	<div class="container">
+		<nav class="footer__nav" aria-label="Разделы">
+			<a href="/">Все травмы</a> · <a href="/about/">О справочнике</a>
+		</nav>
 		<Credit repo={site.repo} />
 	</div>
 </footer>
@@ -19,5 +22,9 @@ import { site } from '#frontend/data/site.ts'
 		padding-block: 24px;
 		font-size: 0.875rem;
 		color: var(--muted);
+
+		&__nav {
+			margin-bottom: 8px;
+		}
 	}
 </style>

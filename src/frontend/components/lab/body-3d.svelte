@@ -25,8 +25,6 @@
 	const HOVER_OPEN_MS = 450
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
 	const PICK_PX = 56
-	const RING_OUTER = 150
-	const RING_INNER = 62
 
 	let wrap: HTMLDivElement
 	let canvas: HTMLCanvasElement
@@ -44,48 +42,8 @@
 
 	let hovered = $state<Spot | null>(null)
 
-	/**
-	 * Как показывать травмы зоны, `?menu=` для сравнения вживую: `atlas` -- выносные подписи
-	 * как в анатомическом атласе, `list` -- панель со списком и описаниями, `ring` -- круг.
-	 * На узком экране atlas и list превращаются в шторку снизу.
-	 */
-	type Layout = 'ring' | 'atlas' | 'list' | 'sheet'
-
-	const menuParam = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('menu') : null
-	const MENU: Exclude<Layout, 'sheet'> = menuParam === 'ring' || menuParam === 'list' ? menuParam : 'atlas'
-
-	let open = $state<{
-		zone: LabZone
-		point: LabZone['points'][number]
-		x: number
-		y: number
-		layout: Layout
-	} | null>(null)
-	// Экранное положение раскрытой зоны: камера ещё едет, поэтому обновляется каждый кадр
-	let anchor = $state({ x: 0, y: 0 })
-	let view = $state({ w: 0, h: 0 })
-
-	const ATLAS_GAP = 64
-	const ATLAS_OFFSET = 170
-
-	/** Подписи атласа: столбец справа от зоны, линия от края зоны с изломом к подписи. */
-	const atlasRows = $derived.by(() => {
-		if (open?.layout !== 'atlas') return []
-
-		const n = open.zone.injuries.length
-		const x = Math.min(anchor.x + ATLAS_OFFSET, view.w - 340)
-		const top = clamp(anchor.y - ((n - 1) * ATLAS_GAP) / 2, 90, Math.max(90, view.h - 70 - (n - 1) * ATLAS_GAP))
-
-		return open.zone.injuries.map((injury, i) => {
-			const angle = n > 1 ? -0.9 + (1.8 * i) / (n - 1) : 0
-			const y = top + i * ATLAS_GAP
-			const sx = anchor.x + 22 * Math.cos(angle)
-			const sy = anchor.y + 22 * Math.sin(angle)
-
-			return { injury, x, y, path: `M ${sx} ${sy} L ${x - 44} ${y} L ${x - 10} ${y}`, sx, sy }
-		})
-	})
-	let activeSector = $state(-1)
+	/** Травмы зоны: панель со списком справа, на узком экране -- шторка снизу. */
+	let open = $state<{ zone: LabZone; point: LabZone['points'][number]; layout: 'list' | 'sheet' } | null>(null)
 	let hoverTimer: ReturnType<typeof setTimeout> | undefined
 
 	type Article = { zone: LabZone; point: LabZone['points'][number]; slug: string; title: string }
@@ -118,12 +76,6 @@
 			scene.onFrame = () => {
 				placeSpots()
 
-				if (open?.layout === 'atlas') {
-					const p = scene.project(open.point.position)
-
-					if (Math.abs(p.x - anchor.x) > 0.5 || Math.abs(p.y - anchor.y) > 0.5) anchor = { x: p.x, y: p.y }
-				}
-
 				if (showFps) {
 					frames++
 					const now = performance.now()
@@ -146,10 +98,7 @@
 			status = 'error'
 		})
 
-		const resizer = new ResizeObserver(() => {
-			body?.resize()
-			view = { w: wrap.clientWidth, h: wrap.clientHeight }
-		})
+		const resizer = new ResizeObserver(() => body?.resize())
 
 		resizer.observe(canvas)
 		// Вне экрана сцена не рисует, чтобы не греть телефон
@@ -234,48 +183,22 @@
 		body.dissolve(point.position, zone.radius)
 		body.controls.autoRotate = false
 		body.controls.enabled = false
-		const { width: w, height: h } = wrap.getBoundingClientRect()
-		const zoom = clamp(0.3 / zone.radius, 1, 2.4)
+		// Камера наезжает на зону и ставит её левее центра, справа список. На телефоне
+		// зона уходит в верхнюю пятую часть экрана, под ней шторка
+		const layout = wrap.clientWidth < 700 ? 'sheet' : 'list'
 
-		view = { w, h }
-		activeSector = -1
+		body.focus(
+			point.position,
+			clamp(0.3 / zone.radius, 1, 2.4),
+			layout === 'sheet' ? { x: 0, y: 0.3 } : { x: -0.2, y: 0 },
+		)
 
-		if (MENU === 'ring') {
-			const margin = RING_OUTER + 8
-			// Камера наезжает на зону и ставит её левее центра, кольцо встаёт справа.
-			// На узком экране сбоку места нет: зона уходит наверх, кольцо -- вниз
-			const wide = w >= 2 * margin + 260
-			const at = wide ? { x: -0.16, y: 0 } : { x: 0, y: 0.5 - 150 / h }
-
-			body.focus(point.position, zoom, at)
-
-			open = wide
-				? {
-						zone,
-						point,
-						layout: 'ring',
-						x: clamp(w / 2 + at.x * w + RING_OUTER + 90, margin, w - margin),
-						y: h / 2,
-					}
-				: { zone, point, layout: 'ring', x: w / 2, y: h - margin }
-
-			return
-		}
-
-		// Зона встаёт левее центра, справа подписи или список. На телефоне зона уходит
-		// в верхнюю пятую часть экрана, под ней шторка
-		const layout: Layout = w < 700 ? 'sheet' : MENU
-		const at = layout === 'sheet' ? { x: 0, y: 0.3 } : { x: layout === 'list' ? -0.2 : -0.18, y: 0 }
-
-		body.focus(point.position, zoom, at)
-		anchor = { x: w / 2 + at.x * w, y: h / 2 - at.y * h }
-		open = { zone, point, layout, x: anchor.x, y: anchor.y }
+		open = { zone, point, layout }
 	}
 
 	function closeMenu() {
 		open = null
 		hovered = null
-		activeSector = -1
 
 		if (!body) return
 
@@ -435,21 +358,9 @@
 	}
 
 	function onPointerMove(event: PointerEvent) {
-		if (event.pointerType !== 'mouse' || status !== 'ready' || article) return
+		if (event.pointerType !== 'mouse' || status !== 'ready' || article || open || event.buttons) return
 
 		const { x, y } = local(event)
-
-		if (open) {
-			if (open.layout !== 'ring') return
-
-			const d = Math.hypot(x - open.x, y - open.y)
-
-			activeSector = d > RING_INNER * 0.6 && d < RING_OUTER + 30 ? sectorAt(x - open.x, y - open.y) : -1
-
-			return
-		}
-
-		if (event.buttons) return
 
 		hover(nearest(x, y, PICK_PX))
 	}
@@ -473,28 +384,11 @@
 		// Видимый край сцены за панелью работает как подложка: клик по нему закрывает статью
 		if (article) return requestCloseArticle()
 
+		// Список ловит клики сам, клик по сцене мимо него закрывает
 		if (open) {
-			// Ссылка сама откроет статью, остальное кольцо -- тоже сектор, мимо кольца -- закрыть
-			if ((event.target as Element).closest('a')) return
+			if (!(event.target as Element).closest('.picker')) closeMenu()
 
-			// Подписи и списки ловят клики сами, клик по сцене мимо них -- закрыть
-			if (open.layout !== 'ring') {
-				if (!(event.target as Element).closest('.picker, .atlas')) closeMenu()
-
-				return
-			}
-
-			const d = Math.hypot(x - open.x, y - open.y)
-
-			if (d > RING_INNER * 0.6 && d < RING_OUTER + 30) {
-				const injury = open.zone.injuries[sectorAt(x - open.x, y - open.y)]
-
-				if (injury) pickInjury(injury)
-
-				return
-			}
-
-			return closeMenu()
+			return
 		}
 
 		if (event.target !== canvas) return
@@ -517,46 +411,12 @@
 		openArticle(open.zone, open.point, injury)
 	}
 
-	/** Ссылка в кольце открывает статью поверх сцены; с модификаторами -- как обычная ссылка. */
+	/** Ссылка в списке открывает статью поверх сцены; с модификаторами -- как обычная ссылка. */
 	function onItemClick(event: MouseEvent, injury: { slug: string; title: string }) {
 		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
 
 		event.preventDefault()
 		pickInjury(injury)
-	}
-
-	function sectorAt(dx: number, dy: number) {
-		const n = open!.zone.injuries.length
-		const angle = (Math.atan2(dx, -dy) + 2 * Math.PI) % (2 * Math.PI)
-
-		return Math.floor(((angle + Math.PI / n) % (2 * Math.PI)) / ((2 * Math.PI) / n))
-	}
-
-	/** Кольцевой сектор i из n; сектор 0 смотрит вверх. */
-	function sectorPath(i: number, n: number) {
-		const gap = n > 1 ? 0.035 : 0
-		const step = (2 * Math.PI) / n
-		const a0 = i * step - step / 2 + gap
-		const a1 = i * step + step / 2 - gap
-		const pt = (r: number, a: number) => `${(r * Math.sin(a)).toFixed(2)} ${(-r * Math.cos(a)).toFixed(2)}`
-		const large = a1 - a0 > Math.PI ? 1 : 0
-
-		if (n === 1)
-			return `M 0 ${-RING_OUTER} A ${RING_OUTER} ${RING_OUTER} 0 1 1 0 ${RING_OUTER} A ${RING_OUTER} ${RING_OUTER} 0 1 1 0 ${-RING_OUTER} M 0 ${-RING_INNER} A ${RING_INNER} ${RING_INNER} 0 1 0 0 ${RING_INNER} A ${RING_INNER} ${RING_INNER} 0 1 0 0 ${-RING_INNER} Z`
-
-		return `M ${pt(RING_OUTER, a0)} A ${RING_OUTER} ${RING_OUTER} 0 ${large} 1 ${pt(RING_OUTER, a1)} L ${pt(RING_INNER, a1)} A ${RING_INNER} ${RING_INNER} 0 ${large} 0 ${pt(RING_INNER, a0)} Z`
-	}
-
-	function labelPos(i: number, n: number) {
-		const a = (i * 2 * Math.PI) / n
-		const r = n === 1 ? (RING_OUTER + RING_INNER) / 2 : (RING_OUTER + RING_INNER) / 2 + 4
-
-		return { x: r * Math.sin(a), y: n === 1 ? -r : -r * Math.cos(a) }
-	}
-
-	/** Короткая подпись для сектора: без уточнений в скобках. */
-	function short(title: string) {
-		return title.replace(/\s*\(.*\)\s*$/, '')
 	}
 </script>
 
@@ -602,47 +462,7 @@
 		{whole.label}
 	</button>
 
-	{#if open?.layout === 'atlas'}
-		<div class="atlas">
-			<svg class="atlas__lines" aria-hidden="true">
-				{#each atlasRows as row, i (row.injury.slug)}
-					<path
-						class="atlas__line"
-						class:atlas__line--active={i === activeSector}
-						d={row.path}
-						pathLength="1"
-						style:--delay="{i * 50}ms"
-					/>
-					<circle class="atlas__dot" cx={row.sx} cy={row.sy} r="2.5" />
-				{/each}
-			</svg>
-			{#if atlasRows.length}
-				<p class="atlas__zone" style:left="{atlasRows[0].x}px" style:top="{atlasRows[0].y - 44}px">
-					{open.zone.label}
-				</p>
-			{/if}
-			<nav aria-label={open.zone.label}>
-				{#each atlasRows as row, i (row.injury.slug)}
-					<a
-						class="atlas__item"
-						class:atlas__item--active={i === activeSector}
-						href="/injuries/{row.injury.slug}/"
-						style:left="{row.x}px"
-						style:top="{row.y}px"
-						style:--delay="{120 + i * 50}ms"
-						onclick={(event) => onItemClick(event, row.injury)}
-						onpointerenter={() => (activeSector = i)}
-						onpointerleave={() => (activeSector = -1)}
-						onfocus={() => (activeSector = i)}
-					>
-						{row.injury.title}
-					</a>
-				{/each}
-			</nav>
-		</div>
-	{/if}
-
-	{#if open?.layout === 'list' || open?.layout === 'sheet'}
+	{#if open}
 		<nav class="picker picker--{open.layout}" aria-label={open.zone.label}>
 			<header class="picker__head">
 				<strong class="picker__zone">{open.zone.label}</strong>
@@ -663,44 +483,6 @@
 					</li>
 				{/each}
 			</ul>
-		</nav>
-	{/if}
-
-	{#if open?.layout === 'ring'}
-		{@const n = open.zone.injuries.length}
-		{@const active = open.zone.injuries[activeSector]}
-		<nav class="body3d__menu" style:left="{open.x}px" style:top="{open.y}px" aria-label={open.zone.label}>
-			<svg
-				class="body3d__ring"
-				viewBox="{-RING_OUTER - 2} {-RING_OUTER - 2} {RING_OUTER * 2 + 4} {RING_OUTER * 2 + 4}"
-				aria-hidden="true"
-			>
-				{#each open.zone.injuries as _, i (i)}
-					<path
-						class="body3d__sector"
-						class:body3d__sector--active={i === activeSector}
-						d={sectorPath(i, n)}
-					/>
-				{/each}
-			</svg>
-			{#each open.zone.injuries as injury, i (injury.slug)}
-				{@const pos = labelPos(i, n)}
-				<a
-					class="body3d__item"
-					class:body3d__item--active={i === activeSector}
-					href="/injuries/{injury.slug}/"
-					onclick={(event) => onItemClick(event, injury)}
-					style:transform="translate(calc({pos.x}px - 50%), calc({pos.y}px - 50%))"
-					style:--delay="{i * 30}ms"
-					onfocus={() => (activeSector = i)}
-				>
-					{short(injury.title)}
-				</a>
-			{/each}
-			<div class="body3d__center">
-				<strong class="body3d__center-title">{open.zone.label}</strong>
-				<span>{active ? active.title : `${n} ${plural(n)}`}</span>
-			</div>
 		</nav>
 	{/if}
 
@@ -852,80 +634,6 @@
 			background: #f8f6f2cc;
 		}
 
-		&__menu {
-			position: absolute;
-			width: 0;
-			height: 0;
-			animation: ring-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-		}
-
-		&__ring {
-			position: absolute;
-			top: -152px;
-			left: -152px;
-			overflow: visible;
-			width: 304px;
-			height: 304px;
-		}
-
-		&__sector {
-			fill: #1d1d1fd9;
-			stroke: #ffffff26;
-			stroke-width: 1;
-			transition: fill 0.15s;
-		}
-
-		&__sector--active {
-			fill: var(--rim);
-		}
-
-		&__item {
-			position: absolute;
-			top: 0;
-			left: 0;
-			overflow: hidden;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 3;
-			line-clamp: 3;
-			width: 92px;
-			font-size: 0.72rem;
-			line-height: 1.2;
-			hyphens: auto;
-			color: #f5f1ea;
-			text-align: center;
-			text-decoration: none;
-			animation: item-in 0.25s both;
-			animation-delay: var(--delay);
-
-			&:focus-visible {
-				border-radius: 4px;
-				outline: 2px solid #fff;
-			}
-		}
-
-		&__item--active {
-			color: #fff;
-		}
-
-		&__center {
-			position: absolute;
-			top: 0;
-			left: 0;
-			transform: translate(-50%, -50%);
-			display: grid;
-			gap: 2px;
-			width: 112px;
-			font-size: 0.7rem;
-			line-height: 1.2;
-			color: var(--fg);
-			text-align: center;
-
-			&-title {
-				font-size: 0.8rem;
-			}
-		}
-
 		&__fps {
 			position: absolute;
 			top: 10px;
@@ -934,83 +642,6 @@
 				600 0.8rem/1 ui-monospace,
 				monospace;
 			color: var(--muted);
-		}
-	}
-
-	/* Выносные подписи: тонкие линии от зоны с изломом к подписям, как в атласе */
-	.atlas {
-		pointer-events: none;
-		position: absolute;
-		inset: 0;
-
-		&__lines {
-			position: absolute;
-			inset: 0;
-			overflow: visible;
-			width: 100%;
-			height: 100%;
-		}
-
-		&__line {
-			fill: none;
-			stroke: #8a7f72;
-			stroke-dasharray: 1;
-			stroke-dashoffset: 1;
-			stroke-width: 1;
-			transition:
-				stroke 0.15s,
-				stroke-width 0.15s;
-			animation: line-draw 0.5s ease-out forwards;
-			animation-delay: var(--delay);
-		}
-
-		&__line--active {
-			stroke: var(--rim);
-			stroke-width: 2;
-		}
-
-		&__dot {
-			fill: var(--rim);
-		}
-
-		&__zone {
-			position: absolute;
-			transform: translateY(-50%);
-			margin: 0;
-			font-size: 0.75rem;
-			font-weight: 600;
-			color: var(--muted);
-			text-transform: uppercase;
-			letter-spacing: 0.08em;
-		}
-
-		&__item {
-			pointer-events: auto;
-			position: absolute;
-			transform: translateY(-50%);
-			max-width: 320px;
-			padding: 6px 12px;
-			border-radius: 10px;
-			font-size: 0.95rem;
-			line-height: 1.25;
-			color: var(--fg);
-			text-decoration: none;
-			background: #f8f6f2cc;
-			backdrop-filter: blur(8px);
-			transition:
-				background 0.15s,
-				box-shadow 0.15s;
-			animation: label-in 0.35s ease-out both;
-			animation-delay: var(--delay);
-
-			&:focus-visible {
-				outline: 2px solid var(--accent);
-			}
-		}
-
-		&__item--active {
-			background: #ffffff;
-			box-shadow: 0 6px 24px #2b221a1f;
 		}
 	}
 
@@ -1051,7 +682,7 @@
 			align-items: baseline;
 			padding: 14px 16px 10px 20px;
 			border-bottom: 1px solid #00000010;
-			background: #faf8f5f2;
+			background: #faf8f5;
 		}
 
 		&__zone {
@@ -1103,19 +734,6 @@
 			font-size: 0.85rem;
 			line-height: 1.35;
 			color: var(--muted);
-		}
-	}
-
-	@keyframes line-draw {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-
-	@keyframes label-in {
-		from {
-			transform: translate(-8px, -50%);
-			opacity: 0;
 		}
 	}
 
@@ -1283,19 +901,6 @@
 				color: var(--muted);
 				background: #ffffff99;
 			}
-		}
-	}
-
-	@keyframes ring-in {
-		from {
-			transform: scale(0.6) rotate(-20deg);
-			opacity: 0;
-		}
-	}
-
-	@keyframes item-in {
-		from {
-			opacity: 0;
 		}
 	}
 </style>

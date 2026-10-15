@@ -4,5 +4,6 @@ BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribut
 https://dbarchive.biosciencedbc.jp/en/bodyparts3d/
 https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
 
-Changes: skin, skeletal muscles and bones merged into three meshes, simplified with meshoptimizer,
-quantized and compressed with EXT_meshopt_compression. This derivative is shared under the same license.
+Changes: skin, skeletal muscles and bones merged into three meshes; external genitalia removed from
+the skin and the groin closed with a smooth patch; simplified with meshoptimizer, quantized and
+compressed with EXT_meshopt_compression. This derivative is shared under the same license.

@@ -1,0 +1,42 @@
+---
+// src/frontend/components/injury-card.astro
+import type { CollectionEntry } from 'astro:content'
+
+import { regionLabel } from '#frontend/data/regions.ts'
+
+type Props = { entry: CollectionEntry<'injuries'> }
+
+const { entry } = Astro.props
+const { data } = entry
+---
+
+<a class="card" href={`/injuries/${entry.id}`}>
+	<span class="card__region">
+		{regionLabel(data.region)}
+		{data.frequency === 'rare' && ' · редко'}
+	</span>
+	<strong class="card__title">{data.title}</strong>
+	<span class="card__summary">{data.summary}</span>
+</a>
+
+<style>
+	.card {
+		display: grid;
+		gap: 6px;
+		padding: 16px;
+		border-radius: 12px;
+		color: inherit;
+		text-decoration: none;
+		background: var(--surface);
+
+		&:hover .card__title {
+			color: var(--accent);
+		}
+
+		&__region,
+		&__summary {
+			font-size: 0.85rem;
+			color: var(--muted);
+		}
+	}
+</style>

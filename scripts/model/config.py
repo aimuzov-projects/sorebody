@@ -23,10 +23,14 @@ for p in glob.glob(f'{obj_dir}/*.obj'):
                 break
 
 bones = by['bone organ'] | by['costal cartilage'] | by['intervertebral disk'] | by['articular disk of symphysis']
-muscles = (by['muscle organ'] | by['tendon']) - bones
+# Крупные мышцы в BP3D лежат частями: дельтовидная и большая грудная -- "zone of muscle organ",
+# четырёхглавая, двуглавые и икроножная -- "head of muscle organ", трапециевидная -- просто части
+PARTS = {f for f in by['cardinal organ part'] if f.endswith('M')}
+muscles = (by['muscle organ'] | by['tendon'] | by['zone of muscle organ'] | by['head of muscle organ']) - bones
 # Внутри головы мышцы глаза и языка не видны, но съедают треугольники
 muscles = {f for f in muscles if not any(k in names.get(f, '') for k in ('ocul', 'rectus of eye', 'oblique of eye', 'tongue', 'glossus', 'palat', 'levator palpebrae', 'tensor tympani', 'stapedius'))}
 bones = {f for f in bones if f in names}
+muscles |= {f for f in PARTS if 'trapezius' in names.get(f, '') or names.get(f, '').endswith(('iliotibial tract', 'calcaneal tendon'))}
 muscles = {f for f in muscles if f in names}
 
 
@@ -52,7 +56,8 @@ for a in anchors:
 
 groups = [
     {'name': 'bones', 'files': sorted(bones), 'ratio': float(b_ratio), 'error': 0.01},
-    {'name': 'muscles', 'files': sorted(muscles), 'ratio': float(m_ratio), 'error': 0.01},
+    # Номер мышцы и волокна по вершинам (build.mjs): мышцы фигуры видны в проёме до догрузки куска
+    {'name': 'muscles', 'files': sorted(muscles), 'ratio': float(m_ratio), 'error': 0.01, 'parts': True},
 ]
 if '--skin' in flags:
     groups.append({'name': 'skin', 'files': sorted(by['skin'] & set(names)), 'ratio': 0.3, 'error': 0.01})

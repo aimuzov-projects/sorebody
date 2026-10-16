@@ -27,9 +27,11 @@ function readObj(file) {
 	const text = fs.readFileSync(file, 'utf8')
 	const v = []
 	const f = []
+	let name = ''
 
 	for (const line of text.split('\n')) {
-		if (line.startsWith('v ')) {
+		if (line.startsWith('# English name')) name = line.split(':')[1].trim()
+		else if (line.startsWith('v ')) {
 			const [, x, y, z] = line.trim().split(/\s+/)
 
 			// мм, Z вверх, перед = -Y  ->  метры, Y вверх, перед = +Z
@@ -45,7 +47,41 @@ function readObj(file) {
 		}
 	}
 
-	return { v, f }
+	return { v, f, name }
+}
+
+/** Имя мышцы без стороны: "Long head of left biceps femoris" -> "long head of biceps femoris". */
+function partName(name) {
+	return name
+		.toLowerCase()
+		.replace(/\b(left|right)\b/g, '')
+		.replace(/\s+muscle$/, '')
+		.replace(/\s+/g, ' ')
+		.trim()
+}
+
+/** Главная ось облака точек -- вдоль неё у мышцы идут волокна. Степенной метод по ковариации. */
+function mainAxis(v) {
+	const n = v.length / 3
+	const m = [0, 0, 0]
+
+	for (let i = 0; i < v.length; i++) m[i % 3] += v[i] / n
+
+	const c = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+	for (let i = 0; i < v.length; i += 3)
+		for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) c[a * 3 + b] += (v[i + a] - m[a]) * (v[i + b] - m[b])
+
+	let x = [0.3, 0.9, 0.2]
+
+	for (let it = 0; it < 30; it++) {
+		const y = [0, 1, 2].map((a) => c[a * 3] * x[0] + c[a * 3 + 1] * x[1] + c[a * 3 + 2] * x[2])
+		const l = Math.hypot(...y) || 1
+
+		x = y.map((k) => k / l)
+	}
+
+	return x
 }
 
 function findObj(id) {
@@ -63,9 +99,15 @@ const buffer = doc.createBuffer()
 const scene = doc.createScene('body')
 let missing = 0
 
+// Мышцы помечаются по вершинам: номер мышцы в `parts` меша (с 1) и направление волокон
+const positions = []
+
 for (const group of cfg.groups) {
 	const pos = []
 	const idx = []
+	const part = []
+	const fiber = []
+	const parts = []
 
 	for (const id of group.files) {
 		const p = findObj(id)
@@ -75,25 +117,52 @@ for (const group of cfg.groups) {
 			continue
 		}
 
-		const { v, f } = readObj(p)
+		const { v, f, name } = readObj(p)
 		const base = pos.length / 3
 
 		for (const x of v) pos.push(x)
+
+		if (group.parts) {
+			const key = partName(name)
+			let id = parts.indexOf(key) + 1
+
+			if (!id) id = parts.push(key)
+
+			const axis = mainAxis(v)
+
+			for (let i = 0; i < v.length / 3; i++) {
+				part.push(id)
+				fiber.push(...axis)
+			}
+		}
 
 		for (const i of f) idx.push(i + base)
 	}
 
 	console.log(group.name, 'files', group.files.length, 'verts', pos.length / 3, 'tris', idx.length / 3)
+	const position = doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer)
 	const prim = doc
 		.createPrimitive()
-		.setAttribute(
-			'POSITION',
-			doc.createAccessor().setType('VEC3').setArray(new Float32Array(pos)).setBuffer(buffer),
-		)
+		.setAttribute('POSITION', position)
 		.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(idx)).setBuffer(buffer))
+
+	positions.push(position)
+
+	if (group.parts) {
+		prim.setAttribute(
+			'_PART',
+			doc.createAccessor().setType('SCALAR').setArray(new Uint16Array(part)).setBuffer(buffer),
+		)
+
+		prim.setAttribute(
+			'_FIBER',
+			doc.createAccessor().setType('VEC3').setArray(new Float32Array(fiber)).setBuffer(buffer),
+		)
+	}
+
 	const mesh = doc.createMesh(group.name).addPrimitive(prim)
 
-	mesh.setExtras({ ratio: group.ratio, error: group.error })
+	mesh.setExtras({ ratio: group.ratio, error: group.error, parts: group.parts ? parts : undefined })
 	scene.addChild(doc.createNode(group.name).setMesh(mesh))
 }
 
@@ -104,9 +173,7 @@ console.log('missing files', missing)
 	let min = [Infinity, Infinity, Infinity]
 	let max = [-Infinity, -Infinity, -Infinity]
 
-	for (const acc of doc.getRoot().listAccessors()) {
-		if (acc.getType() !== 'VEC3') continue
-
+	for (const acc of positions) {
 		const a = acc.getArray()
 
 		for (let i = 0; i < a.length; i += 3)
@@ -120,9 +187,7 @@ console.log('missing files', missing)
 
 	console.log('bounds', min, max, 'offset', off)
 
-	for (const acc of doc.getRoot().listAccessors()) {
-		if (acc.getType() !== 'VEC3') continue
-
+	for (const acc of positions) {
 		const a = acc.getArray()
 
 		for (let i = 0; i < a.length; i += 3) for (let k = 0; k < 3; k++) a[i + k] += off[k]
@@ -224,7 +289,7 @@ await MeshoptEncoder.ready
 await doc.transform(weld({}))
 
 for (const mesh of doc.getRoot().listMeshes()) {
-	const { ratio, error } = mesh.getExtras()
+	const { ratio, error, parts } = mesh.getExtras()
 
 	for (const prim of mesh.listPrimitives()) {
 		// ratio 1 -- исходная сетка без упрощения
@@ -233,7 +298,8 @@ for (const mesh of doc.getRoot().listMeshes()) {
 		console.log(mesh.getName(), 'tris after', prim.getIndices().getCount() / 3)
 	}
 
-	mesh.setExtras({})
+	// Названия мышц по номерам из `_PART` уходят в extras меша, сцена берёт их из userData
+	mesh.setExtras(parts ? { parts } : {})
 }
 
 await doc.transform(weld({}), dedup(), prune())

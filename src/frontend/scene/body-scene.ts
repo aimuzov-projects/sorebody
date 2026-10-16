@@ -18,7 +18,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-import { createDetail, DETAIL_REACH, detailKey } from './detail.ts'
+import { createDetail, DETAIL_REACH, detailKey, partIds } from './detail.ts'
 import { createDissolveMaterial } from './dissolve.ts'
 
 type Vec3 = [number, number, number]
@@ -89,17 +89,19 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	controls.autoRotateSpeed = 0.6
 	controls.update()
 
-	// Слои снаружи внутрь: кожа раскрывается на весь радиус, мышцы -- на часть, кости целы
-	// Сатиновая керамика снаружи, кромка среза -- синяя, как акцент интерфейса
+	// Слои снаружи внутрь: в зоне раскрывается кожа, под ней мышцы; у травмы глубже (связка, мениск,
+	// диск, нерв) мышцы расходятся малой сферой. Сатиновая керамика снаружи, кромка среза -- синяя
 	const skin = createDissolveMaterial('#f5f5f3', '#4a9bff', 0.42)
 
 	// Подсветка всей фигуры (зона «Всё тело»): синее свечение кожи, по умолчанию погашено
 	skin.material.emissive.set('#3d8bfd')
 	skin.material.emissiveIntensity = 0
-	const muscles = createDissolveMaterial('#e8e4df', '#0071e3', 0.6)
+	// Мышцы как в атласе: красные с волокнами, матовые; в тёмной теме глубже
+	const muscles = createDissolveMaterial(muscleColor(), '#0071e3', 0.78, true)
 	// Кости -- тот же материал без растворения: так в них работает вырез под детальный кусок зоны
 	const bones = createDissolveMaterial('#efe7da', '#0071e3', 0.5)
-	const MUSCLE_SHARE = 0.6
+	/** Сфера в мышцах у глубокой травмы -- доля радиуса зоны. */
+	const DEEP_SHARE = 0.45
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
 	const gltf = await loader.loadAsync(modelUrl)
@@ -129,7 +131,25 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		base: [muscles, bones],
 		baseUrl: modelUrl.replace(/[^/]*$/, 'detail/'),
 		lowPower: () => slow,
+		muscleColor: muscleColor(),
 	})
+
+	let baseMuscles: Mesh | undefined
+
+	gltf.scene.traverse((obj) => {
+		if (obj instanceof Mesh && obj.name.startsWith('muscles')) baseMuscles = obj
+	})
+
+	const darkScheme = matchMedia('(prefers-color-scheme: dark)')
+	const themeWatch = new MutationObserver(applyTheme)
+
+	function applyTheme() {
+		muscles.material.color.set(muscleColor())
+		detail.recolor(muscleColor())
+	}
+
+	themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+	darkScheme.addEventListener('change', applyTheme)
 
 	function resize() {
 		const { clientWidth: w, clientHeight: h } = canvas
@@ -193,6 +213,14 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	let radius = 0
 	let radiusTo = 0
+	// Сфера в мышцах у глубокой травмы и сила подсветки мышц травмы
+	let deep = 0
+	let deepTo = 0
+	let highlight = 0
+	let highlightTo = 0
+	// Сфера снимает только мышцы над подсвеченными: сосуды и нервы в ней не показываем
+	let peel = false
+	let peelTo = false
 	// Центр проёма тоже доезжает плавно: при смене травмы в зоне проём переползает к ней
 	const center = skin.uniforms.uCenter.value
 	const centerTo = new Vector3()
@@ -243,12 +271,22 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		if (Math.abs(radiusTo - radius) < 0.0005) radius = radiusTo
 
+		deep += (deepTo - deep) * (1 - Math.exp(-dt * 5))
+		highlight += (highlightTo - highlight) * (1 - Math.exp(-dt * 6))
+
+		if (Math.abs(deepTo - deep) < 0.0005) deep = deepTo
+
+		// Снятая сфера закрывается -- мышцы травмы остаются до конца, иначе мигнули бы
+		peel = peelTo || (peel && deepTo === 0 && deep > 0)
+
 		skin.uniforms.uRadius.value = radius
-		muscles.uniforms.uRadius.value = radius * MUSCLE_SHARE
+		muscles.uniforms.uRadius.value = deep
+		muscles.uniforms.uHighlight.value = highlight
+		muscles.uniforms.uPeel.value = peel ? 1 : 0
 		// Мышцы видны только в проёме кожи: в BodyParts3D сухожилия у колена и мышцы шеи
 		// местами выходят за кожу и проступали серыми полосами. Без проёма мышц нет вовсе
 		muscles.uniforms.uOuter.value = radius
-		detail.sync(center, radius, MUSCLE_SHARE)
+		detail.sync(center, radius, deep, highlight, peel)
 
 		const ease = 1 - Math.exp(-dt * 6)
 
@@ -426,7 +464,12 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 			tintTo = points?.length ? 0.55 : 0
 		},
-		dissolve(point: Vec3 | null, size = 0) {
+		/**
+		 * Проём в коже вокруг точки на `size`; `null` закрывает. `depth` -- травма глубже мышц:
+		 * мышцы у точки расходятся сферой поменьше, под ними связки, кости, сосуды и нервы.
+		 * `peeled` -- та же сфера снимает только мышцы над подсвеченными (см. highlight).
+		 */
+		dissolve(point: Vec3 | null, size = 0, depth: 'muscle' | 'deep' = 'muscle', peeled = false) {
 			if (point) {
 				centerTo.set(...point)
 
@@ -435,6 +478,16 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			}
 
 			radiusTo = point ? size : 0
+			deepTo = point && (depth === 'deep' || peeled) ? size * DEEP_SHARE : 0
+			peelTo = peeled && depth !== 'deep'
+		},
+		/** Подсветить мышцы, в названиях которых есть строки из `names`; `null` гасит. */
+		highlight(names: string[] | null) {
+			const ids = partIds(baseMuscles?.userData.parts, names)
+
+			muscles.uniforms.uParts.value = ids
+			detail.highlight(names)
+			highlightTo = names?.length ? 0.45 : 0
 		},
 		/**
 		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях экрана от
@@ -488,6 +541,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			renderer.setAnimationLoop(paused ? null : loop)
 		},
 		dispose() {
+			themeWatch.disconnect()
+			darkScheme.removeEventListener('change', applyTheme)
 			renderer.setAnimationLoop(null)
 			controls.dispose()
 			renderer.dispose()
@@ -525,4 +580,12 @@ void main() {
 	shadow.renderOrder = -1
 
 	return shadow
+}
+
+/** Красный мышц: в тёмной теме глубже, чтобы не светился на тёмном фоне. Тема -- `<html data-theme>` или система. */
+function muscleColor() {
+	const theme = document.documentElement.dataset.theme
+	const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+
+	return dark ? '#a3392f' : '#c65a4b'
 }

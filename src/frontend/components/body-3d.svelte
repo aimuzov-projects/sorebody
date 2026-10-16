@@ -32,7 +32,7 @@
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
-	import { injuryFocus, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
+	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -615,15 +615,25 @@
 		if (!body || !open) return
 
 		const point = open.zone.points[open.index]
-		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? 0.12 : -0.12, y: 0 }
-		const zoom = clamp(0.3 / open.zone.radius, 1, 2.4)
+		// Точка зоны -- в середину свободной от списка половины экрана. Колонка начинается в 32 px
+		// за серединой, подложка -- за 48 px до неё (см. .zone), поэтому край свободной части в 16 px
+		// до середины. Сдвигается окно камеры, а не модель: фигура вертится вокруг своей оси
+		const half = 0.25 + 8 / wrap.clientWidth
+		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? half : -half, y: 0 }
+		// «Всё тело» на телефоне мельче: между шапкой и шторкой должна уместиться почти вся фигура
+		const zoom = open.zone === whole && open.side === 'bottom' ? 0.6 : clamp(0.3 / open.zone.radius, 1, 2.4)
 
 		const injury = accent ? injuryFocus(open.zone, open.index, accent.slug) : null
 
 		body.frame(0, 0)
 		// Место травмы бывает у края зоны или за ним (широчайшая, задняя поверхность бедра):
 		// проём того же размера переезжает к нему: под точкой видно, на что она указывает
-		body.dissolve(injury?.position ?? point.position, open.zone.radius)
+		// В зоне растворяется только кожа, видны мышцы. Травма глубже мышц (связка, мениск, диск,
+		// нерв) раскрывает их малой сферой у места травмы, мышечная -- подсвечивает свои мышцы
+		const layer = accent ? injuryLayer(accent.slug) : null
+
+		body.dissolve(injury?.position ?? point.position, open.zone.radius, layer?.depth, layer?.peel)
+		body.highlight(layer?.depth === 'muscle' ? (layer.muscles ?? null) : null)
 		// Связки, мениски, сосуды и нервы зоны -- отдельным куском, только когда зона открыта
 		body.showDetail(open.zone === whole ? null : open.zone.slug, point.position, open.zone.radius)
 		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
@@ -698,6 +708,7 @@
 		if (!body) return
 
 		body.dissolve(null)
+		body.highlight(null)
 		body.showDetail(null)
 		body.focus(null)
 		body.controls.enabled = true
@@ -1993,25 +2004,25 @@
 			bottom: 0;
 		}
 
-		/* Колонка вплотную к зоне: зона у центра экрана, список начинается сразу за ним.
-		   Подложка уходит до края экрана, а к зоне растворяется на 25vw маской по smoothstep:
-		   без ступеньки, рука модели не обрезается полосой. Под текстом она уже сплошная */
+		/* Колонка сразу за серединой экрана, фигура -- в середине другой половины. Подложка уходит
+		   до края экрана, а к фигуре растворяется по smoothstep: прозрачная за 48 px до текста,
+		   почти сплошная у его края. На фигуру и точку зоны она не заходит */
 		&--left {
 			right: calc(50% + 32px);
 
 			&::before {
-				right: -27vw;
+				right: -48px;
 				left: -50vw;
 				background: var(--a-bg);
 				mask-image: linear-gradient(
 					to left,
-					rgb(0 0 0 / 0%) calc(0px + 25vw * 0 / 6),
-					rgb(0 0 0 / 7%) calc(0px + 25vw * 1 / 6),
-					rgb(0 0 0 / 26%) calc(0px + 25vw * 2 / 6),
-					rgb(0 0 0 / 50%) calc(0px + 25vw * 3 / 6),
-					rgb(0 0 0 / 74%) calc(0px + 25vw * 4 / 6),
-					rgb(0 0 0 / 93%) calc(0px + 25vw * 5 / 6),
-					rgb(0 0 0 / 100%) calc(0px + 25vw * 6 / 6)
+					rgb(0 0 0 / 0%) 0px,
+					rgb(0 0 0 / 7%) 12px,
+					rgb(0 0 0 / 26%) 24px,
+					rgb(0 0 0 / 50%) 36px,
+					rgb(0 0 0 / 74%) 48px,
+					rgb(0 0 0 / 93%) 60px,
+					rgb(0 0 0 / 100%) 72px
 				);
 			}
 		}
@@ -2021,17 +2032,17 @@
 
 			&::before {
 				right: -50vw;
-				left: -27vw;
+				left: -48px;
 				background: var(--a-bg);
 				mask-image: linear-gradient(
 					to right,
-					rgb(0 0 0 / 0%) calc(0px + 25vw * 0 / 6),
-					rgb(0 0 0 / 7%) calc(0px + 25vw * 1 / 6),
-					rgb(0 0 0 / 26%) calc(0px + 25vw * 2 / 6),
-					rgb(0 0 0 / 50%) calc(0px + 25vw * 3 / 6),
-					rgb(0 0 0 / 74%) calc(0px + 25vw * 4 / 6),
-					rgb(0 0 0 / 93%) calc(0px + 25vw * 5 / 6),
-					rgb(0 0 0 / 100%) calc(0px + 25vw * 6 / 6)
+					rgb(0 0 0 / 0%) 0px,
+					rgb(0 0 0 / 7%) 12px,
+					rgb(0 0 0 / 26%) 24px,
+					rgb(0 0 0 / 50%) 36px,
+					rgb(0 0 0 / 74%) 48px,
+					rgb(0 0 0 / 93%) 60px,
+					rgb(0 0 0 / 100%) 72px
 				);
 			}
 		}

@@ -1,7 +1,7 @@
 # Переводит выгрузку z_anatomy_export.py в координаты OBJ BodyParts3D (мм, Z вверх, перед = -Y).
 # Кости Z-Anatomy -- переделанные кости BP3D: длина и форма расходятся на 1-2 см, поэтому одного
-# общего переноса мало. Для каждой зоны подгоняем ICP с масштабом по костям её сустава, и
-# структуру переносим преобразованием ближайшей зоны.
+# общего переноса мало. Для каждой зоны подгоняем ICP с масштабом по костям её сустава, а каждую
+# вершину переносим смесью подгонок ближних зон: длинные мышцы и нервы не рвутся между зонами.
 # usage: blender -b --factory-startup --python z_align.py -- <export dir> <bp3d obj dir> <out dir> <offset x,y,z>
 # offset -- сдвиг фигуры из лога build.mjs, чтобы перевести точки зон из zones.ts в мм BP3D
 import glob, json, os, sys
@@ -46,7 +46,10 @@ ZONES = {
     'hip-groin': ((0.107, 0.882, -0.025), 0.14, ['Hip bone', 'Femur']),
     'knee': ((0.081, 0.459, 0.011), 0.085, ['Femur', 'Tibia', 'Patella', 'Fibula']),
     'ankle-foot': ((0.07, 0.064, -0.024), 0.09, ['Tibia', 'Fibula', 'Talus', 'Calcaneus']),
+    # Поясница посередине: одна подгонка без стороны, по позвонкам L1-L5
+    'lumbar': ((0, 1.066, -0.034), 0.15, [f'Vertebra L{i}' for i in range(1, 6)]),
 }
+SPINE_BP = {f'Vertebra L{i}': f'{n} lumbar vertebra' for i, n in enumerate(('first', 'second', 'third', 'fourth', 'fifth'), 1)}
 
 
 def to_bp(p):
@@ -71,6 +74,8 @@ def refs(names, side):
     word = 'left' if side == 'l' else 'right'
     # В BP3D кости запястья без слова bone: left scaphoid
     keys = dict.fromkeys(k for n in names for k in (f'{word} {n.lower()}', f'{word} {n.lower().removesuffix(" bone")}'))
+    if side == 'c':
+        keys = [SPINE_BP[n] for n in names if n in SPINE_BP]
     bp = [read_v(bp_names[k]) for k in keys if k in bp_names]
     return np.vstack(za) * 1000 + glob_shift, np.vstack(bp)
 
@@ -85,7 +90,7 @@ print('global shift', glob_shift.round(1))
 
 fits = []
 for zone, (c, r, bones) in ZONES.items():
-    for side, sx in (('l', 1), ('r', -1)):
+    for side, sx in (('l', 1), ('r', -1)) if c[0] else (('c', 0),):
         center = to_bp((c[0] * sx, c[1], c[2]))
         # Подгоняем по костям у самого сустава: дальние части (пластина лопатки) у моделей разной формы
         reach = r * 1000
@@ -117,12 +122,16 @@ for m in manifest:
     base, side = m['name'].rsplit('.', 1)
     v = read_v(f"{exp_dir}/{m['file']}.obj") * 1000 + glob_shift
     mid = v.mean(0)
-    # Ближайшая зона той же стороны; дальше 1,6 радиуса зоны структура кускам не нужна
-    fit = min((f for f in fits if f['side'] == side), key=lambda f: np.linalg.norm(mid - f['center']))
+    # Ближайшая зона той же стороны или поясница; дальше 1,6 радиуса зоны структура кускам не нужна
+    fit = min((f for f in fits if f['side'] in (side, 'c')), key=lambda f: np.linalg.norm(mid - f['center']))
     zr = ZONES[fit['zone']][1] * 1000 * 1.6
     if np.min(np.linalg.norm(v - fit['center'], axis=1)) > zr:
         continue
-    p = fit['scale'] * v @ fit['rot'].T + fit['shift']
+    # Вес подгонки падает с расстоянием до центра её зоны, σ = 12 см
+    near = [f for f in fits if f['side'] in (side, 'c')]
+    w = np.stack([np.exp(-((np.linalg.norm(v - f['center'], axis=1) / 120) ** 2)) for f in near], 1) + 1e-12
+    w /= w.sum(1, keepdims=True)
+    p = sum(w[:, [i]] * (f['scale'] * v @ f['rot'].T + f['shift']) for i, f in enumerate(near))
     word = 'left' if side == 'l' else 'right'
     with open(f"{exp_dir}/{m['file']}.obj") as src, open(f"{out_dir}/{m['file']}.obj", 'w') as dst:
         dst.write(f'# English name : {word} {base.lower()}\n')
@@ -131,9 +140,9 @@ for m in manifest:
         for line in src:
             if line.startswith('f '):
                 dst.write(line)
-    kind = 'nerves' if 'nerve' in base.lower() or 'plexus' in base.lower() else 'ligaments'
+    kind = 'muscles' if m.get('muscle') else 'nerves' if 'nerve' in base.lower() or 'plexus' in base.lower() else 'ligaments'
     out.append({'file': m['file'], 'name': f'{word} {base.lower()}', 'kind': kind, 'zone': fit['zone'], 'tris': m['tris']})
 
 json.dump({'fits': [{k: (v.tolist() if hasattr(v, 'tolist') else v) for k, v in f.items()} for f in fits], 'objects': out},
           open(f'{out_dir}/manifest.json', 'w'), indent=1)
-print('aligned', len(out), {k: sum(o['kind'] == k for o in out) for k in ('ligaments', 'nerves')})
+print('aligned', len(out), {k: sum(o['kind'] == k for o in out) for k in ('ligaments', 'nerves', 'muscles')})

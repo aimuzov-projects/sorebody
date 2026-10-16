@@ -6,11 +6,6 @@ import { site } from '#frontend/data/site.ts'
 
 <footer class="footer">
 	<div class="container">
-		<div class="footer__row">
-			<nav class="footer__nav" aria-label="Разделы">
-				<a href="/">Все травмы</a> · <a href="/about/">О справочнике</a>
-			</nav>
-		</div>
 		<Credit repo={site.repo} />
 	</div>
 </footer>
@@ -24,19 +19,5 @@ import { site } from '#frontend/data/site.ts'
 		padding-block: 24px;
 		font-size: 0.875rem;
 		color: var(--muted);
-
-		&__row {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 12px 24px;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 8px;
-		}
-
-		/* Ссылки без своего цвета в тёмной теме браузер красит в фиолетовый */
-		&__nav :any-link {
-			color: var(--accent);
-		}
 	}
 </style>

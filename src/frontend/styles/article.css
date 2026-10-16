@@ -58,30 +58,72 @@
 	&__meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
-		align-items: baseline;
+		gap: 8px;
+		align-items: center;
 		margin: 0;
 		font-size: 15px;
 		color: var(--muted);
 	}
 
-	&__region {
-		color: var(--accent);
-		text-decoration: none;
-	}
-
-	&__tag--rare {
+	/* Метки над заголовком -- таблетки, как фильтры раскрытой зоны на главной */
+	&__pill {
 		display: inline-flex;
 		gap: 6px;
 		align-items: center;
-		font-weight: 600;
-		color: var(--rare);
+		padding: 4px 12px 4px 10px;
+		border-radius: 999px;
+		color: var(--fg);
+		white-space: nowrap;
+		background: color-mix(in srgb, var(--fg) 7%, var(--bg));
+
+		/* Зона ведёт на свой список: подпись «Зона» и стрелка говорят, что это ссылка */
+		&--link {
+			padding-inline: 12px 8px;
+			text-decoration: none;
+			transition: background 0.3s var(--article-ease);
+
+			&:hover {
+				background: color-mix(in srgb, var(--fg) 12%, var(--bg));
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+		}
+
+		&--common {
+			--pill: var(--common);
+		}
+
+		&--rare {
+			--pill: var(--rare);
+		}
 	}
 
-	&__tag-icon {
+	/* Чуть ближе к цвету текста, чем --muted: на подложке таблетки серый не добирал контраста */
+	&__pill-label {
+		color: color-mix(in srgb, var(--muted) 75%, var(--fg));
+	}
+
+	&__pill-arrow {
 		display: inline-flex;
-		width: 13px;
-		height: 13px;
+		width: 16px;
+		height: 16px;
+		margin-left: -2px;
+		color: var(--muted);
+		transition: transform 0.3s var(--article-ease);
+	}
+
+	&__pill--link:hover &__pill-arrow {
+		transform: translateX(2px);
+	}
+
+	&__pill-icon {
+		display: inline-flex;
+		width: 10px;
+		height: 10px;
+		color: var(--pill);
 
 		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 		& svg {
@@ -107,42 +149,48 @@
 		white-space: nowrap;
 	}
 
-	/* Другое название травмы -- приглушённый значок после заголовка, не текст в нём */
+	/* Другое название травмы -- тихий значок после заголовка, не текст в нём: серый, без
+	   кольца, как показатель степени -- верх чуть выше прописных. em считается от шрифта
+	   заголовка, поэтому font: inherit */
 	&__alias {
+		--alias-size: max(16px, 0.5em);
+
 		cursor: pointer;
 		position: relative;
-		top: -0.12em;
-		display: inline-grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		margin-left: 6px;
+		display: inline-block;
+		width: var(--alias-size);
+		height: var(--alias-size);
+		margin-left: 0.16em;
 		padding: 0;
 		border: 0;
 		border-radius: 50%;
-		color: var(--muted);
-		vertical-align: middle;
+		font: inherit;
+		color: color-mix(in srgb, var(--muted) 70%, transparent);
+		vertical-align: calc(0.8em - var(--alias-size));
 		background: none;
-		transition:
-			color 0.3s var(--article-ease),
-			background 0.3s var(--article-ease);
+		transition: color 0.3s var(--article-ease);
+
+		/* Невидимая зона нажатия 44 на 44 вокруг маленького значка */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: calc((44px - var(--alias-size)) / -2);
+		}
 
 		&:hover,
+		&:focus-visible,
 		&[aria-expanded='true'] {
 			color: var(--accent);
-			background: color-mix(in srgb, var(--fg) 7%, transparent);
 		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
-			outline-offset: 2px;
+			outline-offset: 3px;
 		}
 
-		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
 		& svg {
-			width: 22px;
-			height: 22px;
-			stroke-width: 2;
+			display: block;
 		}
 	}
 
@@ -167,6 +215,11 @@
 
 		@media (prefers-reduced-motion: reduce) {
 			animation-name: alias-fade;
+		}
+
+		/* Под значком (сверху не хватило места) -- выезжает сверху вниз, над ним -- снизу вверх */
+		&[data-side='bottom'] {
+			animation-name: alias-in-below;
 		}
 	}
 
@@ -768,6 +821,13 @@
 }
 
 @keyframes alias-in {
+	from {
+		transform: translateY(4px);
+		opacity: 0;
+	}
+}
+
+@keyframes alias-in-below {
 	from {
 		transform: translateY(-4px);
 		opacity: 0;

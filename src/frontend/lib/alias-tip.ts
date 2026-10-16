@@ -2,7 +2,8 @@
  * Значок другого названия у заголовка статьи (`[data-alias]`) и его всплывашка
  * (`[data-alias-tip]`, popover). Мышь открывает её наведением, клавиатура -- фокусом, палец --
  * тапом; клик закрепляет, Esc и тап мимо закрывают сами (popover="auto"). Подсказка в верхнем
- * слое, место под значком ставим сами и обновляем при прокрутке. Возвращает функцию снятия.
+ * слое, место ставим сами: над значком, а если сверху её накрыла бы липкая шапка -- под ним;
+ * по горизонтали не шире колонки заголовка и экрана. Возвращает функцию снятия.
  */
 export function initAliasTip(root: Element, scroller: HTMLElement | Window) {
 	const button = root.querySelector<HTMLButtonElement>('[data-alias]')
@@ -15,15 +16,29 @@ export function initAliasTip(root: Element, scroller: HTMLElement | Window) {
 	let wasOpen = false
 	const isOpen = () => tip.matches(':popover-open')
 
+	// Шапка статьи: на отдельной странице -- .article-bar, поверх сцены -- полоса своего reader
+	const bar = root.closest('.reader')?.querySelector('.reader__bar') ?? document.querySelector('.article-bar')
+	const column = button.closest('h1') ?? button
+
 	const place = () => {
 		if (!isOpen()) return
 
 		const rect = button.getBoundingClientRect()
-		const width = tip.offsetWidth
-		const max = document.documentElement.clientWidth - width - 16
+		const barBottom = bar?.getBoundingClientRect().bottom ?? 0
 
-		tip.style.top = `${rect.bottom + 8}px`
-		tip.style.left = `${Math.max(16, Math.min(rect.left - 12, max))}px`
+		// Значок уехал под шапку -- подсказке не к чему крепиться
+		if (rect.top < barBottom) return hide()
+
+		const { width, height } = tip.getBoundingClientRect()
+		const box = column.getBoundingClientRect()
+		const viewport = document.documentElement.clientWidth
+		const above = rect.top - height - 10 >= barBottom
+		const from = Math.max(16, box.left)
+		const to = Math.min(viewport - 16, Math.max(box.right, from + width))
+
+		tip.dataset.side = above ? 'top' : 'bottom'
+		tip.style.top = `${above ? rect.top - height - 10 : rect.bottom + 10}px`
+		tip.style.left = `${Math.max(from, Math.min(rect.left + rect.width / 2 - width / 2, to - width))}px`
 	}
 
 	const show = () => {

@@ -34,13 +34,7 @@ export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
  * чтобы срез читался как толща ткани, а не как дыра. `muscle` -- мышечный слой: волокна вдоль
  * главной оси каждой мышцы (атрибут `_fiber`) и подсветка мышц по номерам (`_part`), см. build.mjs.
  */
-export function createDissolveMaterial(
-	color: string,
-	rim: string | Rim,
-	roughness = 0.92,
-	muscle = false,
-	shorts = false,
-) {
+export function createDissolveMaterial(color: string, rim: string | Rim, roughness = 0.92, muscle = false) {
 	const edge = typeof rim === 'string' ? { front: rim, back: rim } : rim
 
 	const uniforms = {
@@ -85,36 +79,15 @@ export function createDissolveMaterial(
 
 	if (muscle) material.defines = { MUSCLE: '' }
 
-	if (shorts) material.defines = { SHORTS: '' }
-
 	material.onBeforeCompile = (shader) => {
 		Object.assign(shader.uniforms, uniforms)
 
 		shader.vertexShader = shader.vertexShader
 			.replace(
-				'#include <beginnormal_vertex>',
-				`#include <beginnormal_vertex>
-#ifdef SHORTS
-// Прижатые вершины смотрят вперёд, иначе на гладкой ткани остаётся тень прежней формы
-objectNormal = normalize(mix(objectNormal, vec3(0.0, 0.0, 1.0), smoothstep(0.0, 0.01, -shortsPush((modelMatrix * vec4(position, 1.0)).xyz))));
-#endif`,
-			)
-			.replace(
 				'#include <common>',
 				`#include <common>
 uniform float uInset;
 varying vec3 vDissolvePos;
-#ifdef SHORTS
-// Шорты: выпуклость паха спереди прижимается к гладкой поверхности ткани. Координаты мировые,
-// метры модели: лобок -- y 0,86 и z 0,085, промежность -- y 0,72. Возвращает, насколько вершину
-// сдвинуть по z (0 -- не трогать)
-float shortsPush(vec3 world) {
-	float fabric = mix(0.045, 0.085, smoothstep(0.72, 0.86, world.y));
-	float weight = (1.0 - smoothstep(0.04, 0.075, abs(world.x)))
-		* smoothstep(0.69, 0.72, world.y) * (1.0 - smoothstep(0.86, 0.89, world.y));
-	return min(0.0, fabric - world.z) * weight;
-}
-#endif
 #ifdef MUSCLE
 attribute float _part;
 attribute vec3 _fiber;
@@ -126,9 +99,6 @@ varying vec3 vFiber;
 				'#include <begin_vertex>',
 				`#include <begin_vertex>
 transformed -= objectNormal * uInset;
-#ifdef SHORTS
-transformed.z += shortsPush((modelMatrix * vec4(transformed, 1.0)).xyz) / length(modelMatrix[0].xyz);
-#endif
 #ifdef MUSCLE
 vPart = _part;
 vFiber = _fiber;
@@ -205,15 +175,6 @@ if (uRadius > 0.0) {
 // Изнанка мышц -- чуть темнее лица, без провала в чёрное
 if (!gl_FrontFacing) diffuseColor.rgb *= 0.86;
 #else
-#ifdef SHORTS
-// Шорты: от пояса до середины бедра, тёмная матовая ткань. По ширине -- только таз и бёдра,
-// кисти висят рядом, с |x| от 0,2
-if (gl_FrontFacing) {
-	float shorts = smoothstep(0.636, 0.644, vDissolvePos.y) * (1.0 - smoothstep(0.966, 0.974, vDissolvePos.y))
-		* (1.0 - smoothstep(0.186, 0.194, abs(vDissolvePos.x)));
-	diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.2, 0.21, 0.24), shorts);
-}
-#endif
 if (!gl_FrontFacing && uHollowOn > 0.5) {
 	// Изнанка кожи в проёме -- срез тканей, а не пустая оболочка: мышечная ткань с прожилками
 	// жира и мелкой зернистостью. Шум в координатах модели: рисунок не плывёт при повороте

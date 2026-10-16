@@ -17,7 +17,8 @@ export const injurySchema = z.strictObject({
 	summary: z.string().min(20).max(220),
 	images: z.array(
 		z.object({
-			src: z.string().regex(/^\/injuries\/[a-z0-9-]+\.jpg$/),
+			// .webp -- иллюстрация с прозрачным фоном, без подложки
+			src: z.string().regex(/^\/injuries\/[a-z0-9-]+\.(jpg|webp)$/),
 			alt: z.string().min(10),
 			caption: z.string().min(10),
 		}),

@@ -53,6 +53,19 @@ function jpegSize(buffer: Buffer) {
 	assert.fail('в JPEG нет SOF0/SOF2')
 }
 
+/**
+ * Размер WebP с прозрачным фоном: такой файл -- расширенный (чанк VP8X) с флагом альфы,
+ * ширина и высота в нём -- 24-битные числа «минус один».
+ */
+function webpSize(buffer: Buffer) {
+	assert.equal(buffer.toString('ascii', 0, 4), 'RIFF', 'не WebP')
+	assert.equal(buffer.toString('ascii', 8, 12), 'WEBP', 'не WebP')
+	assert.equal(buffer.toString('ascii', 12, 16), 'VP8X', 'WebP без расширенного заголовка, значит без альфы')
+	assert.ok(buffer[20]! & 0x10, 'WebP без альфа-канала')
+
+	return { width: buffer.readUIntLE(24, 3) + 1, height: buffer.readUIntLE(27, 3) + 1 }
+}
+
 /** Ссылки Markdown `[текст](url)`: для сносок на PubMed текст — номер источника в `sources`. */
 const LINK = /\[([^\]]*)\]\(([^)\s]+)\)/g
 
@@ -120,9 +133,10 @@ for (const { slug, data, body } of articles) {
 		for (const { src } of data.images) assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
 	})
 
-	test(`${slug}: images are 1200x669 JPEG`, () => {
+	test(`${slug}: images are 1200x669 JPEG or WebP with alpha`, () => {
 		for (const { src } of data.images) {
-			const size = jpegSize(readFileSync(new URL(`.${src}`, `${PUBLIC}/`)))
+			const file = readFileSync(new URL(`.${src}`, `${PUBLIC}/`))
+			const size = src.endsWith('.webp') ? webpSize(file) : jpegSize(file)
 
 			assert.deepEqual(size, { width: 1200, height: 669 }, src)
 		}

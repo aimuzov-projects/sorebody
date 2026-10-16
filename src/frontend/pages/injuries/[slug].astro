@@ -45,7 +45,13 @@ const [image] = data.images
 			<p class="article__lead">{data.summary}</p>
 			{image && (
 				<figure class="article__figure">
-					<img class="article__image" src={image.src} alt={image.alt} width="1200" height="669" />
+					<img
+						class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
+						src={image.src}
+						alt={image.alt}
+						width="1200"
+						height="669"
+					/>
 					<figcaption class="article__caption">{image.caption}</figcaption>
 				</figure>
 			)}

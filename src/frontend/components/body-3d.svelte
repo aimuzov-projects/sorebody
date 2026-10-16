@@ -1210,6 +1210,10 @@
 		</section>
 	{/if}
 
+	<!-- Подвал на десктопе -- строкой внизу сцены по сетке шапки: от левой колонки до линии
+	     значка темы. На телефоне он внутри панели индекса (.index__footer) -->
+	{#if footer}<div class="scene-footer">{@render footer()}</div>{/if}
+
 	{#if showFps}
 		<output class="body3d__fps">{fps} fps</output>
 	{/if}
@@ -1546,6 +1550,8 @@
 		gap: 20px;
 		width: min(380px, 32vw);
 		padding-top: calc(var(--theme-toggle-top) + var(--header-row) + 16px);
+		/* Снизу место под строку подвала сцены (.scene-footer): колонка на неё не наезжает */
+		padding-bottom: 56px;
 		transition:
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
@@ -1987,6 +1993,11 @@
 			margin-bottom: 16px;
 			font-size: 13px;
 
+			/* На десктопе подвал -- отдельной строкой внизу сцены (.scene-footer) */
+			@media (width >= 700px) {
+				display: none;
+			}
+
 			/* На телефоне у страницы движения место под шапкой -- списку травм: подвал есть под статьёй */
 			@media (width < 700px) {
 				.body3d--movement & {
@@ -1998,6 +2009,32 @@
 			& :global(.footer) {
 				padding: 0;
 			}
+		}
+	}
+
+	/* Подвал сцены на десктопе: строка у нижнего края поверх сцены, без фона. Поля даёт сам
+	   .footer -- те же токены, что у шапки. Мимо ссылок мышь проходит к сцене: модель можно
+	   крутить и под подвалом */
+	.scene-footer {
+		pointer-events: none;
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		font-size: 13px;
+
+		@media (width < 700px) {
+			display: none;
+		}
+
+		& :global(.footer) {
+			padding-block: 0 max(16px, env(safe-area-inset-bottom, 0px));
+		}
+
+		/* stylelint-disable-next-line selector-max-type -- ссылки подписи из infra-site-kit без своего класса */
+		& :global(a) {
+			pointer-events: auto;
 		}
 	}
 

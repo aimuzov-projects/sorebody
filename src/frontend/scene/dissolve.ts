@@ -86,8 +86,8 @@ export function createDissolveMaterial(
 		// Колыхание ткани: отставание подола при повороте фигуры, радианы вокруг оси Y; высоты пояса
 		// и подола; время для ряби
 		uSwayTurn: { value: 0 },
-		uSwayTop: { value: 0.975 },
-		uSwayBottom: { value: 0.63 },
+		uSwayTop: { value: 1.0 },
+		uSwayBottom: { value: 0.65 },
 		uTime: { value: 0 },
 	}
 	const material = new MeshStandardMaterial({ color, roughness, metalness: 0, side: DoubleSide })

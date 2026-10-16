@@ -66,15 +66,14 @@ cp detail/*.glb detail/index.json ../../public/model/detail/
 
 ## Шорты
 
-`public/model/shorts.glb` -- отдельный меш поверх кожи, в мировых координатах сцены. Собирается из кожи готовой
-`body.glb`: `skin-obj.mjs` выгружает её в OBJ, `shorts.py` в Blender строит свободные шорты по горизонтальным срезам:
-на каждой высоте -- выпуклая оболочка среза с зазором, у пояса плотно, к подолу штанины отходят до 3,4 см. Выше
-промежности срез общий на таз, ниже -- по штанине на ногу. Тела сшиваются воксельным ремешем, пояс и подол
-срезаются ровной плоскостью.
+`public/model/shorts.glb` -- модель «Distance Short Men» (fersmta, CC BY 4.0) с Sketchfab, посаженная на фигуру.
+Архив модели скачивается вручную (нужен аккаунт Sketchfab), в репозитории его нет. `skin-obj.mjs` выгружает кожу
+`body.glb` в OBJ, `shorts.py` в Blender берёт низкополигональную версию шорт, масштабирует её по талии и посадке,
+отодвигает ткань от кожи и оставляет из текстур только карту нормалей (швы, резинка, панели).
 
 ```bash
 node scripts/model/skin-obj.mjs public/model/body.glb skin.obj
-blender -b -P scripts/model/shorts.py -- skin.obj public/model/shorts.glb
+blender -b -P scripts/model/shorts.py -- distance_short_men/scene.gltf skin.obj public/model/shorts.glb
 ```
 
 Колыхание считает сцена: подол отстаёт от поворота фигуры пружиной (`uSwayTurn` в `dissolve.ts`).

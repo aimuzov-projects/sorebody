@@ -5,6 +5,7 @@ import {
 	HemisphereLight,
 	MathUtils,
 	Mesh,
+	MeshStandardMaterial,
 	NeutralToneMapping,
 	OrthographicCamera,
 	PlaneGeometry,
@@ -151,7 +152,18 @@ export async function createBodyScene(
 	const shortsGltf = await shortsModel
 
 	shortsGltf?.scene.traverse((obj) => {
-		if (obj instanceof Mesh) obj.material = shorts.material
+		if (!(obj instanceof Mesh)) return
+
+		// Швы, резинка и панели выкройки -- в карте нормалей модели, цвет и матовость -- наши
+		const { normalMap, normalScale } = obj.material as MeshStandardMaterial
+
+		if (normalMap) {
+			shorts.material.normalMap = normalMap
+			shorts.material.normalScale.copy(normalScale)
+			shorts.material.needsUpdate = true
+		}
+
+		obj.material = shorts.material
 	})
 
 	if (shortsGltf) scene.add(shortsGltf.scene)

@@ -1,0 +1,149 @@
+---
+import { Moon, Sun, SunMoon } from 'lucide-static'
+
+import { themeLabel, type Theme } from '#frontend/lib/theme.ts'
+
+/** Иконка на каждое состояние; видна та, что совпадает с `<html data-theme>`. */
+const ICONS: [Theme, string][] = [
+	['auto', SunMoon],
+	['light', Sun],
+	['dark', Moon],
+]
+---
+
+<div class="theme-toggle">
+	<button
+		class="theme-toggle__button"
+		type="button"
+		aria-label={themeLabel('auto')}
+		aria-describedby="theme-tip"
+		data-theme-toggle
+	>
+		{ICONS.map(([theme, icon]) => (
+			<span class={`theme-toggle__icon theme-toggle__icon--${theme}`} aria-hidden="true" set:html={icon} />
+		))}
+	</button>
+	<span class="theme-toggle__tip" id="theme-tip" role="tooltip" popover="manual" data-theme-tip></span>
+</div>
+
+<style>
+	/* Один значок в правом верхнем углу, без рамок и подложек: в покое приглушён, на наведении и
+	   фокусе проявляется. На главной лежит поверх сцены и открытой статьи, на остальных
+	   страницах уезжает вместе с шапкой. В Mini App тему задаёт Telegram, значок не нужен */
+	.theme-toggle {
+		position: absolute;
+		z-index: 3;
+		top: calc(20px + env(safe-area-inset-top, 0px));
+		right: calc(max(16px, env(safe-area-inset-right, 0px)));
+
+		:global([data-telegram]) & {
+			display: none;
+		}
+	}
+
+	.theme-toggle__button {
+		cursor: pointer;
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		border: 0;
+		color: var(--fg);
+		opacity: 0.55;
+		background: none;
+		transition: opacity 0.3s ease;
+		-webkit-tap-highlight-color: transparent;
+
+		/* Мягкое свечение вместо обводки фокуса: тот же сигнал, но в языке fade */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -4px;
+			border-radius: 50%;
+			opacity: 0;
+			background: radial-gradient(closest-side, color-mix(in srgb, var(--fg) 20%, transparent), transparent);
+			transition: opacity 0.3s ease;
+		}
+
+		&:hover,
+		&:focus-visible {
+			opacity: 1;
+		}
+
+		&:focus-visible {
+			outline: none;
+
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
+	/* Иконки стопкой в одной клетке: уходящая гаснет, сжимается и размывается, новая
+	   проявляется из того же места с поворотом */
+	.theme-toggle__icon {
+		transform: rotate(-60deg) scale(0.5);
+		display: inline-flex;
+		grid-area: 1 / 1;
+		width: 22px;
+		height: 22px;
+		opacity: 0;
+		filter: blur(3px);
+		transition:
+			opacity 0.35s ease,
+			filter 0.45s ease,
+			transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+
+		@media (--reduced-motion) {
+			transform: none;
+			filter: none;
+			transition: opacity 0.2s ease;
+		}
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& :global(svg) {
+			width: 100%;
+			height: 100%;
+			stroke-width: 1.8;
+		}
+	}
+
+	:global(:root:not([data-theme])) .theme-toggle__icon--auto,
+	:global(:root[data-theme='light']) .theme-toggle__icon--light,
+	:global(:root[data-theme='dark']) .theme-toggle__icon--dark {
+		transform: none;
+		opacity: 1;
+		filter: none;
+	}
+
+	/* Подсказка с действием. В верхнем слое (popover), иначе её накрыл бы круг подсмотра
+	   темы; место под значком ставит скрипт. Без плашки, а круг под текстом бывает в другой
+	   схеме: белый текст в режиме difference читается и на светлом, и на тёмном */
+	.theme-toggle__tip {
+		pointer-events: none;
+		position: fixed;
+		inset: auto;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		font-size: 0.75rem;
+		line-height: 1.4;
+		color: #ffffff;
+		white-space: nowrap;
+		background: none;
+		mix-blend-mode: difference;
+		animation: tip-in 0.25s ease;
+
+		@media (--reduced-motion) {
+			animation: none;
+		}
+	}
+
+	@keyframes tip-in {
+		from {
+			opacity: 0;
+		}
+	}
+</style>

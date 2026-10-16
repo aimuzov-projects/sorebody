@@ -1,5 +1,4 @@
 import { themePeek, type Scheme } from '@aimuzov-projects/infra-site-kit/theme-peek.js'
-import { Monitor, Moon, Sun } from 'lucide-static'
 
 /**
  * Тема сайта: как в системе, светлая или тёмная. Выбор лежит в localStorage и до отрисовки
@@ -15,22 +14,16 @@ export const THEME_BOOT =
 	`try{var t=localStorage.getItem('${KEY}');` +
 	"if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}"
 
-const CHOICES: [Theme, string, string][] = [
-	['auto', 'Как в системе', Monitor],
-	['light', 'Светлая', Sun],
-	['dark', 'Тёмная', Moon],
-]
+/** Переключатель один и ходит по кругу, как во всех проектах: система, светлая, тёмная. */
+const NEXT: Record<Theme, Theme> = { auto: 'light', light: 'dark', dark: 'auto' }
 
-/** Разметка переключателя строкой: общая для подвала (Astro) и индекса главной (Svelte). */
-export function themeSwitchHtml() {
-	const options = CHOICES.map(
-		([value, label, icon]) =>
-			`<button class="theme-switch__option" type="button" data-theme-choice="${value}" ` +
-			`aria-pressed="${value === 'auto'}" aria-label="${label}" title="${label}">${icon}</button>`,
-	)
-
-	return `<div class="theme-switch" role="group" aria-label="Тема">${options.join('')}</div>`
+export const THEME_VIEW: Record<Theme, { label: string; action: string }> = {
+	auto: { label: 'как в системе', action: 'Включить светлую' },
+	light: { label: 'светлая', action: 'Включить тёмную' },
+	dark: { label: 'тёмная', action: 'Вернуть как в системе' },
 }
+
+export const themeLabel = (theme: Theme) => `Тема: ${THEME_VIEW[theme].label}. ${THEME_VIEW[theme].action}`
 
 function current(): Theme {
 	const theme = document.documentElement.dataset.theme
@@ -38,28 +31,8 @@ function current(): Theme {
 	return theme === 'light' || theme === 'dark' ? theme : 'auto'
 }
 
-/** Подсмотр темы из kit на каждой кнопке: круг с копией страницы в той схеме, что даст клик. */
-const peeks = new Map<HTMLElement, () => void>()
 const systemScheme = (): Scheme => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-
-function attachPeeks(root: ParentNode) {
-	// Кнопки, ушедшие со страницы (статья на главной закрыта), отпускаем
-	for (const [button, cleanup] of peeks) {
-		if (button.isConnected) continue
-
-		cleanup()
-		peeks.delete(button)
-	}
-
-	for (const button of root.querySelectorAll<HTMLElement>('[data-theme-choice]')) {
-		if (peeks.has(button) || button.closest('.theme-peek')) continue
-
-		const choice = button.dataset.themeChoice as Theme
-		const cleanup = themePeek(button, { target: () => (choice === 'auto' ? systemScheme() : choice) })
-
-		if (cleanup) peeks.set(button, cleanup)
-	}
-}
+const schemeOf = (theme: Theme): Scheme => (theme === 'auto' ? systemScheme() : theme)
 
 /**
  * В копии страницы канвас 3D-модели пустой: cloneNode не переносит картинку. Кадр WebGL
@@ -95,23 +68,55 @@ function copyCanvases(peek: Element) {
 	requestAnimationFrame(step)
 }
 
-/** Отметить выбранную тему на переключателях внутри `root`, и на вставленных позже. */
-export function syncThemeSwitches(root: ParentNode = document) {
-	const theme = current()
+/**
+ * Иконку нужного состояния показывает CSS по `<html data-theme>`, так что она верна уже на
+ * первой отрисовке. Скрипт ведёт клики, подпись для скринридера и подсмотр темы из kit:
+ * круг показывает схему, которую даст следующий клик.
+ */
+export function initThemeToggle() {
+	const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]')
 
-	for (const button of root.querySelectorAll<HTMLElement>('[data-theme-choice]'))
-		button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme))
+	if (!button) return
 
-	attachPeeks(root)
-}
+	const tip = document.querySelector<HTMLElement>('[data-theme-tip]')
 
-/** Клики ловим на документе: переключатель может прийти позже, со статьёй на главной. */
-export function initThemeSwitch() {
-	document.addEventListener('click', (event) => {
-		const button = (event.target as Element).closest<HTMLElement>('[data-theme-choice]')
-		const theme = button?.dataset.themeChoice as Theme | undefined
+	/** Подсказка под значком, прижата к его правому краю: значок стоит у края экрана. */
+	const place = () => {
+		if (!tip?.matches(':popover-open')) return
 
-		if (!theme) return
+		const rect = button.getBoundingClientRect()
+
+		tip.style.top = `${rect.bottom + 2}px`
+		tip.style.right = `${document.documentElement.clientWidth - rect.right}px`
+	}
+
+	const sync = () => {
+		button.setAttribute('aria-label', themeLabel(current()))
+
+		if (tip) tip.textContent = THEME_VIEW[current()].action
+
+		place()
+	}
+
+	const showTip = () => {
+		tip?.showPopover()
+		sync()
+	}
+
+	const hideTip = () => {
+		if (tip?.matches(':popover-open')) tip.hidePopover()
+	}
+
+	// С пальца подсказка не нужна: после касания она так и висела бы до следующего тапа
+	button.addEventListener('pointerenter', (event) => event.pointerType !== 'touch' && showTip())
+	button.addEventListener('pointerleave', hideTip)
+	button.addEventListener('focus', () => button.matches(':focus-visible') && showTip())
+	button.addEventListener('blur', hideTip)
+	addEventListener('scroll', place, { capture: true, passive: true })
+	addEventListener('resize', place)
+
+	button.addEventListener('click', () => {
+		const theme = NEXT[current()]
 
 		if (theme === 'auto') delete document.documentElement.dataset.theme
 		else document.documentElement.dataset.theme = theme
@@ -123,7 +128,16 @@ export function initThemeSwitch() {
 			// Хранилище недоступно (приватный режим): тема держится до перезагрузки
 		}
 
-		syncThemeSwitches()
+		sync()
+	})
+
+	// Следующий клик может не сменить схему (тёмная -> система в тёмной ОС): тогда круга нет
+	themePeek(button, {
+		target: (scheme) => {
+			const next = schemeOf(NEXT[current()])
+
+			return next === scheme ? undefined : next
+		},
 	})
 
 	// Копия страницы в круге подсмотра заполняется заново при каждой смене схемы
@@ -132,5 +146,5 @@ export function initThemeSwitch() {
 			if (target instanceof Element && target.matches('.theme-peek')) copyCanvases(target)
 	}).observe(document.body, { childList: true, subtree: true })
 
-	syncThemeSwitches()
+	sync()
 }

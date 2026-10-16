@@ -26,7 +26,6 @@
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
-	import { syncThemeSwitches } from '#frontend/lib/theme.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
@@ -320,9 +319,6 @@
 	}
 
 	onMount(() => {
-		// Переключатель темы в индексе отрисован уже после общего скрипта страницы
-		syncThemeSwitches(wrap)
-
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
 		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
 		const stopPageZoom = (event: Event) => {
@@ -657,7 +653,6 @@
 			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
 			await tick()
-			syncThemeSwitches(readerElement)
 			backButton?.focus({ preventScroll: true })
 		} catch (error) {
 			if (token !== loadToken) return

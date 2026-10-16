@@ -93,19 +93,15 @@
 		color: var(--a-care);
 	}
 
-	/* Наведение на сам логотип-ссылку или на ссылку, в которую он вложен, красит весь знак и слово */
+	/* Наведение на сам логотип-ссылку или на ссылку, в которую он вложен, красит тело гири и «care» */
 	.logo:is(:hover, :focus-visible) .logo__body,
 	:global(.logo-host:is(:hover, :focus-visible)) .logo__body {
 		fill: var(--a-blue);
 	}
 
-	.logo:is(:hover, :focus-visible) .logo__ear,
-	:global(.logo-host:is(:hover, :focus-visible)) .logo__ear {
-		stroke: var(--a-blue);
-	}
-
-	.logo:is(:hover, :focus-visible) :is(.logo__wod, .logo__care),
-	:global(.logo-host:is(:hover, :focus-visible)) :is(.logo__wod, .logo__care) {
+	/* «wod» и ушко остаются как есть: синеет только «care» и тело гири */
+	.logo:is(:hover, :focus-visible) .logo__care,
+	:global(.logo-host:is(:hover, :focus-visible)) .logo__care {
 		color: var(--a-blue);
 	}
 

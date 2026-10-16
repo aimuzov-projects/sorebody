@@ -37,7 +37,12 @@ for p in glob.glob(f'{bp_dir}/*.obj'):
 ZONES = {
     'shoulder': ((0.165, 1.39, -0.024), 0.13, ['Humerus', 'Scapula', 'Clavicle']),
     'elbow': ((0.21, 1.127, -0.033), 0.09, ['Humerus', 'Radius', 'Ulna']),
-    'wrist-hand': ((0.25, 0.874, 0.021), 0.1, ['Radius', 'Ulna']),
+    'wrist-hand': (
+        (0.25, 0.874, 0.021),
+        0.1,
+        ['Radius', 'Ulna', 'Scaphoid bone', 'Lunate bone', 'Capitate bone', 'Hamate bone', 'Trapezium bone',
+         'Trapezoid bone', 'Pisiform bone', 'Second metacarpal bone', 'Third metacarpal bone', 'Fourth metacarpal bone'],
+    ),
     'hip-groin': ((0.107, 0.882, -0.025), 0.14, ['Hip bone', 'Femur']),
     'knee': ((0.081, 0.459, 0.011), 0.085, ['Femur', 'Tibia', 'Patella', 'Fibula']),
     'ankle-foot': ((0.07, 0.064, -0.024), 0.09, ['Tibia', 'Fibula', 'Talus', 'Calcaneus']),
@@ -64,7 +69,9 @@ def umeyama(src, dst):
 def refs(names, side):
     za = [read_v(f"{exp_dir}/{m['file']}.obj") for m in manifest if m['ref'] and m['name'] in {f'{n}.{side}' for n in names}]
     word = 'left' if side == 'l' else 'right'
-    bp = [read_v(bp_names[f'{word} {n.lower()}']) for n in names if f'{word} {n.lower()}' in bp_names]
+    # В BP3D кости запястья без слова bone: left scaphoid
+    keys = dict.fromkeys(k for n in names for k in (f'{word} {n.lower()}', f'{word} {n.lower().removesuffix(" bone")}'))
+    bp = [read_v(bp_names[k]) for k in keys if k in bp_names]
     return np.vstack(za) * 1000 + glob_shift, np.vstack(bp)
 
 
@@ -80,7 +87,8 @@ fits = []
 for zone, (c, r, bones) in ZONES.items():
     for side, sx in (('l', 1), ('r', -1)):
         center = to_bp((c[0] * sx, c[1], c[2]))
-        reach = r * 1000 * 1.6
+        # Подгоняем по костям у самого сустава: дальние части (пластина лопатки) у моделей разной формы
+        reach = r * 1000
         za, bp = refs(bones, side)
         bp = bp[np.linalg.norm(bp - center, axis=1) < reach]
         tree = kdtree.KDTree(len(bp))

@@ -10,7 +10,11 @@ os.makedirs(out_dir, exist_ok=True)
 KEEP = re.compile(r'ligament|menisc|labrum|articular capsule|nerve|plexus', re.I)
 # Внутреннее ухо (CC BY-NC-SA) и почка (CC BY-NC) -- не берём; черепные структуры зонам не нужны
 DROP = re.compile(r'cochlea|semicircular|vestibul|tympan|ossicle|stapes|incus|malleus|kidney|renal|cranial|optic|olfactory', re.I)
+# Пальцы у Z-Anatomy согнуты иначе, чем у BP3D: их связки и ветви нервов висели бы в воздухе
+FINGERS = re.compile(r'interphalangeal|metacarpophalangeal|digital|phalan|transverse metacarpal', re.I)
 REFS = {'Femur', 'Patella', 'Tibia', 'Fibula', 'Humerus', 'Scapula', 'Clavicle', 'Hip bone', 'Radius', 'Ulna', 'Talus', 'Calcaneus'}
+REFS |= {f'{b} bone' for b in ('Scaphoid', 'Lunate', 'Capitate', 'Hamate', 'Trapezium', 'Trapezoid', 'Pisiform')}
+REFS |= {f'{n} metacarpal bone' for n in ('First', 'Second', 'Third', 'Fourth', 'Fifth')}
 
 # Скрытые и исключённые коллекции depsgraph не вычисляет: модификаторы к ним бы не применились
 def show(layer):
@@ -44,7 +48,7 @@ for ob in bpy.data.objects:
         continue
 
     ref = base in REFS
-    if not ref and (not KEEP.search(base) or DROP.search(base)):
+    if not ref and (not KEEP.search(base) or DROP.search(base) or FINGERS.search(base)):
         continue
 
     ev = ob.evaluated_get(deps)

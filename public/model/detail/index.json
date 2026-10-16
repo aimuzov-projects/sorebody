@@ -1,0 +1,41 @@
+{
+	"shoulder-left": {
+		"nerves": true
+	},
+	"shoulder-right": {
+		"nerves": true
+	},
+	"elbow-left": {
+		"nerves": true
+	},
+	"elbow-right": {
+		"nerves": true
+	},
+	"wrist-hand-left": {
+		"nerves": true
+	},
+	"wrist-hand-right": {
+		"nerves": true
+	},
+	"lumbar-center": {
+		"nerves": true
+	},
+	"hip-groin-left": {
+		"nerves": true
+	},
+	"hip-groin-right": {
+		"nerves": true
+	},
+	"knee-left": {
+		"nerves": false
+	},
+	"knee-right": {
+		"nerves": false
+	},
+	"ankle-foot-left": {
+		"nerves": false
+	},
+	"ankle-foot-right": {
+		"nerves": false
+	}
+}

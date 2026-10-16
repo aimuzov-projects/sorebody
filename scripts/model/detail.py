@@ -1,5 +1,6 @@
-# Собирает config.json детальных кусков зон для build.mjs: все слои BodyParts3D (кости, мышцы, хрящи
-# и связки, артерии, вены, нервы) в сфере вокруг точки зоны, по куску на точку.
+# Собирает config.json детальных кусков зон для build.mjs: слои BodyParts3D (кости, мышцы, хрящи,
+# артерии, вены) в сфере вокруг точки зоны, по куску на точку. Нервы -- отдельным куском
+# `<зона>-<сторона>.nerves`, его слабые устройства не грузят.
 # usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio> [<z-anatomy dir>]
 # z-anatomy dir -- выход z_align.py: связки, мениски, губы, капсулы и нервы поверх BP3D
 # offset -- сдвиг из лога сборки фигуры (строка bounds ... offset), чтобы кусок лёг в её координаты
@@ -36,11 +37,19 @@ layers = {
     'cartilage': (by['cartilage organ'] | by['ligament organ']) - bones,
     'arteries': by['artery'],
     'veins': by['vein'],
-    'nerves': by['nerve'] | by['nerve trunk'],
 }
+# Из Z-Anatomy все связки, мениски, губы и капсулы, а нервы -- только те, о которых говорят статьи:
+# надлопаточный и подмышечный (плечо), локтевой, лучевой и срединный (локоть, кисть), седалищный
+# (задняя поверхность бедра) и латеральный кожный нерв бедра (мералгия). Сплетения целиком тяжёлые
+# и забивают кадр. Нервы BP3D -- только черепные, зонам не нужны
+NERVES = {f'{side} {n} nerve' for side in ('left', 'right') for n in (
+    'suprascapular', 'axillary', 'ulnar', 'radial', 'median', 'sciatic', 'lateral femoral cutaneous')}
 for d in extra:
     for o in json.load(open(f'{d}/manifest.json'))['objects']:
-        layers.setdefault(o['kind'], set()).add(o['file'])
+        if o['kind'] == 'ligaments' or o['name'] in NERVES:
+            layers.setdefault(o['kind'], set()).add(o['file'])
+# Кожа BP3D для обрезки слоёв Z-Anatomy: что вышло за кожу, висело бы над телом
+skin = sorted(by['skin'] & boxes.keys())
 
 # Точки и радиусы -- как ANCHORS в src/frontend/scene/zones.ts; кусок берём в 1,25 радиуса
 ZONES = {
@@ -54,21 +63,34 @@ ZONES = {
 }
 
 
+# Вены живота в куске поясницы -- треть его веса, а травмам спины они ни к чему
+SKIP = {'lumbar': {'veins'}}
+
+
 def touches(box, c, r):
     lo, hi = box
     return sum((max(lo[k] - c[k], 0, c[k] - hi[k])) ** 2 for k in range(3)) < r * r
 
 
 os.makedirs(out_dir, exist_ok=True)
+# Оглавление для сцены: какие куски есть и у каких есть отдельный кусок нервов
+index = {}
 for zone, (c, r) in ZONES.items():
     for side, sx in ((('left', 1), ('right', -1)) if c[0] else (('center', 1),)):
         center = (c[0] * sx, c[1], c[2])
         radius = r * 1.25
         groups = []
         for name, files in layers.items():
+            if name in SKIP.get(zone, ()):
+                continue
             near = sorted(f for f in files if f in boxes and touches(boxes[f], center, radius))
             if near:
                 groups.append({'name': name, 'files': near, 'ratio': ratio, 'error': 0.005})
-        cfg = {'objDirs': [obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius}, 'groups': groups}
-        json.dump(cfg, open(f'{out_dir}/{zone}-{side}.json', 'w'), indent=1)
+        base = {'objDirs': [obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},
+                'skinClip': {'skin': skin[0], 'groups': ['ligaments', 'nerves']}}
+        for suffix, part in (('', [g for g in groups if g['name'] != 'nerves']), ('.nerves', [g for g in groups if g['name'] == 'nerves'])):
+            if part:
+                json.dump({**base, 'groups': part}, open(f'{out_dir}/{zone}-{side}{suffix}.json', 'w'), indent=1)
+        index[f'{zone}-{side}'] = {'nerves': any(g['name'] == 'nerves' for g in groups)}
         print(zone, side, {g['name']: len(g['files']) for g in groups})
+json.dump(index, open(f'{out_dir}/index.json', 'w'), indent=1)

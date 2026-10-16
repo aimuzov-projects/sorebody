@@ -19,27 +19,33 @@ node build.mjs body.json body.glb
 Аргументы `0.08 0.12` -- доля треугольников мышц и костей после упрощения, кожа -- 0.3. Рядом с GLB появится
 `body.anchors.json` с центрами суставов, их надо перенести в `src/frontend/scene/zones.ts`.
 
-## Детальные куски зон (проба)
+## Детальные куски зон
 
-`detail.py` собирает конфиги кусков: все слои BodyParts3D (кости, мышцы, хрящи и связки, артерии, вены, нервы) в
-сфере 1,25 радиуса вокруг каждой точки зоны из `zones.ts`. `offset` берётся из лога сборки фигуры, чтобы кусок лёг в
-её координаты; `build.mjs` по `clip` оставляет только треугольники в сфере. Последний аргумент -- доля треугольников,
-`1` -- без упрощения.
+Общий план показывает только `body.glb`. Когда зону открывают (или наводят на её строку или точку), сцена догружает
+кусок `public/model/detail/<зона>-<сторона>.glb`: все слои в сфере 1,25 радиуса зоны вокруг её точки. Внутри этой
+сферы базовые мышцы и кости не рисуются, их заменяет кусок (`uCut` в `dissolve.ts`). Нервы лежат отдельно в
+`<зона>-<сторона>.nerves.glb`, слабые устройства их не грузят. `index.json` говорит сцене, какие куски есть.
 
-```bash
-python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5
-for c in detail/*.json; do node build.mjs $c ${c%.json}.glb; done
-```
+`detail.py` собирает конфиги кусков: кости, мышцы, хрящи, артерии и вены BodyParts3D (у поясницы без вен живота) и
+слои Z-Anatomy, если передать их папку. `offset` берётся из лога сборки фигуры (строка `bounds ... offset`), чтобы кусок
+лёг в её координаты. `build.mjs` по `clip` оставляет треугольники в сфере, а слои Z-Anatomy ещё и обрезает по коже
+BodyParts3D (`skinClip`, `skin-test.mjs`): что вышло наружу, висело бы над телом. Последний аргумент `detail.py` --
+доля треугольников, `1` -- без упрощения. Точки и радиусы зон в `detail.py` и `zones.ts` должны совпадать, это
+проверяет `src/frontend/scene/detail.test.ts`.
 
 ### Связки, мениски и нервы из Z-Anatomy
 
 В BodyParts3D нет менисков, крестообразных и коллатеральных связок, суставных губ и нервов конечностей. Их берём из
 [Z-Anatomy](https://github.com/Z-Anatomy/Models-of-human-anatomy) (CC BY-SA 4.0, `Z-Anatomy.zip` → `Startup.blend`)
-через Blender: `z_anatomy_export.py` выгружает их с применёнными модификаторами, `z_align.py` подгоняет к костям BP3D
-по каждой зоне (ICP с масштабом). Внутреннее ухо и почку (NC-лицензии) скрипт не берёт.
+через Blender 5.2: `z_anatomy_export.py` выгружает их с применёнными модификаторами, `z_align.py` подгоняет к костям
+BP3D по каждой зоне (ICP с масштабом по костям сустава в радиусе зоны). Внутреннее ухо и почку (NC-лицензии) и
+структуры пальцев (у Z-Anatomy они согнуты иначе) скрипт не берёт. Связки, мениски, губы и капсулы в куски идут все,
+нервы -- только из списка `NERVES` в `detail.py`.
 
 ```bash
 blender -b Startup.blend --python z_anatomy_export.py -- za-export
 blender -b --factory-startup --python z_align.py -- za-export <папка с OBJ> za-aligned <offset x,y,z>
 python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5 za-aligned
+for c in detail/*-*.json; do node build.mjs $c ${c%.json}.glb; done
+cp detail/*.glb detail/index.json ../../public/model/detail/
 ```

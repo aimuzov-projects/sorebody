@@ -1,8 +1,18 @@
-body.glb is a simplified and compressed derivative of BodyParts3D.
+body.glb and the zone chunks in detail/ are simplified and compressed derivatives of BodyParts3D and Z-Anatomy.
 
 BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan.
 https://dbarchive.biosciencedbc.jp/en/bodyparts3d/
 https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
 
-Changes: skin, skeletal muscles and bones merged into three meshes, simplified with meshoptimizer,
-quantized and compressed with EXT_meshopt_compression. This derivative is shared under the same license.
+Z-Anatomy, (c) Gauthier Kervyn, licensed under CC Attribution-ShareAlike 4.0 International.
+Z-Anatomy itself is based on BodyParts3D.
+https://github.com/Z-Anatomy/Models-of-human-anatomy
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Changes: in body.glb, skin, skeletal muscles and bones are merged into three meshes. Each chunk in detail/ holds the
+BodyParts3D bones, muscles, cartilage and vessels around one zone, plus Z-Anatomy ligaments, menisci, labra, joint
+capsules and selected nerves. The Z-Anatomy parts are exported from Blender with modifiers applied and fitted to the
+BodyParts3D bones zone by zone (ICP with scale), then clipped to the BodyParts3D skin. Z-Anatomy parts under
+non-commercial licenses (inner ear, kidney) are not used. All meshes are simplified with meshoptimizer, quantized and
+compressed with EXT_meshopt_compression. body.glb is shared under CC BY-SA 2.1 JP. The chunks in detail/ combine both
+sources and are shared under CC BY-SA 4.0, which BY-SA 2.1 JP allows as a later version with the same elements.

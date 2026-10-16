@@ -18,6 +18,8 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
+import { createSkinTest } from './skin-test.mjs'
+
 const [cfgPath, outPath] = process.argv.slice(2)
 const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
 
@@ -168,9 +170,22 @@ console.log('missing files', missing)
 	if (cfg.anchors) fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
 }
 
-// Оставляем треугольники, у которых хоть одна вершина в сфере `clip`
+// Оставляем треугольники, у которых хоть одна вершина в сфере `clip`. Слои из `skinClip.groups`
+// (взятые из другой модели) ещё и обрезаем по коже BP3D: что вышло наружу, висело бы над телом
 if (cfg.clip) {
 	const { center, radius } = cfg.clip
+	let outside = () => false
+
+	if (cfg.skinClip) {
+		const { v, f } = readObj(findObj(cfg.skinClip.skin))
+		const off = cfg.offset
+
+		for (let i = 0; i < v.length; i++) v[i] += off[i % 3]
+
+		const where = createSkinTest(v, f)
+
+		outside = (pos, i) => where(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]) === 'outside'
+	}
 
 	for (const mesh of doc.getRoot().listMeshes())
 		for (const prim of mesh.listPrimitives()) {
@@ -178,10 +193,18 @@ if (cfg.clip) {
 			const idx = prim.getIndices().getArray()
 			const near = (v) =>
 				Math.hypot(pos[3 * v] - center[0], pos[3 * v + 1] - center[1], pos[3 * v + 2] - center[2]) < radius
+			const skinClip = cfg.skinClip?.groups.includes(mesh.getName())
 			const keep = []
 
-			for (let t = 0; t < idx.length; t += 3)
-				if (near(idx[t]) || near(idx[t + 1]) || near(idx[t + 2])) keep.push(idx[t], idx[t + 1], idx[t + 2])
+			for (let t = 0; t < idx.length; t += 3) {
+				const tri = [idx[t], idx[t + 1], idx[t + 2]]
+
+				if (!tri.some(near)) continue
+
+				if (skinClip && tri.some((v) => outside(pos, v))) continue
+
+				keep.push(...tri)
+			}
 
 			prim.getIndices().setArray(new Uint32Array(keep))
 			compactPrimitive(prim)
@@ -206,6 +229,7 @@ for (const mesh of doc.getRoot().listMeshes()) {
 	for (const prim of mesh.listPrimitives()) {
 		// ratio 1 -- исходная сетка без упрощения
 		if (ratio < 1) simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio, error, lockBorder: false })
+
 		console.log(mesh.getName(), 'tris after', prim.getIndices().getCount() / 3)
 	}
 

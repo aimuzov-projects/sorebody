@@ -1,7 +1,7 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
 import { getCollection } from 'astro:content'
-import { ExternalLink } from 'lucide-static'
+import { Diamond, ExternalLink } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
@@ -34,7 +34,12 @@ const [image] = data.images
 				<a class="article__region" href={`/?region=${data.region}`}>
 					{regionLabel(data.region)}
 				</a>
-				{data.frequency === 'rare' && <span class="article__tag article__tag--rare">Редко, но опасно</span>}
+				{data.frequency === 'rare' && (
+					<span class="article__tag article__tag--rare">
+						<span class="article__tag-icon" aria-hidden="true" set:html={Diamond} />
+						Редко, но опасно
+					</span>
+				)}
 			</p>
 			<h1 class="article__title">{data.title}</h1>
 			<p class="article__lead">{data.summary}</p>

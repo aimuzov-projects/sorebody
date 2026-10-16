@@ -21,7 +21,7 @@
 <script lang="ts">
 	import { onMount, tick, type Snippet } from 'svelte'
 
-	import { PersonStanding, Search } from 'lucide-static'
+	import { Circle, Diamond, PersonStanding, Search } from 'lucide-static'
 
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { syncThemeSwitches, themeSwitchHtml } from '#frontend/lib/theme.ts'
@@ -43,10 +43,11 @@
 
 	let { zones, whole, movements, modelUrl, footer }: Props = $props()
 
+	/** Частота: у частых и редких свой знак и цвет (--common, --rare), как легенда к списку. */
 	const FREQUENCIES = [
-		['all', 'Все'],
-		['common', 'Частые'],
-		['rare', 'Редкие'],
+		['all', 'Все', ''],
+		['common', 'Частые', Circle],
+		['rare', 'Редкие', Diamond],
 	] as const
 
 	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
@@ -787,12 +788,14 @@
 		</label>
 		<div class="index__filters">
 			<div class="index__freq" role="group" aria-label="Частота">
-				{#each FREQUENCIES as [value, label] (value)}
+				{#each FREQUENCIES as [value, label, icon] (value)}
 					<button
-						class="index__chip"
+						class="index__chip index__chip--{value}"
 						type="button"
 						aria-pressed={frequency === value}
-						onclick={() => (frequency = value)}>{label}</button
+						onclick={() => (frequency = value)}
+						>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
+							>{/if}{label}</button
 					>
 				{/each}
 			</div>
@@ -859,8 +862,6 @@
 						<span class="zone__filter-names">{filterNames}</span>
 						<button class="zone__reset" type="button" onclick={resetFilters}>Сбросить</button>
 					</p>
-				{:else}
-					<p class="zone__count">{total} {plural(total)}</p>
 				{/if}
 			</header>
 			<ul class="zone__list" onscroll={onListScroll}>
@@ -884,7 +885,12 @@
 								>
 							</span>
 							<span class="zone__summary">
-								{#if injury.rare}<span class="zone__rare">Редко ·</span>{/if}
+								{#if injury.rare}<span class="zone__rare"
+										><span class="zone__rare-icon" aria-hidden="true">{@html Diamond}</span
+										>Редко</span
+									>
+									·
+								{/if}
 								{injury.summary}
 							</span>
 						</a>
@@ -1325,7 +1331,12 @@
 		}
 
 		&__chip {
+			--chip: var(--a-fg);
+
 			cursor: pointer;
+			display: inline-flex;
+			gap: 6px;
+			align-items: center;
 			padding: 5px 14px;
 			border: 0;
 			border-radius: 999px;
@@ -1337,10 +1348,19 @@
 				color 0.3s var(--a-ease),
 				background 0.3s var(--a-ease);
 
+			/* Частые и редкие -- каждая в своём цвете: знак в нём всегда, выбранная залита им */
+			&--common {
+				--chip: var(--common);
+			}
+
+			&--rare {
+				--chip: var(--rare);
+			}
+
 			&[aria-pressed='true'] {
 				font-weight: 600;
 				color: var(--a-bg);
-				background: var(--a-fg);
+				background: var(--chip);
 			}
 
 			&:hover:not([aria-pressed='true']) {
@@ -1351,6 +1371,24 @@
 				outline: 2px solid var(--a-blue);
 				outline-offset: 2px;
 			}
+		}
+
+		&__chip-icon {
+			display: inline-flex;
+			width: 11px;
+			height: 11px;
+			color: var(--chip);
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				fill: currentcolor;
+			}
+		}
+
+		&__chip[aria-pressed='true'] &__chip-icon {
+			color: inherit;
 		}
 
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */
@@ -1721,7 +1759,24 @@
 
 		/* Редкие травмы отмечены словом, а не цветной точкой: точка читалась как уведомление */
 		&__rare {
+			display: inline-flex;
+			gap: 4px;
+			align-items: center;
 			font-weight: 600;
+			color: var(--rare);
+		}
+
+		&__rare-icon {
+			display: inline-flex;
+			width: 12px;
+			height: 12px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				fill: currentcolor;
+			}
 		}
 
 		/* Описание целиком, без многоточия: строка и так ссылка, это видно по стрелке */

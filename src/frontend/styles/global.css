@@ -11,6 +11,9 @@
 	--accent: #0066cc;
 	--surface: #f5f5f7;
 	--danger: #c4271b;
+	/* Частота травмы: свой цвет и знак у частых и редких, одни на всём сайте */
+	--common: #0b7285;
+	--rare: #8944ab;
 
 	color-scheme: light;
 }
@@ -25,6 +28,8 @@
 		--accent: #2997ff;
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
+		--common: #5ac8d8;
+		--rare: #c983f0;
 
 		color-scheme: dark;
 	}
@@ -37,6 +42,8 @@
 	--accent: #2997ff;
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
+	--common: #5ac8d8;
+	--rare: #c983f0;
 
 	color-scheme: dark;
 }

@@ -2,6 +2,8 @@
 // src/frontend/components/injury-card.astro
 import type { CollectionEntry } from 'astro:content'
 
+import { Diamond } from 'lucide-static'
+
 import { regionLabel } from '#frontend/data/regions.ts'
 
 type Props = { entry: CollectionEntry<'injuries'> }
@@ -13,7 +15,12 @@ const { data } = entry
 <a class="card" href={`/injuries/${entry.id}/`}>
 	<span class="card__region">
 		{regionLabel(data.region)}
-		{data.frequency === 'rare' && ' · редко'}
+		{data.frequency === 'rare' && (
+			<span class="card__rare">
+				· <span class="card__rare-icon" aria-hidden="true" set:html={Diamond} />
+				редко
+			</span>
+		)}
 	</span>
 	<strong class="card__title">{data.title}</strong>
 	<span class="card__summary">{data.summary}</span>
@@ -37,6 +44,25 @@ const { data } = entry
 		&__summary {
 			font-size: 0.85rem;
 			color: var(--muted);
+		}
+
+		/* Редкие -- тем же знаком и цветом, что в фильтре частоты на главной */
+		&__rare {
+			font-weight: 600;
+			color: var(--rare);
+		}
+
+		&__rare-icon {
+			display: inline-flex;
+			width: 10px;
+			height: 10px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				fill: currentcolor;
+			}
 		}
 	}
 </style>

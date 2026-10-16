@@ -46,7 +46,24 @@
 	}
 
 	&__tag--rare {
-		color: var(--danger);
+		display: inline-flex;
+		gap: 6px;
+		align-items: center;
+		font-weight: 600;
+		color: var(--rare);
+	}
+
+	&__tag-icon {
+		display: inline-flex;
+		width: 13px;
+		height: 13px;
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& svg {
+			width: 100%;
+			height: 100%;
+			fill: currentcolor;
+		}
 	}
 
 	&__title {

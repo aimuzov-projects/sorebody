@@ -494,51 +494,56 @@
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
-		const mod = import('#frontend/scene/body-scene.ts')
-		const ready = mod.then(async ({ createBodyScene }) => {
-			const scene = await createBodyScene(canvas, modelUrl)
+		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный WebGL,
+		// и страница с ней занимает у axe десятки секунд. Остаётся постер и вся разметка.
+		// `?scene` включает сцену и под автотестом, рендер постера (`?poster`) её требует
+		const automated = navigator.webdriver && !posterMode && !new URLSearchParams(location.search).has('scene')
+		const ready = (automated ? new Promise<never>(() => {}) : import('#frontend/scene/body-scene.ts')).then(
+			async ({ createBodyScene }) => {
+				const scene = await createBodyScene(canvas, modelUrl)
 
-			if (disposed) return scene.dispose()
+				if (disposed) return scene.dispose()
 
-			body = scene
-			scene.resize()
+				body = scene
+				scene.resize()
 
-			scene.onFrame = () => {
-				placeSpots()
+				scene.onFrame = () => {
+					placeSpots()
 
-				// Первый кадр с готовой камерой: точки уже на местах, можно показывать
-				if (status === 'ready' && !live) {
-					live = true
+					// Первый кадр с готовой камерой: точки уже на местах, можно показывать
+					if (status === 'ready' && !live) {
+						live = true
 
-					// Рендер постера (scripts/poster): фигура замирает в стартовом кадре
-					if (posterMode) {
-						scene.controls.autoRotate = false
-						Object.assign(window, { posterBounds: scene.bounds })
+						// Рендер постера (scripts/poster): фигура замирает в стартовом кадре
+						if (posterMode) {
+							scene.controls.autoRotate = false
+							Object.assign(window, { posterBounds: scene.bounds })
+						}
+
+						setTimeout(() => (posterShown = false), 400)
 					}
 
-					setTimeout(() => (posterShown = false), 400)
-				}
+					if (showFps) {
+						frames++
+						const now = performance.now()
 
-				if (showFps) {
-					frames++
-					const now = performance.now()
-
-					if (now - fpsFrom > 500) {
-						fps = Math.round((frames * 1000) / (now - fpsFrom))
-						frames = 0
-						fpsFrom = now
+						if (now - fpsFrom > 500) {
+							fps = Math.round((frames * 1000) / (now - fpsFrom))
+							frames = 0
+							fpsFrom = now
+						}
 					}
 				}
-			}
 
-			status = 'ready'
-			// Адрес мог открыть зону или статью до того, как модель загрузилась
-			sync()
-			focusOpen()
-			homeFrame(true)
+				status = 'ready'
+				// Адрес мог открыть зону или статью до того, как модель загрузилась
+				sync()
+				focusOpen()
+				homeFrame(true)
 
-			if (sceneHidden) scene.pause(true)
-		})
+				if (sceneHidden) scene.pause(true)
+			},
+		)
 
 		ready.catch((error) => {
 			console.error(error)

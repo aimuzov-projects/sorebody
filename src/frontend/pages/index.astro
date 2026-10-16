@@ -6,6 +6,7 @@ import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { site } from '#frontend/data/site.ts'
 import Base from '#frontend/layouts/base.astro'
 import { buildZones } from '#frontend/scene/zones.ts'
+import '#frontend/styles/article.css'
 
 // meshopt-декодер модели -- WebAssembly; разрешаем его только на главной, где модель
 Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")

@@ -23,6 +23,7 @@
 
 	import { PersonStanding, Search } from 'lucide-static'
 
+	import { initReading } from '#frontend/lib/reading.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { Zone } from '#frontend/scene/zones.ts'
@@ -106,6 +107,9 @@
 	let article = $state.raw<Injury | null>(null)
 	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
 	let articleBody = $state<HTMLDivElement>()
+	let readerElement = $state<HTMLElement>()
+	let progressBar = $state<HTMLElement>()
+	let stopReading: (() => void) | undefined
 	let backButton = $state<HTMLButtonElement>()
 	let sceneHidden = $state(false)
 	let loadToken = 0
@@ -405,6 +409,8 @@
 
 		article = null
 		loadToken++
+		stopReading?.()
+		stopReading = undefined
 		sceneHidden = false
 		clearTimeout(sleepTimer)
 		body?.pause(false)
@@ -434,13 +440,20 @@
 			if (!main) throw new Error('no <main> in article page')
 
 			// Метка зоны и плашка черновика в полноэкранной статье лишние
-			main.querySelector('.injury__meta')?.remove()
+			main.querySelector('.article__meta')?.remove()
 			await tick()
 
-			if (token !== loadToken || !articleBody) return
+			if (token !== loadToken || !articleBody || !readerElement) return
 
-			articleBody.replaceChildren(document.importNode(main, true))
-			articleBody.parentElement?.scrollTo(0, 0)
+			// Второй main на странице не нужен: те же классы и содержимое, но в div
+			const root = document.createElement('div')
+
+			root.className = main.className
+			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
+			stopReading?.()
+			articleBody.replaceChildren(root)
+			readerElement.scrollTo(0, 0)
+			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
 			backButton?.focus({ preventScroll: true })
 		} catch (error) {
@@ -698,7 +711,16 @@
 </div>
 
 {#if article}
-	<article class="reader" transition:fadeUp aria-label={article.title} aria-busy={articleStatus === 'loading'}>
+	<article
+		class="reader"
+		bind:this={readerElement}
+		transition:fadeUp
+		aria-label={article.title}
+		aria-busy={articleStatus === 'loading'}
+	>
+		<div class="reader__progress" aria-hidden="true">
+			<span class="reader__progress-bar" bind:this={progressBar}></span>
+		</div>
 		<div class="reader__bar">
 			<button class="reader__back" type="button" bind:this={backButton} onclick={up}>
 				<span aria-hidden="true">←</span> Назад
@@ -1413,9 +1435,9 @@
 			position: sticky;
 			z-index: 1;
 			top: 0;
-			max-width: 728px;
+			max-width: 1052px;
 			margin: 0 auto;
-			padding: calc(20px + var(--tg-top)) 24px 36px;
+			padding: calc(20px + var(--tg-top)) 24px 20px;
 			background: linear-gradient(to bottom, var(--a-page) 55%, transparent);
 		}
 
@@ -1452,94 +1474,46 @@
 			color: var(--a-fg2);
 		}
 
-		/* Разметка статьи приходит с /injuries/<slug>/ без её scoped-стилей, задаём здесь */
+		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */
 		&__body {
-			max-width: 728px;
-			margin: 0 auto;
-			padding: 0 24px 120px;
+			padding-bottom: 40px;
 
-			/* minmax(0, 1fr): иначе длинное слово в заголовке растягивает колонку шире экрана */
-			& :global(.injury) {
-				display: grid;
-				grid-template-columns: minmax(0, 1fr);
-				gap: 28px;
-				max-width: none;
-				padding: 0;
+			/* Под липкой полосой с "Назад": статье меньше верхнего отступа, оглавлению и
+			   якорям разделов -- запас на её высоту */
+			& :global(.article) {
+				padding-top: 8px;
 			}
 
-			/* У заголовков статьи нет своих классов, а разметку правит не эта страница */
-			/* stylelint-disable-next-line selector-max-type */
-			& :global(h1) {
-				margin: 0;
-				font-size: clamp(32px, 6vw, 56px);
-				font-weight: 700;
-				line-height: 1.07;
-				hyphens: auto;
-				letter-spacing: -0.03em;
-				overflow-wrap: break-word;
+			& :global(.article__toc) {
+				top: calc(76px + var(--tg-top));
 			}
 
-			/* stylelint-disable-next-line selector-max-type */
-			& :global(h2) {
-				margin: 40px 0 0;
-				font-size: 28px;
-				font-weight: 600;
-				line-height: 1.14;
-				letter-spacing: -0.02em;
+			& :global(.article-section) {
+				scroll-margin-top: calc(84px + var(--tg-top));
 			}
+		}
 
-			/* stylelint-disable-next-line selector-max-type */
-			& :global(a) {
-				color: var(--a-blue);
-				text-decoration: none;
-				transition: opacity 0.3s var(--a-ease);
-			}
+		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад" */
+		&__progress {
+			pointer-events: none;
+			position: fixed;
+			z-index: 2;
+			top: var(--tg-top);
+			right: 0;
+			left: 0;
+			height: 3px;
+		}
 
-			/* stylelint-disable-next-line selector-max-type */
-			& :global(a:hover) {
-				opacity: 0.7;
-			}
+		&__progress-bar {
+			transform-origin: left;
+			transform: scaleX(0);
+			display: block;
+			height: 100%;
+			background: linear-gradient(to right, transparent, var(--a-blue) 30%);
+			transition: transform 0.15s linear;
 
-			& :global(.injury__lead) {
-				margin: 0;
-				font-size: 21px;
-				line-height: 1.38;
-				color: var(--a-fg2);
-				letter-spacing: -0.015em;
-			}
-
-			& :global(.injury__figure) {
-				margin: 8px 0;
-			}
-
-			& :global(.injury__caption) {
-				margin-top: 12px;
-				font-size: 14px;
-				color: var(--a-fg2);
-			}
-
-			& :global(.injury__body) {
-				display: grid;
-				gap: 4px;
-			}
-
-			& :global(.injury__movements) {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 8px 24px;
-				padding: 0;
-				list-style: none;
-			}
-
-			& :global(.injury__sources) {
-				font-size: 14px;
-				color: var(--a-fg2);
-			}
-
-			& :global(.disclaimer) {
-				margin-top: 24px;
-				font-size: 15px;
-				color: var(--a-fg2);
+			@media (--reduced-motion) {
+				transition: none;
 			}
 		}
 	}

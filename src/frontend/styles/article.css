@@ -1,0 +1,475 @@
+/* Статья-лонгрид. Одни стили для отдельной страницы и для статьи поверх модели на главной.
+   Язык тот же, что у сцены: ни карточек, ни рамок, ни разделителей -- только прозрачность,
+   градиенты и края, растворённые маской. Цвета -- общие токены сайта: на главной их
+   переопределяет сцена, отдельной странице тёмную тему задаёт блок ниже. */
+
+/* Отдельная страница статьи: своя тёмная тема (на главной её ведёт сцена). */
+:root:has(body > .article) {
+	color-scheme: light dark;
+
+	@media (prefers-color-scheme: dark) {
+		--bg: #000000;
+		--fg: #f5f5f7;
+		--muted: #a1a1a6;
+		--accent: #2997ff;
+		--surface: rgb(255 255 255 / 10%);
+		--danger: #ff453a;
+	}
+
+	/* Ссылки подвала сайта без своего цвета: в тёмной теме браузер красит их в фиолетовый */
+	& .footer__nav :any-link {
+		color: var(--accent);
+	}
+}
+
+.article {
+	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
+	--article-column: 680px;
+
+	width: 100%;
+	max-width: calc(var(--article-column) + 260px + 64px + 48px);
+	margin: 0 auto;
+	padding: 48px 24px 96px;
+	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
+	color: var(--fg);
+	letter-spacing: -0.012em;
+
+	@media (width < 600px) {
+		padding: 28px 20px 72px;
+	}
+
+	&__hero {
+		display: grid;
+		gap: 20px;
+		max-width: var(--article-column);
+		margin: 0 auto 56px;
+
+		@media (width >= 1100px) {
+			margin-left: calc(260px + 64px);
+		}
+	}
+
+	&__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: baseline;
+		margin: 0;
+		font-size: 15px;
+		color: var(--muted);
+	}
+
+	&__region {
+		color: var(--accent);
+		text-decoration: none;
+	}
+
+	&__tag--rare {
+		color: var(--danger);
+	}
+
+	&__title {
+		margin: 0;
+		font-size: clamp(34px, 6vw, 56px);
+		font-weight: 700;
+		line-height: 1.07;
+		hyphens: auto;
+		letter-spacing: -0.03em;
+		overflow-wrap: break-word;
+	}
+
+	&__lead {
+		margin: 0;
+		font-size: clamp(20px, 2.2vw, 24px);
+		line-height: 1.45;
+		color: var(--muted);
+		letter-spacing: -0.015em;
+	}
+
+	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
+	&__figure {
+		margin: 16px 0 0;
+
+		@media (width >= 900px) {
+			margin-inline: -48px;
+		}
+	}
+
+	&__image {
+		width: 100%;
+		mask-image:
+			linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
+			linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+		mask-composite: intersect;
+	}
+
+	&__caption {
+		max-width: var(--article-column);
+		margin: 4px auto 0;
+		font-size: 14px;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет */
+	&__layout {
+		@media (width >= 1100px) {
+			display: grid;
+			grid-template-columns: 260px minmax(0, var(--article-column));
+			gap: 64px;
+			align-items: start;
+		}
+	}
+
+	&__toc {
+		display: none;
+
+		@media (width >= 1100px) {
+			position: sticky;
+			top: calc(48px + var(--tg-top, 0px));
+			overflow-y: auto;
+			display: block;
+			max-height: calc(100dvh - 96px);
+			padding: 12px 0;
+			mask-image: linear-gradient(to bottom, transparent, #000000 12px, #000000 calc(100% - 24px), transparent);
+		}
+	}
+
+	&__toc-list {
+		display: grid;
+		gap: 2px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__toc-link {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		padding: 7px 0;
+		font-size: 15px;
+		color: var(--muted);
+		text-decoration: none;
+		transition: color 0.35s var(--article-ease);
+
+		&:hover,
+		&[aria-current] {
+			color: var(--fg);
+		}
+
+		&[aria-current] {
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__toc-icon,
+	&__source-icon {
+		display: inline-flex;
+		flex: none;
+	}
+
+	&__toc-icon {
+		width: 18px;
+		height: 18px;
+	}
+
+	&__body {
+		max-width: var(--article-column);
+		margin: 0 auto;
+		font-size: 19px;
+		line-height: 1.6;
+
+		@media (width < 600px) {
+			font-size: 17.5px;
+		}
+	}
+
+	&__end {
+		display: grid;
+		gap: 48px;
+		max-width: var(--article-column);
+		margin: 80px auto 0;
+
+		@media (width >= 1100px) {
+			margin-left: calc(260px + 64px);
+		}
+	}
+
+	&__end-title {
+		margin: 0 0 16px;
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+
+	/* Движения -- чипсы без рамки, фон лёгким градиентом */
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__chip {
+		display: inline-block;
+		padding: 8px 16px;
+		border-radius: 999px;
+		font-size: 15px;
+		color: var(--fg);
+		text-decoration: none;
+		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), var(--surface));
+		transition:
+			color 0.3s var(--article-ease),
+			background 0.3s var(--article-ease);
+
+		&:hover {
+			color: var(--accent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__source-list {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		padding-left: 1.4em;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--muted);
+	}
+
+	&__source-link {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		color: var(--accent);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&__source-icon {
+		width: 13px;
+		height: 13px;
+	}
+
+	&__disclaimer {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--muted);
+	}
+}
+
+/* Разделы статьи из Markdown (lib/article-html.ts): иконка у заголовка, воздух между
+   разделами, акценты у "Когда сразу к врачу" и "Как адаптировать тренировки" */
+.article-section {
+	scroll-margin-top: calc(32px + var(--tg-top, 0px));
+	margin-top: 64px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&__title {
+		display: flex;
+		gap: 14px;
+		align-items: center;
+		margin: 0 0 20px;
+		font-size: clamp(26px, 3vw, 32px);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.025em;
+	}
+
+	&__icon {
+		display: inline-flex;
+		flex: none;
+		width: 28px;
+		height: 28px;
+		color: var(--accent);
+	}
+
+	/* Красноватый фон гаснет к краям блока (closest-side): края не видно, рамки нет */
+	&--urgent {
+		margin-inline: -32px;
+		padding: 32px;
+		background: radial-gradient(
+			closest-side,
+			color-mix(in srgb, var(--danger) 15%, transparent),
+			color-mix(in srgb, var(--danger) 8%, transparent) 60%,
+			transparent
+		);
+
+		@media (width < 600px) {
+			margin-inline: -20px;
+			padding: 28px 20px;
+		}
+	}
+
+	&--urgent &__icon {
+		color: var(--danger);
+	}
+}
+
+/* stylelint-disable selector-max-type -- разметка из Markdown приходит без классов */
+.article-section {
+	& p {
+		margin: 0 0 1em;
+	}
+
+	& ul,
+	& ol {
+		display: grid;
+		gap: 0.65em;
+		margin: 0 0 1em;
+		padding-left: 1.25em;
+	}
+
+	& li::marker {
+		color: var(--muted);
+	}
+
+	& a {
+		color: var(--accent);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	& strong {
+		font-weight: 650;
+	}
+}
+/* stylelint-enable selector-max-type */
+
+/* Сноски -- надстрочные номера, без скобок; подпись источника в title */
+.cite {
+	margin-left: 2px;
+	font-size: 0.68em;
+	font-weight: 600;
+	line-height: 0;
+}
+
+.cite__link {
+	padding: 0 1px;
+	color: var(--accent);
+	text-decoration: none;
+	opacity: 0.85;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+/* Проценты в разделе о частоте -- крупнее и жирнее */
+.stat {
+	font-size: 1.18em;
+	font-weight: 700;
+	color: var(--fg);
+	letter-spacing: -0.02em;
+}
+
+/* "Было → стало": слева что убрать (приглушено), стрелка, справа на что заменить */
+.swap {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+	margin-left: -1.25em;
+	list-style: none;
+
+	@media (width < 600px) {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+
+	& + & {
+		margin-top: 0.6em;
+	}
+
+	&__was {
+		color: var(--muted);
+	}
+
+	&__label {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--muted);
+		letter-spacing: 0;
+	}
+
+	&__arrow {
+		display: inline-flex;
+		width: 22px;
+		height: 22px;
+		margin-top: 22px;
+		color: var(--accent);
+
+		@media (width < 600px) {
+			transform: rotate(90deg);
+			margin-top: 0;
+		}
+	}
+
+	&__now {
+		font-weight: 600;
+	}
+
+	&__hint {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent);
+		letter-spacing: 0;
+	}
+}
+
+/* Иконки Lucide тоньше дефолта и тянутся под свой контейнер */
+/* stylelint-disable-next-line selector-max-type -- SVG приходит из lucide-static без класса */
+:is(.article, .article-section, .swap) svg {
+	width: 100%;
+	height: 100%;
+	stroke-width: 1.6;
+}
+
+/* Полоса прогресса чтения сверху отдельной страницы */
+.reading-progress {
+	pointer-events: none;
+	position: fixed;
+	z-index: 20;
+	top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+	right: 0;
+	left: 0;
+	height: 3px;
+}
+
+.reading-progress__bar {
+	transform-origin: left;
+	transform: scaleX(0);
+	display: block;
+	height: 100%;
+	background: linear-gradient(to right, transparent, var(--accent) 30%);
+	transition: transform 0.15s linear;
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}

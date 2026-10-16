@@ -56,13 +56,13 @@ img {
 	padding-inline: var(--gutter);
 }
 
-/* Заголовки внутри Markdown-статьи без классов: отступ задаём по тегу. */
-.injury__body h2 {
-	margin-top: 1.6em;
-}
-
 /* Полноэкранный Mini App Telegram: содержимое не уходит под системные кнопки сверху и снизу.
    Переменные ставит SDK Telegram, вне него их нет и отступ нулевой. */
+/* Отступ под системные кнопки Telegram сверху: им пользуются липкие и фиксированные элементы. */
+[data-telegram] {
+	--tg-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+}
+
 [data-telegram] body {
 	padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	padding-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));

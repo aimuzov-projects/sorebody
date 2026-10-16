@@ -1,12 +1,14 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
-import { getCollection, render } from 'astro:content'
+import { getCollection } from 'astro:content'
+import { ExternalLink } from 'lucide-static'
 
-import Disclaimer from '#frontend/components/disclaimer.astro'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
 import Base from '#frontend/layouts/base.astro'
+import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+import '#frontend/styles/article.css'
 
 export async function getStaticPaths() {
 	const injuries = await getCollection('injuries')
@@ -15,119 +17,98 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props
-const { Content } = await render(entry)
 const { data } = entry
+const { html, sections } = enhanceArticle(entry.rendered?.html ?? '', data.sources)
 const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(m.slug))
+const [image] = data.images
 ---
 
 <Base title={data.title} description={data.summary}>
-	<main class="injury container">
-		<p class="injury__meta">
-			<a href={`/?region=${data.region}`}>{regionLabel(data.region)}</a>
-			{data.frequency === 'rare' && <span class="badge badge--rare">Редко, но опасно</span>}
-			{data.draft && <span class="badge">Черновик: врач не проверял</span>}
-		</p>
-		<h1>{data.title}</h1>
-		<p class="injury__lead">{data.summary}</p>
+	<div class="reading-progress" aria-hidden="true">
+		<span class="reading-progress__bar"></span>
+	</div>
+	<main class="article" data-article>
+		<header class="article__hero">
+			<p class="article__meta">
+				<a class="article__region" href={`/?region=${data.region}`}>
+					{regionLabel(data.region)}
+				</a>
+				{data.frequency === 'rare' && <span class="article__tag article__tag--rare">Редко, но опасно</span>}
+				{data.draft && <span class="article__tag">Черновик: врач не проверял</span>}
+			</p>
+			<h1 class="article__title">{data.title}</h1>
+			<p class="article__lead">{data.summary}</p>
+			{image && (
+				<figure class="article__figure">
+					<img class="article__image" src={image.src} alt={image.alt} width="1200" height="669" />
+					<figcaption class="article__caption">{image.caption}</figcaption>
+				</figure>
+			)}
+		</header>
 
-		{data.images.map((image) => (
-			<figure class="injury__figure">
-				<img class="injury__image" src={image.src} alt={image.alt} width="1200" height="669" loading="lazy" />
-				<figcaption class="injury__caption">{image.caption}</figcaption>
-			</figure>
-		))}
-
-		<article class="injury__body">
-			<Content />
-		</article>
-
-		{movements.length > 0 && (
-			<section>
-				<h2>Связанные движения</h2>
-				<ul class="injury__movements">
-					{movements.map((m) => (
+		<div class="article__layout">
+			<nav class="article__toc" aria-label="Разделы статьи" data-toc>
+				<ol class="article__toc-list">
+					{sections.map((section) => (
 						<li>
-							<a href={`/movements/${m.slug}/`}>{m.title}</a>
+							<a class="article__toc-link" href={`#${section.id}`}>
+								<span class="article__toc-icon" aria-hidden="true" set:html={section.icon} />
+								{section.title}
+							</a>
 						</li>
 					))}
-				</ul>
+				</ol>
+			</nav>
+
+			<div class="article__body" set:html={html} />
+		</div>
+
+		<footer class="article__end">
+			{movements.length > 0 && (
+				<section class="article__related" aria-labelledby="related-title">
+					<h2 class="article__end-title" id="related-title">
+						Связанные движения
+					</h2>
+					<ul class="article__chips">
+						{movements.map((m) => (
+							<li>
+								<a class="article__chip" href={`/movements/${m.slug}/`}>
+									{m.title}
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
+
+			<section class="article__sources" aria-labelledby="sources-title">
+				<h2 class="article__end-title" id="sources-title">
+					Источники
+				</h2>
+				<ol class="article__source-list">
+					{data.sources.map((s) => (
+						<li class="article__source">
+							{s.label} ·{' '}
+							<a class="article__source-link" href={pubmedUrl(s.pmid)}>
+								PMID {s.pmid}
+								<span class="article__source-icon" aria-hidden="true" set:html={ExternalLink} />
+							</a>
+						</li>
+					))}
+				</ol>
 			</section>
-		)}
 
-		<section>
-			<h2>Источники</h2>
-			<ol class="injury__sources">
-				{data.sources.map((s) => (
-					<li>
-						<a href={pubmedUrl(s.pmid)}>{s.label}</a> · PMID {s.pmid}
-					</li>
-				))}
-			</ol>
-		</section>
-
-		<Disclaimer />
+			<p class="article__disclaimer">
+				Справка не заменяет консультацию врача. Иллюстрации сгенерированы нейросетью, анатомия на них упрощена.
+			</p>
+		</footer>
 	</main>
 </Base>
 
-<style>
-	.injury {
-		display: grid;
-		gap: 20px;
-		max-width: calc(72ch + var(--gutter) * 2);
-		padding-block: var(--section-y);
+<script>
+	import { initReading } from '#frontend/lib/reading.ts'
 
-		&__meta {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-			align-items: center;
-			margin: 0;
-			font-size: 0.9rem;
-		}
+	const root = document.querySelector('[data-article]')
 
-		&__lead {
-			margin: 0;
-			font-size: 1.15rem;
-			color: var(--muted);
-		}
-
-		&__figure {
-			margin: 0;
-		}
-
-		&__image {
-			border-radius: 12px;
-			background: #ffffff;
-		}
-
-		&__caption {
-			margin-top: 6px;
-			font-size: 0.85rem;
-			color: var(--muted);
-		}
-
-		&__movements {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px 16px;
-			padding: 0;
-			list-style: none;
-		}
-
-		&__sources {
-			font-size: 0.9rem;
-		}
-	}
-
-	.badge {
-		padding: 2px 8px;
-		border-radius: 999px;
-		font-size: 0.8rem;
-		background: var(--surface);
-
-		&--rare {
-			color: #ffffff;
-			background: var(--danger);
-		}
-	}
-</style>
+	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
+</script>

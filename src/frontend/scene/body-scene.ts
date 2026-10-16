@@ -386,10 +386,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			radiusTo = center ? radius : 0
 		},
 		/**
-		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях кадра от центра
-		 * (x вправо, y вверх). `view` -- ракурс в градусах: азимут от лица (+Z) к левому боку
-		 * (+X) и угол от вертикали; без него ракурс остаётся текущим. `spring` -- доезд пружиной.
-		 * `null` возвращает камеру как было до наезда.
+		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях экрана от
+		 * центра (x вправо, y вверх); сдвиг кадра задаёт сам наезд. `view` -- ракурс в градусах:
+		 * азимут от лица (+Z) к левому боку (+X) и угол от вертикали; без него ракурс остаётся
+		 * текущим. `spring` -- доезд пружиной. `null` возвращает камеру как было до наезда.
 		 */
 		focus(
 			point: Vec3 | null,
@@ -414,13 +414,17 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			restore ??= now
 			const azimuth = view ? MathUtils.degToRad(view.azimuth) : now.azimuth
 			const polar = view ? MathUtils.degToRad(view.polar) : now.polar
+			// Центр орбиты -- на оси тела, на высоте точки: фигура и в зоне вертится вокруг
+			// своей оси, а не вокруг локтя. В `at` точку ставит сдвиг окна кадра, а не центра.
 			// Сдвиг считаем в осях будущего ракурса, а не текущего: камера ещё повернётся
+			const target = new Vector3(0, point[1], 0)
 			const toCamera = new Vector3().setFromSphericalCoords(1, polar, azimuth)
 			const right = new Vector3(0, 1, 0).cross(toCamera).normalize()
 			const up = toCamera.clone().cross(right)
-			const target = new Vector3(...point)
-				.addScaledVector(right, (-at.x * 2 * halfWidth) / zoom)
-				.addScaledVector(up, (-at.y * 2 * half) / zoom)
+			const off = new Vector3(...point).sub(target)
+
+			shiftTo.x = at.x - (off.dot(right) * zoom) / (2 * halfWidth * shiftTo.s)
+			shiftTo.y = at.y - (off.dot(up) * zoom) / (2 * half * shiftTo.s)
 
 			// OrbitControls зажимает зум в своих пределах на каждом update()
 			controls.maxZoom = Math.max(MAX_ZOOM, zoom)

@@ -18,11 +18,14 @@
 	import type { LabZone } from '#frontend/lab/zones.ts'
 
 	type Props = { zones: LabZone[]; whole: LabZone; modelUrl: string }
+	type Injury = LabZone['injuries'][number]
 
 	let { zones, whole, modelUrl }: Props = $props()
 
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
 	const PICK_PX = 56
+	/** Сколько гаснет сцена перед статьёй; после этого рендер останавливается. */
+	const SCENE_FADE_MS = 450
 
 	let wrap: HTMLDivElement
 	let canvas: HTMLCanvasElement
@@ -30,6 +33,7 @@
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
+	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
 	type Spot = { zone: LabZone; index: number; x: number; y: number; visible: boolean }
 
@@ -41,23 +45,111 @@
 	// raw: иначе Svelte обернёт точку в прокси и сравнение hovered === spot всегда ложно
 	let hovered = $state.raw<Spot | null>(null)
 
-	/** Травмы зоны: панель со списком справа, на узком экране -- шторка снизу. */
-	let open = $state<{ zone: LabZone; point: LabZone['points'][number]; layout: 'list' | 'sheet' } | null>(null)
-
-	type Article = { zone: LabZone; point: LabZone['points'][number]; slug: string; title: string }
-
-	let article = $state<Article | null>(null)
+	/** Раскрытая зона. `side` -- где стоит список: в свободной от зоны половине экрана. */
+	let open = $state.raw<{ zone: LabZone; index: number; side: 'left' | 'right' | 'bottom' } | null>(null)
+	let article = $state.raw<Injury | null>(null)
 	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
 	let articleBody = $state<HTMLDivElement>()
-	let closeButton = $state<HTMLButtonElement>()
-	// Своя запись в истории: тогда крестик и Esc закрывают статью через history.back()
-	let pushed = false
+	let backButton = $state<HTMLButtonElement>()
+	let sceneHidden = $state(false)
 	let loadToken = 0
-	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
+	let sleepTimer: ReturnType<typeof setTimeout> | undefined
+
+	/**
+	 * Адрес -- источник правды, три уровня: сцена (без хеша), зона `#zone=knee:0`, статья
+	 * `#meniscus-tear`. "Назад" и системная кнопка браузера поднимаются на уровень вверх.
+	 * Записи выше `baseLevel` положили в историю мы сами, ниже -- пришли со ссылкой.
+	 */
+	type Place = { level: 0 } | { level: 1; zone: LabZone; index: number } | { level: 2; zone: LabZone; injury: Injury }
+
+	let baseLevel = 0
+
+	function zoneHash(zone: LabZone, index: number) {
+		return `#zone=${zone.slug}:${index}`
+	}
+
+	function parseHash(): Place {
+		const hash = decodeURIComponent(location.hash.slice(1))
+		const zoneMatch = hash.match(/^zone=([\w-]+):(\d)$/)
+
+		if (zoneMatch) {
+			const zone = [...zones, whole].find((z) => z.slug === zoneMatch[1])
+			const index = Number(zoneMatch[2])
+
+			if (zone && zone.points[index]) return { level: 1, zone, index }
+		}
+
+		for (const zone of [...zones, whole]) {
+			const injury = zone.injuries.find((i) => i.slug === hash)
+
+			if (injury) return { level: 2, zone, injury }
+		}
+
+		return { level: 0 }
+	}
+
+	/** Привести экран к адресу: открыть или закрыть зону и статью. */
+	function sync() {
+		const place = parseHash()
+
+		if (place.level === 0) {
+			hideArticle()
+			closeZone()
+
+			return
+		}
+
+		if (place.level === 1) {
+			hideArticle()
+			showZone(place.zone, place.index)
+
+			return
+		}
+
+		// Под статьёй держим её зону раскрытой: "Назад" вернёт к тому же списку и кадру
+		if (open?.zone !== place.zone) showZone(place.zone, 0)
+
+		showArticle(place.injury)
+	}
+
+	function openZone(zone: LabZone, index: number) {
+		history.pushState(null, '', zoneHash(zone, index))
+		showZone(zone, index)
+	}
+
+	function openArticle(injury: Injury) {
+		history.pushState(null, '', `#${injury.slug}`)
+		showArticle(injury)
+	}
+
+	/** На уровень вверх: через history.back(), если запись наша, иначе заменой адреса. */
+	function up() {
+		const place = parseHash()
+		const level = place.level
+
+		if (level === 0) return
+
+		if (level > baseLevel) {
+			history.back()
+
+			return
+		}
+
+		// Зону берём из адреса статьи: модель могла ещё не загрузиться и не раскрыть её
+		const parent =
+			place.level === 2
+				? zoneHash(place.zone, open?.zone === place.zone ? open.index : 0)
+				: location.pathname + location.search
+
+		history.replaceState(null, '', parent)
+		baseLevel = level - 1
+		sync()
+	}
 
 	onMount(() => {
-		openFromHash()
-		window.addEventListener('popstate', openFromHash)
+		baseLevel = parseHash().level
+		sync()
+		window.addEventListener('popstate', sync)
 
 		let disposed = false
 		let frames = 0
@@ -87,8 +179,10 @@
 			}
 
 			status = 'ready'
+			// Адрес мог открыть зону или статью до того, как модель загрузилась
+			sync()
 
-			if (article) recede(article)
+			if (sceneHidden) scene.pause(true)
 		})
 
 		ready.catch((error) => {
@@ -99,13 +193,14 @@
 		const resizer = new ResizeObserver(() => body?.resize())
 
 		resizer.observe(canvas)
-		// Вне экрана сцена не рисует, чтобы не греть телефон
-		const visibility = new IntersectionObserver(([entry]) => body?.pause(!entry.isIntersecting))
+		// Вне экрана и под статьёй сцена не рисует, чтобы не греть телефон
+		const visibility = new IntersectionObserver(([entry]) => body?.pause(!entry.isIntersecting || sceneHidden))
 
 		visibility.observe(canvas)
 
 		return () => {
-			window.removeEventListener('popstate', openFromHash)
+			window.removeEventListener('popstate', sync)
+			clearTimeout(sleepTimer)
 			disposed = true
 			resizer.disconnect()
 			visibility.disconnect()
@@ -162,28 +257,32 @@
 		if (body) body.controls.autoRotate = !spot
 	}
 
-	function openMenu(spot: Spot | null, zone = spot?.zone) {
-		if (!zone || !body) return
+	/**
+	 * Раскрыть зону и поставить список в свободную от неё половину экрана: зона справа --
+	 * список слева, и наоборот. Камера сдвигает зону на другую сторону. На узком экране
+	 * свободной половины нет: зона уходит наверх, список -- в нижнюю половину.
+	 */
+	function showZone(zone: LabZone, index: number) {
+		if (!body) return
 
-		const point = spot ? zone.points[spot.index] : zone.points[0]
+		if (open?.zone === zone && open.index === index) return
 
+		const point = zone.points[index]
+		const w = wrap.clientWidth
+		const side = w < 700 ? 'bottom' : body.project(point.position).x > w / 2 ? 'left' : 'right'
+		const at = side === 'bottom' ? { x: 0, y: 0.26 } : { x: side === 'left' ? 0.24 : -0.24, y: 0 }
+
+		hovered = null
 		body.dissolve(point.position, zone.radius)
 		body.controls.autoRotate = false
 		body.controls.enabled = false
-		// Камера наезжает на зону и ставит её левее центра, справа список. На телефоне
-		// зона уходит в верхнюю пятую часть экрана, под ней шторка
-		const layout = wrap.clientWidth < 700 ? 'sheet' : 'list'
-
-		body.focus(
-			point.position,
-			clamp(0.3 / zone.radius, 1, 2.4),
-			layout === 'sheet' ? { x: 0, y: 0.3 } : { x: -0.2, y: 0 },
-		)
-
-		open = { zone, point, layout }
+		body.focus(point.position, clamp(0.3 / zone.radius, 1, 2.4), at)
+		open = { zone, index, side }
 	}
 
-	function closeMenu() {
+	function closeZone() {
+		if (!open) return
+
 		open = null
 		hovered = null
 
@@ -195,66 +294,25 @@
 		body.controls.autoRotate = true
 	}
 
-	function findInjury(slug: string) {
-		for (const zone of [...zones, whole]) {
-			const injury = zone.injuries.find((i) => i.slug === slug)
-
-			if (injury) return { zone, injury }
-		}
-	}
-
-	/** Хеш адреса -- источник правды: статья открыта, пока в нём её slug. */
-	function openFromHash() {
-		const found = findInjury(decodeURIComponent(location.hash.slice(1)))
-
-		if (found) {
-			const point = article?.zone === found.zone ? article.point : found.zone.points[0]
-
-			openArticle(found.zone, point, found.injury, false)
-		} else if (article) {
-			pushed = false
-			closeArticle()
-		}
-	}
-
-	function openArticle(
-		zone: LabZone,
-		point: LabZone['points'][number],
-		injury: { slug: string; title: string },
-		push = true,
-	) {
+	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
+	function showArticle(injury: Injury) {
 		if (article?.slug === injury.slug) return
 
-		open = null
-		hovered = null
-		article = { zone, point, ...injury }
-
-		if (push) {
-			history.pushState(null, '', `#${injury.slug}`)
-			pushed = true
-		}
-
-		recede(article)
+		article = injury
+		sceneHidden = true
+		clearTimeout(sleepTimer)
+		sleepTimer = setTimeout(() => sceneHidden && body?.pause(true), reduceMotion ? 0 : SCENE_FADE_MS)
 		void loadArticle(injury.slug)
 	}
 
-	/** Сцена уходит вглубь: зона остаётся раскрытой, камера отъезжает, фигура медленно крутится. */
-	function recede({ zone, point }: Article) {
-		if (!body) return
+	function hideArticle() {
+		if (!article) return
 
-		const { width: w } = wrap.getBoundingClientRect()
-
-		body.dissolve(point.position, zone.radius)
-		body.controls.enabled = false
-		body.controls.autoRotate = true
-		body.controls.autoRotateSpeed = 0.35
-
-		if (reduceMotion) return body.focus(null)
-
-		// Статья -- карточка по центру, фигура за ней видна по бокам. На телефоне карточка
-		// почти во весь экран, а раскрытая зона остаётся в полоске сверху
-		if (w < 600) body.focus(point.position, 1.6, { x: 0, y: 0.44 })
-		else body.focus([0, 0.9, 0], 0.9)
+		article = null
+		loadToken++
+		sceneHidden = false
+		clearTimeout(sleepTimer)
+		body?.pause(false)
 	}
 
 	async function loadArticle(slug: string) {
@@ -280,6 +338,8 @@
 
 			if (!main) throw new Error('no <main> in article page')
 
+			// Метка зоны и плашка черновика в полноэкранной статье лишние
+			main.querySelector('.injury__meta')?.remove()
 			await tick()
 
 			if (token !== loadToken || !articleBody) return
@@ -287,7 +347,7 @@
 			articleBody.replaceChildren(document.importNode(main, true))
 			articleBody.parentElement?.scrollTo(0, 0)
 			articleStatus = 'ready'
-			closeButton?.focus({ preventScroll: true })
+			backButton?.focus({ preventScroll: true })
 		} catch (error) {
 			if (token !== loadToken) return
 
@@ -296,40 +356,19 @@
 		}
 	}
 
-	/** Крестик и Esc: если запись в истории наша -- назад, popstate закроет статью. */
-	function requestCloseArticle() {
-		if (pushed) {
-			history.back()
-
-			return
-		}
-
-		history.replaceState(null, '', location.pathname + location.search)
-		closeArticle()
-	}
-
-	function closeArticle() {
-		article = null
-		loadToken++
-
-		if (!body) return
-
-		body.controls.autoRotateSpeed = 0.6
-		closeMenu()
-	}
-
 	/**
-	 * Панель выезжает снизу; при reduced motion только проявляется. Через `tick`, а не `css`:
-	 * `css` вставляет в страницу тег стилей с keyframes, а CSP сайта такое блокирует.
+	 * Статья проявляется со сдвигом снизу, при reduced motion -- только прозрачностью.
+	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
 	 */
-	function panelIn(node: HTMLElement) {
+	function fadeUp(node: HTMLElement) {
 		return {
-			duration: reduceMotion ? 200 : 520,
+			duration: reduceMotion ? 250 : 550,
+			delay: reduceMotion ? 0 : 120,
 			// Близко к cubic-bezier(0.25, 1, 0.5, 1) из CSS: быстрый старт, мягкая посадка
 			easing: (t: number) => 1 - (1 - t) ** 4,
 			tick: (t: number) => {
 				node.style.opacity = String(t)
-				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 56}px)`
+				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 24}px)`
 			},
 		}
 	}
@@ -359,7 +398,7 @@
 	}
 
 	function onPointerUp(event: PointerEvent) {
-		if (!downAt || status !== 'ready') return
+		if (!downAt || status !== 'ready' || article) return
 
 		const { x, y } = local(event)
 		const moved = Math.hypot(x - downAt.x, y - downAt.y) > 8
@@ -368,12 +407,9 @@
 
 		if (moved) return
 
-		// Видимый край сцены за панелью работает как подложка: клик по нему закрывает статью
-		if (article) return requestCloseArticle()
-
-		// Список ловит клики сам, клик по сцене мимо него закрывает
+		// Список ловит клики сам, клик по сцене мимо него -- на уровень вверх
 		if (open) {
-			if (!(event.target as Element).closest('.picker')) closeMenu()
+			if (!(event.target as Element).closest('.zone')) up()
 
 			return
 		}
@@ -382,28 +418,19 @@
 
 		const spot = nearest(x, y, event.pointerType === 'mouse' ? PICK_PX : PICK_PX * 1.3)
 
-		if (spot) openMenu(spot)
+		if (spot) openZone(spot.zone, spot.index)
 	}
 
 	function onKey(event: KeyboardEvent) {
-		if (event.key !== 'Escape') return
-
-		if (article) requestCloseArticle()
-		else if (open) closeMenu()
+		if (event.key === 'Escape' && (article || open)) up()
 	}
 
-	function pickInjury(injury: { slug: string; title: string }) {
-		if (!open) return
-
-		openArticle(open.zone, open.point, injury)
-	}
-
-	/** Ссылка в списке открывает статью поверх сцены; с модификаторами -- как обычная ссылка. */
-	function onItemClick(event: MouseEvent, injury: { slug: string; title: string }) {
+	/** Ссылка в списке открывает статью на месте; с модификаторами -- как обычная ссылка. */
+	function onItemClick(event: MouseEvent, injury: Injury) {
 		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
 
 		event.preventDefault()
-		pickInjury(injury)
+		openArticle(injury)
 	}
 </script>
 
@@ -412,7 +439,7 @@
 <div
 	class="body3d"
 	class:body3d--open={open}
-	class:body3d--receded={article}
+	class:body3d--hidden={sceneHidden}
 	class:body3d--hot={hovered && !open}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
@@ -421,7 +448,7 @@
 	onpointerleave={() => !open && hover(null)}
 	role="presentation"
 >
-	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: наведите на зону тела"></canvas>
+	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
 	{#if status !== 'ready'}
 		<p class="body3d__status">
@@ -439,53 +466,46 @@
 			type="button"
 			hidden={status !== 'ready'}
 			aria-label={spot.zone.label}
-			onclick={() => openMenu(spot)}
+			onclick={() => openZone(spot.zone, spot.index)}
 			onfocus={() => hover(spot)}
 		>
 			<span class="body3d__spot-dot"></span>
 		</button>
 	{/each}
 
-	<button class="body3d__whole" type="button" hidden={status !== 'ready'} onclick={() => openMenu(null, whole)}>
+	<button class="body3d__whole" type="button" hidden={status !== 'ready'} onclick={() => openZone(whole, 0)}>
 		{whole.label}
 	</button>
 
 	{#if open}
 		{@const count = open.zone.injuries.length}
-		<nav class="picker picker--{open.layout}" aria-label={open.zone.label}>
-			{#if open.layout === 'sheet'}
-				<span class="picker__grabber" aria-hidden="true"></span>
-			{/if}
-			<header class="picker__head">
-				<div class="picker__heading">
-					<h2 class="picker__zone">{open.zone.label}</h2>
-					<p class="picker__count">{count} {plural(count)}</p>
-				</div>
-				<button class="picker__close" type="button" aria-label="Закрыть" onclick={closeMenu}>
-					<span aria-hidden="true">×</span>
-				</button>
+		<section class="zone zone--{open.side}" aria-label={open.zone.label}>
+			<header class="zone__head">
+				<button class="zone__back" type="button" onclick={up}><span aria-hidden="true">←</span> Назад</button>
+				<h2 class="zone__title">{open.zone.label}</h2>
+				<p class="zone__count">{count} {plural(count)}</p>
 			</header>
-			<ul class="picker__group">
-				{#each open.zone.injuries as injury (injury.slug)}
-					<li class="picker__row">
+			<ul class="zone__list">
+				{#each open.zone.injuries as injury, i (injury.slug)}
+					<li class="zone__row" style:--i={i}>
 						<a
-							class="picker__item"
+							class="zone__item"
 							href="/injuries/{injury.slug}/"
 							onclick={(event) => onItemClick(event, injury)}
 						>
-							<span class="picker__text">
-								<span class="picker__title">
-									{injury.title}
-									{#if injury.rare}<span class="picker__badge">Редко</span>{/if}
-								</span>
-								<span class="picker__summary">{injury.summary}</span>
+							<span class="zone__name">
+								{#if injury.rare}
+									<span class="zone__rare" title="Редкая травма"></span>
+									<span class="zone__hidden">Редкая:</span>
+								{/if}
+								{injury.title}
 							</span>
-							<span class="picker__chevron" aria-hidden="true">›</span>
+							<span class="zone__summary">{injury.summary}</span>
 						</a>
 					</li>
 				{/each}
 			</ul>
-		</nav>
+		</section>
 	{/if}
 
 	{#if showFps}
@@ -494,32 +514,27 @@
 </div>
 
 {#if article}
-	<section class="panel" transition:panelIn aria-label={article.title} aria-busy={articleStatus === 'loading'}>
-		<header class="panel__bar">
-			<a class="panel__standalone" href="/injuries/{article.slug}/">Открыть отдельной страницей</a>
-			<button
-				class="panel__close"
-				type="button"
-				aria-label="Закрыть"
-				bind:this={closeButton}
-				onclick={requestCloseArticle}
-			>
-				<span aria-hidden="true">×</span>
+	<article class="reader" transition:fadeUp aria-label={article.title} aria-busy={articleStatus === 'loading'}>
+		<div class="reader__bar">
+			<button class="reader__back" type="button" bind:this={backButton} onclick={up}>
+				<span aria-hidden="true">←</span> Назад
 			</button>
-		</header>
+		</div>
 		{#if articleStatus === 'loading'}
-			<p class="panel__status">Загружаем статью…</p>
+			<p class="reader__status">Загружаем статью…</p>
 		{:else if articleStatus === 'error'}
-			<p class="panel__status">
+			<p class="reader__status">
 				Не получилось загрузить статью. <a href="/injuries/{article.slug}/">Открыть отдельно</a>
 			</p>
 		{/if}
-		<div class="panel__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>
-	</section>
+		<div class="reader__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>
+	</article>
 {/if}
 
 <style>
-	/* Токены (--a-*) объявлены на body в pages/lab/3d.astro, тёмная тема -- там же */
+	/* Токены (--a-*) объявлены на body в pages/lab/3d.astro, тёмная тема -- там же.
+	   Язык страницы: ни карточек, ни рамок, ни разделителей -- только прозрачность,
+	   сдвиги и края, растворённые градиентом */
 	.body3d {
 		touch-action: pan-y;
 		user-select: none;
@@ -528,16 +543,24 @@
 		inset: 0;
 		overflow: hidden;
 		background: radial-gradient(ellipse 60% 70% at 50% 45%, var(--a-glow) 0%, var(--a-bg) 70%);
+		transition:
+			opacity 0.45s var(--a-ease),
+			visibility 0s;
+
+		/* Под статьёй сцену не видно вовсе: гаснет, потом скрывается, рендер стоит */
+		&--hidden {
+			visibility: hidden;
+			opacity: 0;
+			transition:
+				opacity 0.45s var(--a-ease),
+				visibility 0s 0.45s;
+		}
 
 		&__canvas {
 			cursor: grab;
 			display: block;
 			width: 100%;
 			height: 100%;
-			transition:
-				transform 0.6s var(--a-ease),
-				filter 0.6s var(--a-ease),
-				opacity 0.4s ease;
 
 			&:active {
 				cursor: grabbing;
@@ -549,31 +572,6 @@
 			cursor: pointer;
 		}
 
-		/* Сцена под статьёй уходит назад, как карточка под модалкой iOS */
-		&--receded &__canvas {
-			cursor: default;
-			transform: scale(0.92);
-			filter: blur(6px) brightness(0.94);
-
-			@media (prefers-color-scheme: dark) {
-				filter: blur(6px) brightness(0.6);
-			}
-
-			@media (--below-sm) {
-				transform: scale(0.96);
-				filter: blur(3px);
-			}
-
-			@media (--reduced-motion) {
-				transform: none;
-				opacity: 0.4;
-				filter: none;
-				transition: opacity 0.2s ease;
-			}
-		}
-
-		&--receded &__spot,
-		&--receded &__whole,
 		&--open &__spot,
 		&--open &__whole {
 			pointer-events: none;
@@ -604,7 +602,7 @@
 			padding: 0;
 			border: 0;
 			background: none;
-			transition: opacity 0.3s var(--a-ease);
+			transition: opacity 0.4s var(--a-ease);
 
 			&:global([data-hidden='true']) {
 				pointer-events: none;
@@ -657,24 +655,19 @@
 		&__whole {
 			cursor: pointer;
 			position: absolute;
-			bottom: 28px;
+			bottom: 32px;
 			left: 50%;
 			transform: translateX(-50%);
-			padding: 10px 20px;
+			padding: 8px 12px;
 			border: 0;
-			border-radius: 980px;
 			font: inherit;
-			font-size: 15px;
-			font-weight: 500;
+			font-size: 17px;
 			color: var(--a-blue);
-			letter-spacing: -0.01em;
-			background: var(--a-vibrancy);
-			backdrop-filter: saturate(180%) blur(20px);
-			box-shadow: var(--a-shadow);
-			transition: opacity 0.3s var(--a-ease);
+			background: none;
+			transition: opacity 0.4s var(--a-ease);
 
 			&:hover {
-				text-decoration: underline;
+				opacity: 0.7;
 			}
 		}
 
@@ -689,251 +682,238 @@
 		}
 	}
 
-	/* Список травм зоны: vibrancy-панель справа, на телефоне шторка; внутри -- группированный
-	   список iOS со шевроном */
-	.picker {
+	/* Список зоны в свободной половине экрана. Подложки нет: фон сцены растворяется
+	   к центру градиентом, строки гаснут к краям скролла маской */
+	.zone {
 		position: absolute;
-		overflow-y: auto;
-		overscroll-behavior: contain;
-		background: var(--a-vibrancy);
-		backdrop-filter: saturate(180%) blur(20px);
-		box-shadow: var(--a-shadow);
+		top: 0;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		width: min(440px, 40vw);
+		animation: fade-in 0.5s var(--a-ease) both;
 
-		&--list {
-			top: 50%;
-			right: 4vw;
-			transform: translateY(-50%);
-			width: min(420px, 38vw);
-			max-height: 84dvh;
-			border-radius: 22px;
-			animation: list-in 0.55s var(--a-ease) both;
+		&::before {
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			z-index: -1;
+			inset: 0 -14vw;
 		}
 
-		&--sheet {
-			right: 0;
-			bottom: 0;
-			left: 0;
-			max-height: 58dvh;
-			border-radius: 22px 22px 0 0;
-			animation: sheet-in 0.55s var(--a-ease) both;
-		}
+		&--left {
+			left: 6vw;
 
-		&__grabber {
-			display: block;
-			width: 36px;
-			height: 5px;
-			margin: 8px auto 0;
-			border-radius: 3px;
-			background: var(--a-sep);
-		}
-
-		&__head {
-			display: flex;
-			gap: 12px;
-			align-items: flex-start;
-			justify-content: space-between;
-			padding: 20px 20px 12px;
-		}
-
-		&__zone {
-			margin: 0;
-			font-size: 28px;
-			font-weight: 700;
-			line-height: 1.1;
-			letter-spacing: -0.025em;
-		}
-
-		&__count {
-			margin: 4px 0 0;
-			font-size: 15px;
-			color: var(--a-fg2);
-		}
-
-		&__close {
-			cursor: pointer;
-			display: grid;
-			flex: none;
-			place-items: center;
-			width: 30px;
-			height: 30px;
-			padding: 0;
-			border: 0;
-			border-radius: 50%;
-			font-size: 20px;
-			line-height: 1;
-			color: var(--a-fg2);
-			background: var(--a-fill);
-
-			&:hover {
-				color: var(--a-fg);
+			&::before {
+				background: linear-gradient(to right, var(--a-bg) 45%, transparent);
 			}
 		}
 
-		&__group {
-			overflow: hidden;
-			margin: 0 16px 16px;
-			padding: 0;
-			border-radius: 14px;
-			list-style: none;
-			background: var(--a-group);
+		&--right {
+			right: 6vw;
+
+			&::before {
+				background: linear-gradient(to left, var(--a-bg) 45%, transparent);
+			}
 		}
 
-		/* Разделитель с отступом слева, как в iOS: у первой строки его нет */
-		&__row + &__row &__item::before {
-			content: '';
-			position: absolute;
-			top: 0;
+		/* Телефон: шапка прибита к верху, строки -- в нижней половине под зоной */
+		&--bottom {
 			right: 0;
-			left: 16px;
-			height: 1px;
-			background: var(--a-sep);
+			left: 0;
+			width: auto;
+			padding-inline: 24px;
+
+			&::before {
+				inset: 0;
+				background:
+					linear-gradient(to bottom, var(--a-bg) 14%, transparent 26%),
+					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
+			}
 		}
 
-		&__item {
-			position: relative;
-			display: grid;
-			grid-template-columns: 1fr auto;
-			gap: 12px;
-			align-items: center;
-			padding: 12px 14px 12px 16px;
-			color: var(--a-fg);
-			text-decoration: none;
-			transition: background 0.2s;
+		&__head {
+			flex: none;
+			padding-top: max(32px, 7dvh);
+		}
 
-			&:hover,
-			&:focus-visible {
-				background: var(--a-fill);
+		&__back {
+			cursor: pointer;
+			margin: 0 0 16px -2px;
+			padding: 4px 2px;
+			border: 0;
+			font: inherit;
+			color: var(--a-blue);
+			background: none;
+			transition: opacity 0.3s var(--a-ease);
+
+			&:hover {
+				opacity: 0.7;
 			}
 
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);
-				outline-offset: -2px;
+				outline-offset: 2px;
 			}
 		}
 
-		&__text {
-			display: grid;
-			gap: 2px;
-		}
-
 		&__title {
-			font-size: 17px;
-			font-weight: 500;
-			line-height: 1.3;
+			margin: 0;
+			font-size: clamp(32px, 4vw, 48px);
+			font-weight: 700;
+			line-height: 1.08;
+			letter-spacing: -0.03em;
 		}
 
-		&__badge {
-			display: inline-block;
-			margin-left: 6px;
-			padding: 1px 7px;
-			border-radius: 980px;
-			font-size: 12px;
+		&__count {
+			margin: 6px 0 0;
+			font-size: 17px;
+			color: var(--a-fg2);
+		}
+
+		/* Скроллятся только строки, к краям они гаснут маской, а не обрезаются */
+		&__list {
+			scrollbar-width: none;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			flex: 1;
+			margin: 12px 0 0;
+			padding: 28px 0 22dvh;
+			list-style: none;
+			mask-image: linear-gradient(to bottom, transparent, #000000 36px, #000000 calc(100% - 120px), transparent);
+		}
+
+		&--bottom &__list {
+			flex: none;
+			height: 50dvh;
+			margin-top: auto;
+			padding-bottom: 12dvh;
+		}
+
+		&__row {
+			animation: row-in 0.55s var(--a-ease) both;
+			animation-delay: calc(120ms + var(--i) * 45ms);
+
+			@media (--reduced-motion) {
+				animation-name: fade-in;
+			}
+		}
+
+		&__item {
+			display: grid;
+			gap: 4px;
+			padding: 14px 0;
+			color: var(--a-fg);
+			text-decoration: none;
+			transition:
+				opacity 0.35s var(--a-ease),
+				color 0.35s var(--a-ease);
+
+			&:focus-visible {
+				color: var(--a-blue);
+				outline: none;
+			}
+		}
+
+		/* Наведённая строка остаётся, остальные отходят на второй план */
+		&__list:hover &__item:not(:hover),
+		&__list:focus-within &__item:not(:focus-visible) {
+			opacity: 0.4;
+		}
+
+		&__name {
+			font-size: 20px;
 			font-weight: 600;
-			color: var(--a-red);
-			letter-spacing: 0;
-			vertical-align: 2px;
-			background: color-mix(in srgb, var(--a-red) 12%, transparent);
+			line-height: 1.25;
+			letter-spacing: -0.02em;
+		}
+
+		&__rare {
+			display: inline-block;
+			width: 7px;
+			height: 7px;
+			margin-right: 8px;
+			border-radius: 50%;
+			vertical-align: 3px;
+			background: var(--a-red);
+		}
+
+		&__hidden {
+			position: absolute;
+			overflow: hidden;
+			width: 1px;
+			height: 1px;
+			white-space: nowrap;
+			clip-path: inset(50%);
 		}
 
 		&__summary {
 			overflow: hidden;
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
-			line-clamp: 2;
-			font-size: 14px;
+			font-size: 15px;
 			line-height: 1.4;
 			color: var(--a-fg2);
+			text-overflow: ellipsis;
 			letter-spacing: -0.01em;
-		}
-
-		&__chevron {
-			font-size: 22px;
-			line-height: 1;
-			color: var(--a-fg2);
-			opacity: 0.6;
+			white-space: nowrap;
 		}
 	}
 
-	/* Статья -- модальная карточка поверх ушедшей назад сцены, колонка около 680 px */
-	.panel {
+	/* Статья на весь экран на чистом фоне; верхний край растворяется под кнопкой "Назад" */
+	.reader {
 		position: fixed;
 		z-index: 2;
-		inset: 5dvh 0 0;
+		inset: 0;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		width: min(760px, calc(100vw - 48px));
-		margin-inline: auto;
-		border-radius: 22px 22px 0 0;
-		background: var(--a-vibrancy);
-		backdrop-filter: saturate(180%) blur(20px);
-		box-shadow: var(--a-shadow);
-
-		@media (--below-sm) {
-			inset: 16dvh 0 0;
-			width: auto;
-		}
+		background: var(--a-page);
 
 		&__bar {
 			position: sticky;
 			z-index: 1;
 			top: 0;
-			display: flex;
-			gap: 12px;
-			align-items: center;
-			justify-content: space-between;
-			padding: 14px 16px 14px 24px;
-			font-size: 14px;
-			background: var(--a-vibrancy);
-			backdrop-filter: saturate(180%) blur(20px);
+			max-width: 728px;
+			margin: 0 auto;
+			padding: 20px 24px 36px;
+			background: linear-gradient(to bottom, var(--a-page) 55%, transparent);
 		}
 
-		&__standalone {
-			color: var(--a-blue);
-			text-decoration: none;
-
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-
-		/* Круглая полупрозрачная кнопка с крестиком, как в модалках iOS */
-		&__close {
+		&__back {
 			cursor: pointer;
-			display: grid;
-			flex: none;
-			place-items: center;
-			width: 32px;
-			height: 32px;
-			padding: 0;
+			margin-left: -2px;
+			padding: 4px 2px;
 			border: 0;
-			border-radius: 50%;
-			font-size: 22px;
-			line-height: 1;
-			color: var(--a-fg2);
-			background: var(--a-fill);
+			font: inherit;
+			font-size: 17px;
+			color: var(--a-blue);
+			background: none;
+			transition: opacity 0.3s var(--a-ease);
 
 			&:hover {
-				color: var(--a-fg);
+				opacity: 0.7;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
 			}
 		}
 
 		&__status {
 			max-width: 680px;
 			margin: 0 auto;
-			padding: 48px 24px;
+			padding: 24px;
 			color: var(--a-fg2);
 		}
 
 		/* Разметка статьи приходит с /injuries/<slug>/ без её scoped-стилей, задаём здесь */
 		&__body {
-			max-width: 680px;
+			max-width: 728px;
 			margin: 0 auto;
-			padding: 8px 24px 80px;
+			padding: 0 24px 120px;
 
 			& :global(.injury) {
 				display: grid;
-				gap: 24px;
+				gap: 28px;
 				max-width: none;
 				padding: 0;
 			}
@@ -942,15 +922,15 @@
 			/* stylelint-disable-next-line selector-max-type */
 			& :global(h1) {
 				margin: 0;
-				font-size: clamp(32px, 5vw, 48px);
+				font-size: clamp(36px, 6vw, 56px);
 				font-weight: 700;
-				line-height: 1.08;
+				line-height: 1.07;
 				letter-spacing: -0.03em;
 			}
 
 			/* stylelint-disable-next-line selector-max-type */
 			& :global(h2) {
-				margin: 32px 0 0;
+				margin: 40px 0 0;
 				font-size: 28px;
 				font-weight: 600;
 				line-height: 1.14;
@@ -961,20 +941,12 @@
 			& :global(a) {
 				color: var(--a-blue);
 				text-decoration: none;
+				transition: opacity 0.3s var(--a-ease);
 			}
 
 			/* stylelint-disable-next-line selector-max-type */
 			& :global(a:hover) {
-				text-decoration: underline;
-			}
-
-			& :global(.injury__meta) {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 8px;
-				align-items: center;
-				margin: 0;
-				font-size: 15px;
+				opacity: 0.7;
 			}
 
 			& :global(.injury__lead) {
@@ -989,13 +961,8 @@
 				margin: 8px 0;
 			}
 
-			& :global(.injury__image) {
-				border-radius: 18px;
-				background: #ffffff;
-			}
-
 			& :global(.injury__caption) {
-				margin-top: 10px;
+				margin-top: 12px;
 				font-size: 14px;
 				color: var(--a-fg2);
 			}
@@ -1008,7 +975,7 @@
 			& :global(.injury__movements) {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 8px 20px;
+				gap: 8px 24px;
 				padding: 0;
 				list-style: none;
 			}
@@ -1018,28 +985,10 @@
 				color: var(--a-fg2);
 			}
 
-			& :global(.badge) {
-				padding: 2px 10px;
-				border-radius: 980px;
-				font-size: 12px;
-				font-weight: 600;
-				color: var(--a-fg2);
-				letter-spacing: 0;
-				background: var(--a-fill);
-			}
-
-			& :global(.badge--rare) {
-				color: var(--a-red);
-				background: color-mix(in srgb, var(--a-red) 12%, transparent);
-			}
-
 			& :global(.disclaimer) {
 				margin-top: 24px;
-				padding: 16px 20px;
-				border-radius: 18px;
 				font-size: 15px;
 				color: var(--a-fg2);
-				background: var(--a-group);
 			}
 		}
 	}
@@ -1056,16 +1005,15 @@
 		}
 	}
 
-	@keyframes list-in {
+	@keyframes fade-in {
 		from {
-			transform: translate(24px, -50%) scale(0.98);
 			opacity: 0;
 		}
 	}
 
-	@keyframes sheet-in {
+	@keyframes row-in {
 		from {
-			transform: translateY(48px);
+			transform: translateY(12px);
 			opacity: 0;
 		}
 	}

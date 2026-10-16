@@ -2,13 +2,17 @@
 import Credit from '@aimuzov-projects/infra-site-kit/credit.astro'
 
 import { site } from '#frontend/data/site.ts'
+import { themeSwitchHtml } from '#frontend/lib/theme.ts'
 ---
 
 <footer class="footer">
 	<div class="container">
-		<nav class="footer__nav" aria-label="Разделы">
-			<a href="/">Все травмы</a> · <a href="/about/">О справочнике</a>
-		</nav>
+		<div class="footer__row">
+			<nav class="footer__nav" aria-label="Разделы">
+				<a href="/">Все травмы</a> · <a href="/about/">О справочнике</a>
+			</nav>
+			<Fragment set:html={themeSwitchHtml()} />
+		</div>
 		<Credit repo={site.repo} />
 	</div>
 </footer>
@@ -23,8 +27,18 @@ import { site } from '#frontend/data/site.ts'
 		font-size: 0.875rem;
 		color: var(--muted);
 
-		&__nav {
+		&__row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px 24px;
+			align-items: center;
+			justify-content: space-between;
 			margin-bottom: 8px;
+		}
+
+		/* Ссылки без своего цвета в тёмной теме браузер красит в фиолетовый */
+		&__nav :any-link {
+			color: var(--accent);
 		}
 	}
 </style>

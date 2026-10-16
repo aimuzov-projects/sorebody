@@ -15,6 +15,32 @@
 	color-scheme: light;
 }
 
+/* Тёмная тема: по системе, если вручную не выбрана светлая, или выбрана вручную
+   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: #000000;
+		--fg: #f5f5f7;
+		--muted: #a1a1a6;
+		--accent: #2997ff;
+		--surface: rgb(255 255 255 / 10%);
+		--danger: #ff453a;
+
+		color-scheme: dark;
+	}
+}
+
+:root[data-theme='dark'] {
+	--bg: #000000;
+	--fg: #f5f5f7;
+	--muted: #a1a1a6;
+	--accent: #2997ff;
+	--surface: rgb(255 255 255 / 10%);
+	--danger: #ff453a;
+
+	color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -41,6 +67,11 @@ select {
 	@media (--touch) {
 		font-size: max(1rem, 1em);
 	}
+}
+
+/* Ссылки без своего цвета: иначе в тёмной теме браузер красит их в фиолетовый */
+:where(a) {
+	color: var(--accent);
 }
 
 img {

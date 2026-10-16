@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 
 import Body3d from '#frontend/components/body-3d.svelte'
+import Footer from '#frontend/components/footer.astro'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { site } from '#frontend/data/site.ts'
 import Base from '#frontend/layouts/base.astro'
@@ -29,7 +30,9 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 
 <Base bare bodyClass="home">
 	<h1 class="home__title">{site.name}: травмы в кроссфите</h1>
-	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb" />
+	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
+		<Footer slot="footer" />
+	</Body3d>
 	<noscript>
 		<ul class="home__fallback">
 			{[...entries]
@@ -80,10 +83,12 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 		line-height: 1.47;
 		color: var(--a-fg);
 		letter-spacing: -0.022em;
-		color-scheme: light dark;
 		background: var(--a-bg);
+	}
 
-		@media (prefers-color-scheme: dark) {
+	/* Тёмная тема сцены -- при тех же условиях, что в global.css: по системе или выбрана вручную */
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme='light']) .home) {
 			--a-bg: #000000;
 			--a-page: #000000;
 			--a-glow: #1d1d1f;
@@ -95,6 +100,19 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 			--a-fill: rgb(255 255 255 / 10%);
 			--a-pop: #1c1c1e;
 		}
+	}
+
+	:global(:root[data-theme='dark'] .home) {
+		--a-bg: #000000;
+		--a-page: #000000;
+		--a-glow: #1d1d1f;
+		--a-fg: #f5f5f7;
+		--a-fg2: #a1a1a6;
+		--a-blue: #2997ff;
+		--a-red: #ff453a;
+		--a-sep: rgb(255 255 255 / 12%);
+		--a-fill: rgb(255 255 255 / 10%);
+		--a-pop: #1c1c1e;
 	}
 
 	.home {

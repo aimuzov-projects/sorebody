@@ -1,26 +1,7 @@
 /* Статья-лонгрид. Одни стили для отдельной страницы и для статьи поверх модели на главной.
    Язык тот же, что у сцены: ни карточек, ни рамок, ни разделителей -- только прозрачность,
    градиенты и края, растворённые маской. Цвета -- общие токены сайта: на главной их
-   переопределяет сцена, отдельной странице тёмную тему задаёт блок ниже. */
-
-/* Отдельная страница статьи: своя тёмная тема (на главной её ведёт сцена). */
-:root:has(body > .article) {
-	color-scheme: light dark;
-
-	@media (prefers-color-scheme: dark) {
-		--bg: #000000;
-		--fg: #f5f5f7;
-		--muted: #a1a1a6;
-		--accent: #2997ff;
-		--surface: rgb(255 255 255 / 10%);
-		--danger: #ff453a;
-	}
-
-	/* Ссылки подвала сайта без своего цвета: в тёмной теме браузер красит их в фиолетовый */
-	& .footer__nav :any-link {
-		color: var(--accent);
-	}
-}
+   переопределяет сцена, тёмную тему задаёт global.css. */
 
 .article {
 	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
@@ -219,8 +200,10 @@
 	}
 
 	&__chip {
-		display: inline-block;
-		padding: 8px 16px;
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		padding: 8px 16px 8px 12px;
 		border-radius: 999px;
 		font-size: 15px;
 		color: var(--fg);
@@ -240,6 +223,14 @@
 		}
 	}
 
+	&__chip-icon {
+		display: inline-flex;
+		flex: none;
+		width: 18px;
+		height: 18px;
+		color: var(--accent);
+	}
+
 	&__source-list {
 		display: grid;
 		gap: 10px;
@@ -255,10 +246,14 @@
 		gap: 4px;
 		align-items: center;
 		color: var(--accent);
-		text-decoration: none;
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: text-decoration-color 0.3s var(--article-ease);
 
 		&:hover {
-			text-decoration: underline;
+			text-decoration-color: currentcolor;
 		}
 	}
 

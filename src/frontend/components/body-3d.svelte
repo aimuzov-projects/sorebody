@@ -19,11 +19,12 @@
 </script>
 
 <script lang="ts">
-	import { onMount, tick } from 'svelte'
+	import { onMount, tick, type Snippet } from 'svelte'
 
 	import { PersonStanding, Search } from 'lucide-static'
 
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { syncThemeSwitches, themeSwitchHtml } from '#frontend/lib/theme.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
@@ -35,10 +36,12 @@
 		/** Движения, которые встречаются хотя бы в одной статье: варианты фильтра. */
 		movements: { slug: string; title: string }[]
 		modelUrl: string
+		/** Подвал сайта из Astro: встаёт под статьёй поверх модели, как на отдельной странице. */
+		footer?: Snippet
 	}
 	type Injury = Zone['injuries'][number]
 
-	let { zones, whole, movements, modelUrl }: Props = $props()
+	let { zones, whole, movements, modelUrl, footer }: Props = $props()
 
 	const FREQUENCIES = [
 		['all', 'Все'],
@@ -303,6 +306,8 @@
 	}
 
 	onMount(() => {
+		// Переключатель темы в индексе отрисован уже после общего скрипта страницы
+		syncThemeSwitches(wrap)
 		// Ссылка «/?region=knee» со страницы статьи открывает список зоны
 		const region = new URLSearchParams(location.search).get('region')
 		const regionZone = allZones.find((zone) => zone.slug === region)
@@ -620,6 +625,8 @@
 			readerElement.scrollTo(0, 0)
 			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
+			await tick()
+			syncThemeSwitches(readerElement)
 			backButton?.focus({ preventScroll: true })
 		} catch (error) {
 			if (token !== loadToken) return
@@ -836,6 +843,7 @@
 		<p class="index__foot">
 			<a class="index__link" href="/about/">О справочнике</a> · справка не заменяет консультацию врача
 		</p>
+		<div class="index__theme">{@html themeSwitchHtml()}</div>
 	</aside>
 
 	{#if open}
@@ -915,6 +923,7 @@
 			</p>
 		{/if}
 		<div class="reader__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>
+		{#if footer && articleStatus === 'ready'}{@render footer()}{/if}
 	</article>
 {/if}
 
@@ -1457,6 +1466,16 @@
 		&__link {
 			color: var(--a-blue);
 			text-decoration: none;
+		}
+
+		/* Тема -- под строкой о справочнике; на телефоне низ индекса занят зонами, там тему
+		   меняют в подвале статьи */
+		&__theme {
+			margin: -12px 0 24px;
+
+			@media (width < 700px) {
+				display: none;
+			}
 		}
 	}
 

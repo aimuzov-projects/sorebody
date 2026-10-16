@@ -3,6 +3,7 @@
 import { getCollection } from 'astro:content'
 import { ExternalLink } from 'lucide-static'
 
+import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
 import Base from '#frontend/layouts/base.astro'
@@ -72,6 +73,11 @@ const [image] = data.images
 						{movements.map((m) => (
 							<li>
 								<a class="article__chip" href={`/movements/${m.slug}/`}>
+									<span
+										class="article__chip-icon"
+										aria-hidden="true"
+										set:html={MOVEMENT_ICONS[m.slug]}
+									/>
 									{m.title}
 								</a>
 							</li>

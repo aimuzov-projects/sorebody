@@ -3,7 +3,9 @@ import { createHash } from 'node:crypto'
 
 import Footer from '#frontend/components/footer.astro'
 import '#frontend/styles/global.css'
+import '#frontend/styles/theme-switch.css'
 import { site } from '#frontend/data/site.ts'
+import { THEME_BOOT } from '#frontend/lib/theme.ts'
 import { pageTitle } from '#frontend/lib/title.ts'
 
 type Props = {
@@ -31,7 +33,9 @@ const TELEGRAM_FLAG =
 	"document.documentElement.dataset.telegram=''}catch{if(/tgWebApp(Data|Platform)=/.test(location.hash))" +
 	"document.documentElement.dataset.telegram=''}"
 
-Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
+for (const script of [TELEGRAM_FLAG, THEME_BOOT])
+	Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(script).digest('base64')}`)
+
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
@@ -52,6 +56,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<meta property="og:description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<script is:inline set:html={TELEGRAM_FLAG} />
+		<script is:inline set:html={THEME_BOOT} />
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
@@ -59,6 +64,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		{!bare && <Footer />}
 		<script>
 			import '#frontend/lib/telegram.ts'
+			import { initThemeSwitch } from '#frontend/lib/theme.ts'
+
+			initThemeSwitch()
 		</script>
 	</body>
 </html>

@@ -3,6 +3,13 @@ import { Moon, Sun, SunMoon } from 'lucide-static'
 
 import { themeLabel, type Theme } from '#frontend/lib/theme.ts'
 
+type Props = {
+	/** В шапке лонгрида: значок в строке шапки у правого края, а не в углу экрана. */
+	inline?: boolean
+}
+
+const { inline = false } = Astro.props
+
 /** Иконка на каждое состояние; видна та, что совпадает с `<html data-theme>`. */
 const ICONS: [Theme, string][] = [
 	['auto', SunMoon],
@@ -11,7 +18,7 @@ const ICONS: [Theme, string][] = [
 ]
 ---
 
-<div class="theme-toggle">
+<div class:list={['theme-toggle', inline && 'theme-toggle--inline']}>
 	<button
 		class="theme-toggle__button"
 		type="button"
@@ -38,6 +45,16 @@ const ICONS: [Theme, string][] = [
 
 		:global([data-telegram]) & {
 			display: none;
+		}
+
+		/* Значок 22px в кнопке 40px: правый край значка -- по правому краю колонки статьи */
+		&--inline {
+			position: relative;
+			z-index: auto;
+			top: auto;
+			right: auto;
+			flex: none;
+			margin: 0 -9px 0 auto;
 		}
 	}
 

@@ -3,6 +3,31 @@
    градиенты и края, растворённые маской. Цвета -- общие токены сайта: на главной их
    переопределяет сцена, тёмную тему задаёт global.css. */
 
+/* Края иллюстрации. На светлом фоне белая картинка широко растворяется в нём. На тёмном
+   широкий переход от белого к фону читался мутной серой каймой, поэтому край узкий: белый
+   лист с мягким краем. Набор по схеме -- как в global.css, вместе с классами подсмотра темы */
+:root,
+.light {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
+		linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--article-image-mask:
+			linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+			linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+	}
+}
+
+:root[data-theme='dark'],
+.dark {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+		linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+}
+
 .article {
 	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
 	--article-column: 680px;
@@ -96,9 +121,7 @@
 
 	&__image {
 		width: 100%;
-		mask-image:
-			linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
-			linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+		mask-image: var(--article-image-mask);
 		mask-composite: intersect;
 
 		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только верх и низ -- кости
@@ -513,15 +536,16 @@
 	top: 0;
 	display: flex;
 	align-items: center;
-	/* body -- flex-колонка: с margin auto без ширины шапка тянулась бы по длине заголовка */
+	/* На всю ширину окна: градиент под шапкой не обрывается сбоку, а содержимое стоит по краям
+	   колонки статьи -- те же 1052px и поля, что у .article. body -- flex-колонка, ширину
+	   задаём явно, иначе шапка сжалась бы по содержимому */
 	width: 100%;
-	max-width: calc(var(--article-column, 680px) + 260px + 64px + 48px);
-	margin: 0 auto;
-	padding: calc(12px + var(--tg-top, 0px)) 24px 20px;
+	padding: calc(12px + var(--tg-top, 0px)) max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-right, 0px)) 20px
+		max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-left, 0px));
 	background: linear-gradient(to bottom, var(--bg) 62%, transparent);
 
 	@media (width < 600px) {
-		padding-inline: 20px;
+		padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
 	}
 }
 

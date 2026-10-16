@@ -2245,10 +2245,9 @@
 			top: 0;
 			display: flex;
 			align-items: center;
-			max-width: 1052px;
 			min-height: calc(52px + var(--tg-top));
-			margin: 0 auto;
-			padding: calc(12px + var(--tg-top)) 24px 20px;
+			/* На всю ширину, содержимое -- по краям колонки статьи, как .article-bar в styles/article.css */
+			padding: calc(12px + var(--tg-top)) max(24px, (100% - 1052px) / 2 + 24px) 20px;
 			background: linear-gradient(to bottom, var(--a-page) 62%, transparent);
 
 			@media (width < 600px) {

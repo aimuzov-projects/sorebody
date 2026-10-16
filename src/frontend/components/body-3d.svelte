@@ -1574,7 +1574,7 @@
 		flex-direction: column;
 		gap: 20px;
 		width: min(380px, 32vw);
-		padding-top: calc(max(32px, 7dvh) + var(--tg-top));
+		padding-top: calc(max(24px, 4dvh) + var(--tg-top));
 		transition:
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
@@ -1933,9 +1933,9 @@
 			margin: 0;
 			/* Сверху маске хватает нескольких пикселей: строки начинаются в ритме блоков выше, а не
 			   через пустую полосу. Края всё равно гаснут, когда список прокручен */
-			padding: 2px 0 18dvh;
+			padding: 2px 0 10dvh;
 			list-style: none;
-			mask-image: linear-gradient(to bottom, transparent, #000000 6px, #000000 calc(100% - 96px), transparent);
+			mask-image: linear-gradient(to bottom, transparent, #000000 6px, #000000 calc(100% - 56px), transparent);
 		}
 
 		&__zone {

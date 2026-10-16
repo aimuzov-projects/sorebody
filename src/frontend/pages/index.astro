@@ -1,40 +1,25 @@
 ---
-import { getCollection } from 'astro:content'
-
 import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
-import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { site } from '#frontend/data/site.ts'
 import Base from '#frontend/layouts/base.astro'
-import { buildZones } from '#frontend/scene/zones.ts'
+import { sceneData } from '#frontend/scene/scene-data.ts'
 import '#frontend/styles/article.css'
+import '#frontend/styles/scene.css'
 
-// meshopt-декодер модели -- WebAssembly; разрешаем его только на главной, где модель
+// meshopt-декодер модели -- WebAssembly; разрешаем его только на страницах с моделью
 Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
 
-const entries = await getCollection('injuries')
-const injuries = entries.map(({ id, data }) => ({
-	slug: id,
-	title: data.title,
-	titleEn: data.titleEn,
-	summary: data.summary,
-	rare: data.frequency === 'rare',
-	movements: data.movements as string[],
-	region: data.region,
-}))
-const { zones, whole } = buildZones(injuries)
-const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.includes(m.slug))).map(
-	({ slug, title }) => ({ slug, title }),
-)
+const { entries, zones, whole, movements } = await sceneData()
 ---
 
-<Base bare bodyClass="home">
-	<h1 class="home__title">{site.name}: травмы в кроссфите</h1>
+<Base bare bodyClass="scene-page">
+	<h1 class="scene-page__title">{site.name}: травмы в кроссфите</h1>
 	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
 		<Footer slot="footer" />
 	</Body3d>
 	<noscript>
-		<ul class="home__fallback">
+		<ul class="scene-page__fallback">
 			{[...entries]
 				.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
 				.map(({ id, data }) => (
@@ -45,100 +30,3 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 		</ul>
 	</noscript>
 </Base>
-
-<style>
-	/* Главная -- 3D-сцена на весь экран. Визуальный язык страниц Apple: системный шрифт,
-	   нейтральная палитра, синий акцент. Токены на body: статья живёт рядом со сценой */
-	:global(.home),
-	:global(.home .light) {
-		--a-font: -apple-system, blinkmacsystemfont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
-		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
-		--a-bg: #f5f5f7;
-		--a-page: #ffffff;
-		--a-glow: #ffffff;
-		--a-fg: #1d1d1f;
-		--a-fg2: #6e6e73;
-		--a-blue: #0071e3;
-		--a-red: #ff3b30;
-		--a-sep: rgb(0 0 0 / 8%);
-		--a-fill: rgb(0 0 0 / 5%);
-		/* Всплывающие списки: светлее фона, чтобы отделиться от него без рамки */
-		--a-pop: #ffffff;
-
-		/* Отступы под системные кнопки Telegram в полноэкранном Mini App; вне Telegram -- ноль.
-		   Переменные --tg-* ставит SDK Telegram на <html> */
-		--tg-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-		--tg-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
-
-		/* Общие токены сайта, которыми пользуется вставленная статья */
-		--fg: var(--a-fg);
-		--muted: var(--a-fg2);
-		--accent: var(--a-blue);
-		--surface: var(--a-fill);
-		--danger: var(--a-red);
-
-		overflow: hidden;
-		height: 100dvh;
-		font-family: var(--a-font);
-		font-size: 17px;
-		line-height: 1.47;
-		color: var(--a-fg);
-		letter-spacing: -0.022em;
-		background: var(--a-bg);
-	}
-
-	/* Тёмная тема сцены -- при тех же условиях, что в global.css: по системе или выбрана вручную */
-	@media (prefers-color-scheme: dark) {
-		:global(:root:not([data-theme='light']) .home) {
-			--a-bg: #000000;
-			--a-page: #000000;
-			--a-glow: #1d1d1f;
-			--a-fg: #f5f5f7;
-			--a-fg2: #a1a1a6;
-			--a-blue: #2997ff;
-			--a-red: #ff453a;
-			--a-sep: rgb(255 255 255 / 12%);
-			--a-fill: rgb(255 255 255 / 10%);
-			--a-pop: #1c1c1e;
-		}
-	}
-
-	:global(:root[data-theme='dark'] .home),
-	:global(.home .dark) {
-		--a-bg: #000000;
-		--a-page: #000000;
-		--a-glow: #1d1d1f;
-		--a-fg: #f5f5f7;
-		--a-fg2: #a1a1a6;
-		--a-blue: #2997ff;
-		--a-red: #ff453a;
-		--a-sep: rgb(255 255 255 / 12%);
-		--a-fill: rgb(255 255 255 / 10%);
-		--a-pop: #1c1c1e;
-	}
-
-	/* Копия главной в круге подсмотра темы: фон и шрифт сцены, а не общие токены сайта */
-	:global(.home .theme-peek) {
-		overflow: hidden;
-		height: 100dvh;
-		font-family: var(--a-font);
-		color: var(--a-fg);
-		background: var(--a-bg);
-	}
-
-	.home {
-		/* Заголовок для поисковиков и скринридеров; на экране его роль играет индекс сцены */
-		&__title {
-			position: absolute;
-			overflow: hidden;
-			width: 1px;
-			height: 1px;
-			white-space: nowrap;
-			clip-path: inset(50%);
-		}
-
-		&__fallback {
-			padding: 24px 6vw;
-		}
-	}
-</style>

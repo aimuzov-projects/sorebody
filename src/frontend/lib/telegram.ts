@@ -3,10 +3,11 @@
  * SDK грузится только если Telegram при открытии передал `tgWebAppData` или `tgWebAppPlatform` в хеше,
  * в обычном браузере модуль ничего не делает и не ходит на telegram.org.
  *
- * На главной шаги -- сцена, список зоны, статья -- ведёт сама сцена: пишет текущий шаг в
- * `<html data-step>` и шлёт событие `wodcare:step`. Кнопка «назад» видна на шагах зоны и
- * статьи, а нажатие уходит обратно событием `wodcare:back`: сцена поднимается на шаг тем же
- * путём, что и своя кнопка «Назад», которую в Mini App прячет атрибут `data-telegram`.
+ * На главной и страницах движений шаги -- сцена, список зоны, статья -- ведёт сама сцена: пишет
+ * текущий шаг в `<html data-step>` и шлёт событие `wodcare:step`. Кнопка «назад» видна везде,
+ * кроме сцены главной, а нажатие уходит обратно событием `wodcare:back`: сцена поднимается на
+ * шаг тем же путём, что и своя кнопка «Назад», которую в Mini App прячет атрибут `data-telegram`.
+ * Со сцены движения шаг вверх -- главная.
  */
 import { BACK_EVENT, STEP_EVENT } from './telegram-events.ts'
 
@@ -39,7 +40,7 @@ function init(app: WebApp | undefined) {
 
 	root.dataset.telegram = ''
 
-	if (location.pathname === '/') {
+	if (location.pathname === '/' || location.pathname.startsWith('/movements/')) {
 		// Обработчик один: что делать по нажатию, решает сцена, она знает, откуда пришли
 		const sync = () =>
 			root.dataset.step && root.dataset.step !== 'scene' ? app.BackButton.show() : app.BackButton.hide()

@@ -40,10 +40,15 @@
 		modelUrl: string
 		/** Подвал сайта из Astro: встаёт под статьёй поверх модели, как на отдельной странице. */
 		footer?: Snippet
+		/**
+		 * Страница движения: вместо индекса -- шапка движения и его травмы, фильтр по движению
+		 * закреплён, точки зон с этими травмами крупнее и пульсируют, остальные приглушены.
+		 */
+		movementPage?: { slug: string; title: string; titleEn: string }
 	}
 	type Injury = Zone['injuries'][number]
 
-	let { zones, whole, movements, modelUrl, footer }: Props = $props()
+	let { zones, whole, movements, modelUrl, footer, movementPage }: Props = $props()
 
 	/** Частота: у частых и редких свой знак и цвет (--common, --rare), как легенда к списку. */
 	const FREQUENCIES = [
@@ -61,10 +66,11 @@
 
 	function matches(injury: Injury) {
 		const q = normalize(query)
+		const only = movementPage?.slug ?? movement
 
 		return (
 			(frequency === 'all' || injury.rare === (frequency === 'rare')) &&
-			(!movement || injury.movements.includes(movement)) &&
+			(!only || injury.movements.includes(only)) &&
 			(!q || normalize(`${injury.title} ${injury.titleEn} ${injury.summary}`).includes(q))
 		)
 	}
@@ -97,6 +103,12 @@
 	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
 	const results = $derived(
 		query.trim()
+			? allZones.flatMap((zone) => zone.injuries.filter(matches).map((injury) => ({ zone, injury })))
+			: [],
+	)
+	/** Травмы движения по зонам сверху вниз, в порядке индекса главной. */
+	const movementInjuries = $derived(
+		movementPage
 			? allZones.flatMap((zone) => zone.injuries.filter(matches).map((injury) => ({ zone, injury })))
 			: [],
 	)
@@ -138,6 +150,70 @@
 		previewTimer = setTimeout(() => focusPreview(zone), zone ? 120 : 220)
 	}
 
+	/**
+	 * Строка травмы на странице движения: как строка в раскрытой зоне, камера подъезжает к месту
+	 * травмы, там встаёт её маркер, а точки зон отступают. Сторону парной зоны берём ту, что
+	 * сейчас смотрит на камеру.
+	 */
+	let lead = $state.raw<{ zone: Zone; index: number; injury: Injury } | null>(null)
+
+	function previewInjury(entry: { zone: Zone; injury: Injury } | null, pointer = true) {
+		if (open) return
+
+		lead = entry && { ...entry, index: body ? facingIndex(entry.zone) : 0 }
+		setHighlight(entry?.zone ?? null)
+		clearTimeout(previewTimer)
+
+		if (pointer && noHover) return
+
+		if (reduceMotion) {
+			if (body) body.controls.autoRotate = !entry
+
+			return
+		}
+
+		previewTimer = setTimeout(focusLead, entry ? 120 : 220)
+	}
+
+	function focusLead() {
+		if (!body || open) return
+
+		if (!lead) {
+			body.focus(null)
+			body.controls.autoRotate = true
+			homeFrame()
+
+			return
+		}
+
+		const target = injuryFocus(lead.zone, lead.index, lead.injury.slug)
+		// Дальше, чем в раскрытой зоне: тело в кадре справа от списка, а не вплотную под ним
+		const zoom = clamp(0.26 / lead.zone.radius, 1, 2.2) * Math.sqrt(target.zoom)
+		// На телефоне список занимает низ: место травмы -- в середину свободной верхней части, а
+		// фигура мельче, чтобы не наезжала на строки
+		const phone = wrap.clientWidth < 700
+
+		if (phone) body.frame(0, 0)
+
+		body.controls.autoRotate = false
+
+		body.focus(
+			target.position,
+			phone ? Math.min(zoom * 0.55, 1.4) : Math.min(zoom, 2.4),
+			{ x: 0, y: phone ? 0.3 : 0 },
+			target.view,
+			true,
+		)
+	}
+
+	/** Из двух точек парной зоны -- та, что сейчас смотрит на камеру. */
+	function facingIndex(zone: Zone) {
+		return zone.points.reduce(
+			(best, point, i) => (body!.facing(point.normal) > body!.facing(zone.points[best].normal) ? i : best),
+			0,
+		)
+	}
+
 	function focusPreview(zone: Zone | null) {
 		if (!body || open) return
 
@@ -148,8 +224,7 @@
 			return
 		}
 
-		// Из двух точек парной зоны -- та, что сейчас смотрит на камеру
-		const point = zone.points.reduce((a, b) => (body!.facing(b.normal) > body!.facing(a.normal) ? b : a))
+		const point = zone.points[facingIndex(zone)]
 
 		body.controls.autoRotate = false
 		// Кадр главной уже сдвинут вправо от индекса: точка встаёт в середину свободной части
@@ -189,7 +264,13 @@
 	type Mark = { key: string; focus: InjuryFocus; slugs: string[] }
 
 	const marks: Mark[] = $derived.by(() => {
-		if (!open) return []
+		if (!open) {
+			if (!lead) return []
+
+			const focus = injuryFocus(lead.zone, lead.index, lead.injury.slug)
+
+			return [{ key: 'lead', focus, slugs: [lead.injury.slug] }]
+		}
 
 		const byKey = new Map<string, Mark>()
 
@@ -257,7 +338,15 @@
 
 	// Текущий шаг -- на <html> и событием: по нему Telegram показывает или прячет свою кнопку «назад»
 	$effect(() => {
-		document.documentElement.dataset.step = article ? 'article' : open ? 'zone' : 'scene'
+		// У сцены движения есть уровень выше -- главная, туда ведёт «назад» Telegram
+		document.documentElement.dataset.step = article
+			? 'article'
+			: open
+				? 'zone'
+				: movementPage
+					? 'movement'
+					: 'scene'
+
 		window.dispatchEvent(new Event(STEP_EVENT))
 	})
 
@@ -279,8 +368,9 @@
 			return
 		}
 
-		// Под статьёй держим её зону раскрытой: "Назад" вернёт к тому же списку и кадру
-		if (open?.zone !== place.zone) showZone(place.zone, 0)
+		// Под статьёй держим её зону раскрытой: "Назад" вернёт к тому же списку и кадру. На странице
+		// движения статью открывают из его списка, и "Назад" ведёт к нему, а не в зону
+		if (open?.zone !== place.zone && !movementPage) showZone(place.zone, 0)
 
 		showArticle(place.injury)
 	}
@@ -300,7 +390,12 @@
 		const place = parseHash()
 		const level = place.level
 
-		if (level === 0) return
+		// Выше сцены движения -- главная: сюда приходит только «назад» Telegram
+		if (level === 0) {
+			if (movementPage) location.assign('/')
+
+			return
+		}
 
 		if (level > baseLevel) {
 			history.back()
@@ -310,7 +405,7 @@
 
 		// Зону берём из адреса статьи: модель могла ещё не загрузиться и не раскрыть её
 		const parent =
-			place.level === 2
+			place.level === 2 && (!movementPage || open?.zone === place.zone)
 				? zoneHash(place.zone, open?.zone === place.zone ? open.index : 0)
 				: location.pathname + location.search
 
@@ -488,6 +583,7 @@
 		const side = wrap.clientWidth < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
 
 		hovered = null
+		lead = null
 		setHighlight(null)
 		clearTimeout(previewTimer)
 		clearAccent()
@@ -563,7 +659,10 @@
 				}
 			}
 
-			setAccent(open?.zone.injuries.find((i) => i.slug === best?.dataset.slug) ?? null)
+			const slug = best?.dataset.slug
+
+			if (open) setAccent(open.zone.injuries.find((i) => i.slug === slug) ?? null)
+			else previewInjury(movementInjuries.find((entry) => entry.injury.slug === slug) ?? null, false)
 		}, 180)
 	}
 
@@ -747,11 +846,51 @@
 
 <svelte:window onkeydown={onKey} />
 
+<!-- Строка травмы: в раскрытой зоне и в списке движения. `zoneLabel` -- зона перед описанием,
+     `onAccent` -- наведение или фокус на строке; `pointer` отличает мышь от клавиатуры -->
+{#snippet injuryRow(
+	injury: Injury,
+	i: number,
+	active: boolean,
+	zoneLabel: string,
+	onAccent: (on: boolean, pointer: boolean) => void,
+)}
+	{@const [head, tail] = splitLastWord(injury.title)}
+	<li class="zone__row" style:--i={i}>
+		<a
+			class="zone__item"
+			class:zone__item--accent={noHover && active}
+			href="/injuries/{injury.slug}/"
+			data-slug={injury.slug}
+			onclick={(event) => onItemClick(event, injury)}
+			onpointerenter={(event) => event.pointerType !== 'touch' && onAccent(true, true)}
+			onpointerleave={(event) => event.pointerType !== 'touch' && onAccent(false, true)}
+			onfocus={() => onAccent(true, false)}
+			onblur={() => onAccent(false, false)}
+		>
+			<span class="zone__name">
+				{head}<span class="zone__tail">{tail}<span class="zone__arrow" aria-hidden="true">→</span></span>
+			</span>
+			<span class="zone__summary">
+				{#if zoneLabel}<span class="zone__where">{zoneLabel}</span> ·
+				{/if}
+				{#if injury.rare}<span class="zone__rare"
+						><span class="zone__rare-icon" aria-hidden="true">{@html Diamond}</span>Редко</span
+					>
+					·
+				{/if}
+				{injury.summary}
+			</span>
+		</a>
+	</li>
+{/snippet}
+
 <div
 	class="body3d"
 	class:body3d--open={open}
 	class:body3d--hidden={sceneHidden}
 	class:body3d--hot={hovered && !open}
+	class:body3d--movement={movementPage}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
 	onpointerdown={onPointerDown}
@@ -772,8 +911,9 @@
 	{#each spots as spot, i (i)}
 		<button
 			class="body3d__spot"
-			class:body3d__spot--hover={hovered === spot || highlighted === spot.zone}
-			class:body3d__spot--dim={highlighted && highlighted !== whole && highlighted !== spot.zone}
+			class:body3d__spot--hover={!lead && (hovered === spot || highlighted === spot.zone)}
+			class:body3d__spot--dim={lead || (highlighted && highlighted !== whole && highlighted !== spot.zone)}
+			class:body3d__spot--key={movementPage && counts.get(spot.zone)}
 			class:body3d__spot--empty={counts.get(spot.zone) === 0}
 			bind:this={spotEls[i]}
 			type="button"
@@ -790,7 +930,7 @@
 	{#each marks as mark, i (mark.key)}
 		<span
 			class="body3d__mark"
-			class:body3d__mark--accent={accent && mark.slugs.includes(accent.slug)}
+			class:body3d__mark--accent={mark.key === 'lead' || (accent && mark.slugs.includes(accent.slug))}
 			class:body3d__mark--dim={accent && !mark.slugs.includes(accent.slug)}
 			bind:this={markEls[i]}
 			hidden={status !== 'ready'}
@@ -801,81 +941,123 @@
 	{/each}
 
 	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
-	<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
-		<header class="index__head">
-			<p class="index__brand">Wodcare</p>
-			<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
-		</header>
-		<label class="index__search">
-			<span class="index__icon" aria-hidden="true">{@html Search}</span>
-			<input
-				class="index__input"
-				type="search"
-				placeholder="Травма или часть тела"
-				aria-label="Поиск по травмам"
-				bind:value={query}
-			/>
-		</label>
-		<div class="index__filters">
-			<div class="index__freq" role="group" aria-label="Частота">
-				{#each FREQUENCIES as [value, label, icon] (value)}
-					<button
-						class="index__chip index__chip--{value}"
-						type="button"
-						aria-pressed={frequency === value}
-						onclick={() => (frequency = value)}
-						>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
-							>{/if}{label}</button
-					>
-				{/each}
-			</div>
-			<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
-		</div>
-		{#if query.trim()}
-			<ul class="index__results" aria-live="polite">
-				{#each results as { zone, injury } (injury.slug)}
-					<li>
-						<a
-							class="index__result"
-							href="/injuries/{injury.slug}/"
-							onclick={(event) => onItemClick(event, injury)}
-						>
-							<span class="index__result-title">{injury.title}</span>
-							<span class="index__result-zone">{zone.label}</span>
-						</a>
-					</li>
-				{:else}
-					<li class="index__empty">Ничего не нашлось</li>
-				{/each}
-			</ul>
-		{:else}
-			<ul class="index__zones">
-				{#each allZones as zone (zone.slug)}
-					{@const count = counts.get(zone) ?? 0}
-					<li class="index__zone-row" class:index__zone-row--whole={zone === whole}>
+	{#if movementPage}
+		{@const total = movementInjuries.length}
+		<aside class="index" class:index--away={open} aria-label="Травмы движения">
+			<header class="index__head">
+				<a class="index__brand" href="/">Wodcare</a>
+				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
+				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
+				>
+				<p class="index__title" aria-hidden="true">{movementPage.title}</p>
+				<p class="index__sub">
+					<span lang="en">{movementPage.titleEn}</span>
+					{#if total}<span class="index__total">{total} {plural(total)}</span>{/if}
+				</p>
+			</header>
+			{#if total}
+				<ul class="zone__list index__injuries" onscroll={onListScroll}>
+					{#each movementInjuries as entry, i (entry.injury.slug)}
+						{@render injuryRow(
+							entry.injury,
+							i,
+							lead?.injury === entry.injury,
+							entry.zone.label,
+							(on, pointer) => previewInjury(on ? entry : null, pointer),
+						)}
+					{/each}
+				</ul>
+			{:else}
+				<div class="index__none">
+					<p class="index__none-title">Статей пока нет</p>
+					<p class="index__none-text">
+						Про травмы на этом движении ещё не написали. Остальные травмы — <a
+							class="index__none-link"
+							href="/">на главной</a
+						>.
+					</p>
+				</div>
+			{/if}
+			<p class="index__foot">Справка не заменяет консультацию врача</p>
+			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
+		</aside>
+	{:else}
+		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
+			<header class="index__head">
+				<p class="index__brand">Wodcare</p>
+				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
+			</header>
+			<label class="index__search">
+				<span class="index__icon" aria-hidden="true">{@html Search}</span>
+				<input
+					class="index__input"
+					type="search"
+					placeholder="Травма или часть тела"
+					aria-label="Поиск по травмам"
+					bind:value={query}
+				/>
+			</label>
+			<div class="index__filters">
+				<div class="index__freq" role="group" aria-label="Частота">
+					{#each FREQUENCIES as [value, label, icon] (value)}
 						<button
-							class="index__zone"
+							class="index__chip index__chip--{value}"
 							type="button"
-							disabled={count === 0}
-							onclick={() => openZone(zone, 0)}
-							onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
-							onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
-							onfocus={() => previewZone(zone, false)}
-							onblur={() => previewZone(null, false)}
+							aria-pressed={frequency === value}
+							onclick={() => (frequency = value)}
+							>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
+								>{/if}{label}</button
 						>
-							<span class="index__count">{count}</span>
-							{#if zone === whole}<span class="index__icon" aria-hidden="true"
-									>{@html PersonStanding}</span
-								>{/if}
-							<span class="index__zone-label">{zone.label}</span>
-						</button>
-					</li>
-				{/each}
-			</ul>
-		{/if}
-		<p class="index__foot">Справка не заменяет консультацию врача</p>
-		{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
-	</aside>
+					{/each}
+				</div>
+				<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
+			</div>
+			{#if query.trim()}
+				<ul class="index__results" aria-live="polite">
+					{#each results as { zone, injury } (injury.slug)}
+						<li>
+							<a
+								class="index__result"
+								href="/injuries/{injury.slug}/"
+								onclick={(event) => onItemClick(event, injury)}
+							>
+								<span class="index__result-title">{injury.title}</span>
+								<span class="index__result-zone">{zone.label}</span>
+							</a>
+						</li>
+					{:else}
+						<li class="index__empty">Ничего не нашлось</li>
+					{/each}
+				</ul>
+			{:else}
+				<ul class="index__zones">
+					{#each allZones as zone (zone.slug)}
+						{@const count = counts.get(zone) ?? 0}
+						<li class="index__zone-row" class:index__zone-row--whole={zone === whole}>
+							<button
+								class="index__zone"
+								type="button"
+								disabled={count === 0}
+								onclick={() => openZone(zone, 0)}
+								onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
+								onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
+								onfocus={() => previewZone(zone, false)}
+								onblur={() => previewZone(null, false)}
+							>
+								<span class="index__count">{count}</span>
+								{#if zone === whole}<span class="index__icon" aria-hidden="true"
+										>{@html PersonStanding}</span
+									>{/if}
+								<span class="index__zone-label">{zone.label}</span>
+							</button>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+			<p class="index__foot">Справка не заменяет консультацию врача</p>
+			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
+		</aside>
+	{/if}
 
 	{#if open}
 		{@const total = open.zone.injuries.length}
@@ -914,35 +1096,7 @@
 			</header>
 			<ul class="zone__list" onscroll={onListScroll}>
 				{#each shown as injury, i (injury.slug)}
-					{@const [head, tail] = splitLastWord(injury.title)}
-					<li class="zone__row" style:--i={i}>
-						<a
-							class="zone__item"
-							class:zone__item--accent={noHover && accent === injury}
-							href="/injuries/{injury.slug}/"
-							data-slug={injury.slug}
-							onclick={(event) => onItemClick(event, injury)}
-							onpointerenter={(event) => event.pointerType !== 'touch' && setAccent(injury)}
-							onpointerleave={(event) => event.pointerType !== 'touch' && setAccent(null)}
-							onfocus={() => setAccent(injury)}
-							onblur={() => setAccent(null)}
-						>
-							<span class="zone__name">
-								{head}<span class="zone__tail"
-									>{tail}<span class="zone__arrow" aria-hidden="true">→</span></span
-								>
-							</span>
-							<span class="zone__summary">
-								{#if injury.rare}<span class="zone__rare"
-										><span class="zone__rare-icon" aria-hidden="true">{@html Diamond}</span
-										>Редко</span
-									>
-									·
-								{/if}
-								{injury.summary}
-							</span>
-						</a>
-					</li>
+					{@render injuryRow(injury, i, accent === injury, '', (on) => setAccent(on ? injury : null))}
 				{/each}
 			</ul>
 		</section>
@@ -1080,6 +1234,17 @@
 				opacity: 0;
 			}
 
+			/* На странице движения зоны без его травм не пропадают, а стоят приглушёнными:
+			   видно, что остальное тело это движение почти не трогает */
+			.body3d--movement &--empty:not(:global([data-hidden='true'])) {
+				opacity: 0.22;
+			}
+
+			/* Ноль у приглушённой точки -- шум: и так видно, что травм тут нет */
+			.body3d--movement &--empty .body3d__spot-count {
+				display: none;
+			}
+
 			&:focus-visible {
 				border-radius: 50%;
 				outline: 2px solid var(--a-blue);
@@ -1182,6 +1347,18 @@
 			animation-duration: 1.6s;
 		}
 
+		/* Зоны травм движения: точка крупнее, пульс чаще -- их видно с первого взгляда */
+		&__spot--key &__spot-dot {
+			transform: scale(1.35);
+			box-shadow:
+				0 0 0 2px var(--a-blue),
+				0 2px 6px rgb(0 0 0 / 25%);
+
+			&::after {
+				animation-duration: 1.6s;
+			}
+		}
+
 		&__spot--hover &__spot-dot {
 			transform: scale(1.6);
 			box-shadow:
@@ -1266,6 +1443,19 @@
 			}
 		}
 
+		/* На странице движения камера подъезжает к травме, и фигура заходит под список:
+		   подложка индекса ложится поверх модели и растворяет её у строк */
+		.body3d--movement & {
+			z-index: 0;
+
+			@media (width < 700px) {
+				&::before {
+					inset: -96px 0 0;
+					background: linear-gradient(to top, var(--a-bg) calc(100% - 96px), transparent);
+				}
+			}
+		}
+
 		&::before {
 			pointer-events: none;
 			content: '';
@@ -1294,10 +1484,122 @@
 		}
 
 		&__brand {
+			justify-self: start;
 			margin: 0;
 			font-size: 15px;
 			font-weight: 600;
 			color: var(--a-fg2);
+			text-decoration: none;
+			transition: color 0.3s var(--a-ease);
+
+			&[href]:hover,
+			&:focus-visible {
+				color: var(--a-fg);
+				outline: none;
+			}
+		}
+
+		/* Путь со страницы движения на главную -- над заголовком, синей ссылкой со стрелкой */
+		&__home {
+			display: inline-flex;
+			gap: 6px;
+			align-items: baseline;
+			justify-self: start;
+			margin: 14px 0 6px;
+			font-size: 17px;
+			color: var(--a-blue);
+			text-decoration: none;
+
+			@media (width < 700px) {
+				margin: 6px 0 2px;
+				font-size: 15px;
+			}
+
+			:global([data-telegram]) & {
+				display: none;
+			}
+
+			&:focus-visible {
+				border-radius: 4px;
+				outline: 2px solid var(--a-blue);
+				outline-offset: 3px;
+			}
+		}
+
+		&__home-arrow {
+			transition: transform 0.35s var(--a-ease);
+		}
+
+		&__home:hover &__home-arrow {
+			transform: translateX(-4px);
+		}
+
+		/* Английское название движения серым и число травм бейджем, как счётчик зоны */
+		&__sub {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px 12px;
+			align-items: center;
+			margin: 6px 0 0;
+			font-size: 19px;
+			color: var(--a-fg2);
+
+			@media (width < 700px) {
+				margin-top: 2px;
+				font-size: 16px;
+			}
+		}
+
+		&__total {
+			padding: 2px 10px;
+			border-radius: 999px;
+			font-size: 14px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			color: var(--a-blue);
+			letter-spacing: 0;
+			background: color-mix(in srgb, var(--a-blue) 13%, var(--a-bg));
+		}
+
+		/* Список травм движения -- те же строки, что в раскрытой зоне, но в колонке индекса */
+		/* Сдвиг вверх -- на высоту маски над первой строкой, иначе между шапкой и строками дыра.
+		   Двойной класс перебивает отступы строк зоны, объявленные ниже */
+		&__injuries.zone__list {
+			margin-top: -16px;
+			padding-top: 22px;
+
+			@media (width < 700px) {
+				margin-top: -22px;
+				padding-bottom: 8dvh;
+			}
+		}
+
+		/* Без статей: тихий текст на месте списка, без карточки и рамки */
+		&__none {
+			flex: 1;
+			animation: fade-in 0.5s var(--a-ease) 0.15s both;
+		}
+
+		&__none-title {
+			margin: 0 0 6px;
+			font-size: 21px;
+			font-weight: 600;
+			letter-spacing: -0.02em;
+		}
+
+		&__none-text {
+			max-width: 32ch;
+			margin: 0;
+			color: var(--a-fg2);
+		}
+
+		&__none-link {
+			color: var(--a-blue);
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 
 		&__title {
@@ -1559,6 +1861,13 @@
 		&__footer {
 			margin-bottom: 16px;
 			font-size: 13px;
+
+			/* На телефоне у страницы движения место под шапкой -- списку травм: подвал есть под статьёй */
+			@media (width < 700px) {
+				.body3d--movement & {
+					display: none;
+				}
+			}
 
 			& :global(.footer) {
 				padding-block: 0;
@@ -1888,6 +2197,12 @@
 			font-weight: 600;
 			line-height: 1.25;
 			letter-spacing: -0.02em;
+		}
+
+		/* Зона травмы в списке движения: там травмы разных зон идут подряд */
+		&__where {
+			font-weight: 600;
+			color: var(--a-fg);
 		}
 
 		/* Редкие травмы отмечены словом, а не цветной точкой: точка читалась как уведомление */

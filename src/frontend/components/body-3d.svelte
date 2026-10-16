@@ -1012,6 +1012,7 @@
 		<button
 			class="body3d__spot"
 			class:body3d__spot--hover={!lead && (hovered === spot || highlighted === spot.zone)}
+			class:body3d__spot--named={!lead && hovered === spot}
 			class:body3d__spot--dim={lead || (highlighted && highlighted !== whole && highlighted !== spot.zone)}
 			class:body3d__spot--key={movementPage && counts.get(spot.zone)}
 			class:body3d__spot--empty={counts.get(spot.zone) === 0}
@@ -1557,8 +1558,10 @@
 			background: var(--a-spot-count-bg);
 		}
 
-		/* Сама по себе цифра непонятна: при наведении на точку (или на строку зоны в списке)
-		   она раскрывается в «8 травм · Плечо» */
+		/* Сама по себе цифра непонятна: при наведении на точку она раскрывается в «8 травм · Плечо».
+		   Только у той точки, что под курсором, а не у всех точек зоны и не от строки списка:
+		   иначе подписи двух точек таза ложились друг на друга. Подпись -- поверх соседних точек
+		   и на светлой подложке в обеих темах, чтобы их цифры не просвечивали сквозь текст */
 		&__spot-more {
 			display: none;
 			/* Пробел после цифры: перенос строки в разметке Svelte съедает */
@@ -1566,7 +1569,15 @@
 			font-weight: 600;
 		}
 
-		&__spot--hover &__spot-more {
+		&__spot--named {
+			z-index: 1;
+		}
+
+		&__spot--named &__spot-count {
+			background: rgb(255 255 255 / 92%);
+		}
+
+		&__spot--named &__spot-more {
 			display: inline;
 		}
 

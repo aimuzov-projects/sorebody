@@ -16,6 +16,13 @@
 	--common: #0b7285;
 	--rare: #8944ab;
 
+	/* Переключатель темы на всех страницах в одной точке окна: правый верхний угол, по
+	   вертикали на линии шапки статьи (её верхнее поле 12px, строка 40px). Шапка статьи
+	   оставляет справа место под него: --theme-toggle-room */
+	--theme-toggle-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px));
+	--theme-toggle-room: calc(var(--theme-toggle-right) + 40px + 8px);
+
 	color-scheme: light;
 }
 

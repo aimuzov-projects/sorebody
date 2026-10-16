@@ -513,7 +513,8 @@
 	}
 
 	/* Тултип с источником: над номером, подложкой цвета текста, появляется на наведение
-	   и на фокус с клавиатуры */
+	   и на фокус с клавиатуры. В покое его нет совсем: прозрачный, он всё равно занимал
+	   место, и у сносок у правого края страница на телефоне становилась шире экрана */
 	&[data-tip]::after {
 		pointer-events: none;
 		content: attr(data-tip);
@@ -521,7 +522,8 @@
 		z-index: 3;
 		bottom: calc(100% + 10px);
 		left: 50%;
-		transform: translate(-50%, 4px);
+		transform: translate(-50%, 0);
+		display: none;
 		width: max-content;
 		max-width: min(280px, 80vw);
 		padding: 6px 10px;
@@ -533,18 +535,18 @@
 		text-align: center;
 		letter-spacing: 0;
 		white-space: normal;
-		opacity: 0;
 		background: var(--fg);
 		box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
-		transition:
-			opacity 0.2s ease,
-			transform 0.2s ease;
+		animation: cite-tip-in 0.2s ease;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
 	}
 
 	&[data-tip]:hover::after,
 	&[data-tip]:focus-visible::after {
-		transform: translate(-50%, 0);
-		opacity: 1;
+		display: block;
 	}
 }
 
@@ -632,12 +634,13 @@
 	   колонки статьи -- те же 1052px и поля, что у .article. body -- flex-колонка, ширину
 	   задаём явно, иначе шапка сжалась бы по содержимому */
 	width: 100%;
-	padding: calc(12px + var(--tg-top, 0px)) max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-right, 0px)) 20px
+	padding: calc(12px + var(--tg-top, 0px)) max(var(--theme-toggle-room), (100% - 1052px) / 2 + 24px) 20px
 		max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-left, 0px));
 	background: linear-gradient(to bottom, var(--bg) 62%, transparent);
 
 	@media (width < 600px) {
-		padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
+		/* Справа -- место под переключатель темы: он в углу окна, поверх шапки */
+		padding-inline: max(20px, env(safe-area-inset-left, 0px)) var(--theme-toggle-room);
 	}
 }
 
@@ -798,5 +801,12 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		transition: none;
+	}
+}
+
+@keyframes cite-tip-in {
+	from {
+		transform: translate(-50%, 4px);
+		opacity: 0;
 	}
 }

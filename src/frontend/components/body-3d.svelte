@@ -330,33 +330,6 @@
 	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
 	let articleBody = $state<HTMLDivElement>()
 	let readerElement = $state<HTMLElement>()
-	let readerBar = $state<HTMLElement>()
-
-	/**
-	 * Переключатель темы, пока открыта статья, стоит в её шапке справа, как на отдельной
-	 * странице, а не висит в углу сцены. Узел один, мы его переносим и плавно проявляем;
-	 * статья закрылась -- возвращаем на место в угол.
-	 */
-	$effect(() => {
-		const toggle = document.querySelector<HTMLElement>('.theme-toggle')
-
-		if (!readerBar || !toggle?.parentElement) return
-
-		const home = toggle.parentElement
-		const next = toggle.nextSibling
-		const fadeIn = () => toggle.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduceMotion ? 0 : 300 })
-
-		toggle.classList.add('theme-toggle--inline')
-		readerBar.append(toggle)
-		fadeIn()
-
-		return () => {
-			toggle.classList.remove('theme-toggle--inline')
-			home.insertBefore(toggle, next)
-			fadeIn()
-		}
-	})
-
 	let progressBar = $state<HTMLElement>()
 	let stopReading: (() => void) | undefined
 	let sceneHidden = $state(false)
@@ -1262,7 +1235,7 @@
 		<div class="reader__progress" aria-hidden="true">
 			<span class="reader__progress-bar" bind:this={progressBar}></span>
 		</div>
-		<div class="reader__bar" bind:this={readerBar}>
+		<div class="reader__bar">
 			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
@@ -2471,11 +2444,12 @@
 			align-items: center;
 			min-height: calc(52px + var(--tg-top));
 			/* На всю ширину, содержимое -- по краям колонки статьи, как .article-bar в styles/article.css */
-			padding: calc(12px + var(--tg-top)) max(24px, (100% - 1052px) / 2 + 24px) 20px;
+			padding: calc(12px + var(--tg-top)) max(var(--theme-toggle-room), (100% - 1052px) / 2 + 24px) 20px;
 			background: linear-gradient(to bottom, var(--a-page) 62%, transparent);
 
+			/* Справа -- место под переключатель темы: он в углу окна, поверх шапки */
 			@media (width < 600px) {
-				padding-inline: 20px;
+				padding-inline: 20px var(--theme-toggle-room);
 			}
 		}
 

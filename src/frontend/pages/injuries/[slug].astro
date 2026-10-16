@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink } from 'lucide
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
-import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
@@ -31,7 +30,7 @@ const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
 const nameTail = name.slice(nameHead.length)
 ---
 
-<Base title={data.title} description={data.summary} themeToggle={false}>
+<Base title={data.title} description={data.summary}>
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -40,7 +39,6 @@ const nameTail = name.slice(nameHead.length)
 		<p class="article-bar__title" aria-hidden="true">
 			{name}
 		</p>
-		<ThemeToggle inline />
 	</header>
 	<main class="article" data-article>
 		<header class="article__hero">

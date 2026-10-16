@@ -2,7 +2,6 @@
 // src/frontend/pages/about.astro
 import { BookOpen, ChevronLeft, FlaskConical, PersonStanding, Sparkles, Stethoscope } from 'lucide-static'
 
-import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import Base from '#frontend/layouts/base.astro'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
 import '#frontend/styles/article.css'
@@ -20,7 +19,7 @@ const SECTIONS = [
 const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 ---
 
-<Base {title} description="Как собран Wodcare: источники, методика и ограничения." themeToggle={false}>
+<Base {title} description="Как собран Wodcare: источники, методика и ограничения.">
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -29,7 +28,6 @@ const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 		<p class="article-bar__title" aria-hidden="true">
 			{title}
 		</p>
-		<ThemeToggle inline />
 	</header>
 	<main class="article" data-article>
 		<header class="article__hero">

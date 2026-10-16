@@ -3,13 +3,6 @@ import { Moon, Sun, SunMoon } from 'lucide-static'
 
 import { themeLabel, type Theme } from '#frontend/lib/theme.ts'
 
-type Props = {
-	/** В шапке лонгрида: значок в строке шапки у правого края, а не в углу экрана. */
-	inline?: boolean
-}
-
-const { inline = false } = Astro.props
-
 /** Иконка на каждое состояние; видна та, что совпадает с `<html data-theme>`. */
 const ICONS: [Theme, string][] = [
 	['auto', SunMoon],
@@ -18,7 +11,7 @@ const ICONS: [Theme, string][] = [
 ]
 ---
 
-<div class:list={['theme-toggle', inline && 'theme-toggle--inline']}>
+<div class="theme-toggle">
 	<button
 		class="theme-toggle__button"
 		type="button"
@@ -34,27 +27,18 @@ const ICONS: [Theme, string][] = [
 </div>
 
 <style>
-	/* Один значок в правом верхнем углу, без рамок и подложек: в покое приглушён, на наведении и
-	   фокусе проявляется. На главной лежит поверх сцены и открытой статьи, на остальных
-	   страницах уезжает вместе с шапкой. В Mini App тему задаёт Telegram, значок не нужен */
+	/* Один значок в правом верхнем углу окна, без рамок и подложек: в покое приглушён, на
+	   наведении и фокусе проявляется. Место одно на всех страницах -- токены в global.css,
+	   поэтому при переходах он не прыгает; лежит поверх сцены, статьи и липкой шапки. В Mini
+	   App тему задаёт Telegram, значок не нужен */
 	.theme-toggle {
-		position: absolute;
-		z-index: 3;
-		top: calc(20px + env(safe-area-inset-top, 0px));
-		right: calc(max(16px, env(safe-area-inset-right, 0px)));
+		position: fixed;
+		z-index: 30;
+		top: var(--theme-toggle-top);
+		right: var(--theme-toggle-right);
 
 		:global([data-telegram]) & {
 			display: none;
-		}
-
-		/* Значок 22px в кнопке 40px: правый край значка -- по правому краю колонки статьи */
-		&--inline {
-			position: relative;
-			z-index: auto;
-			top: auto;
-			right: auto;
-			flex: none;
-			margin: 0 -9px 0 auto;
 		}
 	}
 

@@ -1,7 +1,7 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
 import { getCollection } from 'astro:content'
-import { ChevronLeft, Diamond, ExternalLink, Info } from 'lucide-static'
+import { ChevronLeft, Diamond, ExternalLink } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
@@ -28,6 +28,10 @@ const [image] = data.images
 const { name, alias } = splitTitle(data.title)
 const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
 const nameTail = name.slice(nameHead.length)
+/** Значок другого названия: залитый кружок с прорезанной «i», без кольца-обводки, как у lucide. */
+const ALIAS_ICON =
+	'<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" ' +
+	'd="M8 0a8 8 0 1 0 0 16A8 8 0 1 0 8 0ZM7 7h2v5.2H7ZM8 3.1a1.15 1.15 0 1 0 0 2.3a1.15 1.15 0 1 0 0-2.3Z"/></svg>'
 ---
 
 <Base title={data.title} description={data.summary} themeToggle={false}>
@@ -68,7 +72,7 @@ const nameTail = name.slice(nameHead.length)
 								aria-expanded="false"
 								aria-controls="article-alias"
 								data-alias
-								set:html={Info}
+								set:html={ALIAS_ICON}
 							/>
 						</span>
 						<span class="article__alias-tip" id="article-alias" popover="auto" data-alias-tip>

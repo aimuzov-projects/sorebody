@@ -107,42 +107,48 @@
 		white-space: nowrap;
 	}
 
-	/* Другое название травмы -- приглушённый значок после заголовка, не текст в нём */
+	/* Другое название травмы -- тихий значок после заголовка, не текст в нём: серый, без
+	   кольца, ростом в половину строчных и вровень с их верхом. em и ex считаются от шрифта
+	   заголовка, поэтому font: inherit */
 	&__alias {
+		--alias-size: max(12px, 0.28em);
+
 		cursor: pointer;
 		position: relative;
-		top: -0.12em;
-		display: inline-grid;
-		place-items: center;
-		width: 36px;
-		height: 36px;
-		margin-left: 6px;
+		display: inline-block;
+		width: var(--alias-size);
+		height: var(--alias-size);
+		margin-left: 0.16em;
 		padding: 0;
 		border: 0;
 		border-radius: 50%;
-		color: var(--muted);
-		vertical-align: middle;
+		font: inherit;
+		color: color-mix(in srgb, var(--muted) 70%, transparent);
+		vertical-align: calc(1ex - var(--alias-size));
 		background: none;
-		transition:
-			color 0.3s var(--article-ease),
-			background 0.3s var(--article-ease);
+		transition: color 0.3s var(--article-ease);
+
+		/* Невидимая зона нажатия 44 на 44 вокруг маленького значка */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: calc((44px - var(--alias-size)) / -2);
+		}
 
 		&:hover,
+		&:focus-visible,
 		&[aria-expanded='true'] {
 			color: var(--accent);
-			background: color-mix(in srgb, var(--fg) 7%, transparent);
 		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
-			outline-offset: 2px;
+			outline-offset: 3px;
 		}
 
-		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
 		& svg {
-			width: 22px;
-			height: 22px;
-			stroke-width: 2;
+			display: block;
 		}
 	}
 
@@ -167,6 +173,11 @@
 
 		@media (prefers-reduced-motion: reduce) {
 			animation-name: alias-fade;
+		}
+
+		/* Под значком (сверху не хватило места) -- выезжает сверху вниз, над ним -- снизу вверх */
+		&[data-side='bottom'] {
+			animation-name: alias-in-below;
 		}
 	}
 
@@ -768,6 +779,13 @@
 }
 
 @keyframes alias-in {
+	from {
+		transform: translateY(4px);
+		opacity: 0;
+	}
+}
+
+@keyframes alias-in-below {
 	from {
 		transform: translateY(-4px);
 		opacity: 0;

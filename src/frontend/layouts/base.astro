@@ -20,9 +20,11 @@ type Props = {
 	bare?: boolean
 	/** Класс на `<body>`: полноэкранной странице нужно задать фон и токены всему документу. */
 	bodyClass?: string
+	/** `false`, если страница ставит переключатель темы сама -- в шапку лонгрида. */
+	themeToggle?: boolean
 }
 
-const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass, themeToggle = true } = Astro.props
 
 /**
  * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
@@ -61,7 +63,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
-		<ThemeToggle />
+		{themeToggle && <ThemeToggle />}
 		<slot />
 		{!bare && <Footer />}
 		<script>

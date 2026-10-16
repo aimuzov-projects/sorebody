@@ -982,7 +982,6 @@
 					</p>
 				</div>
 			{/if}
-			<p class="index__foot">Справка не заменяет консультацию врача</p>
 			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{:else}
@@ -1058,7 +1057,6 @@
 					{/each}
 				</ul>
 			{/if}
-			<p class="index__foot">Справка не заменяет консультацию врача</p>
 			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{/if}
@@ -1853,12 +1851,6 @@
 			color: var(--a-fg2);
 		}
 
-		&__foot {
-			margin: 0;
-			font-size: 13px;
-			color: var(--a-fg2);
-		}
-
 		/* Подвал сайта, тот же, что на остальных страницах, -- внизу индекса, без своих полей */
 		&__footer {
 			margin-bottom: 16px;
@@ -2315,12 +2307,10 @@
 			z-index: 1;
 			top: 0;
 			display: flex;
-			gap: 8px;
 			align-items: center;
-			max-width: 1052px;
 			min-height: calc(52px + var(--tg-top));
-			margin: 0 auto;
-			padding: calc(12px + var(--tg-top)) 24px 20px;
+			/* На всю ширину, содержимое -- по краям колонки статьи, как .article-bar в styles/article.css */
+			padding: calc(12px + var(--tg-top)) max(24px, (100% - 1052px) / 2 + 24px) 20px;
 			background: linear-gradient(to bottom, var(--a-page) 62%, transparent);
 
 			@media (width < 600px) {
@@ -2334,7 +2324,8 @@
 			place-items: center;
 			width: 40px;
 			height: 40px;
-			margin-left: -10px;
+			/* Маленький заголовок встаёт ровно по тексту пунктов оглавления под шапкой */
+			margin: 0 -2px 0 -10px;
 			padding: 0;
 			border: 0;
 			border-radius: 50%;

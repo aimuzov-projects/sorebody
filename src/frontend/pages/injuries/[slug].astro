@@ -6,6 +6,7 @@ import { ChevronLeft, Diamond, ExternalLink } from 'lucide-static'
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
+import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
@@ -24,7 +25,7 @@ const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(
 const [image] = data.images
 ---
 
-<Base title={data.title} description={data.summary}>
+<Base title={data.title} description={data.summary} themeToggle={false}>
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -33,6 +34,7 @@ const [image] = data.images
 		<p class="article-bar__title" aria-hidden="true">
 			{data.title}
 		</p>
+		<ThemeToggle inline />
 	</header>
 	<main class="article" data-article>
 		<header class="article__hero">
@@ -119,26 +121,17 @@ const [image] = data.images
 					))}
 				</ol>
 			</section>
-
-			<p class="article__disclaimer">
-				Справка не заменяет консультацию врача. Иллюстрации сгенерированы нейросетью, анатомия на них упрощена.
-			</p>
 		</footer>
 	</main>
 </Base>
 
 <script>
+	import { initBackLink } from '#frontend/lib/back-link.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 
 	const root = document.querySelector('[data-article]')
 
 	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
 
-	// Пришли со страницы сайта -- "Назад" возвращает туда же, с её прокруткой; иначе на главную
-	document.querySelector('[data-back]')?.addEventListener('click', (event) => {
-		if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
-			event.preventDefault()
-			history.back()
-		}
-	})
+	initBackLink()
 </script>

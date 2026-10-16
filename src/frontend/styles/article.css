@@ -31,11 +31,17 @@
 .article {
 	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
 	--article-column: 680px;
+	/* Вертикальный ритм лонгрида -- три шага. Перед разделом заметно больше, чем после его
+	   заголовка: заголовок держится за свой текст, а не за предыдущий раздел */
+	--rhythm-section: 44px;
+	--rhythm-heading: 14px;
+	--rhythm-block: 0.7em;
 
 	width: 100%;
 	max-width: calc(var(--article-column) + 260px + 64px + 48px);
 	margin: 0 auto;
 	padding: 16px 24px 96px;
+
 	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
 	color: var(--fg);
 	letter-spacing: -0.012em;
@@ -505,7 +511,7 @@
    разделами, акценты у "Когда сразу к врачу" и "Как адаптировать тренировки" */
 .article-section {
 	scroll-margin-top: calc(32px + var(--tg-top, 0px));
-	margin-top: 64px;
+	margin-top: var(--rhythm-section);
 
 	&:first-child {
 		margin-top: 0;
@@ -515,7 +521,7 @@
 		display: flex;
 		gap: 14px;
 		align-items: center;
-		margin: 0 0 20px;
+		margin: 0 0 var(--rhythm-heading);
 		font-size: clamp(24px, 2.4vw, 28px);
 		font-weight: 700;
 		line-height: 1.15;
@@ -533,7 +539,7 @@
 	/* Красноватый фон гаснет к краям блока (closest-side): края не видно, рамки нет */
 	&--urgent {
 		margin-inline: -32px;
-		padding: 32px;
+		padding: calc(var(--rhythm-section) / 2) 32px;
 		background: radial-gradient(
 			closest-side,
 			color-mix(in srgb, var(--danger) 15%, transparent),
@@ -543,7 +549,7 @@
 
 		@media (width < 600px) {
 			margin-inline: -20px;
-			padding: 28px 20px;
+			padding: calc(var(--rhythm-section) / 2) 20px;
 		}
 	}
 
@@ -555,14 +561,14 @@
 /* stylelint-disable selector-max-type -- разметка из Markdown приходит без классов */
 .article-section {
 	& p {
-		margin: 0 0 1em;
+		margin: 0 0 var(--rhythm-block);
 	}
 
 	& ul,
 	& ol {
 		display: grid;
-		gap: 0.65em;
-		margin: 0 0 1em;
+		gap: calc(var(--rhythm-block) * 0.65);
+		margin: 0 0 var(--rhythm-block);
 		padding-left: 1.25em;
 	}
 
@@ -672,7 +678,7 @@
 	}
 
 	& + & {
-		margin-top: 0.6em;
+		margin-top: calc(var(--rhythm-block) * 0.6);
 	}
 
 	&__was {

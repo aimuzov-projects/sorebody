@@ -25,6 +25,9 @@
 	/* Высота и поля одни для всех страниц: токены каркаса в styles/global.css */
 	.site-header {
 		--header-fade: 20px;
+		/* Мягкий край рисуется ниже самой шапки, на её высоту и раскладку страницы не влияет */
+		--header-tail: 28px;
+		--header-bg: var(--site-header-bg, var(--bg));
 
 		position: sticky;
 		z-index: 10;
@@ -35,7 +38,46 @@
 		width: 100%;
 		min-height: calc(var(--theme-toggle-top) + var(--header-row) + var(--header-fade));
 		padding: var(--theme-toggle-top) var(--theme-toggle-room) var(--header-fade) var(--frame-x);
-		background: linear-gradient(to bottom, var(--site-header-bg, var(--bg)) 62%, transparent);
+
+		/* Под строкой шапки контент не обрывается: фон гаснет вниз по плавной кривой
+		   (smoothstep, без резкого перепада у линейного градиента), а под ним -- размытие,
+		   которое сходит на нет к низу. Где backdrop-filter нет, остаётся один градиент */
+		&::before,
+		&::after {
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			z-index: -1;
+			inset: 0 0 calc(-1 * var(--header-tail));
+		}
+
+		&::before {
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
+			mask-image: linear-gradient(
+				to bottom,
+				#000000 calc(100% - var(--header-fade) - var(--header-tail)),
+				transparent
+			);
+
+			@media (prefers-reduced-transparency: reduce) {
+				display: none;
+			}
+		}
+
+		&::after {
+			--fade-from: calc(100% - var(--header-fade) - var(--header-tail));
+			--fade: calc(var(--header-fade) + var(--header-tail));
+
+			background: linear-gradient(
+				to bottom,
+				var(--header-bg) var(--fade-from),
+				color-mix(in srgb, var(--header-bg) 84%, transparent) calc(var(--fade-from) + var(--fade) * 0.25),
+				color-mix(in srgb, var(--header-bg) 50%, transparent) calc(var(--fade-from) + var(--fade) * 0.5),
+				color-mix(in srgb, var(--header-bg) 16%, transparent) calc(var(--fade-from) + var(--fade) * 0.75),
+				transparent
+			);
+		}
 	}
 
 	.site-header--floating {
@@ -46,7 +88,11 @@
 		z-index: 3;
 		right: 0;
 		left: 0;
-		background: none;
+
+		&::before,
+		&::after {
+			display: none;
+		}
 
 		& > :global(*) {
 			pointer-events: auto;

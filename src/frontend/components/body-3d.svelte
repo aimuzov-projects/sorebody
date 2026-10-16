@@ -667,7 +667,8 @@
 		// Точка зоны -- ближе к списку, а не в середину свободной половины: зона на внешнем краю
 		// тела, туловище уходит от неё в свободную половину и при середине не помещалось в экран.
 		// Сдвигается окно камеры, а не модель: фигура вертится вокруг своей оси
-		const half = 0.1 + 8 / wrap.clientWidth
+		// Но и не вплотную: срез плеча при 0,1 заходил под размытую подложку списка
+		const half = 0.19 + 8 / wrap.clientWidth
 		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? half : -half, y: 0 }
 		// «Всё тело» на телефоне мельче: между шапкой и шторкой должна уместиться почти вся фигура
 		const zoom = open.zone === whole && open.side === 'bottom' ? 0.6 : clamp(0.3 / open.zone.radius, 1, 2.4)
@@ -1023,7 +1024,11 @@
 			onfocus={() => hover(spot)}
 		>
 			<span class="body3d__spot-dot"></span>
-			<span class="body3d__spot-count" aria-hidden="true">{counts.get(spot.zone)}</span>
+			<span class="body3d__spot-count" aria-hidden="true"
+				>{counts.get(spot.zone)}<span class="body3d__spot-more">
+					{plural(counts.get(spot.zone) ?? 0)} · {spot.zone.label}</span
+				></span
+			>
 		</button>
 	{/each}
 
@@ -1538,6 +1543,9 @@
 			top: 50%;
 			left: 36px;
 			transform: translateY(-50%);
+			/* В тёмной теме цифра в светлой таблетке: ореол на тёмном фоне давал серое пятно */
+			padding: 0 5px;
+			border-radius: 8px;
 			font-size: 13px;
 			font-weight: 700;
 			font-variant-numeric: tabular-nums;
@@ -1545,6 +1553,21 @@
 			text-shadow:
 				0 0 3px #ffffff,
 				0 0 6px #ffffff;
+			white-space: nowrap;
+			background: var(--a-spot-count-bg);
+		}
+
+		/* Сама по себе цифра непонятна: при наведении на точку (или на строку зоны в списке)
+		   она раскрывается в «8 травм · Плечо» */
+		&__spot-more {
+			display: none;
+			/* Пробел после цифры: перенос строки в разметке Svelte съедает */
+			margin-left: 0.3em;
+			font-weight: 600;
+		}
+
+		&__spot--hover &__spot-more {
+			display: inline;
 		}
 
 		&__fps {

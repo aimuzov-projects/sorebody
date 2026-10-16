@@ -512,7 +512,6 @@
 	z-index: 10;
 	top: 0;
 	display: flex;
-	gap: 8px;
 	align-items: center;
 	/* body -- flex-колонка: с margin auto без ширины шапка тянулась бы по длине заголовка */
 	width: 100%;
@@ -532,7 +531,8 @@
 	place-items: center;
 	width: 40px;
 	height: 40px;
-	margin-left: -10px;
+	/* Маленький заголовок встаёт ровно по тексту пунктов оглавления под шапкой */
+	margin: 0 -2px 0 -10px;
 	border-radius: 50%;
 	color: var(--accent);
 	transition: background 0.3s ease;

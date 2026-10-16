@@ -2240,7 +2240,6 @@
 			z-index: 1;
 			top: 0;
 			display: flex;
-			gap: 8px;
 			align-items: center;
 			max-width: 1052px;
 			min-height: calc(52px + var(--tg-top));
@@ -2259,7 +2258,8 @@
 			place-items: center;
 			width: 40px;
 			height: 40px;
-			margin-left: -10px;
+			/* Маленький заголовок встаёт ровно по тексту пунктов оглавления под шапкой */
+			margin: 0 -2px 0 -10px;
 			padding: 0;
 			border: 0;
 			border-radius: 50%;

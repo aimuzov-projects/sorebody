@@ -183,6 +183,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let radius = 0
 	let radiusTo = 0
 	let glowTo = 0
+	let tintTo = 0
 	let last = performance.now()
 	let onFrame: (() => void) | undefined
 
@@ -244,6 +245,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		}
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
+		skin.uniforms.uTintStrength.value += (tintTo - skin.uniforms.uTintStrength.value) * ease
 
 		const goal = manual ? null : (focusTo ?? restore)
 
@@ -359,6 +361,18 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		glow(on: boolean) {
 			glowTo = on ? 0.16 : 0
+		},
+		/** Подсветить места на коже голубым с переходом в серый; `null` гасит. */
+		tint(points: Vec3[] | null, radius = 0.1) {
+			if (points?.length) {
+				const [a, b = a] = points
+
+				skin.uniforms.uTint.value[0].set(...a)
+				skin.uniforms.uTint.value[1].set(...b)
+				skin.uniforms.uTintRadius.value = radius
+			}
+
+			tintTo = points?.length ? 0.55 : 0
 		},
 		dissolve(center: Vec3 | null, radius = 0) {
 			if (center) {

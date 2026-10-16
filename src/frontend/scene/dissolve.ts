@@ -12,6 +12,11 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 		// Сдвиг внутрь по нормали в единицах меша: после упрощения мышцы местами пробивают кожу
 		uInset: { value: 0 },
 		uRim: { value: new Color(rim) },
+		// Подсветка зоны: голубое свечение вокруг двух точек (парная зона), к краю -- в серый
+		uTint: { value: [new Vector3(), new Vector3()] },
+		uTintRadius: { value: 0.1 },
+		uTintStrength: { value: 0 },
+		uTintColor: { value: new Color('#3d8bfd') },
 	}
 	const material = new MeshStandardMaterial({ color, roughness, metalness: 0, side: DoubleSide })
 
@@ -33,6 +38,10 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 uniform vec3 uCenter;
 uniform float uRadius;
 uniform vec3 uRim;
+uniform vec3 uTint[2];
+uniform float uTintRadius;
+uniform float uTintStrength;
+uniform vec3 uTintColor;
 varying vec3 vDissolvePos;
 ${NOISE}`,
 			)
@@ -50,6 +59,14 @@ if (uRadius > 0.0) {
 			.replace(
 				'#include <color_fragment>',
 				'#include <color_fragment>\nif (!gl_FrontFacing) diffuseColor.rgb *= 0.62;',
+			)
+			.replace(
+				'#include <emissivemap_fragment>',
+				`#include <emissivemap_fragment>
+if (uTintStrength > 0.0) {
+	float near = min(distance(vDissolvePos, uTint[0]), distance(vDissolvePos, uTint[1]));
+	totalEmissiveRadiance += uTintColor * uTintStrength * (1.0 - smoothstep(0.0, uTintRadius, near));
+}`,
 			)
 			.replace(
 				'#include <dithering_fragment>',

@@ -26,7 +26,7 @@
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
-	import { syncThemeSwitches, themeSwitchHtml } from '#frontend/lib/theme.ts'
+	import { syncThemeSwitches } from '#frontend/lib/theme.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
@@ -107,6 +107,12 @@
 	function setHighlight(zone: Zone | null) {
 		highlighted = zone
 		body?.glow(zone === whole)
+		tintZone(zone && zone !== whole ? zone : null)
+	}
+
+	/** Зона под курсором -- голубым пятном на коже, к краю в серый, как свечение «Всего тела». */
+	function tintZone(zone: Zone | null) {
+		body?.tint(zone?.points.map((p) => p.position) ?? null, zone ? zone.radius * 1.5 : 0)
 	}
 
 	/**
@@ -465,6 +471,7 @@
 		if (open || spot === hovered) return
 
 		hovered = spot
+		tintZone(spot?.zone ?? null)
 
 		if (body) body.controls.autoRotate = !spot
 	}
@@ -866,10 +873,8 @@
 				{/each}
 			</ul>
 		{/if}
-		<p class="index__foot">
-			<a class="index__link" href="/about/">О справочнике</a> · справка не заменяет консультацию врача
-		</p>
-		<div class="index__theme">{@html themeSwitchHtml()}</div>
+		<p class="index__foot">Справка не заменяет консультацию врача</p>
+		{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 	</aside>
 
 	{#if open}
@@ -1545,27 +1550,22 @@
 		}
 
 		&__foot {
-			margin: 0 0 24px;
+			margin: 0;
 			font-size: 13px;
 			color: var(--a-fg2);
+		}
 
-			@media (width < 700px) {
-				display: none;
+		/* Подвал сайта, тот же, что на остальных страницах, -- внизу индекса, без своих полей */
+		&__footer {
+			margin-bottom: 16px;
+			font-size: 13px;
+
+			& :global(.footer) {
+				padding-block: 0;
 			}
-		}
 
-		&__link {
-			color: var(--a-blue);
-			text-decoration: none;
-		}
-
-		/* Тема -- под строкой о справочнике; на телефоне низ индекса занят зонами, там тему
-		   меняют в подвале статьи */
-		&__theme {
-			margin: -12px 0 24px;
-
-			@media (width < 700px) {
-				display: none;
+			& :global(.container) {
+				padding-inline: 0;
 			}
 		}
 	}

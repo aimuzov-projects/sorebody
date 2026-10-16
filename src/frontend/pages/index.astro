@@ -49,7 +49,8 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 <style>
 	/* Главная -- 3D-сцена на весь экран. Визуальный язык страниц Apple: системный шрифт,
 	   нейтральная палитра, синий акцент. Токены на body: статья живёт рядом со сценой */
-	:global(.home) {
+	:global(.home),
+	:global(.home .light) {
 		--a-font: -apple-system, blinkmacsystemfont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
 		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
 		--a-bg: #f5f5f7;
@@ -102,7 +103,8 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 		}
 	}
 
-	:global(:root[data-theme='dark'] .home) {
+	:global(:root[data-theme='dark'] .home),
+	:global(.home .dark) {
 		--a-bg: #000000;
 		--a-page: #000000;
 		--a-glow: #1d1d1f;
@@ -113,6 +115,15 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 		--a-sep: rgb(255 255 255 / 12%);
 		--a-fill: rgb(255 255 255 / 10%);
 		--a-pop: #1c1c1e;
+	}
+
+	/* Копия главной в круге подсмотра темы: фон и шрифт сцены, а не общие токены сайта */
+	:global(.home .theme-peek) {
+		overflow: hidden;
+		height: 100dvh;
+		font-family: var(--a-font);
+		color: var(--a-fg);
+		background: var(--a-bg);
 	}
 
 	.home {

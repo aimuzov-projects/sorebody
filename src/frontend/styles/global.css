@@ -1,4 +1,5 @@
-:root {
+:root,
+.light {
 	--font-sans: system-ui, sans-serif;
 
 	--container: 1180px;
@@ -19,7 +20,8 @@
 }
 
 /* Тёмная тема: по системе, если вручную не выбрана светлая, или выбрана вручную
-   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий */
+   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий.
+   Классы .light и .dark -- у копии страницы в круге подсмотра темы (theme-peek из kit) */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
 		--bg: #000000;
@@ -35,7 +37,8 @@
 	}
 }
 
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+.dark {
 	--bg: #000000;
 	--fg: #f5f5f7;
 	--muted: #a1a1a6;
@@ -54,8 +57,10 @@
 	box-sizing: border-box;
 }
 
-/* Колонка не ниже экрана, чтобы на короткой странице подвал оставался внизу. */
-body {
+/* Колонка не ниже экрана, чтобы на короткой странице подвал оставался внизу.
+   .theme-peek -- копия страницы в круге подсмотра темы, она встаёт на место body. */
+body,
+.theme-peek {
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;

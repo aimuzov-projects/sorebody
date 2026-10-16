@@ -122,7 +122,7 @@ const isCite = (node: Node | undefined): node is Element =>
 
 /**
  * Сноски `(N)` и `(N, M)`: ссылки на PubMed с номером источника, в скобках, через запятую.
- * Группу меняем на `<sup>` без скобок; у ссылки подпись из списка источников.
+ * Группу меняем на `<sup>` без скобок; у ссылки подпись из списка источников для тултипа.
  */
 function groupCites(parent: Element, sources: { label: string }[]) {
 	// Внутрь готовой сноски не заходим, иначе её ссылка обернётся заново
@@ -154,7 +154,8 @@ function groupCites(parent: Element, sources: { label: string }[]) {
 						class: 'cite__link',
 						href: link.attributes.href!,
 						'aria-label': `Источник ${num}${label ? `: ${label}` : ''}`,
-						...(label ? { title: label } : {}),
+						// Подпись источника -- тултипом при наведении (styles/article.css)
+						...(label ? { 'data-tip': label } : {}),
 					},
 					[text(String(num))],
 				),

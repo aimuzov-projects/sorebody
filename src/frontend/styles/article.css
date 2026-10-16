@@ -380,12 +380,49 @@
 }
 
 .cite__link {
+	position: relative;
 	padding: 0 1px;
 	color: var(--accent);
 	text-decoration: none;
 	opacity: 0.85;
 
-	&:hover {
+	&:hover,
+	&:focus-visible {
+		opacity: 1;
+	}
+
+	/* Тултип с источником: над номером, подложкой цвета текста, появляется на наведение
+	   и на фокус с клавиатуры */
+	&[data-tip]::after {
+		pointer-events: none;
+		content: attr(data-tip);
+		position: absolute;
+		z-index: 3;
+		bottom: calc(100% + 10px);
+		left: 50%;
+		transform: translate(-50%, 4px);
+		width: max-content;
+		max-width: min(280px, 80vw);
+		padding: 6px 10px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 1.35;
+		color: var(--bg);
+		text-align: center;
+		letter-spacing: 0;
+		white-space: normal;
+		opacity: 0;
+		background: var(--fg);
+		box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	&[data-tip]:hover::after,
+	&[data-tip]:focus-visible::after {
+		transform: translate(-50%, 0);
 		opacity: 1;
 	}
 }

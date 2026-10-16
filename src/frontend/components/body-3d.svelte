@@ -1990,12 +1990,9 @@
 				}
 			}
 
+			/* Внутри индекса подвал -- по краям его колонки, без своих полей */
 			& :global(.footer) {
-				padding-block: 0;
-			}
-
-			& :global(.container) {
-				padding-inline: 0;
+				padding: 0;
 			}
 		}
 	}

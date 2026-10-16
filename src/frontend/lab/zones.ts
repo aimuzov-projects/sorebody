@@ -29,8 +29,8 @@ export type LabZone = {
  */
 const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
 	shoulder: { radius: 0.13, points: pair([0.165, 1.39, -0.024], 1, 0.3, { azimuth: 40, polar: 70 }) },
-	elbow: { radius: 0.09, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 78 }) },
-	'wrist-hand': { radius: 0.1, points: pair([0.25, 0.874, 0.021], 1, 0.3, { azimuth: 70, polar: 78 }) },
+	elbow: { radius: 0.09, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
+	'wrist-hand': { radius: 0.1, points: pair([0.25, 0.874, 0.021], 1, 0.3, { azimuth: 70, polar: 74 }) },
 	lumbar: {
 		radius: 0.15,
 		points: [{ position: [0, 1.066, -0.034], normal: [0, 0, -1], view: { azimuth: 160, polar: 76 } }],

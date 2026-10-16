@@ -503,15 +503,14 @@
 							onclick={(event) => onItemClick(event, injury)}
 						>
 							<span class="zone__name">
-								{#if injury.rare}
-									<span class="zone__rare" title="Редкая травма"></span>
-									<span class="zone__hidden">Редкая:</span>
-								{/if}
 								{head}<span class="zone__tail"
 									>{tail}<span class="zone__arrow" aria-hidden="true">→</span></span
 								>
 							</span>
-							<span class="zone__summary">{injury.summary}</span>
+							<span class="zone__summary">
+								{#if injury.rare}<span class="zone__rare">Редко ·</span>{/if}
+								{injury.summary}
+							</span>
 						</a>
 					</li>
 				{/each}
@@ -871,33 +870,17 @@
 			letter-spacing: -0.02em;
 		}
 
+		/* Редкие травмы отмечены словом, а не цветной точкой: точка читалась как уведомление */
 		&__rare {
-			display: inline-block;
-			width: 7px;
-			height: 7px;
-			margin-right: 8px;
-			border-radius: 50%;
-			vertical-align: 3px;
-			background: var(--a-red);
+			font-weight: 600;
 		}
 
-		&__hidden {
-			position: absolute;
-			overflow: hidden;
-			width: 1px;
-			height: 1px;
-			white-space: nowrap;
-			clip-path: inset(50%);
-		}
-
+		/* Описание целиком, без многоточия: строка и так ссылка, это видно по стрелке */
 		&__summary {
-			overflow: hidden;
 			font-size: 15px;
-			line-height: 1.4;
+			line-height: 1.45;
 			color: var(--a-fg2);
-			text-overflow: ellipsis;
 			letter-spacing: -0.01em;
-			white-space: nowrap;
 		}
 	}
 

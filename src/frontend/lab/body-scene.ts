@@ -75,7 +75,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	controls.enablePan = false
 	controls.enableDamping = true
 	controls.minPolarAngle = Math.PI * 0.3
-	controls.maxPolarAngle = Math.PI * 0.55
+	// Камера всегда чуть выше горизонта: снизу фигура выглядит неудачно, видны пятки
+	controls.maxPolarAngle = MathUtils.degToRad(80)
 	controls.minZoom = 0.9
 	controls.maxZoom = 2.6
 	controls.autoRotate = true

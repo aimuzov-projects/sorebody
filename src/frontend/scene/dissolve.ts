@@ -3,9 +3,10 @@ import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three
 /**
  * Матовый "фарфор" с растворением в сфере: фрагменты ближе `uRadius` к `uCenter` отбрасываются,
  * граница рвётся 3D-шумом и подсвечивается тёплой кромкой. Внутренняя сторона оболочки темнее,
- * чтобы срез читался как толща ткани, а не как дыра.
+ * чтобы срез читался как толща ткани, а не как дыра. `muscle` -- мышечный слой: волокна вдоль
+ * главной оси каждой мышцы (атрибут `_fiber`) и подсветка мышц по номерам (`_part`), см. build.mjs.
  */
-export function createDissolveMaterial(color: string, rim: string, roughness = 0.92) {
+export function createDissolveMaterial(color: string, rim: string, roughness = 0.92, muscle = false) {
 	const uniforms = {
 		uCenter: { value: new Vector3() },
 		uRadius: { value: 0 },
@@ -24,15 +25,41 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 		uTintRadius: { value: 0.1 },
 		uTintStrength: { value: 0 },
 		uTintColor: { value: new Color('#3d8bfd') },
+		// Подсветка мышц травмы: номера мышц из `_part` (до 8, -1 -- пусто) и сила свечения
+		uParts: { value: Array.from({ length: 8 }, () => -1) },
+		uHighlight: { value: 0 },
+		// Сфера `uRadius` снимает только мышцы над подсвеченными, сами они остаются: глубокая мышца травмы
+		uPeel: { value: 0 },
 	}
 	const material = new MeshStandardMaterial({ color, roughness, metalness: 0, side: DoubleSide })
+
+	if (muscle) material.defines = { MUSCLE: '' }
 
 	material.onBeforeCompile = (shader) => {
 		Object.assign(shader.uniforms, uniforms)
 
 		shader.vertexShader = shader.vertexShader
-			.replace('#include <common>', '#include <common>\nuniform float uInset;\nvarying vec3 vDissolvePos;')
-			.replace('#include <begin_vertex>', '#include <begin_vertex>\ntransformed -= objectNormal * uInset;')
+			.replace(
+				'#include <common>',
+				`#include <common>
+uniform float uInset;
+varying vec3 vDissolvePos;
+#ifdef MUSCLE
+attribute float _part;
+attribute vec3 _fiber;
+varying float vPart;
+varying vec3 vFiber;
+#endif`,
+			)
+			.replace(
+				'#include <begin_vertex>',
+				`#include <begin_vertex>
+transformed -= objectNormal * uInset;
+#ifdef MUSCLE
+vPart = _part;
+vFiber = _fiber;
+#endif`,
+			)
 			.replace(
 				'#include <project_vertex>',
 				'#include <project_vertex>\nvDissolvePos = (modelMatrix * vec4(transformed, 1.0)).xyz;',
@@ -52,26 +79,57 @@ uniform vec3 uTint[2];
 uniform float uTintRadius;
 uniform float uTintStrength;
 uniform vec3 uTintColor;
+uniform float uParts[8];
+uniform float uHighlight;
+uniform float uPeel;
 varying vec3 vDissolvePos;
+#ifdef MUSCLE
+varying float vPart;
+varying vec3 vFiber;
+#endif
 ${NOISE}`,
 			)
 			.replace(
 				'#include <clipping_planes_fragment>',
 				`#include <clipping_planes_fragment>
 if ((distance(vDissolvePos, uCut.xyz) - uCut.w) * uCutSide < 0.0) discard;
+// Мышца травмы: номер из _part среди подсвеченных
+float hit = 0.0;
+#ifdef MUSCLE
+if (uHighlight > 0.0) for (int i = 0; i < 8; i++) hit = max(hit, 1.0 - step(0.5, abs(vPart - uParts[i])));
+#endif
+bool kept = uPeel > 0.5 && hit > 0.5;
 float dissolveEdge = 1.0;
 float n = snoise(vDissolvePos * 12.0) * 0.7 + snoise(vDissolvePos * 34.0) * 0.3;
 // Граница проёма во внешнем слое -- той же формулой с шумом, что у него самого
 if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.02 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {
 	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.02 * smoothstep(0.0, 0.05, uRadius);
-	if (d < 0.0) discard;
-	dissolveEdge = smoothstep(0.0, 0.007, d);
+	if (d < 0.0 && !kept) discard;
+	if (!kept) dissolveEdge = smoothstep(0.0, 0.007, d);
 }`,
 			)
 			.replace(
 				'#include <color_fragment>',
-				'#include <color_fragment>\nif (!gl_FrontFacing) diffuseColor.rgb *= 0.62;',
+				`#include <color_fragment>
+if (!gl_FrontFacing) diffuseColor.rgb *= 0.62;
+#ifdef MUSCLE
+// Волокна: шум по координатам поперёк главной оси мышцы, вдоль неё он не меняется -- выходят
+// тонкие продольные тяжи, как на атласе. У мышц без оси (мимо build.mjs) волокон нет
+float fiberLength = length(vFiber);
+if (fiberLength > 0.1) {
+	vec3 axis = vFiber / fiberLength;
+	vec3 across = vDissolvePos - dot(vDissolvePos, axis) * axis;
+	float fibers = snoise(across * 420.0) * 0.6 + snoise(across * 1100.0 + 3.7) * 0.4;
+	float bundles = snoise(vDissolvePos * 60.0);
+	diffuseColor.rgb *= 0.9 + 0.12 * fibers + 0.05 * bundles;
+}
+// Подсветка мышц травмы: они остаются красными и чуть светятся, остальные бледнеют
+if (uHighlight > 0.0) {
+	float pale = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)) * 1.2 + 0.12;
+	diffuseColor.rgb = mix(diffuseColor.rgb, vec3(pale), uHighlight * (1.0 - hit));
+}
+#endif`,
 			)
 			.replace(
 				'#include <emissivemap_fragment>',
@@ -79,7 +137,10 @@ if (uRadius > 0.0) {
 if (uTintStrength > 0.0) {
 	float near = min(distance(vDissolvePos, uTint[0]), distance(vDissolvePos, uTint[1]));
 	totalEmissiveRadiance += uTintColor * uTintStrength * (1.0 - smoothstep(0.0, uTintRadius, near));
-}`,
+}
+#ifdef MUSCLE
+totalEmissiveRadiance += diffuseColor.rgb * 0.5 * uHighlight * hit;
+#endif`,
 			)
 			.replace(
 				'#include <dithering_fragment>',

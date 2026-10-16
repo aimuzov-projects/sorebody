@@ -12,10 +12,10 @@ type Dissolve = ReturnType<typeof createDissolveMaterial>
  */
 export const DETAIL_REACH = 1.25
 
-/** Слои куска: кости и мышцы как у фигуры, связки с менисками голубоватые, сосуды и нервы цветные. */
+/** Слои куска: кости как у фигуры, связки с менисками голубоватые, сосуды и нервы цветные. Мышцы -- цветом темы. */
 const LAYERS: Record<string, string> = {
 	bones: '#efe7da',
-	muscles: '#e8e4df',
+	muscles: '#c65a4b',
 	cartilage: '#d6e4ec',
 	ligaments: '#9fbbe6',
 	arteries: '#c9463d',
@@ -25,6 +25,22 @@ const LAYERS: Record<string, string> = {
 
 /** Сколько кусков держать в памяти: открытая зона и пара соседних по наведению. */
 const KEEP = 4
+/** Слои, которые видны только в сфере глубокой травмы: под мышцами, но без неё они лишь мешают. */
+const DEEP = new Set(['arteries', 'veins', 'nerves'])
+
+/**
+ * Номера мышц для подсветки: позиции (с 1) в `parts` меша тех мышц, в названиях которых есть
+ * строка из `names`. Шейдер берёт до 8 номеров, пустые места -- -1.
+ */
+export function partIds(parts: string[] | undefined, names: string[] | null) {
+	const ids: number[] = []
+
+	parts?.forEach((part, i) => {
+		if (names?.some((name) => part.includes(name))) ids.push(i + 1)
+	})
+
+	return Array.from({ length: 8 }, (_, i) => ids[i] ?? -1)
+}
 
 /** Имя куска: зона и сторона тела. Левая сторона -- на +X, как в zones.ts. */
 export function detailKey(slug: string, position: Vec3) {
@@ -44,12 +60,15 @@ export function createDetail(options: {
 	base: Dissolve[]
 	baseUrl: string
 	lowPower: () => boolean
+	muscleColor: string
 }) {
 	const { scene, loader, base, baseUrl, lowPower } = options
 	const materials = Object.fromEntries(
 		Object.entries(LAYERS).map(([layer, color]) => [
 			layer,
-			createDissolveMaterial(color, '#0071e3', layer === 'bones' ? 0.5 : 0.6),
+			layer === 'muscles'
+				? createDissolveMaterial(options.muscleColor, '#0071e3', 0.78, true)
+				: createDissolveMaterial(color, '#0071e3', layer === 'bones' ? 0.5 : 0.6),
 		]),
 	)
 	const all = Object.values(materials)
@@ -61,6 +80,19 @@ export function createDetail(options: {
 	const cache = new Map<string, Promise<Group | null>>()
 	let shown: Group[] = []
 	let wanted: string | null = null
+	let highlighted: string[] | null = null
+
+	/** Номера подсвеченных мышц -- по списку мышц показанного куска. */
+	function applyHighlight() {
+		let parts: string[] | undefined
+
+		for (const group of shown)
+			group.traverse((obj) => {
+				if (obj instanceof Mesh && obj.userData.parts) parts = obj.userData.parts
+			})
+
+		materials.muscles.uniforms.uParts.value = partIds(parts, highlighted)
+	}
 
 	function readIndex() {
 		index ??= fetch(`${baseUrl}index.json`)
@@ -181,19 +213,36 @@ export function createDetail(options: {
 			}
 
 			cut(point, radius)
+			applyHighlight()
 			// Метка для замера догрузки: от клика по зоне до куска на сцене
 			performance.mark(`detail:${key}`)
 		},
-		/** Каждый кадр: слои куска следуют за проёмом кожи, мышцы -- за своей долей. */
-		sync(center: Vector3, radius: number, muscleShare: number) {
+		/**
+		 * Каждый кадр: слои куска следуют за проёмом кожи `radius`. Мышцы расходятся на `deep`
+		 * у глубокой травмы, сосуды и нервы видны только в этой сфере, `highlight` -- сила подсветки.
+		 * `peel` -- сфера снимает лишь мышцы над подсвеченными, сосуды и нервы не нужны.
+		 */
+		sync(center: Vector3, radius: number, deep: number, highlight: number, peel: boolean) {
 			if (!shown.length) return
 
 			for (const [layer, m] of Object.entries(materials)) {
 				m.uniforms.uCenter.value.copy(center)
 				// Кости видны и без проёма -- их закрывает кожа; остальное рисуем только в проёме
-				m.uniforms.uOuter.value = layer === 'bones' ? -1 : radius
-				m.uniforms.uRadius.value = layer === 'muscles' ? radius * muscleShare : 0
+				m.uniforms.uOuter.value = layer === 'bones' ? -1 : DEEP.has(layer) ? (peel ? 0 : deep) : radius
+				m.uniforms.uRadius.value = layer === 'muscles' ? deep : 0
 			}
+
+			materials.muscles.uniforms.uHighlight.value = highlight
+			materials.muscles.uniforms.uPeel.value = peel ? 1 : 0
+		},
+		/** Подсветить мышцы куска по строкам в названиях; `null` гасит. */
+		highlight(names: string[] | null) {
+			highlighted = names
+			applyHighlight()
+		},
+		/** Цвет мышц при смене темы. */
+		recolor(color: string) {
+			materials.muscles.material.color.set(color)
 		},
 	}
 }

@@ -134,6 +134,64 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'orofacial-trauma': { offset: [0, 0.31, 0.05], normal: [0, 0, 1], view: { azimuth: 15, polar: 80 }, zoom: 3.2 },
 }
 
+/**
+ * Глубина травмы в раскрытой зоне. `deep` -- связка, мениск, губа, кость, диск, нерв или сосуд:
+ * мышцы у места травмы расходятся малой сферой, под ними видны глубокие слои. `muscle` -- мышца
+ * или сухожилие: мышцы остаются, а подсвечиваются те, чьи названия (из BodyParts3D и Z-Anatomy,
+ * без стороны) содержат строки из `muscles`. `peel` -- мышца травмы лежит под другими (манжета под
+ * дельтовидной, разгибатели под широчайшей): малая сфера снимает мышцы над ней. Травмы без записи --
+ * `muscle` без подсветки.
+ */
+export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: string[]; peel?: boolean }> = {
+	'acl-tear': { depth: 'deep' },
+	'meniscus-tear': { depth: 'deep' },
+	// Тендинопатия надколенника -- сухожилие четырёхглавой
+	'patellofemoral-pain': { depth: 'muscle', muscles: ['rectus femoris', 'vastus'] },
+	'subacromial-impingement': { depth: 'muscle', muscles: ['supraspinatus'], peel: true },
+	'rotator-cuff-tendinopathy': {
+		depth: 'muscle',
+		muscles: ['supraspinatus', 'infraspinatus', 'teres minor', 'subscapularis'],
+		peel: true,
+	},
+	'labral-tear-slap': { depth: 'deep' },
+	'subscapularis-biceps-pulley': {
+		depth: 'muscle',
+		muscles: ['subscapularis', 'long head of biceps brachii'],
+		peel: true,
+	},
+	'pectoralis-major-rupture': { depth: 'muscle', muscles: ['pectoralis major'] },
+	'paget-schroetter-syndrome': { depth: 'deep' },
+	'latissimus-dorsi-tear': { depth: 'muscle', muscles: ['latissimus dorsi'] },
+	'upper-limb-stress-fractures': { depth: 'deep' },
+	'inguinal-hernia': {
+		depth: 'muscle',
+		muscles: ['external oblique', 'internal abdominal oblique', 'transversus abdominis'],
+		peel: true,
+	},
+	'meralgia-paresthetica': { depth: 'deep' },
+	'iliotibial-band-syndrome': { depth: 'muscle', muscles: ['iliotibial tract', 'tensor fasciae latae'] },
+	'hamstring-strain': { depth: 'muscle', muscles: ['biceps femoris', 'semitendinosus', 'semimembranosus'] },
+	'stress-urinary-incontinence': { depth: 'muscle', muscles: ['coccygeus', 'levator ani'], peel: true },
+	'femoroacetabular-impingement': { depth: 'deep' },
+	'lumbar-disc-herniation': { depth: 'deep' },
+	'low-back-strain': {
+		depth: 'muscle',
+		muscles: ['iliocostalis lumborum', 'longissimus thoracis', 'multifidus lumborum', 'quadratus lumborum'],
+		peel: true,
+	},
+	'elbow-tendinopathy': {
+		depth: 'muscle',
+		muscles: ['extensor carpi radialis brevis', 'extensor digitorum', 'flexor carpi radialis', 'pronator teres'],
+	},
+	'wrist-sprain': { depth: 'deep' },
+	'ankle-sprain': { depth: 'deep' },
+}
+
+/** Слой травмы: глубина и подсвечиваемые мышцы. */
+export function injuryLayer(slug: string) {
+	return INJURY_LAYER[slug] ?? { depth: 'muscle' as const }
+}
+
 export type InjuryFocus = { position: Vec3; normal: Vec3; view: View; zoom: number }
 
 /** Точка фокуса травмы на стороне `index` раскрытой зоны; `zoom` -- множитель к кадру зоны. */

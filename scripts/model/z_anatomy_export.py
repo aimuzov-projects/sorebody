@@ -1,4 +1,5 @@
-# Выгрузка из Z-Anatomy (Startup.blend) связок, менисков, суставных губ, капсул и нервов в OBJ:
+# Выгрузка из Z-Anatomy (Startup.blend) связок, менисков, суставных губ, капсул, нервов и мышц,
+# которых нет в BodyParts3D, в OBJ:
 # сетки берутся после модификаторов (Subdivision, Solidify, Hook, кривые с толщиной), в мировых
 # координатах Blender. Рядом кладутся опорные кости для совмещения с BodyParts3D.
 # usage: blender -b Startup.blend --python z_anatomy_export.py -- <out dir>
@@ -15,6 +16,11 @@ FINGERS = re.compile(r'interphalangeal|metacarpophalangeal|digital|phalan|transv
 REFS = {'Femur', 'Patella', 'Tibia', 'Fibula', 'Humerus', 'Scapula', 'Clavicle', 'Hip bone', 'Radius', 'Ulna', 'Talus', 'Calcaneus'}
 REFS |= {f'{b} bone' for b in ('Scaphoid', 'Lunate', 'Capitate', 'Hamate', 'Trapezium', 'Trapezoid', 'Pisiform')}
 REFS |= {f'{n} metacarpal bone' for n in ('First', 'Second', 'Third', 'Fourth', 'Fifth')}
+# Поясничные позвонки -- без стороны, по ним совмещается поясница
+SPINE = {f'Vertebra L{i}' for i in range(1, 6)}
+# Мышцы, которых в BodyParts3D нет вовсе, а статьи о них есть: широчайшая, мышцы поясницы и живота
+MUSCLES = {f'{m} muscle' for m in ('Latissimus dorsi', 'Multifidus lumborum', 'Multifidus thoracis', 'Quadratus lumborum',
+                                   'Internal abdominal oblique', 'Transversus abdominis', 'Rectus abdominis')}
 
 # Скрытые и исключённые коллекции depsgraph не вычисляет: модификаторы к ним бы не применились
 def show(layer):
@@ -43,12 +49,15 @@ for ob in bpy.data.objects:
         continue
 
     base, _, side = ob.name.rpartition('.')
+    if ob.name in SPINE:
+        base, side = ob.name, 'c'
     # .l/.r -- сами структуры; .g/.j/.t/.i/.s -- подписи и служебные копии
-    if side not in {'l', 'r'}:
+    elif side not in {'l', 'r'}:
         continue
 
-    ref = base in REFS
-    if not ref and (not KEEP.search(base) or DROP.search(base) or FINGERS.search(base)):
+    ref = base in REFS or base in SPINE
+    muscle = base in MUSCLES
+    if not ref and not muscle and (not KEEP.search(base) or DROP.search(base) or FINGERS.search(base)):
         continue
 
     ev = ob.evaluated_get(deps)
@@ -62,7 +71,7 @@ for ob in bpy.data.objects:
 
     mesh.calc_loop_triangles()
     mw = ob.matrix_world
-    name = re.sub(r'[^\w.-]+', '_', ob.name)
+    name = re.sub(r'[^\w.-]+', '_', f'{base}.{side}')
 
     with open(f'{out_dir}/{name}.obj', 'w') as fh:
         fh.write(f'# English name : {ob.name}\n')
@@ -73,7 +82,7 @@ for ob in bpy.data.objects:
             a, b, c = t.vertices
             fh.write(f'f {a + 1} {b + 1} {c + 1}\n')
 
-    manifest.append({'name': ob.name, 'file': name, 'ref': ref, 'tris': len(mesh.loop_triangles), 'type': ob.type,
+    manifest.append({'name': f'{base}.{side}', 'file': name, 'ref': ref, 'muscle': muscle, 'tris': len(mesh.loop_triangles), 'type': ob.type,
                      'collections': [c.name for c in ob.users_collection]})
     ev.to_mesh_clear()
 

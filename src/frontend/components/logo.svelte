@@ -75,7 +75,7 @@
 	}
 
 	.logo__body {
-		fill: var(--a-fg);
+		fill: var(--a-logo);
 	}
 
 	.logo__ear {

@@ -1575,7 +1575,7 @@
 		flex-direction: column;
 		gap: 20px;
 		width: min(380px, 32vw);
-		padding-top: calc(max(24px, 4dvh) + var(--tg-top));
+		padding-top: calc(28px + var(--tg-top));
 		transition:
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);

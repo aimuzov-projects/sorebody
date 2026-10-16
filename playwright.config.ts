@@ -2,5 +2,6 @@
 import preset from '@aimuzov-projects/infra-site-kit/playwright'
 import { defineConfig } from '@playwright/test'
 
-// axe обходит все страницы sitemap одним тестом: на 52 страницах 30 с уже мало
-export default defineConfig(preset, { timeout: 120_000 })
+// axe обходит весь sitemap одним тестом, а главная и страницы движений грузят 3D-модель:
+// 30 секунд пресета на полсотни таких страниц не хватает
+export default defineConfig(preset, { timeout: 180_000 })

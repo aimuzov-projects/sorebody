@@ -1,7 +1,7 @@
 import { Mesh, Vector3, type Group, type Scene } from 'three'
 import type { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-import { createDissolveMaterial } from './dissolve.ts'
+import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM } from './dissolve.ts'
 
 type Vec3 = [number, number, number]
 type Dissolve = ReturnType<typeof createDissolveMaterial>
@@ -67,8 +67,8 @@ export function createDetail(options: {
 		Object.entries(LAYERS).map(([layer, color]) => [
 			layer,
 			layer === 'muscles'
-				? createDissolveMaterial(options.muscleColor, '#0071e3', 0.78, true)
-				: createDissolveMaterial(color, '#0071e3', layer === 'bones' ? 0.5 : 0.6),
+				? createDissolveMaterial(options.muscleColor, MUSCLE_RIM, 0.78, true)
+				: createDissolveMaterial(color, BONE_RIM, layer === 'bones' ? 0.5 : 0.6),
 		]),
 	)
 	const all = Object.values(materials)

@@ -20,7 +20,7 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { createDetail, DETAIL_REACH, detailKey, partIds } from './detail.ts'
-import { createDissolveMaterial } from './dissolve.ts'
+import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM, SKIN_RIM } from './dissolve.ts'
 import { AZIMUTH_DEG, FRAME, NARROW, POLAR_DEG, TARGET_Y } from './frame.ts'
 
 type Vec3 = [number, number, number]
@@ -95,15 +95,15 @@ export async function createBodyScene(
 
 	// Слои снаружи внутрь: в зоне раскрывается кожа, под ней мышцы; у травмы глубже (связка, мениск,
 	// диск, нерв) мышцы расходятся малой сферой. Сатиновая керамика снаружи, кромка среза -- синяя
-	const skin = createDissolveMaterial('#f5f5f3', '#4a9bff', 0.42)
+	const skin = createDissolveMaterial('#f5f5f3', SKIN_RIM, 0.42)
 
 	// Подсветка всей фигуры (зона «Всё тело»): синее свечение кожи, по умолчанию погашено
 	skin.material.emissive.set('#3d8bfd')
 	skin.material.emissiveIntensity = 0
 	// Мышцы как в атласе: красные с волокнами, матовые; в тёмной теме глубже
-	const muscles = createDissolveMaterial(muscleColor(), '#0071e3', 0.78, true)
+	const muscles = createDissolveMaterial(muscleColor(), MUSCLE_RIM, 0.78, true)
 	// Кости -- тот же материал без растворения: так в них работает вырез под детальный кусок зоны
-	const bones = createDissolveMaterial('#efe7da', '#0071e3', 0.5)
+	const bones = createDissolveMaterial('#efe7da', BONE_RIM, 0.5)
 	/** Сфера в мышцах у глубокой травмы -- доля радиуса зоны. */
 	const DEEP_SHARE = 0.45
 

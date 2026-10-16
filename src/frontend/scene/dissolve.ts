@@ -1,18 +1,44 @@
 import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three'
 
+/** Цвета среза у края проёма: снаружи и на изнанке, ширина -- в метрах модели. */
+export type Rim = { front: string; back: string; inner?: string; frontWidth?: number; backWidth?: number }
+
+/**
+ * Кожа: срез толщиной 4 мм. От края проёма наружу -- желтоватая клетчатка (`inner`),
+ * затем светлая розоватая дерма (`front`), потом кожа. Изнанка у края -- та же клетчатка.
+ */
+export const SKIN_RIM: Rim = {
+	front: '#f2cdc2',
+	inner: '#e8d6a8',
+	back: '#e2d0a2',
+	frontWidth: 0.004,
+	backWidth: 0.006,
+}
+/** Мышцы и кости: срез в тон слоя, без неона. */
+export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#4e1414' }
+export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
+
 /**
  * Матовый "фарфор" с растворением в сфере: фрагменты ближе `uRadius` к `uCenter` отбрасываются,
  * граница рвётся 3D-шумом и подсвечивается тёплой кромкой. Внутренняя сторона оболочки темнее,
  * чтобы срез читался как толща ткани, а не как дыра. `muscle` -- мышечный слой: волокна вдоль
  * главной оси каждой мышцы (атрибут `_fiber`) и подсветка мышц по номерам (`_part`), см. build.mjs.
  */
-export function createDissolveMaterial(color: string, rim: string, roughness = 0.92, muscle = false) {
+export function createDissolveMaterial(color: string, rim: string | Rim, roughness = 0.92, muscle = false) {
+	const edge = typeof rim === 'string' ? { front: rim, back: rim } : rim
+
 	const uniforms = {
 		uCenter: { value: new Vector3() },
 		uRadius: { value: 0 },
 		// Сдвиг внутрь по нормали в единицах меша: после упрощения мышцы местами пробивают кожу
 		uInset: { value: 0 },
-		uRim: { value: new Color(rim) },
+		// Срез у края проёма: снаружи -- узкая полоса `front`, на изнанке -- более широкая `back`.
+		// У кожи изнанка у края -- светлая дерма и желтоватая подкожка: срез читается толстым
+		uRim: { value: new Color(edge.front) },
+		uRimWidth: { value: edge.frontWidth ?? 0.003 },
+		uRimInner: { value: new Color(edge.inner ?? edge.front) },
+		uRimBack: { value: new Color(edge.back) },
+		uRimBackWidth: { value: edge.backWidth ?? 0.003 },
 		// Радиус проёма во внешнем слое (кожи): слой виден только там, где тот уже растворён.
 		// Меньше нуля -- внешнего слоя нет
 		uOuter: { value: -1 },
@@ -72,6 +98,10 @@ vFiber = _fiber;
 uniform vec3 uCenter;
 uniform float uRadius;
 uniform vec3 uRim;
+uniform float uRimWidth;
+uniform vec3 uRimInner;
+uniform vec3 uRimBack;
+uniform float uRimBackWidth;
 uniform float uOuter;
 uniform vec4 uCut;
 uniform float uCutSide;
@@ -100,13 +130,14 @@ if (uHighlight > 0.0) for (int i = 0; i < 8; i++) hit = max(hit, 1.0 - step(0.5,
 #endif
 bool kept = uPeel > 0.5 && hit > 0.5;
 float dissolveEdge = 1.0;
-float n = snoise(vDissolvePos * 12.0) * 0.7 + snoise(vDissolvePos * 34.0) * 0.3;
+// Край проёма: лёгкая органика без зубцов -- шум редкий и слабый
+float n = snoise(vDissolvePos * 4.0) * 0.7 + snoise(vDissolvePos * 11.0) * 0.3;
 // Граница проёма во внешнем слое -- той же формулой с шумом, что у него самого
-if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.02 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
+if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.007 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {
-	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.02 * smoothstep(0.0, 0.05, uRadius);
+	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.007 * smoothstep(0.0, 0.05, uRadius);
 	if (d < 0.0 && !kept) discard;
-	if (!kept) dissolveEdge = smoothstep(0.0, 0.007, d);
+	if (!kept) dissolveEdge = d / (gl_FrontFacing ? uRimWidth : uRimBackWidth);
 }`,
 			)
 			.replace(
@@ -144,7 +175,12 @@ totalEmissiveRadiance += diffuseColor.rgb * 0.5 * uHighlight * hit;
 			)
 			.replace(
 				'#include <dithering_fragment>',
-				'#include <dithering_fragment>\ngl_FragColor.rgb = mix(uRim, gl_FragColor.rgb, dissolveEdge);',
+				`#include <dithering_fragment>
+// Изнанка у края: у самого среза -- цвет \`back\`, дальше мягко в обычную тёмную изнанку
+float edgeMix = smoothstep(0.7, 1.0, dissolveEdge);
+// Снаружи у самого края -- нижний слой (inner), за ним мягко верхний (front)
+vec3 cut = gl_FrontFacing ? mix(uRimInner, uRim, smoothstep(0.45, 0.65, dissolveEdge)) : uRimBack;
+gl_FragColor.rgb = mix(cut, gl_FragColor.rgb, edgeMix);`,
 			)
 	}
 

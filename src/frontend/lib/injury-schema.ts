@@ -23,7 +23,7 @@ export const injurySchema = z.strictObject({
 		}),
 	),
 	sources: z.array(z.object({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) })).min(1),
-	/** Черновик: врач статью не проверял. На странице показывается плашка. */
+	/** Черновик: врач статью не проверял. На сайте не показывается, это пометка для редактуры. */
 	draft: z.boolean(),
 })
 

@@ -12,6 +12,9 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 		// Сдвиг внутрь по нормали в единицах меша: после упрощения мышцы местами пробивают кожу
 		uInset: { value: 0 },
 		uRim: { value: new Color(rim) },
+		// Радиус проёма во внешнем слое (кожи): слой виден только там, где тот уже растворён.
+		// Меньше нуля -- внешнего слоя нет
+		uOuter: { value: -1 },
 		// Подсветка зоны: голубое свечение вокруг двух точек (парная зона), к краю -- в серый
 		uTint: { value: [new Vector3(), new Vector3()] },
 		uTintRadius: { value: 0.1 },
@@ -38,6 +41,7 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 uniform vec3 uCenter;
 uniform float uRadius;
 uniform vec3 uRim;
+uniform float uOuter;
 uniform vec3 uTint[2];
 uniform float uTintRadius;
 uniform float uTintStrength;
@@ -49,8 +53,10 @@ ${NOISE}`,
 				'#include <clipping_planes_fragment>',
 				`#include <clipping_planes_fragment>
 float dissolveEdge = 1.0;
+float n = snoise(vDissolvePos * 12.0) * 0.7 + snoise(vDissolvePos * 34.0) * 0.3;
+// Граница проёма во внешнем слое -- той же формулой с шумом, что у него самого
+if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.02 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {
-	float n = snoise(vDissolvePos * 12.0) * 0.7 + snoise(vDissolvePos * 34.0) * 0.3;
 	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.02 * smoothstep(0.0, 0.05, uRadius);
 	if (d < 0.0) discard;
 	dissolveEdge = smoothstep(0.0, 0.007, d);

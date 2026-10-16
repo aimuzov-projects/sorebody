@@ -2104,8 +2104,8 @@
 		}
 	}
 
-	/* Список зоны в свободной половине экрана. Подложки нет: фон сцены растворяется
-	   к центру градиентом, строки гаснут к краям скролла маской */
+	/* Список зоны в свободной половине экрана. Подложка полупрозрачная с размытием, как
+	   у шапки, и растворяется к центру градиентом; строки гаснут к краям скролла маской */
 	.zone {
 		position: absolute;
 		top: 0;
@@ -2142,7 +2142,9 @@
 			&::before {
 				right: -48px;
 				left: -50vw;
-				background: var(--a-bg);
+				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
 				mask-image: linear-gradient(
 					to left,
 					rgb(0 0 0 / 0%) 0px,
@@ -2162,7 +2164,9 @@
 			&::before {
 				right: -50vw;
 				left: -48px;
-				background: var(--a-bg);
+				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
 				mask-image: linear-gradient(
 					to right,
 					rgb(0 0 0 / 0%) 0px,

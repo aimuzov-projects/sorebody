@@ -53,11 +53,19 @@
 		}
 
 		&::before {
+			/* Размытие сходит на нет с середины шапки по той же smoothstep-кривой, что и фон:
+			   с резким краем оно читалось полосой поверх сцены */
+			--blur-from: 40%;
+			--blur-fade: calc(100% - var(--blur-from));
 			-webkit-backdrop-filter: blur(12px);
 			backdrop-filter: blur(12px);
+
 			mask-image: linear-gradient(
 				to bottom,
-				#000000 calc(100% - var(--header-fade) - var(--header-tail)),
+				#000000 var(--blur-from),
+				rgb(0 0 0 / 84%) calc(var(--blur-from) + var(--blur-fade) * 0.25),
+				rgb(0 0 0 / 50%) calc(var(--blur-from) + var(--blur-fade) * 0.5),
+				rgb(0 0 0 / 16%) calc(var(--blur-from) + var(--blur-fade) * 0.75),
 				transparent
 			);
 
@@ -83,6 +91,8 @@
 
 	.site-header--floating {
 		--header-fade: 0px;
+		/* Над сценой край длиннее: под шапкой не текст, а контрастная фигура */
+		--header-tail: 56px;
 
 		pointer-events: none;
 		position: absolute;

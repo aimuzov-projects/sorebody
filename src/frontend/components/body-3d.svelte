@@ -31,6 +31,7 @@
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
+	import SearchField from '#frontend/components/search-field.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
@@ -1074,16 +1075,7 @@
 				</div>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>
-			<label class="index__search">
-				<span class="index__icon" aria-hidden="true">{@html Search}</span>
-				<input
-					class="index__input"
-					type="search"
-					placeholder="Травма или часть тела"
-					aria-label="Поиск по травмам"
-					bind:value={query}
-				/>
-			</label>
+			<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
 			<div class="index__filters">
 				<div class="index__freq" role="group" aria-label="Частота">
 					{#each FREQUENCIES as [value, label, icon] (value)}
@@ -1756,44 +1748,6 @@
 				width: 100%;
 				height: 100%;
 				stroke-width: 1.75;
-			}
-		}
-
-		/* Поле поиска без рамки: снизу тонкая линия, гаснущая к краям, при фокусе -- синяя */
-		&__search {
-			display: flex;
-			gap: 10px;
-			align-items: center;
-			padding: 8px 0 10px;
-			background: linear-gradient(to right, transparent, var(--a-sep) 12%, var(--a-sep) 88%, transparent) bottom /
-				100% 1px no-repeat;
-			transition: background-size 0.3s var(--a-ease);
-
-			&:focus-within {
-				background-image: linear-gradient(
-					to right,
-					transparent,
-					var(--a-blue) 12%,
-					var(--a-blue) 88%,
-					transparent
-				);
-			}
-		}
-
-		&__input {
-			flex: 1;
-			min-width: 0;
-			padding: 0;
-			border: 0;
-			font: inherit;
-			font-size: 19px;
-			color: var(--a-fg);
-			background: none;
-			outline: none;
-
-			&::placeholder {
-				color: var(--a-fg2);
-				opacity: 0.8;
 			}
 		}
 

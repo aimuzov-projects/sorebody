@@ -25,6 +25,7 @@
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
+	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -959,7 +960,13 @@
 		{@const total = movementInjuries.length}
 		<aside class="index" class:index--away={open} aria-label="Травмы движения">
 			<header class="index__head">
-				<a class="index__brand" href="/">Wodcare</a>
+				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
+				<div class="index__brand-row">
+					<a class="index__brand" href="/">Wodcare</a>
+					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
+						>{@html INFO_DOT}</a
+					>
+				</div>
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
 				>
@@ -997,7 +1004,12 @@
 	{:else}
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__brand">Wodcare</p>
+				<div class="index__brand-row">
+					<p class="index__brand">Wodcare</p>
+					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
+						>{@html INFO_DOT}</a
+					>
+				</div>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>
 			<label class="index__search">
@@ -1508,6 +1520,49 @@
 			&:focus-visible {
 				color: var(--a-fg);
 				outline: none;
+			}
+		}
+
+		&__brand-row {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			justify-self: start;
+		}
+
+		/* Значок «О справочнике»: та же тихая «i», что у другого названия в статье. Сам 13px,
+		   зона нажатия 44 на 44 -- невидимым ::before */
+		&__about {
+			position: relative;
+			display: block;
+			flex: none;
+			width: 13px;
+			height: 13px;
+			border-radius: 50%;
+			color: color-mix(in srgb, var(--a-fg2) 70%, transparent);
+			transition: color 0.3s var(--a-ease);
+
+			&::before {
+				content: '';
+				position: absolute;
+				inset: -15.5px;
+			}
+
+			&:hover,
+			&:focus-visible {
+				color: var(--a-blue);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 3px;
+			}
+
+			/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
+			& :global(svg) {
+				display: block;
+				width: 100%;
+				height: 100%;
 			}
 		}
 

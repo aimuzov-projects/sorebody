@@ -217,7 +217,6 @@
 	let readerElement = $state<HTMLElement>()
 	let progressBar = $state<HTMLElement>()
 	let stopReading: (() => void) | undefined
-	let backButton = $state<HTMLButtonElement>()
 	let sceneHidden = $state(false)
 	let loadToken = 0
 	let sleepTimer: ReturnType<typeof setTimeout> | undefined
@@ -658,7 +657,9 @@
 			articleStatus = 'ready'
 			await tick()
 			syncThemeSwitches(readerElement)
-			backButton?.focus({ preventScroll: true })
+			// Фокус -- на статью, а не на стрелку: скринридер начинает с неё, а у кнопки нет
+			// рамки фокуса, которую браузер рисовал при программном переводе
+			readerElement.focus({ preventScroll: true })
 		} catch (error) {
 			if (token !== loadToken) return
 
@@ -956,6 +957,7 @@
 {#if article}
 	<article
 		class="reader"
+		tabindex="-1"
 		bind:this={readerElement}
 		transition:fadeUp
 		aria-label={article.title}
@@ -965,14 +967,11 @@
 			<span class="reader__progress-bar" bind:this={progressBar}></span>
 		</div>
 		<div class="reader__bar">
-			<button
-				class="reader__back"
-				type="button"
-				aria-label="Назад"
-				title="Назад"
-				bind:this={backButton}
-				onclick={up}><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
+				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
+			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css -->
+			<p class="article-bar__title" aria-hidden="true">{article.title}</p>
 		</div>
 		{#if articleStatus === 'loading'}
 			<p class="reader__status">Загружаем статью…</p>
@@ -1930,14 +1929,26 @@
 		overscroll-behavior: contain;
 		background: var(--a-page);
 
+		&:focus {
+			outline: none;
+		}
+
 		&__bar {
 			position: sticky;
 			z-index: 1;
 			top: 0;
+			display: flex;
+			gap: 8px;
+			align-items: center;
 			max-width: 1052px;
+			min-height: calc(52px + var(--tg-top));
 			margin: 0 auto;
-			padding: calc(20px + var(--tg-top)) 24px 20px;
-			background: linear-gradient(to bottom, var(--a-page) 55%, transparent);
+			padding: calc(12px + var(--tg-top)) 24px 20px;
+			background: linear-gradient(to bottom, var(--a-page) 62%, transparent);
+
+			@media (width < 600px) {
+				padding-inline: 20px;
+			}
 		}
 
 		&__back {

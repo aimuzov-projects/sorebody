@@ -29,10 +29,13 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 ---
 
 <Base bare bodyClass="home">
-	<h1 class="home__title">{site.name}: травмы в кроссфите</h1>
-	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
-		<Footer slot="footer" />
-	</Body3d>
+	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
+	<main>
+		<h1 class="home__title">{site.name}: травмы в кроссфите</h1>
+		<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
+			<Footer slot="footer" />
+		</Body3d>
+	</main>
 	<noscript>
 		<ul class="home__fallback">
 			{[...entries]

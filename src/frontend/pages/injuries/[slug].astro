@@ -1,7 +1,7 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink } from 'lucide-static'
+import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, TextQuote } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
@@ -88,7 +88,14 @@ const nameTail = name.slice(nameHead.length)
 					name
 				)}
 			</h1>
-			<p class="article__lead">{data.summary}</p>
+			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
+			<div class="article__summary">
+				<p class="article__summary-label">
+					<span class="article__summary-icon" aria-hidden="true" set:html={TextQuote} />
+					Коротко
+				</p>
+				<p class="article__summary-text">{data.summary}</p>
+			</div>
 			{image && (
 				<figure class="article__figure">
 					<img

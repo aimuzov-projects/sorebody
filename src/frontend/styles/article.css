@@ -202,6 +202,53 @@
 		letter-spacing: -0.015em;
 	}
 
+	/* «Коротко о травме»: метка вторичным цветом и текст крупнее основного цветом текста. Слева
+	   тонкая синяя линия, гаснущая сверху и снизу, висит в поле колонки: текст стоит ровно
+	   под заголовком. Ни рамки, ни подложки */
+	&__summary {
+		position: relative;
+		display: grid;
+		gap: 8px;
+		margin: 4px 0 0 -16px;
+		padding: 6px 0 6px 16px;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 2px;
+			border-radius: 1px;
+			background: linear-gradient(to bottom, transparent, var(--accent) 22%, var(--accent) 78%, transparent);
+		}
+	}
+
+	&__summary-label {
+		display: inline-flex;
+		gap: 6px;
+		align-items: center;
+		margin: 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--muted);
+		letter-spacing: 0.02em;
+	}
+
+	&__summary-icon {
+		display: inline-flex;
+		width: 15px;
+		height: 15px;
+	}
+
+	&__summary-text {
+		margin: 0;
+		font-size: clamp(20px, 2vw, 23px);
+		line-height: 1.45;
+		color: var(--fg);
+		letter-spacing: -0.015em;
+	}
+
 	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
 	&__figure {
 		margin: 16px 0 0;

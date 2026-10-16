@@ -229,6 +229,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		skin.uniforms.uRadius.value = radius
 		muscles.uniforms.uRadius.value = radius * MUSCLE_SHARE
+		// Мышцы видны только в проёме кожи: в BodyParts3D сухожилия у колена и мышцы шеи
+		// местами выходят за кожу и проступали серыми полосами. Без проёма мышц нет вовсе
+		muscles.uniforms.uOuter.value = radius
 
 		const ease = 1 - Math.exp(-dt * 6)
 

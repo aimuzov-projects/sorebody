@@ -30,17 +30,19 @@ const injuries = entries
 	bare
 	bodyClass="scene-page"
 >
-	<h1 class="scene-page__title">{title}</h1>
-	<Body3d
-		client:only="svelte"
-		{zones}
-		{whole}
-		{movements}
-		movementPage={{ slug, title, titleEn }}
-		modelUrl="/model/body.glb"
-	>
-		<Footer slot="footer" />
-	</Body3d>
+	<main>
+		<h1 class="scene-page__title">{title}</h1>
+		<Body3d
+			client:only="svelte"
+			{zones}
+			{whole}
+			{movements}
+			movementPage={{ slug, title, titleEn }}
+			modelUrl="/model/body.glb"
+		>
+			<Footer slot="footer" />
+		</Body3d>
+	</main>
 	<noscript>
 		<div class="scene-page__fallback">
 			<p>

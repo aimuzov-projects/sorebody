@@ -14,10 +14,13 @@ const { entries, zones, whole, movements } = await sceneData()
 ---
 
 <Base bare bodyClass="scene-page">
-	<h1 class="scene-page__title">{site.name}: травмы в кроссфите</h1>
-	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
-		<Footer slot="footer" />
-	</Body3d>
+	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
+	<main>
+		<h1 class="scene-page__title">{site.name}: травмы в кроссфите</h1>
+		<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
+			<Footer slot="footer" />
+		</Body3d>
+	</main>
 	<noscript>
 		<ul class="scene-page__fallback">
 			{[...entries]

@@ -8,13 +8,22 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 	const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-toc] a')]
 	const sections = links.flatMap((link) => root.querySelector(`#${CSS.escape(link.hash.slice(1))}`) ?? [])
+	// Уход заголовка в шапку: там, где CSS умеет привязать анимацию к прокрутке, он всё делает сам
+	const titleByScript = !CSS.supports('animation-timeline: scroll()')
 	let frame = 0
 
 	const update = () => {
 		frame = 0
 		const max = box.scrollHeight - box.clientHeight
+		const y = box.scrollTop
 
-		bar?.style.setProperty('transform', `scaleX(${max > 0 ? Math.min(1, box.scrollTop / max) : 0})`)
+		bar?.style.setProperty('transform', `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`)
+
+		// Те же диапазоны, что animation-range в styles/article.css
+		if (titleByScript) {
+			box.style.setProperty('--title-out', String(Math.min(1, y / 140)))
+			box.style.setProperty('--title-in', String(Math.min(1, Math.max(0, (y - 80) / 80))))
+		}
 
 		// Активный -- последний раздел, чей верх уже поднялся выше трети экрана
 		const top = scroller instanceof Window ? 0 : scroller.getBoundingClientRect().top

@@ -26,8 +26,12 @@ type Vec3 = [number, number, number]
 /** Высота кадра в метрах модели: фигура 1,72 м плюс поля. */
 const FRAME = 2.0
 const TARGET = new Vector3(0, 0.9, 0)
-/** Предел зума колёсиком; наезд на зону и травму его временно поднимает. */
+/** Предел зума колёсиком и щипком: ближе фигура заходит на индекс слева. Наезд на зону и травму его поднимает. */
 const MAX_ZOOM = 2.6
+/** Наклон камеры главной: чуть сверху, как у продуктового снимка. */
+const POLAR = MathUtils.degToRad(73)
+/** Ракурсы зон по наклону лежат в этих пределах; ниже горизонта камера не опускается. */
+const POLAR_RANGE = [MathUtils.degToRad(50), MathUtils.degToRad(80)] as const
 
 export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
 
@@ -76,10 +80,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	controls.target.copy(TARGET)
 	controls.enablePan = false
 	controls.enableDamping = true
-	controls.minPolarAngle = Math.PI * 0.3
-	// Камера всегда чуть выше горизонта: снизу фигура выглядит неудачно, видны пятки
-	controls.maxPolarAngle = MathUtils.degToRad(80)
-	controls.minZoom = 0.9
+	// Наклон камеры не меняется: фигура только вертится вокруг своей оси и не уезжает
+	// на индекс. focus() снимает зажим, чтобы облететь к ракурсу зоны, и ставит его на новом
+	controls.minPolarAngle = controls.maxPolarAngle = POLAR
+	controls.minZoom = 0.6
 	controls.maxZoom = MAX_ZOOM
 	controls.autoRotate = true
 	controls.autoRotateSpeed = 0.6
@@ -136,14 +140,21 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	const shift = { x: 0, y: 0, s: 1 }
 	const shiftTo = { x: 0, y: 0, s: 1 }
 
+	// Three делит на зум ширину окна, но не его сдвиг: без поправки на зум сдвиг на экране
+	// рос бы вместе с зумом и фигура уезжала вправо, на зуме к ней -- за край
+	let framedZoom = 1
+
 	function applyFrame() {
 		const w = halfWidth * shift.s
 		const h = half * shift.s
+		const dx = (shift.x * 2 * w) / camera.zoom
+		const dy = (shift.y * 2 * h) / camera.zoom
 
-		camera.left = -w - shift.x * 2 * w
-		camera.right = w - shift.x * 2 * w
-		camera.top = h - shift.y * 2 * h
-		camera.bottom = -h - shift.y * 2 * h
+		framedZoom = camera.zoom
+		camera.left = -w - dx
+		camera.right = w - dx
+		camera.top = h - dy
+		camera.bottom = -h - dy
 		camera.updateProjectionMatrix()
 	}
 
@@ -181,6 +192,16 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	let focusTo: Shot | null = null
 	let restore: Shot | null = null
+	// Человек сам крутит или зумит: наезд не тянет камеру обратно, пока не придёт новый focus()
+	let manual = false
+
+	controls.addEventListener('start', () => {
+		manual = true
+		// Человек вертит фигуру: наклон остаётся тем, к которому камера успела приехать
+		orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
+		controls.minPolarAngle = controls.maxPolarAngle = orbit.phi
+	})
+
 	const step = new Vector3()
 	const offset = new Vector3()
 	const orbit = new Spherical()
@@ -224,7 +245,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
 
-		const goal = focusTo ?? restore
+		const goal = manual ? null : (focusTo ?? restore)
 
 		if (goal) {
 			const k = 1 - Math.exp(-dt * 6)
@@ -287,10 +308,14 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			if (!focusTo && settled) {
 				restore = null
 				controls.maxZoom = MAX_ZOOM
+				controls.minPolarAngle = controls.maxPolarAngle = POLAR
 			}
 		}
 
 		controls.update(dt)
+
+		if (camera.zoom !== framedZoom) applyFrame()
+
 		renderer.render(scene, camera)
 		onFrame?.()
 		adaptPixelRatio(now)
@@ -356,6 +381,11 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			view?: { azimuth: number; polar: number },
 			spring = false,
 		) {
+			manual = false
+
+			// Наклон освобождаем на время облёта: и к ракурсу зоны, и обратно к общему плану
+			;[controls.minPolarAngle, controls.maxPolarAngle] = POLAR_RANGE
+
 			if (!point) {
 				focusTo = null
 

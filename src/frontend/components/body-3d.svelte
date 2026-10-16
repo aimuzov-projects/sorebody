@@ -21,8 +21,10 @@
 <script lang="ts">
 	import { onMount, tick, type Snippet } from 'svelte'
 
-	import { Circle, Diamond, PersonStanding, Search } from 'lucide-static'
+	import { ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search } from 'lucide-static'
 
+	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
+	import type { Movement } from '#frontend/data/movements.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { syncThemeSwitches, themeSwitchHtml } from '#frontend/lib/theme.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -69,15 +71,22 @@
 
 	const allZones = $derived([...zones, whole])
 	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
-	/** Какие фильтры включены, словами: в шапке раскрытой зоны рядом со счётчиком. */
-	const filterNames = $derived(
+	/**
+	 * Включённые фильтры для шапки раскрытой зоны: каждый своим чипом и со своим знаком --
+	 * частота кружком или ромбом в её цвете, движение его иконкой, поиск лупой.
+	 */
+	const activeFilters = $derived(
 		[
-			query.trim() && `«${query.trim()}»`,
-			frequency !== 'all' && FREQUENCIES.find(([value]) => value === frequency)?.[1],
-			movement && movements.find((m) => m.slug === movement)?.title,
-		]
-			.filter(Boolean)
-			.join(', '),
+			query.trim() && { key: 'query', label: `«${query.trim()}»`, icon: Search, tone: '' },
+			frequency === 'common' && { key: 'frequency', label: 'Частые', icon: Circle, tone: 'common' },
+			frequency === 'rare' && { key: 'frequency', label: 'Редкие', icon: Diamond, tone: 'rare' },
+			movement && {
+				key: 'movement',
+				label: movements.find((m) => m.slug === movement)?.title ?? movement,
+				icon: MOVEMENT_ICONS[movement as Movement] ?? '',
+				tone: '',
+			},
+		].filter((f) => f !== false && f !== ''),
 	)
 
 	function resetFilters() {
@@ -137,10 +146,8 @@
 		const point = zone.points.reduce((a, b) => (body!.facing(b.normal) > body!.facing(a.normal) ? b : a))
 
 		body.controls.autoRotate = false
-		// Кадр главной сдвинут вправо от индекса; точка встаёт в середину свободной части
-		const at = wrap.clientWidth < 700 ? { x: 0, y: 0 } : { x: -0.17, y: 0 }
-
-		body.focus(point.position, clamp(0.26 / zone.radius, 1, 2.2), at, point.view, true)
+		// Кадр главной уже сдвинут вправо от индекса: точка встаёт в середину свободной части
+		body.focus(point.position, clamp(0.26 / zone.radius, 1, 2.2), { x: 0, y: 0 }, point.view, true)
 	}
 
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
@@ -309,6 +316,20 @@
 	onMount(() => {
 		// Переключатель темы в индексе отрисован уже после общего скрипта страницы
 		syncThemeSwitches(wrap)
+
+		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
+		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
+		const stopPageZoom = (event: Event) => {
+			if (!(event instanceof WheelEvent) || event.ctrlKey) event.preventDefault()
+
+			// Точки зон -- кнопки поверх канваса: колесо над ними тоже зумит модель
+			if (event instanceof WheelEvent && (event.target as Element).closest('.body3d__spot'))
+				canvas.dispatchEvent(new WheelEvent('wheel', event))
+		}
+
+		for (const type of ['wheel', 'gesturestart', 'gesturechange'])
+			wrap.addEventListener(type, stopPageZoom, { passive: false })
+
 		// Ссылка «/?region=knee» со страницы статьи открывает список зоны
 		const region = new URLSearchParams(location.search).get('region')
 		const regionZone = allZones.find((zone) => zone.slug === region)
@@ -375,6 +396,8 @@
 		visibility.observe(canvas)
 
 		return () => {
+			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
+
 			window.removeEventListener('popstate', sync)
 			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
@@ -478,8 +501,8 @@
 
 		body.frame(0, 0)
 		body.dissolve(point.position, open.zone.radius)
+		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
 		body.controls.autoRotate = false
-		body.controls.enabled = false
 
 		// При reduced motion камера не ездит за строками: акцент только на маркере
 		const target = accent && !reduceMotion ? injuryFocus(open.zone, open.index, accent.slug) : null
@@ -833,11 +856,11 @@
 							onfocus={() => previewZone(zone, false)}
 							onblur={() => previewZone(null, false)}
 						>
+							<span class="index__count">{count}</span>
 							{#if zone === whole}<span class="index__icon" aria-hidden="true"
 									>{@html PersonStanding}</span
 								>{/if}
 							<span class="index__zone-label">{zone.label}</span>
-							<span class="index__count">{count}</span>
 						</button>
 					</li>
 				{/each}
@@ -854,14 +877,34 @@
 		{@const shown = open.zone.injuries.filter(matches)}
 		<section class="zone zone--{open.side}" aria-label={open.zone.label}>
 			<header class="zone__head">
-				<button class="zone__back" type="button" onclick={up}><span aria-hidden="true">←</span> Назад</button>
-				<h2 class="zone__title">{open.zone.label}</h2>
+				<div class="zone__heading">
+					<button class="zone__back" type="button" aria-label="Назад" title="Назад" onclick={up}
+						><span class="zone__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+					>
+					<h2 class="zone__title">{open.zone.label}</h2>
+				</div>
 				{#if filtering}
-					<p class="zone__count zone__count--filtered">
-						<span class="zone__filter">{shown.length} из {total} {plural(total)}</span>
-						<span class="zone__filter-names">{filterNames}</span>
-						<button class="zone__reset" type="button" onclick={resetFilters}>Сбросить</button>
-					</p>
+					<div class="zone__filters">
+						<button
+							class="zone__reset"
+							type="button"
+							aria-label="Сбросить фильтры"
+							title="Сбросить фильтры"
+							onclick={resetFilters}
+							><span class="zone__reset-icon" aria-hidden="true">{@html FunnelX}</span></button
+						>
+						<p class="zone__filter">{shown.length} из {total} {plural(total)}</p>
+						<ul class="zone__tags" aria-label="Фильтры">
+							{#each activeFilters as filter (filter.key)}
+								<li class="zone__tag">
+									<span
+										class="zone__tag-icon zone__tag-icon--{filter.tone || 'plain'}"
+										aria-hidden="true">{@html filter.icon}</span
+									>{filter.label}
+								</li>
+							{/each}
+						</ul>
+					</div>
 				{/if}
 			</header>
 			<ul class="zone__list" onscroll={onListScroll}>
@@ -917,9 +960,14 @@
 			<span class="reader__progress-bar" bind:this={progressBar}></span>
 		</div>
 		<div class="reader__bar">
-			<button class="reader__back" type="button" bind:this={backButton} onclick={up}>
-				<span aria-hidden="true">←</span> Назад
-			</button>
+			<button
+				class="reader__back"
+				type="button"
+				aria-label="Назад"
+				title="Назад"
+				bind:this={backButton}
+				onclick={up}><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+			>
 		</div>
 		{#if articleStatus === 'loading'}
 			<p class="reader__status">Загружаем статью…</p>
@@ -1451,16 +1499,21 @@
 			}
 		}
 
+		/* Сколько травм в зоне -- бейджем перед названием: числа стоят ровным столбцом */
 		&__count {
-			margin-left: auto;
-			font-size: 15px;
-			font-weight: 500;
+			display: inline-grid;
+			flex: none;
+			place-items: center;
+			min-width: 28px;
+			height: 24px;
+			padding: 0 7px;
+			border-radius: 999px;
+			font-size: 14px;
+			font-weight: 600;
 			font-variant-numeric: tabular-nums;
 			color: var(--a-fg2);
-
-			@media (width < 700px) {
-				margin-left: 0;
-			}
+			letter-spacing: 0;
+			background: var(--a-fill);
 		}
 
 		&__result {
@@ -1583,7 +1636,7 @@
 			}
 
 			/* Под фильтром шапка выше на строку: фон под ней тянется дальше */
-			&:has(.zone__count--filtered)::before {
+			&:has(.zone__filters)::before {
 				background:
 					linear-gradient(to bottom, var(--a-bg) 21%, transparent 33%),
 					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
@@ -1595,16 +1648,29 @@
 			padding-top: calc(max(32px, 7dvh) + var(--tg-top));
 		}
 
+		/* «Назад» -- стрелка в строке заголовка, без подписи: место на шапке дороже слова */
+		&__heading {
+			display: flex;
+			gap: 6px;
+			align-items: center;
+			margin-left: -12px;
+		}
+
 		&__back {
 			cursor: pointer;
-			margin: 0 0 16px -2px;
-
-			padding: 4px 2px;
+			display: inline-grid;
+			flex: none;
+			place-items: center;
+			width: 44px;
+			height: 44px;
+			padding: 0;
 			border: 0;
-			font: inherit;
+			border-radius: 50%;
 			color: var(--a-blue);
 			background: none;
-			transition: opacity 0.3s var(--a-ease);
+			transition:
+				opacity 0.3s var(--a-ease),
+				background 0.3s var(--a-ease);
 
 			/* В Mini App своя «Назад» не нужна: у Telegram есть системная кнопка */
 			:global([data-telegram]) & {
@@ -1612,12 +1678,25 @@
 			}
 
 			&:hover {
-				opacity: 0.7;
+				background: var(--a-fill);
 			}
 
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);
 				outline-offset: 2px;
+			}
+		}
+
+		&__back-icon {
+			display: inline-flex;
+			width: 34px;
+			height: 34px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 2.4;
 			}
 		}
 
@@ -1629,24 +1708,59 @@
 			letter-spacing: -0.03em;
 		}
 
-		&__count {
-			margin: 6px 0 0;
-			font-size: 17px;
-			color: var(--a-fg2);
+		/* Под фильтром список неполный: слева, под стрелкой "Назад", -- сброс иконкой, дальше
+		   счётчик синей таблеткой и включённые фильтры чипами */
+		&__filters {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			align-items: center;
+			margin: 10px 0 0 -12px;
+			font-size: 15px;
+		}
 
-			/* Под фильтром список неполный: счётчик -- синей таблеткой, рядом что отфильтровано
-			   и как вернуть всё */
-			&--filtered {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 6px 10px;
-				align-items: center;
-				margin-top: 12px;
-				font-size: 15px;
+		&__reset {
+			cursor: pointer;
+			display: inline-grid;
+			flex: none;
+			place-items: center;
+			width: 44px;
+			height: 32px;
+			padding: 0;
+			border: 0;
+			border-radius: 999px;
+			color: var(--a-blue);
+			background: none;
+			transition: background 0.3s var(--a-ease);
+
+			&:hover {
+				background: var(--a-fill);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
 			}
 		}
 
+		&__reset-icon,
+		&__tag-icon {
+			display: inline-flex;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		&__reset-icon {
+			width: 20px;
+			height: 20px;
+		}
+
 		&__filter {
+			margin: 0;
 			padding: 4px 12px;
 			border-radius: 999px;
 			font-weight: 600;
@@ -1656,26 +1770,45 @@
 			background: color-mix(in srgb, var(--a-blue) 13%, var(--a-bg));
 		}
 
-		&__filter-names {
-			color: var(--a-fg);
+		&__tags {
+			display: contents;
 		}
 
-		&__reset {
-			cursor: pointer;
-			padding: 2px;
-			border: 0;
-			font: inherit;
-			color: var(--a-blue);
-			background: none;
-			transition: opacity 0.3s var(--a-ease);
+		&__tag {
+			display: inline-flex;
+			gap: 6px;
+			align-items: center;
+			padding: 4px 12px 4px 10px;
+			border-radius: 999px;
+			color: var(--a-fg);
+			white-space: nowrap;
+			list-style: none;
+			background: color-mix(in srgb, var(--a-fg) 7%, var(--a-bg));
+		}
 
-			&:hover {
-				opacity: 0.7;
+		&__tag-icon {
+			width: 15px;
+			height: 15px;
+			color: var(--a-fg2);
+
+			/* Частота -- залитым знаком в своём цвете, как в переключателе индекса */
+			&--common,
+			&--rare {
+				width: 10px;
+				height: 10px;
+
+				/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+				& :global(svg) {
+					fill: currentcolor;
+				}
 			}
 
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
+			&--common {
+				color: var(--common);
+			}
+
+			&--rare {
+				color: var(--rare);
 			}
 		}
 
@@ -1809,27 +1942,42 @@
 
 		&__back {
 			cursor: pointer;
-			margin-left: -2px;
-
-			padding: 4px 2px;
+			display: inline-grid;
+			place-items: center;
+			width: 40px;
+			height: 40px;
+			margin-left: -10px;
+			padding: 0;
 			border: 0;
-			font: inherit;
-			font-size: 17px;
+			border-radius: 50%;
 			color: var(--a-blue);
 			background: none;
-			transition: opacity 0.3s var(--a-ease);
+			transition: background 0.3s var(--a-ease);
 
 			:global([data-telegram]) & {
 				display: none;
 			}
 
 			&:hover {
-				opacity: 0.7;
+				background: var(--a-fill);
 			}
 
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);
 				outline-offset: 2px;
+			}
+		}
+
+		&__back-icon {
+			display: inline-flex;
+			width: 28px;
+			height: 28px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 2.2;
 			}
 		}
 

@@ -2118,9 +2118,9 @@
 	   .footer -- те же токены, что у шапки. Мимо ссылок мышь проходит к сцене: модель можно
 	   крутить и под подвалом */
 	.scene-footer {
-		/* Подложка как у шапки сцены (site-header.svelte), только зеркально: полупрозрачный фон
-		   и размытие гаснут вверх по smoothstep, мягкий край уходит выше строки подвала */
-		--footer-tail: 56px;
+		/* Подложка без размытия: полупрозрачный фон гаснет вверх от самого края экрана по
+		   smoothstep, сплошной полосы нет, край уходит чуть выше строки подвала */
+		--footer-tail: 24px;
 		--footer-bg: var(--bg);
 		pointer-events: none;
 		position: absolute;
@@ -2134,44 +2134,19 @@
 			display: none;
 		}
 
-		&::before,
 		&::after {
 			pointer-events: none;
 			content: '';
 			position: absolute;
 			z-index: -1;
 			inset: calc(-1 * var(--footer-tail)) 0 0;
-		}
-
-		&::before {
-			--blur-from: 40%;
-			--blur-fade: calc(100% - var(--blur-from));
-
-			-webkit-backdrop-filter: blur(12px);
-			backdrop-filter: blur(12px);
-			mask-image: linear-gradient(
-				to top,
-				#000000 var(--blur-from),
-				rgb(0 0 0 / 84%) calc(var(--blur-from) + var(--blur-fade) * 0.25),
-				rgb(0 0 0 / 50%) calc(var(--blur-from) + var(--blur-fade) * 0.5),
-				rgb(0 0 0 / 16%) calc(var(--blur-from) + var(--blur-fade) * 0.75),
-				transparent
-			);
-
-			@media (prefers-reduced-transparency: reduce) {
-				display: none;
-			}
-		}
-
-		&::after {
-			--fade-from: calc(100% - var(--footer-tail));
-
 			background: linear-gradient(
 				to top,
-				color-mix(in srgb, var(--footer-bg) 72%, transparent) var(--fade-from),
-				color-mix(in srgb, var(--footer-bg) 60%, transparent) calc(var(--fade-from) + var(--footer-tail) * 0.25),
-				color-mix(in srgb, var(--footer-bg) 36%, transparent) calc(var(--fade-from) + var(--footer-tail) * 0.5),
-				color-mix(in srgb, var(--footer-bg) 12%, transparent) calc(var(--fade-from) + var(--footer-tail) * 0.75),
+				color-mix(in srgb, var(--footer-bg) 72%, transparent),
+				color-mix(in srgb, var(--footer-bg) 64%, transparent) 20%,
+				color-mix(in srgb, var(--footer-bg) 47%, transparent) 40%,
+				color-mix(in srgb, var(--footer-bg) 25%, transparent) 60%,
+				color-mix(in srgb, var(--footer-bg) 8%, transparent) 80%,
 				transparent
 			);
 		}

@@ -20,7 +20,7 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { createDetail, DETAIL_REACH, detailKey, partIds } from './detail.ts'
-import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM, SKIN_RIM } from './dissolve.ts'
+import { BONE_RIM, createDissolveMaterial, FABRIC_RIM, MUSCLE_RIM, SKIN_RIM } from './dissolve.ts'
 import { AZIMUTH_DEG, FRAME, NARROW, POLAR_DEG, TARGET_Y } from './frame.ts'
 
 type Vec3 = [number, number, number]
@@ -106,8 +106,26 @@ export async function createBodyScene(
 	const bones = createDissolveMaterial('#efe7da', BONE_RIM, 0.5)
 	/** Сфера в мышцах у глубокой травмы -- доля радиуса зоны. */
 	const DEEP_SHARE = 0.45
+	// Шорты поверх кожи: серая матовая ткань. Проём, подсветка зоны и граница по середине тела --
+	// общие с кожей: в зоне паха ткань раскрывается тем же проёмом
+	const shorts = createDissolveMaterial('#6b707b', FABRIC_RIM, 0.95, false, true)
+
+	for (const key of [
+		'uCenter',
+		'uRadius',
+		'uMidline',
+		'uTint',
+		'uTintRadius',
+		'uTintStrength',
+		'uTintPrev',
+		'uTintPrevRadius',
+		'uTintPrevStrength',
+	] as const)
+		Object.assign(shorts.uniforms, { [key]: skin.uniforms[key] })
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+	// Шорты -- отдельный файл рядом с моделью (scripts/model/shorts.py), грузятся вместе с ней
+	const shortsModel = loader.loadAsync(modelUrl.replace(/[^/]*$/, 'shorts.glb')).catch(() => null)
 	// Доля загруженного body.glb -- для полосы под силуэтом; без размера ответа её нет
 	const gltf = await loader.loadAsync(modelUrl, (event) => {
 		if (event.lengthComputable && event.total) onProgress?.(event.loaded / event.total)
@@ -129,6 +147,14 @@ export async function createBodyScene(
 	})
 
 	scene.add(gltf.scene)
+
+	const shortsGltf = await shortsModel
+
+	shortsGltf?.scene.traverse((obj) => {
+		if (obj instanceof Mesh) obj.material = shorts.material
+	})
+
+	if (shortsGltf) scene.add(shortsGltf.scene)
 
 	// Коробка фигуры вместе с тенью на полу: по ней скрипт режет постер, а страница его ставит
 	const bounds = new Box3()
@@ -238,6 +264,9 @@ export async function createBodyScene(
 	const centerTo = new Vector3()
 	let glowTo = 0
 	let tintTo = 0
+	let sway = 0
+	let swayVelocity = 0
+	let swayAzimuth = 0
 	let last = performance.now()
 	let onFrame: (() => void) | undefined
 
@@ -320,6 +349,23 @@ export async function createBodyScene(
 
 		skin.uniforms.uTintStrength.value += (tintTo - skin.uniforms.uTintStrength.value) * tintEase
 		skin.uniforms.uTintPrevStrength.value *= 1 - tintEase
+
+		// Колыхание шорт: подол догоняет поворот фигуры пружиной с недодемпфированием -- при
+		// остановке ткань ещё пару раз качнётся. Цель -- отставание, пропорциональное скорости
+		const azimuth = controls.getAzimuthalAngle()
+		const turn = Math.atan2(Math.sin(azimuth - swayAzimuth), Math.cos(azimuth - swayAzimuth))
+
+		swayAzimuth = azimuth
+
+		if (dt > 0) {
+			const target = MathUtils.clamp((turn / dt) * 0.04, -0.06, 0.06)
+
+			swayVelocity += (70 * (target - sway) - 5 * swayVelocity) * dt
+			sway += swayVelocity * dt
+		}
+
+		shorts.uniforms.uSwayTurn.value = sway
+		shorts.uniforms.uTime.value = now / 1000
 
 		const goal = manual ? null : (focusTo ?? restore)
 

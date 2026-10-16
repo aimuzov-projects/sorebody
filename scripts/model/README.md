@@ -63,3 +63,17 @@ python3 -I detail.py <папка со списками> <папка с OBJ> deta
 for c in detail/*-*.json; do node build.mjs $c ${c%.json}.glb; done
 cp detail/*.glb detail/index.json ../../public/model/detail/
 ```
+
+## Шорты
+
+`public/model/shorts.glb` -- отдельный меш поверх кожи, в мировых координатах сцены. Собирается из кожи готовой
+`body.glb`: `skin-obj.mjs` выгружает её в OBJ, `shorts.py` в Blender берёт кожу от пояса до середины бедра,
+утолщает её в обе стороны, добавляет перемычку в паху, сглаживает воксельным ремешем и сглаживанием, режет ровные
+пояс и подол и прореживает до ~16 тыс. треугольников.
+
+```bash
+node scripts/model/skin-obj.mjs public/model/body.glb skin.obj
+blender -b -P scripts/model/shorts.py -- skin.obj public/model/shorts.glb
+```
+
+Колыхание считает сцена: подол отстаёт от поворота фигуры пружиной (`uSwayTurn` в `dissolve.ts`).

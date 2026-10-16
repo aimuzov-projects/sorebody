@@ -26,7 +26,7 @@
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
-	import type { Zone } from '#frontend/scene/zones.ts'
+	import { injuryFocus, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -98,6 +98,36 @@
 		zones.flatMap((zone) => zone.points.map((_, index) => ({ zone, index, x: 0, y: 0, visible: true }))),
 	)
 	let spotEls = $state<HTMLButtonElement[]>([])
+
+	/**
+	 * Травма, на строку которой навели в раскрытой зоне (на таче -- строка у центра списка):
+	 * камера подъезжает к её месту, её маркер крупнее, остальные притушены.
+	 */
+	let accent = $state.raw<Injury | null>(null)
+	let accentTimer: ReturnType<typeof setTimeout> | undefined
+	let scrollTimer: ReturnType<typeof setTimeout> | undefined
+	const noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
+
+	/** Маркеры травм раскрытой зоны: травмы с одним местом делят маркер. */
+	type Mark = { key: string; focus: InjuryFocus; slugs: string[] }
+
+	const marks: Mark[] = $derived.by(() => {
+		if (!open) return []
+
+		const byKey = new Map<string, Mark>()
+
+		for (const injury of open.zone.injuries.filter(matches)) {
+			const focus = injuryFocus(open.zone, open.index, injury.slug)
+			const key = focus.position.map((v) => v.toFixed(3)).join()
+			const mark = byKey.get(key)
+
+			if (mark) mark.slugs.push(injury.slug)
+			else byKey.set(key, { key, focus, slugs: [injury.slug] })
+		}
+
+		return [...byKey.values()]
+	})
+	let markEls = $state<HTMLSpanElement[]>([])
 
 	// raw: иначе Svelte обернёт точку в прокси и сравнение hovered === spot всегда ложно
 	let hovered = $state.raw<Spot | null>(null)
@@ -307,6 +337,17 @@
 			el.style.transform = `translate(${p.x}px, ${p.y}px)`
 			el.dataset.hidden = String(!spot.visible)
 		}
+
+		for (const [i, mark] of marks.entries()) {
+			const el = markEls[i]
+
+			if (!el) continue
+
+			const p = body.project(mark.focus.position)
+
+			el.style.transform = `translate(${p.x}px, ${p.y}px)`
+			el.dataset.hidden = String(body.facing(mark.focus.normal) < -0.05)
+		}
 	}
 
 	function nearest(x: number, y: number, radius: number) {
@@ -352,22 +393,81 @@
 
 		hovered = null
 		setHighlight(null)
+		clearAccent()
 		open = { zone, index, side }
 		focusOpen()
 	}
 
-	/** Камера к раскрытой зоне. Отдельно от `showZone`: список работает и до загрузки модели, и без WebGL. */
-	function focusOpen() {
+	/**
+	 * Камера к раскрытой зоне, а при акценте -- ещё ближе, к месту травмы. Растворение остаётся
+	 * на всю зону. Отдельно от `showZone`: список работает и до загрузки модели, и без WebGL.
+	 */
+	function focusOpen(spring = false) {
 		if (!body || !open) return
 
 		const point = open.zone.points[open.index]
 		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? 0.12 : -0.12, y: 0 }
+		const zoom = clamp(0.3 / open.zone.radius, 1, 2.4)
 
 		body.frame(0, 0)
 		body.dissolve(point.position, open.zone.radius)
 		body.controls.autoRotate = false
 		body.controls.enabled = false
-		body.focus(point.position, clamp(0.3 / open.zone.radius, 1, 2.4), at, point.view)
+
+		// При reduced motion камера не ездит за строками: акцент только на маркере
+		const target = accent && !reduceMotion ? injuryFocus(open.zone, open.index, accent.slug) : null
+
+		// На телефоне зона над списком и под шапкой: ближе 3 она уже заезжает под заголовок
+		const maxZoom = open.side === 'bottom' ? 3 : 4
+
+		if (target) body.focus(target.position, Math.min(zoom * target.zoom, maxZoom), at, target.view, true)
+		else body.focus(point.position, zoom, at, point.view, spring)
+	}
+
+	/**
+	 * Акцент на травме. Маркер откликается сразу, камера -- с короткой задержкой: курсор,
+	 * проходящий по строкам, не дёргает её от каждой.
+	 */
+	function setAccent(injury: Injury | null) {
+		if (!open || accent === injury) return
+
+		accent = injury
+		clearTimeout(accentTimer)
+		accentTimer = setTimeout(() => focusOpen(true), injury ? 90 : 160)
+	}
+
+	function clearAccent() {
+		accent = null
+		clearTimeout(accentTimer)
+		clearTimeout(scrollTimer)
+	}
+
+	/** Тач: ховера нет, акцент получает строка у центра видимой части списка, когда скролл затих. */
+	function onListScroll(event: Event) {
+		if (!noHover) return
+
+		const list = event.currentTarget as HTMLElement
+
+		clearTimeout(scrollTimer)
+
+		scrollTimer = setTimeout(() => {
+			const box = list.getBoundingClientRect()
+			const middle = box.top + box.height * 0.4
+			let best: HTMLElement | undefined
+			let bestD = Infinity
+
+			for (const item of list.querySelectorAll<HTMLElement>('[data-slug]')) {
+				const r = item.getBoundingClientRect()
+				const d = Math.abs(r.top + r.height / 2 - middle)
+
+				if (d < bestD) {
+					best = item
+					bestD = d
+				}
+			}
+
+			setAccent(open?.zone.injuries.find((i) => i.slug === best?.dataset.slug) ?? null)
+		}, 180)
 	}
 
 	function closeZone() {
@@ -375,6 +475,7 @@
 
 		open = null
 		hovered = null
+		clearAccent()
 
 		if (!body) return
 
@@ -398,6 +499,9 @@
 		if (article?.slug === injury.slug) return
 
 		article = injury
+		// Камера возвращается к кадру зоны, пока сцена скрыта: после статьи акцент начнётся заново
+		accent = null
+		focusOpen()
 		sceneHidden = true
 		clearTimeout(sleepTimer)
 		sleepTimer = setTimeout(() => sceneHidden && body?.pause(true), reduceMotion ? 0 : SCENE_FADE_MS)
@@ -583,6 +687,19 @@
 		</button>
 	{/each}
 
+	{#each marks as mark, i (mark.key)}
+		<span
+			class="body3d__mark"
+			class:body3d__mark--accent={accent && mark.slugs.includes(accent.slug)}
+			class:body3d__mark--dim={accent && !mark.slugs.includes(accent.slug)}
+			bind:this={markEls[i]}
+			hidden={status !== 'ready'}
+			aria-hidden="true"
+		>
+			<span class="body3d__mark-dot"></span>
+		</span>
+	{/each}
+
 	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
 	<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
 		<header class="index__head">
@@ -680,14 +797,20 @@
 						: `${total} ${plural(total)}`}
 				</p>
 			</header>
-			<ul class="zone__list">
+			<ul class="zone__list" onscroll={onListScroll}>
 				{#each shown as injury, i (injury.slug)}
 					{@const [head, tail] = splitLastWord(injury.title)}
 					<li class="zone__row" style:--i={i}>
 						<a
 							class="zone__item"
+							class:zone__item--accent={noHover && accent === injury}
 							href="/injuries/{injury.slug}/"
+							data-slug={injury.slug}
 							onclick={(event) => onItemClick(event, injury)}
+							onpointerenter={(event) => event.pointerType !== 'touch' && setAccent(injury)}
+							onpointerleave={(event) => event.pointerType !== 'touch' && setAccent(null)}
+							onfocus={() => setAccent(injury)}
+							onblur={() => setAccent(null)}
 						>
 							<span class="zone__name">
 								{head}<span class="zone__tail"
@@ -854,6 +977,68 @@
 				border-radius: 50%;
 				opacity: 0;
 				animation: spot-pulse 2.4s var(--a-ease) infinite;
+
+				@media (--reduced-motion) {
+					animation: none;
+				}
+			}
+		}
+
+		/* Маркеры травм раскрытой зоны: такая же точка, но не кнопка. Строка под курсором
+		   увеличивает свой маркер и включает пульс, остальные притушены */
+		&__mark {
+			pointer-events: none;
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: grid;
+			place-items: center;
+			width: 40px;
+			height: 40px;
+			margin: -20px 0 0 -20px;
+			transition: opacity 0.35s var(--a-ease);
+			animation: fade-in 0.5s var(--a-ease) 0.3s both;
+
+			&:global([data-hidden='true']) {
+				opacity: 0;
+			}
+
+			&--dim {
+				opacity: 0.25;
+			}
+		}
+
+		&__mark-dot {
+			position: relative;
+			width: 9px;
+			height: 9px;
+			border-radius: 50%;
+			background: #ffffff;
+			box-shadow:
+				0 0 0 1.5px var(--a-blue),
+				0 1px 4px rgb(0 0 0 / 25%);
+			transition:
+				transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+				box-shadow 0.45s var(--a-ease);
+
+			&::after {
+				content: '';
+				position: absolute;
+				inset: -7px;
+				border: 1.5px solid var(--a-blue);
+				border-radius: 50%;
+				opacity: 0;
+			}
+		}
+
+		&__mark--accent &__mark-dot {
+			transform: scale(1.7);
+			box-shadow:
+				0 0 0 2px var(--a-blue),
+				0 2px 8px rgb(0 0 0 / 25%);
+
+			&::after {
+				animation: spot-pulse 1.6s var(--a-ease) infinite;
 
 				@media (--reduced-motion) {
 					animation: none;
@@ -1377,6 +1562,11 @@
 				color: var(--a-blue);
 				outline: none;
 			}
+		}
+
+		/* Тач: строка у центра списка, к которой подъехала камера */
+		&__list:has(&__item--accent) &__item:not(&__item--accent) {
+			opacity: 0.4;
 		}
 
 		&__list:has(&__item:focus-visible) &__item:not(:focus-visible) {

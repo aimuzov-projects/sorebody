@@ -87,3 +87,71 @@ export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
 
 	return { zones, whole }
 }
+
+/**
+ * Где внутри зоны сама травма. Смещение от центра зоны в метрах модели, для левой точки
+ * (+X -- наружу); у правой зеркалится. `normal` и `view` -- если с ракурса зоны место не видно,
+ * `zoom` -- во сколько раз ближе кадра зоны. Травмы без записи наезжают на центр зоны.
+ */
+const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; zoom?: number }> = {
+	// Колено: надколенник спереди, ПКС в центре сустава, мениск -- по суставной щели изнутри
+	'patellofemoral-pain': { offset: [0, 0.02, 0.05], normal: [0.2, 0, 1], view: { azimuth: 12, polar: 78 } },
+	'acl-tear': { offset: [0, 0, 0], zoom: 1.7 },
+	'meniscus-tear': { offset: [-0.035, -0.015, 0.015], normal: [-0.3, 0, 1], view: { azimuth: 0, polar: 78 } },
+	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
+	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
+	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },
+	'labral-tear-slap': { offset: [0, 0, 0], zoom: 1.7 },
+	'subscapularis-biceps-pulley': { offset: [0, -0.01, 0.045], normal: [0.3, 0, 1], view: { azimuth: 20, polar: 74 } },
+	'pectoralis-major-rupture': { offset: [-0.07, -0.05, 0.08], normal: [0, 0, 1], view: { azimuth: 10, polar: 74 } },
+	'paget-schroetter-syndrome': { offset: [-0.07, 0.02, 0.06], normal: [0, 0.3, 1], view: { azimuth: 8, polar: 70 } },
+	'latissimus-dorsi-tear': { offset: [-0.03, -0.12, -0.06], normal: [0.5, 0, -1], view: { azimuth: 125, polar: 76 } },
+	'upper-limb-stress-fractures': {
+		offset: [-0.06, -0.03, -0.09],
+		normal: [0, 0, -1],
+		view: { azimuth: 150, polar: 72 },
+	},
+	// Таз и бедро: пах спереди изнутри, ИТТ сбоку, задняя поверхность бедра сзади
+	'inguinal-hernia': { offset: [-0.055, 0, 0.085], normal: [0, 0, 1], view: { azimuth: 10, polar: 76 } },
+	'meralgia-paresthetica': { offset: [0.03, -0.07, 0.07], normal: [0.5, 0, 1], view: { azimuth: 35, polar: 76 } },
+	'iliotibial-band-syndrome': { offset: [0.055, -0.17, 0], normal: [1, 0, 0], view: { azimuth: 80, polar: 76 } },
+	'hamstring-strain': { offset: [0, -0.15, -0.07], normal: [0, 0, -1], view: { azimuth: 155, polar: 76 } },
+	'stress-urinary-incontinence': {
+		offset: [-0.107, 0.01, 0.07],
+		normal: [0, 0, 1],
+		view: { azimuth: 0, polar: 78 },
+	},
+	// Поясница: диск по центру, мышцы -- сбоку от позвоночника
+	'lumbar-disc-herniation': { offset: [0, -0.03, 0], zoom: 1.5 },
+	'low-back-strain': { offset: [0.05, 0, -0.04], normal: [0.3, 0, -1] },
+	// Всё тело: шея и лицо
+	'cervical-artery-dissection': {
+		offset: [0, 0.2, -0.01],
+		normal: [0, 0, 1],
+		view: { azimuth: 25, polar: 80 },
+		zoom: 3,
+	},
+	'orofacial-trauma': { offset: [0, 0.31, 0.05], normal: [0, 0, 1], view: { azimuth: 15, polar: 80 }, zoom: 3.2 },
+}
+
+export type InjuryFocus = { position: Vec3; normal: Vec3; view: View; zoom: number }
+
+/** Точка фокуса травмы на стороне `index` раскрытой зоны; `zoom` -- множитель к кадру зоны. */
+export function injuryFocus(zone: Zone, index: number, slug: string): InjuryFocus {
+	const point = zone.points[index]
+	const entry = INJURY_FOCUS[slug]
+	const s = point.position[0] < 0 ? -1 : 1
+
+	if (!entry) return { ...point, zoom: 1.5 }
+
+	const [dx, dy, dz] = entry.offset
+	const [x, y, z] = point.position
+	const normal = entry.normal ? ([s * entry.normal[0], entry.normal[1], entry.normal[2]] as Vec3) : point.normal
+
+	return {
+		position: [x + s * dx, y + dy, z + dz],
+		normal,
+		view: entry.view ? { azimuth: s * entry.view.azimuth, polar: entry.view.polar } : point.view,
+		zoom: entry.zoom ?? 1.5,
+	}
+}

@@ -26,6 +26,8 @@ type Vec3 = [number, number, number]
 /** Высота кадра в метрах модели: фигура 1,72 м плюс поля. */
 const FRAME = 2.0
 const TARGET = new Vector3(0, 0.9, 0)
+/** Предел зума колёсиком; наезд на зону и травму его временно поднимает. */
+const MAX_ZOOM = 2.6
 
 export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
 
@@ -78,7 +80,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	// Камера всегда чуть выше горизонта: снизу фигура выглядит неудачно, видны пятки
 	controls.maxPolarAngle = MathUtils.degToRad(80)
 	controls.minZoom = 0.9
-	controls.maxZoom = 2.6
+	controls.maxZoom = MAX_ZOOM
 	controls.autoRotate = true
 	controls.autoRotateSpeed = 0.6
 	controls.update()
@@ -174,13 +176,20 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let onFrame: (() => void) | undefined
 
 	// Наезд на зону: куда сдвинуть центр орбиты, какой зум и ракурс, и что вернуть после
-	type Shot = { target: Vector3; zoom: number; azimuth: number; polar: number }
+	// `spring` -- доезд пружиной с лёгким перелётом (наезд на травму), иначе экспонентой
+	type Shot = { target: Vector3; zoom: number; azimuth: number; polar: number; spring?: boolean }
 
 	let focusTo: Shot | null = null
 	let restore: Shot | null = null
 	const step = new Vector3()
 	const offset = new Vector3()
 	const orbit = new Spherical()
+	// Скорости пружины: цель орбиты, зум, азимут и наклон
+	const velocity = { target: new Vector3(), zoom: 0, azimuth: 0, polar: 0 }
+	const rest = new Vector3()
+	const STIFFNESS = 90
+	const DAMPING = 2 * Math.sqrt(STIFFNESS) * 0.72
+	const springStep = (gap: number, v: number, dt: number) => v + (gap * STIFFNESS - v * DAMPING) * dt
 
 	function currentShot(): Shot {
 		orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
@@ -219,29 +228,66 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		if (goal) {
 			const k = 1 - Math.exp(-dt * 6)
+			const gap = rest.subVectors(goal.target, controls.target)
 
-			step.subVectors(goal.target, controls.target).multiplyScalar(k)
-			controls.target.add(step)
-			camera.position.add(step)
-			camera.zoom += (goal.zoom - camera.zoom) * k
-			camera.updateProjectionMatrix()
-
-			// Облёт к ракурсу вокруг центра орбиты, по азимуту -- кратчайшей дугой
 			orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
+			// Облёт к ракурсу вокруг центра орбиты, по азимуту -- кратчайшей дугой
 			const turn = Math.atan2(Math.sin(goal.azimuth - orbit.theta), Math.cos(goal.azimuth - orbit.theta))
+			const tilt = goal.polar - orbit.phi
+			const zoomGap = goal.zoom - camera.zoom
 
-			orbit.theta += turn * k
-			orbit.phi += (goal.polar - orbit.phi) * k
+			if (goal.spring) {
+				// Пружину считаем мелкими шагами: на длинном кадре явный шаг разносит
+				const n = Math.ceil(dt * 120)
+				const h = dt / n
+				let zoomLeft = zoomGap
+				let turnLeft = turn
+				let tiltLeft = tilt
+
+				step.set(0, 0, 0)
+
+				for (let i = 0; i < n; i++) {
+					velocity.target.addScaledVector(gap, STIFFNESS * h).multiplyScalar(1 - DAMPING * h)
+					gap.addScaledVector(velocity.target, -h)
+					step.addScaledVector(velocity.target, h)
+					velocity.zoom = springStep(zoomLeft, velocity.zoom, h)
+					zoomLeft -= velocity.zoom * h
+					velocity.azimuth = springStep(turnLeft, velocity.azimuth, h)
+					turnLeft -= velocity.azimuth * h
+					velocity.polar = springStep(tiltLeft, velocity.polar, h)
+					tiltLeft -= velocity.polar * h
+				}
+
+				camera.zoom = goal.zoom - zoomLeft
+				orbit.theta += turn - turnLeft
+				orbit.phi = goal.polar - tiltLeft
+			} else {
+				velocity.target.set(0, 0, 0)
+				velocity.zoom = velocity.azimuth = velocity.polar = 0
+				step.copy(gap).multiplyScalar(k)
+				camera.zoom += zoomGap * k
+				orbit.theta += turn * k
+				orbit.phi += tilt * k
+			}
+
+			// Наклон не уходит за пределы орбиты и при перелёте пружины
+			orbit.phi = MathUtils.clamp(orbit.phi, controls.minPolarAngle, controls.maxPolarAngle)
+			controls.target.add(step)
+			camera.updateProjectionMatrix()
 			camera.position.copy(controls.target).add(offset.setFromSpherical(orbit))
 			camera.lookAt(controls.target)
 
 			const settled =
-				step.lengthSq() < 1e-10 &&
-				Math.abs(goal.zoom - camera.zoom) < 1e-3 &&
+				rest.subVectors(goal.target, controls.target).lengthSq() < 1e-10 &&
+				Math.abs(zoomGap) < 1e-3 &&
 				Math.abs(turn) < 1e-3 &&
-				Math.abs(goal.polar - orbit.phi) < 1e-3
+				Math.abs(tilt) < 1e-3 &&
+				velocity.target.lengthSq() < 1e-8
 
-			if (!focusTo && settled) restore = null
+			if (!focusTo && settled) {
+				restore = null
+				controls.maxZoom = MAX_ZOOM
+			}
 		}
 
 		controls.update(dt)
@@ -300,10 +346,16 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		/**
 		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях кадра от центра
 		 * (x вправо, y вверх). `view` -- ракурс в градусах: азимут от лица (+Z) к левому боку
-		 * (+X) и угол от вертикали; без него ракурс остаётся текущим. `null` возвращает камеру
-		 * как было до наезда.
+		 * (+X) и угол от вертикали; без него ракурс остаётся текущим. `spring` -- доезд пружиной.
+		 * `null` возвращает камеру как было до наезда.
 		 */
-		focus(point: Vec3 | null, zoom = 1, at = { x: 0, y: 0 }, view?: { azimuth: number; polar: number }) {
+		focus(
+			point: Vec3 | null,
+			zoom = 1,
+			at = { x: 0, y: 0 },
+			view?: { azimuth: number; polar: number },
+			spring = false,
+		) {
 			if (!point) {
 				focusTo = null
 
@@ -323,7 +375,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				.addScaledVector(right, (-at.x * 2 * halfWidth) / zoom)
 				.addScaledVector(up, (-at.y * 2 * half) / zoom)
 
-			focusTo = { target, zoom, azimuth, polar }
+			// OrbitControls зажимает зум в своих пределах на каждом update()
+			controls.maxZoom = Math.max(MAX_ZOOM, zoom)
+			focusTo = { target, zoom, azimuth, polar, spring }
 		},
 		pause(paused: boolean) {
 			last = performance.now()

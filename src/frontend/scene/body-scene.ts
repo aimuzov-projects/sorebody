@@ -86,6 +86,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	// Слои снаружи внутрь: кожа раскрывается на весь радиус, мышцы -- на часть, кости целы
 	// Сатиновая керамика снаружи, кромка среза -- синяя, как акцент интерфейса
 	const skin = createDissolveMaterial('#f5f5f3', '#4a9bff', 0.42)
+
+	// Подсветка всей фигуры (зона «Всё тело»): синее свечение кожи, по умолчанию погашено
+	skin.material.emissive.set('#3d8bfd')
+	skin.material.emissiveIntensity = 0
 	const muscles = createDissolveMaterial('#e8e4df', '#0071e3', 0.6)
 	const bones = new MeshStandardMaterial({ color: '#efe7da', roughness: 0.5, metalness: 0 })
 	const MUSCLE_SHARE = 0.6
@@ -115,13 +119,29 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		renderer.setSize(w, h, false)
 		const aspect = w / h
-		// В узком кадре фигура упирается в ширину, а не в высоту
-		const half = aspect < 0.62 ? (FRAME * 0.62) / aspect / 2 : FRAME / 2
 
-		camera.left = -half * aspect
-		camera.right = half * aspect
-		camera.top = half
-		camera.bottom = -half
+		// В узком кадре фигура упирается в ширину, а не в высоту
+		half = aspect < 0.62 ? (FRAME * 0.62) / aspect / 2 : FRAME / 2
+		halfWidth = half * aspect
+		applyFrame()
+	}
+
+	// Сдвиг кадра в долях экрана: на главной фигура стоит правее индекса (на телефоне -- выше).
+	// Двигаем окно камеры, а не центр орбиты: иначе при автоповороте фигура ходила бы по кругу
+	let half = FRAME / 2
+	let halfWidth = FRAME / 2
+	// `s` -- масштаб окна: больше 1, и фигура мельче (на главной телефона она уходит наверх)
+	const shift = { x: 0, y: 0, s: 1 }
+	const shiftTo = { x: 0, y: 0, s: 1 }
+
+	function applyFrame() {
+		const w = halfWidth * shift.s
+		const h = half * shift.s
+
+		camera.left = -w - shift.x * 2 * w
+		camera.right = w - shift.x * 2 * w
+		camera.top = h - shift.y * 2 * h
+		camera.bottom = -h - shift.y * 2 * h
 		camera.updateProjectionMatrix()
 	}
 
@@ -149,6 +169,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	let radius = 0
 	let radiusTo = 0
+	let glowTo = 0
 	let last = performance.now()
 	let onFrame: (() => void) | undefined
 
@@ -177,6 +198,22 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		skin.uniforms.uRadius.value = radius
 		muscles.uniforms.uRadius.value = radius * MUSCLE_SHARE
+
+		const ease = 1 - Math.exp(-dt * 6)
+
+		if (shift.x !== shiftTo.x || shift.y !== shiftTo.y || shift.s !== shiftTo.s) {
+			shift.x += (shiftTo.x - shift.x) * ease
+			shift.y += (shiftTo.y - shift.y) * ease
+			shift.s += (shiftTo.s - shift.s) * ease
+
+			const left = Math.abs(shiftTo.x - shift.x) + Math.abs(shiftTo.y - shift.y) + Math.abs(shiftTo.s - shift.s)
+
+			if (left < 1e-4) Object.assign(shift, shiftTo)
+
+			applyFrame()
+		}
+
+		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
 
 		const goal = focusTo ?? restore
 
@@ -243,6 +280,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		set onFrame(fn: (() => void) | undefined) {
 			onFrame = fn
 		},
+		/** Сдвиг кадра в долях экрана: x вправо, y вверх. Плавно, в цикле отрисовки. */
+		frame(x: number, y: number, scale = 1) {
+			shiftTo.x = x
+			shiftTo.y = y
+			shiftTo.s = scale
+		},
+		glow(on: boolean) {
+			glowTo = on ? 0.16 : 0
+		},
 		dissolve(center: Vec3 | null, radius = 0) {
 			if (center) {
 				skin.uniforms.uCenter.value.set(...center)
@@ -274,8 +320,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			const right = new Vector3(0, 1, 0).cross(toCamera).normalize()
 			const up = toCamera.clone().cross(right)
 			const target = new Vector3(...point)
-				.addScaledVector(right, (-at.x * (camera.right - camera.left)) / zoom)
-				.addScaledVector(up, (-at.y * (camera.top - camera.bottom)) / zoom)
+				.addScaledVector(right, (-at.x * 2 * halfWidth) / zoom)
+				.addScaledVector(up, (-at.y * 2 * half) / zoom)
 
 			focusTo = { target, zoom, azimuth, polar }
 		},

@@ -21,13 +21,61 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 
-	import type { BodyScene } from '#frontend/lab/body-scene.ts'
-	import type { LabZone } from '#frontend/lab/zones.ts'
+	import { PersonStanding, Search } from 'lucide-static'
 
-	type Props = { zones: LabZone[]; whole: LabZone; modelUrl: string }
-	type Injury = LabZone['injuries'][number]
+	import type { BodyScene } from '#frontend/scene/body-scene.ts'
+	import type { Zone } from '#frontend/scene/zones.ts'
 
-	let { zones, whole, modelUrl }: Props = $props()
+	type Props = {
+		zones: Zone[]
+		whole: Zone
+		/** Движения, которые встречаются хотя бы в одной статье: варианты фильтра. */
+		movements: { slug: string; title: string }[]
+		modelUrl: string
+	}
+	type Injury = Zone['injuries'][number]
+
+	let { zones, whole, movements, modelUrl }: Props = $props()
+
+	const FREQUENCIES = [
+		['all', 'Все'],
+		['common', 'Частые'],
+		['rare', 'Редкие'],
+	] as const
+
+	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
+	let query = $state('')
+	let frequency = $state<'all' | 'common' | 'rare'>('all')
+	let movement = $state('')
+
+	const normalize = (s: string) => s.toLowerCase().replaceAll('ё', 'е').trim()
+
+	function matches(injury: Injury) {
+		const q = normalize(query)
+
+		return (
+			(frequency === 'all' || injury.rare === (frequency === 'rare')) &&
+			(!movement || injury.movements.includes(movement)) &&
+			(!q || normalize(`${injury.title} ${injury.titleEn} ${injury.summary}`).includes(q))
+		)
+	}
+
+	const allZones = $derived([...zones, whole])
+	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
+	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
+	const results = $derived(
+		query.trim()
+			? allZones.flatMap((zone) => zone.injuries.filter(matches).map((injury) => ({ zone, injury })))
+			: [],
+	)
+
+	/** Зона, на строку которой навели в индексе: её точки на модели подсвечиваются. */
+	let highlighted = $state.raw<Zone | null>(null)
+
+	function setHighlight(zone: Zone | null) {
+		highlighted = zone
+		body?.glow(zone === whole)
+	}
 
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
 	const PICK_PX = 56
@@ -42,7 +90,7 @@
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
 	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
-	type Spot = { zone: LabZone; index: number; x: number; y: number; visible: boolean }
+	type Spot = { zone: Zone; index: number; x: number; y: number; visible: boolean }
 
 	const spots: Spot[] = $derived(
 		zones.flatMap((zone) => zone.points.map((_, index) => ({ zone, index, x: 0, y: 0, visible: true }))),
@@ -53,7 +101,7 @@
 	let hovered = $state.raw<Spot | null>(null)
 
 	/** Раскрытая зона. `side` -- где стоит список: в свободной от зоны половине экрана. */
-	let open = $state.raw<{ zone: LabZone; index: number; side: 'left' | 'right' | 'bottom' } | null>(null)
+	let open = $state.raw<{ zone: Zone; index: number; side: 'left' | 'right' | 'bottom' } | null>(null)
 	let article = $state.raw<Injury | null>(null)
 	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
 	let articleBody = $state<HTMLDivElement>()
@@ -67,11 +115,11 @@
 	 * `#meniscus-tear`. "Назад" и системная кнопка браузера поднимаются на уровень вверх.
 	 * Записи выше `baseLevel` положили в историю мы сами, ниже -- пришли со ссылкой.
 	 */
-	type Place = { level: 0 } | { level: 1; zone: LabZone; index: number } | { level: 2; zone: LabZone; injury: Injury }
+	type Place = { level: 0 } | { level: 1; zone: Zone; index: number } | { level: 2; zone: Zone; injury: Injury }
 
 	let baseLevel = 0
 
-	function zoneHash(zone: LabZone, index: number) {
+	function zoneHash(zone: Zone, index: number) {
 		return `#zone=${zone.slug}:${index}`
 	}
 
@@ -119,7 +167,7 @@
 		showArticle(place.injury)
 	}
 
-	function openZone(zone: LabZone, index: number) {
+	function openZone(zone: Zone, index: number) {
 		history.pushState(null, '', zoneHash(zone, index))
 		showZone(zone, index)
 	}
@@ -154,6 +202,13 @@
 	}
 
 	onMount(() => {
+		// Ссылка «/?region=knee» со страницы статьи открывает список зоны
+		const region = new URLSearchParams(location.search).get('region')
+		const regionZone = allZones.find((zone) => zone.slug === region)
+
+		if (regionZone && !location.hash)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
+
 		baseLevel = parseHash().level
 		sync()
 		window.addEventListener('popstate', sync)
@@ -161,7 +216,7 @@
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
-		const mod = import('#frontend/lab/body-scene.ts')
+		const mod = import('#frontend/scene/body-scene.ts')
 		const ready = mod.then(async ({ createBodyScene }) => {
 			const scene = await createBodyScene(canvas, modelUrl)
 
@@ -188,6 +243,8 @@
 			status = 'ready'
 			// Адрес мог открыть зону или статью до того, как модель загрузилась
 			sync()
+			focusOpen()
+			homeFrame()
 
 			if (sceneHidden) scene.pause(true)
 		})
@@ -197,7 +254,10 @@
 			status = 'error'
 		})
 
-		const resizer = new ResizeObserver(() => body?.resize())
+		const resizer = new ResizeObserver(() => {
+			body?.resize()
+			homeFrame()
+		})
 
 		resizer.observe(canvas)
 		// Вне экрана и под статьёй сцена не рисует, чтобы не греть телефон
@@ -271,21 +331,29 @@
 	 * Зона у центра экрана, колонка начинается сразу за центром. На узком экране сбоку места
 	 * нет: зона уходит наверх, список -- в нижнюю половину.
 	 */
-	function showZone(zone: LabZone, index: number) {
-		if (!body) return
-
+	function showZone(zone: Zone, index: number) {
 		if (open?.zone === zone && open.index === index) return
 
-		const point = zone.points[index]
-		const side = wrap.clientWidth < 700 ? 'bottom' : point.position[0] >= 0 ? 'right' : 'left'
-		const at = side === 'bottom' ? { x: 0, y: 0.14 } : { x: side === 'left' ? 0.12 : -0.12, y: 0 }
+		const side = wrap.clientWidth < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
 
 		hovered = null
-		body.dissolve(point.position, zone.radius)
+		setHighlight(null)
+		open = { zone, index, side }
+		focusOpen()
+	}
+
+	/** Камера к раскрытой зоне. Отдельно от `showZone`: список работает и до загрузки модели, и без WebGL. */
+	function focusOpen() {
+		if (!body || !open) return
+
+		const point = open.zone.points[open.index]
+		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? 0.12 : -0.12, y: 0 }
+
+		body.frame(0, 0)
+		body.dissolve(point.position, open.zone.radius)
 		body.controls.autoRotate = false
 		body.controls.enabled = false
-		body.focus(point.position, clamp(0.3 / zone.radius, 1, 2.4), at, point.view)
-		open = { zone, index, side }
+		body.focus(point.position, clamp(0.3 / open.zone.radius, 1, 2.4), at, point.view)
 	}
 
 	function closeZone() {
@@ -300,6 +368,15 @@
 		body.focus(null)
 		body.controls.enabled = true
 		body.controls.autoRotate = true
+		homeFrame()
+	}
+
+	/** Кадр главной: фигура правее индекса, на телефоне -- выше нижней панели. */
+	function homeFrame() {
+		if (!body || open) return
+
+		if (wrap.clientWidth < 700) body.frame(0, 0.27, 1.9)
+		else body.frame(0.17, 0)
 	}
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
@@ -469,32 +546,119 @@
 	{#each spots as spot, i (i)}
 		<button
 			class="body3d__spot"
-			class:body3d__spot--hover={hovered === spot}
+			class:body3d__spot--hover={hovered === spot || highlighted === spot.zone}
+			class:body3d__spot--empty={counts.get(spot.zone) === 0}
 			bind:this={spotEls[i]}
 			type="button"
 			hidden={status !== 'ready'}
-			aria-label={spot.zone.label}
+			aria-label="{spot.zone.label}: {counts.get(spot.zone)} {plural(counts.get(spot.zone) ?? 0)}"
 			onclick={() => openZone(spot.zone, spot.index)}
 			onfocus={() => hover(spot)}
 		>
 			<span class="body3d__spot-dot"></span>
+			<span class="body3d__spot-count" aria-hidden="true">{counts.get(spot.zone)}</span>
 		</button>
 	{/each}
 
-	<button class="body3d__whole" type="button" hidden={status !== 'ready'} onclick={() => openZone(whole, 0)}>
-		{whole.label}
-	</button>
+	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
+	<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
+		<header class="index__head">
+			<p class="index__brand">Wodcare</p>
+			<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
+		</header>
+		<label class="index__search">
+			<span class="index__icon" aria-hidden="true">{@html Search}</span>
+			<input
+				class="index__input"
+				type="search"
+				placeholder="ПКС, плечо, рабдо…"
+				aria-label="Поиск по травмам"
+				bind:value={query}
+			/>
+		</label>
+		<div class="index__filters">
+			<div class="index__freq" role="group" aria-label="Частота">
+				{#each FREQUENCIES as [value, label] (value)}
+					<button
+						class="index__chip"
+						type="button"
+						aria-pressed={frequency === value}
+						onclick={() => (frequency = value)}>{label}</button
+					>
+				{/each}
+			</div>
+			<label class="index__movement">
+				<span class="index__movement-label">Движение</span>
+				<select class="index__select" bind:value={movement}>
+					<option value="">любое</option>
+					{#each movements as m (m.slug)}
+						<option value={m.slug}>{m.title}</option>
+					{/each}
+				</select>
+			</label>
+		</div>
+		{#if query.trim()}
+			<ul class="index__results" aria-live="polite">
+				{#each results as { zone, injury } (injury.slug)}
+					<li>
+						<a
+							class="index__result"
+							href="/injuries/{injury.slug}/"
+							onclick={(event) => onItemClick(event, injury)}
+						>
+							<span class="index__result-title">{injury.title}</span>
+							<span class="index__result-zone">{zone.label}</span>
+						</a>
+					</li>
+				{:else}
+					<li class="index__empty">Ничего не нашлось</li>
+				{/each}
+			</ul>
+		{:else}
+			<ul class="index__zones">
+				{#each allZones as zone (zone.slug)}
+					{@const count = counts.get(zone) ?? 0}
+					<li class="index__zone-row" class:index__zone-row--whole={zone === whole}>
+						<button
+							class="index__zone"
+							type="button"
+							disabled={count === 0}
+							onclick={() => openZone(zone, 0)}
+							onpointerenter={() => setHighlight(zone)}
+							onpointerleave={() => setHighlight(null)}
+							onfocus={() => setHighlight(zone)}
+							onblur={() => setHighlight(null)}
+						>
+							{#if zone === whole}<span class="index__icon" aria-hidden="true"
+									>{@html PersonStanding}</span
+								>{/if}
+							<span class="index__zone-label">{zone.label}</span>
+							<span class="index__count">{count}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+		<p class="index__foot">
+			<a class="index__link" href="/about/">О справочнике</a> · справка не заменяет консультацию врача
+		</p>
+	</aside>
 
 	{#if open}
-		{@const count = open.zone.injuries.length}
+		{@const total = open.zone.injuries.length}
+		{@const shown = open.zone.injuries.filter(matches)}
 		<section class="zone zone--{open.side}" aria-label={open.zone.label}>
 			<header class="zone__head">
 				<button class="zone__back" type="button" onclick={up}><span aria-hidden="true">←</span> Назад</button>
 				<h2 class="zone__title">{open.zone.label}</h2>
-				<p class="zone__count">{count} {plural(count)}</p>
+				<p class="zone__count">
+					{filtering
+						? `${shown.length} из ${total} ${plural(total)} по фильтру`
+						: `${total} ${plural(total)}`}
+				</p>
 			</header>
 			<ul class="zone__list">
-				{#each open.zone.injuries as injury, i (injury.slug)}
+				{#each shown as injury, i (injury.slug)}
 					{@const [head, tail] = splitLastWord(injury.title)}
 					<li class="zone__row" style:--i={i}>
 						<a
@@ -542,7 +706,7 @@
 {/if}
 
 <style>
-	/* Токены (--a-*) объявлены на body в pages/lab/3d.astro, тёмная тема -- там же.
+	/* Токены (--a-*) объявлены на body в pages/index.astro, тёмная тема -- там же.
 	   Язык страницы: ни карточек, ни рамок, ни разделителей -- только прозрачность,
 	   сдвиги и края, растворённые градиентом */
 	.body3d {
@@ -582,8 +746,7 @@
 			cursor: pointer;
 		}
 
-		&--open &__spot,
-		&--open &__whole {
+		&--open &__spot {
 			pointer-events: none;
 			opacity: 0;
 		}
@@ -615,6 +778,12 @@
 			transition: opacity 0.4s var(--a-ease);
 
 			&:global([data-hidden='true']) {
+				pointer-events: none;
+				opacity: 0;
+			}
+
+			/* Под фильтр в зоне ничего не попало: точка гаснет и не нажимается */
+			&--empty {
 				pointer-events: none;
 				opacity: 0;
 			}
@@ -662,23 +831,18 @@
 				0 2px 8px rgb(0 0 0 / 25%);
 		}
 
-		&__whole {
-			cursor: pointer;
+		/* Сколько травм зоны проходит фильтр -- цифра справа от точки. Цвет один для обеих тем:
+		   цифра почти всегда лежит на белой фигуре, а не на фоне */
+		&__spot-count {
+			pointer-events: none;
 			position: absolute;
-			bottom: 32px;
-			left: 50%;
-			transform: translateX(-50%);
-			padding: 8px 12px;
-			border: 0;
-			font: inherit;
-			font-size: 17px;
-			color: var(--a-blue);
-			background: none;
-			transition: opacity 0.4s var(--a-ease);
-
-			&:hover {
-				opacity: 0.7;
-			}
+			top: 50%;
+			left: 30px;
+			transform: translateY(-50%);
+			font-size: 13px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			color: #6e6e73;
 		}
 
 		&__fps {
@@ -689,6 +853,337 @@
 				600 12px/1 ui-monospace,
 				monospace;
 			color: var(--a-fg2);
+		}
+	}
+
+	/* Индекс главной: колонка слева (на телефоне -- снизу) без подложки. Фон сцены растворяется
+	   к фигуре градиентом, когда раскрыта зона, индекс уходит прозрачностью */
+	.index {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 6vw;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: min(380px, 32vw);
+		padding-top: max(32px, 7dvh);
+		transition:
+			opacity 0.45s var(--a-ease),
+			transform 0.45s var(--a-ease);
+
+		@media (width < 700px) {
+			top: auto;
+			right: 0;
+			left: 0;
+			gap: 14px;
+			width: auto;
+			max-height: 56dvh;
+			padding: 28px 20px max(16px, env(safe-area-inset-bottom));
+
+			&::before {
+				inset: -40px 0 0;
+				background: linear-gradient(to top, var(--a-bg) 70%, transparent);
+			}
+
+			&--away {
+				transform: translateY(16px);
+			}
+		}
+
+		@media (width < 700px) {
+			/* На телефоне зоны -- строка с горизонтальной прокруткой, края гаснут маской */
+			&__zones {
+				overflow: auto hidden;
+				display: flex;
+				flex: none;
+				gap: 22px;
+				padding: 4px 0;
+				mask-image: linear-gradient(to right, #000000 85%, transparent);
+			}
+
+			&__results {
+				max-height: 26dvh;
+				padding-bottom: 32px;
+			}
+		}
+
+		&::before {
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			z-index: -1;
+			top: 0;
+			right: -8vw;
+			bottom: 0;
+			left: -6vw;
+			background: linear-gradient(to right, var(--a-bg) 60%, transparent);
+		}
+
+		&--away {
+			pointer-events: none;
+			transform: translateX(-16px);
+			opacity: 0;
+
+			@media (--reduced-motion) {
+				transform: none;
+			}
+		}
+
+		&__head {
+			display: grid;
+			gap: 2px;
+		}
+
+		&__brand {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--a-fg2);
+		}
+
+		&__title {
+			margin: 0;
+			font-size: clamp(30px, 3.4vw, 44px);
+			font-weight: 700;
+			line-height: 1.08;
+			letter-spacing: -0.03em;
+
+			@media (width < 700px) {
+				font-size: 26px;
+			}
+		}
+
+		&__icon {
+			display: inline-flex;
+			flex: none;
+			width: 20px;
+			height: 20px;
+			color: var(--a-fg2);
+
+			/* SVG иконки приходит строкой из lucide-static, своего класса у него нет */
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 1.75;
+			}
+		}
+
+		/* Поле поиска без рамки: снизу тонкая линия, гаснущая к краям, при фокусе -- синяя */
+		&__search {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			padding: 8px 0 10px;
+			background: linear-gradient(to right, transparent, var(--a-sep) 12%, var(--a-sep) 88%, transparent) bottom /
+				100% 1px no-repeat;
+			transition: background-size 0.3s var(--a-ease);
+
+			&:focus-within {
+				background-image: linear-gradient(
+					to right,
+					transparent,
+					var(--a-blue) 12%,
+					var(--a-blue) 88%,
+					transparent
+				);
+			}
+		}
+
+		&__input {
+			flex: 1;
+			min-width: 0;
+			padding: 0;
+			border: 0;
+			font: inherit;
+			font-size: 19px;
+			color: var(--a-fg);
+			background: none;
+			outline: none;
+
+			&::placeholder {
+				color: var(--a-fg2);
+				opacity: 0.8;
+			}
+		}
+
+		&__filters {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 20px;
+			align-items: baseline;
+		}
+
+		/* Частота: слова через точку, выбранное -- основным цветом и жирнее */
+		&__freq {
+			display: flex;
+			gap: 14px;
+		}
+
+		&__chip {
+			cursor: pointer;
+			padding: 2px 0;
+			border: 0;
+			font: inherit;
+			font-size: 16px;
+			color: var(--a-fg2);
+			background: none;
+			transition: color 0.3s var(--a-ease);
+
+			&[aria-pressed='true'] {
+				font-weight: 600;
+				color: var(--a-fg);
+			}
+
+			&:hover {
+				color: var(--a-fg);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
+		}
+
+		&__movement {
+			display: inline-flex;
+			gap: 6px;
+			align-items: baseline;
+			font-size: 16px;
+			color: var(--a-fg2);
+		}
+
+		&__select {
+			cursor: pointer;
+			max-width: 220px;
+			padding: 2px 0;
+			border: 0;
+			font: inherit;
+			color: var(--a-blue);
+			text-overflow: ellipsis;
+			appearance: none;
+			background: none;
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
+		}
+
+		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */
+		&__zones,
+		&__results {
+			scrollbar-width: none;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			flex: 1;
+			margin: 0;
+			padding: 12px 0 18dvh;
+			list-style: none;
+			mask-image: linear-gradient(to bottom, transparent, #000000 16px, #000000 calc(100% - 96px), transparent);
+		}
+
+		&__zone-row--whole {
+			margin-top: 18px;
+
+			@media (width < 700px) {
+				margin-top: 0;
+			}
+		}
+
+		&__zone {
+			cursor: pointer;
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			width: 100%;
+			padding: 9px 0;
+			border: 0;
+			font: inherit;
+			font-size: 21px;
+			font-weight: 600;
+			color: var(--a-fg);
+			letter-spacing: -0.02em;
+			white-space: nowrap;
+			background: none;
+			transition:
+				color 0.3s var(--a-ease),
+				opacity 0.3s var(--a-ease);
+
+			@media (width < 700px) {
+				padding: 6px 0;
+				font-size: 17px;
+			}
+
+			&:hover:not(:disabled) {
+				color: var(--a-blue);
+			}
+
+			&:focus-visible {
+				color: var(--a-blue);
+				outline: none;
+			}
+
+			&:disabled {
+				cursor: default;
+				opacity: 0.3;
+			}
+		}
+
+		&__count {
+			margin-left: auto;
+			font-size: 15px;
+			font-weight: 500;
+			font-variant-numeric: tabular-nums;
+			color: var(--a-fg2);
+
+			@media (width < 700px) {
+				margin-left: 0;
+			}
+		}
+
+		&__result {
+			display: grid;
+			gap: 2px;
+			padding: 10px 0;
+			color: var(--a-fg);
+			text-decoration: none;
+			transition: color 0.3s var(--a-ease);
+
+			&:hover,
+			&:focus-visible {
+				color: var(--a-blue);
+				outline: none;
+			}
+		}
+
+		&__result-title {
+			font-size: 18px;
+			font-weight: 600;
+			line-height: 1.3;
+			letter-spacing: -0.015em;
+		}
+
+		&__result-zone,
+		&__empty {
+			font-size: 14px;
+			color: var(--a-fg2);
+		}
+
+		&__foot {
+			margin: 0 0 24px;
+			font-size: 13px;
+			color: var(--a-fg2);
+
+			@media (width < 700px) {
+				display: none;
+			}
+		}
+
+		&__link {
+			color: var(--a-blue);
+			text-decoration: none;
 		}
 	}
 

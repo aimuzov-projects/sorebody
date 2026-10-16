@@ -11,9 +11,13 @@ type Props = {
 	description?: string
 	/** `false` у служебных страниц вроде 404: без canonical и с запретом индексации. */
 	index?: boolean
+	/** Страница на весь экран без подвала, как главная с 3D-моделью. */
+	bare?: boolean
+	/** Класс на `<body>`: полноэкранной странице нужно задать фон и токены всему документу. */
+	bodyClass?: string
 }
 
-const { title, description = site.description, index = true } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
@@ -35,9 +39,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<slot name="head" />
 	</head>
-	<body>
+	<body class={bodyClass}>
 		<slot />
-		<Footer />
+		{!bare && <Footer />}
 		<script>
 			import '#frontend/lib/telegram.ts'
 		</script>

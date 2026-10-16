@@ -1,55 +1,106 @@
 ---
 import { getCollection } from 'astro:content'
 
-import Disclaimer from '#frontend/components/disclaimer.astro'
-import InjuryBrowser from '#frontend/components/injury-browser.svelte'
+import Body3d from '#frontend/components/body-3d.svelte'
+import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { site } from '#frontend/data/site.ts'
 import Base from '#frontend/layouts/base.astro'
-import type { InjuryListItem } from '#frontend/lib/filter.ts'
+import { buildZones } from '#frontend/scene/zones.ts'
 
-const injuries: InjuryListItem[] = (await getCollection('injuries'))
-	.map(({ id, data }) => ({
-		slug: id,
-		title: data.title,
-		titleEn: data.titleEn,
-		summary: data.summary,
-		region: data.region,
-		frequency: data.frequency,
-		movements: data.movements,
-	}))
-	.sort(
-		(a, b) =>
-			Number(a.frequency === 'rare') - Number(b.frequency === 'rare') || a.title.localeCompare(b.title, 'ru'),
-	)
+// meshopt-декодер модели -- WebAssembly; разрешаем его только на главной, где модель
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
+
+const entries = await getCollection('injuries')
+const injuries = entries.map(({ id, data }) => ({
+	slug: id,
+	title: data.title,
+	titleEn: data.titleEn,
+	summary: data.summary,
+	rare: data.frequency === 'rare',
+	movements: data.movements as string[],
+	region: data.region,
+}))
+const { zones, whole } = buildZones(injuries)
+const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.includes(m.slug))).map(
+	({ slug, title }) => ({ slug, title }),
+)
 ---
 
-<Base>
-	<main class="home container">
-		<h1 class="home__title">{site.name}</h1>
-		<p class="home__lead">{site.description}</p>
-		<InjuryBrowser client:load {injuries} />
-		<p>
-			<a href="/about/">Как сделан справочник и откуда цифры</a>
-		</p>
-		<Disclaimer />
-	</main>
+<Base bare bodyClass="home">
+	<h1 class="home__title">{site.name}: травмы в кроссфите</h1>
+	<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb" />
+	<noscript>
+		<ul class="home__fallback">
+			{[...entries]
+				.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+				.map(({ id, data }) => (
+					<li>
+						<a href={`/injuries/${id}/`}>{data.title}</a>
+					</li>
+				))}
+		</ul>
+	</noscript>
 </Base>
 
 <style>
-	.home {
-		display: grid;
-		gap: 20px;
-		padding-block: var(--section-y);
+	/* Главная -- 3D-сцена на весь экран. Визуальный язык страниц Apple: системный шрифт,
+	   нейтральная палитра, синий акцент. Токены на body: статья живёт рядом со сценой */
+	:global(.home) {
+		--a-font: -apple-system, blinkmacsystemfont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
+		--a-bg: #f5f5f7;
+		--a-page: #ffffff;
+		--a-glow: #ffffff;
+		--a-fg: #1d1d1f;
+		--a-fg2: #6e6e73;
+		--a-blue: #0071e3;
+		--a-red: #ff3b30;
+		--a-sep: rgb(0 0 0 / 8%);
+		--a-fill: rgb(0 0 0 / 5%);
 
+		/* Общие токены сайта, которыми пользуется вставленная статья */
+		--fg: var(--a-fg);
+		--muted: var(--a-fg2);
+		--accent: var(--a-blue);
+		--surface: var(--a-fill);
+		--danger: var(--a-red);
+
+		overflow: hidden;
+		height: 100dvh;
+		font-family: var(--a-font);
+		font-size: 17px;
+		line-height: 1.47;
+		color: var(--a-fg);
+		letter-spacing: -0.022em;
+		color-scheme: light dark;
+		background: var(--a-bg);
+
+		@media (prefers-color-scheme: dark) {
+			--a-bg: #000000;
+			--a-page: #000000;
+			--a-glow: #1d1d1f;
+			--a-fg: #f5f5f7;
+			--a-fg2: #a1a1a6;
+			--a-blue: #2997ff;
+			--a-red: #ff453a;
+			--a-sep: rgb(255 255 255 / 12%);
+			--a-fill: rgb(255 255 255 / 10%);
+		}
+	}
+
+	.home {
+		/* Заголовок для поисковиков и скринридеров; на экране его роль играет индекс сцены */
 		&__title {
-			margin: 0;
-			font-size: clamp(2.4rem, 6vw, 3.6rem);
+			position: absolute;
+			overflow: hidden;
+			width: 1px;
+			height: 1px;
+			white-space: nowrap;
+			clip-path: inset(50%);
 		}
 
-		&__lead {
-			max-width: 60ch;
-			margin: 0;
-			color: var(--muted);
+		&__fallback {
+			padding: 24px 6vw;
 		}
 	}
 </style>

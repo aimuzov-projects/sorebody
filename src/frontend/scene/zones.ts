@@ -7,7 +7,7 @@ export type View = { azimuth: number; polar: number }
 
 type Point = { position: Vec3; normal: Vec3; view: View }
 
-export type LabZone = {
+export type Zone = {
 	slug: Region
 	label: string
 	/** Радиус сферы растворения, метры модели. */
@@ -17,11 +17,21 @@ export type LabZone = {
 	 * `view` -- ракурс, с которого раскрытая зона видна целиком и не перекрыта рукой или телом.
 	 */
 	points: Point[]
-	injuries: { slug: string; title: string; summary: string; rare: boolean }[]
+	injuries: ZoneInjury[]
+}
+
+/** Травма в списке зоны: хватает для поиска, фильтров и строки списка. */
+export type ZoneInjury = {
+	slug: string
+	title: string
+	titleEn: string
+	summary: string
+	rare: boolean
+	movements: string[]
 }
 
 /**
- * Центры суставов в координатах `public/lab/body.glb`: метры, Y вверх, лицо к +Z, правая сторона
+ * Центры суставов в координатах `public/model/body.glb`: метры, Y вверх, лицо к +Z, правая сторона
  * тела на -X. Посчитаны скриптом сборки модели по костям BodyParts3D (головка плечевой, дистальный
  * эпифиз плечевой, кости запястья, L1–L5, головка бедренной, надколенник, таранная).
  * Ракурсы подобраны по снимкам: плечо и таз спереди-сбоку, локоть и кисть сбоку, чтобы их
@@ -60,22 +70,20 @@ const WHOLE = {
 	points: [{ position: [0, 1.25, 0.05] as Vec3, normal: [0, 0, 1] as Vec3, view: { azimuth: 25, polar: 76 } }],
 }
 
-export function buildZones(
-	injuries: { slug: string; title: string; summary: string; rare: boolean; region: Region }[],
-) {
+export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
 	const byRegion = (slug: Region) =>
 		injuries
 			.filter((i) => i.region === slug)
-			.map(({ slug, title, summary, rare }) => ({ slug, title, summary, rare }))
+			.map(({ region: _region, ...injury }) => injury)
 			.sort((a, b) => a.title.localeCompare(b.title, 'ru'))
-	const zones: LabZone[] = REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
+	const zones: Zone[] = REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
 		slug: r.slug,
 		label: r.label,
 		...ANCHORS[r.slug as Exclude<Region, 'other'>],
 		injuries: byRegion(r.slug),
 	}))
 	const other = REGIONS.find((r) => r.slug === 'other')!
-	const whole: LabZone = { slug: other.slug, label: other.label, ...WHOLE, injuries: byRegion(other.slug) }
+	const whole: Zone = { slug: other.slug, label: other.label, ...WHOLE, injuries: byRegion(other.slug) }
 
 	return { zones, whole }
 }

@@ -1,6 +1,6 @@
-# Модель для /lab/3d/
+# 3D-модель главной
 
-`public/lab/body.glb` собрана из [BodyParts3D](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html),
+`public/model/body.glb` собрана из [BodyParts3D](https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html),
 архив `isa_BP3D_4.0_obj_99.zip` (136 МБ) и `isa_element_parts.txt`. Три меша: `skin` (кожа целиком), `muscles`
 (316 элементов из "muscle organ" и "tendon", без мышц глаза и языка), `bones` (240 элементов: "bone organ", рёберные
 хрящи, межпозвонковые диски, лобковый симфиз).
@@ -17,4 +17,4 @@ node build.mjs body.json body.glb
 ```
 
 Аргументы `0.08 0.12` -- доля треугольников мышц и костей после упрощения, кожа -- 0.3. Рядом с GLB появится
-`body.anchors.json` с центрами суставов, их надо перенести в `src/frontend/lab/zones.ts`.
+`body.anchors.json` с центрами суставов, их надо перенести в `src/frontend/scene/zones.ts`.

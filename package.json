@@ -25,6 +25,7 @@
 		"@astrojs/sitemap": "3.7.4",
 		"@astrojs/svelte": "9.0.1",
 		"astro": "7.3.7",
+		"lucide-static": "1.48.0",
 		"svelte": "5.57.2",
 		"three": "0.186.1"
 	},

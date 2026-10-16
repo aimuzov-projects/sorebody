@@ -1111,8 +1111,10 @@
 							type="button"
 							aria-pressed={frequency === value}
 							onclick={() => (frequency = value)}
-							>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
-								>{/if}{label}</button
+							>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span>{/if}<span
+								class="index__chip-label"
+								data-label={label}>{label}</span
+							></button
 						>
 					{/each}
 				</div>
@@ -1885,6 +1887,22 @@
 
 		&__chip[aria-pressed='true'] &__chip-icon {
 			color: inherit;
+		}
+
+		/* Выбранная подпись жирнее; невидимая жирная копия заранее держит ширину, чтобы фильтр не прыгал */
+		&__chip-label {
+			display: inline-flex;
+			flex-direction: column;
+
+			&::after {
+				pointer-events: none;
+				content: attr(data-label);
+				user-select: none;
+				overflow: hidden;
+				height: 0;
+				font-weight: 600;
+				visibility: hidden;
+			}
 		}
 
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */

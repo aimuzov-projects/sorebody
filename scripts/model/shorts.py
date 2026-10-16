@@ -7,6 +7,7 @@
 # В Blender ось Z вверх, перед фигуры -- -Y. Экспорт с +Y вверх возвращает координаты сцены.
 import sys
 
+import bmesh
 import bpy
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
@@ -19,6 +20,8 @@ WAIST = 1.0
 SCALE = Vector((1.1, 1.12, 0.75))
 # Зазор между кожей и тканью: где кожа ближе, ткань отодвигается наружу
 CLEARANCE = 0.004
+# Кисти висят вдоль бёдер с |x| от 0,21: бока шорт шире SIDE поджимаются, чтобы до них не доставать
+SIDE, SIDE_SQUEEZE = 0.17, 0.35
 NORMAL_SIZE = 1024
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -45,10 +48,19 @@ body_waist = [v.co for v in skin.data.vertices if abs(v.co.z - 0.975) < 0.006 an
 body_y = (min(w.y for w in body_waist) + max(w.y for w in body_waist)) / 2
 
 for v in shorts.data.vertices:
-    v.co = Vector((v.co.x * SCALE.x, (v.co.y - center_y) * SCALE.y + body_y, WAIST - (top - v.co.z) * SCALE.z))
+    x = v.co.x * SCALE.x
+    if abs(x) > SIDE:
+        x = (SIDE + (abs(x) - SIDE) * SIDE_SQUEEZE) * (1 if x > 0 else -1)
+    v.co = Vector((x, (v.co.y - center_y) * SCALE.y + body_y, WAIST - (top - v.co.z) * SCALE.z))
 
 # Где кожа подошла к ткани ближе зазора, ткань отходит наружу по нормали кожи. Кожа -- двойная
 # оболочка, нормаль разворачиваем от оси тела
+# Руки из кожи убираем: иначе ткань у кистей отталкивалась от них и обтягивала ладони
+mesh = bmesh.new()
+mesh.from_mesh(skin.data)
+bmesh.ops.delete(mesh, geom=[v for v in mesh.verts if abs(v.co.x) > 0.195], context='VERTS')
+mesh.to_mesh(skin.data)
+mesh.free()
 tree = BVHTree.FromObject(skin, bpy.context.evaluated_depsgraph_get())
 moved = 0
 for v in shorts.data.vertices:

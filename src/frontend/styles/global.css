@@ -107,6 +107,15 @@ body,
 	background: var(--bg);
 }
 
+/* В копии страницы внутри круга подсмотра размытия нет: круг обрезает копию, и backdrop-filter
+   под ним видит только саму копию с перерисованным каждый кадр canvas -- пятно мигало */
+.theme-peek *,
+.theme-peek *::before,
+.theme-peek *::after {
+	-webkit-backdrop-filter: none !important;
+	backdrop-filter: none !important;
+}
+
 /* Safari на iPhone приближает страницу к полю с текстом мельче 16px, стоит в нём встать.
    Класс компонента перебивает это правило, поэтому своё поле на телефоне — тоже от 1rem. */
 input,

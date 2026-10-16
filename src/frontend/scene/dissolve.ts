@@ -27,8 +27,6 @@ export const SKIN_RIM: Rim = {
 /** Кости: срез в тон слоя. Мышцам цвет кромки не нужен: их срез -- та же мышца на тон темнее. */
 export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#6b1d1d' }
 export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
-/** Ткань шорт: срез в тон самой ткани, изнанка темнее. */
-export const FABRIC_RIM: Rim = { front: '#2b2e35', back: '#1d1f24', hollow: '#1d1f24' }
 
 /**
  * Матовый "фарфор" с растворением в сфере: фрагменты ближе `uRadius` к `uCenter` отбрасываются,
@@ -36,14 +34,7 @@ export const FABRIC_RIM: Rim = { front: '#2b2e35', back: '#1d1f24', hollow: '#1d
  * чтобы срез читался как толща ткани, а не как дыра. `muscle` -- мышечный слой: волокна вдоль
  * главной оси каждой мышцы (атрибут `_fiber`) и подсветка мышц по номерам (`_part`), см. build.mjs.
  */
-export function createDissolveMaterial(
-	color: string,
-	rim: string | Rim,
-	roughness = 0.92,
-	muscle = false,
-	/** Ткань: вершины ниже пояса колышутся вслед за `uSway` (см. sway в body-scene). */
-	sway = false,
-) {
+export function createDissolveMaterial(color: string, rim: string | Rim, roughness = 0.92, muscle = false) {
 	const edge = typeof rim === 'string' ? { front: rim, back: rim } : rim
 
 	const uniforms = {
@@ -83,18 +74,10 @@ export function createDissolveMaterial(
 		uHighlight: { value: 0 },
 		// Сфера `uRadius` снимает только мышцы над подсвеченными, сами они остаются: глубокая мышца травмы
 		uPeel: { value: 0 },
-		// Колыхание ткани: отставание подола при повороте фигуры, радианы вокруг оси Y; высоты пояса
-		// и подола; время для ряби
-		uSwayTurn: { value: 0 },
-		uSwayTop: { value: 1.0 },
-		uSwayBottom: { value: 0.65 },
-		uTime: { value: 0 },
 	}
 	const material = new MeshStandardMaterial({ color, roughness, metalness: 0, side: DoubleSide })
 
 	if (muscle) material.defines = { MUSCLE: '' }
-
-	if (sway) material.defines = { SWAY: '' }
 
 	material.onBeforeCompile = (shader) => {
 		Object.assign(shader.uniforms, uniforms)
@@ -105,12 +88,6 @@ export function createDissolveMaterial(
 				`#include <common>
 uniform float uInset;
 varying vec3 vDissolvePos;
-#ifdef SWAY
-uniform float uSwayTurn;
-uniform float uSwayTop;
-uniform float uSwayBottom;
-uniform float uTime;
-#endif
 #ifdef MUSCLE
 attribute float _part;
 attribute vec3 _fiber;
@@ -122,17 +99,6 @@ varying vec3 vFiber;
 				'#include <begin_vertex>',
 				`#include <begin_vertex>
 transformed -= objectNormal * uInset;
-#ifdef SWAY
-// Ткань поворачивается вокруг оси тела на uSwayTurn позже самой фигуры. Пояс сидит на месте,
-// подол отстаёт сильнее всего: доля по высоте в квадрате. Сверху -- рябь по окружности штанины
-// со своей фазой у каждой стороны, чтобы ткань не ходила доской. Меш шорт -- в мировых координатах
-{
-	float hang = clamp((uSwayTop - position.y) / (uSwayTop - uSwayBottom), 0.0, 1.0);
-	hang *= hang;
-	float ripple = 1.0 + 0.35 * sin(uTime * 7.0 + atan(position.z, position.x - sign(position.x) * 0.09) * 3.0);
-	transformed.xz += uSwayTurn * hang * ripple * vec2(position.z, -position.x);
-}
-#endif
 #ifdef MUSCLE
 vPart = _part;
 vFiber = _fiber;

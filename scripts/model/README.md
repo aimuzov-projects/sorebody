@@ -63,17 +63,3 @@ python3 -I detail.py <папка со списками> <папка с OBJ> deta
 for c in detail/*-*.json; do node build.mjs $c ${c%.json}.glb; done
 cp detail/*.glb detail/index.json ../../public/model/detail/
 ```
-
-## Шорты
-
-`public/model/shorts.glb` -- модель «Distance Short Men» (fersmta, CC BY 4.0) с Sketchfab, посаженная на фигуру.
-Архив модели скачивается вручную (нужен аккаунт Sketchfab), в репозитории его нет. `skin-obj.mjs` выгружает кожу
-`body.glb` в OBJ, `shorts.py` в Blender берёт низкополигональную версию шорт, масштабирует её по талии и посадке,
-отодвигает ткань от кожи и оставляет из текстур только карту нормалей (швы, резинка, панели).
-
-```bash
-node scripts/model/skin-obj.mjs public/model/body.glb skin.obj
-blender -b -P scripts/model/shorts.py -- distance_short_men/scene.gltf skin.obj public/model/shorts.glb
-```
-
-Колыхание считает сцена: подол отстаёт от поворота фигуры пружиной (`uSwayTurn` в `dissolve.ts`).

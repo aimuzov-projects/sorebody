@@ -18,9 +18,3 @@ The Z-Anatomy parts are exported from Blender with modifiers applied and fitted 
 non-commercial licenses (inner ear, kidney) are not used. All meshes are simplified with meshoptimizer, quantized and
 compressed with EXT_meshopt_compression. body.glb is shared under CC BY-SA 2.1 JP. The chunks in detail/ combine both
 sources and are shared under CC BY-SA 4.0, which BY-SA 2.1 JP allows as a later version with the same elements.
-
-shorts.glb is based on "Distance Short Men"
-(https://sketchfab.com/3d-models/distance-short-men-08eeac0016c24479bff8735bcbfbdc09) by fersmta
-(https://sketchfab.com/fersmta), licensed under CC BY 4.0 (http://creativecommons.org/licenses/by/4.0/).
-Changes: only the low-poly version is kept, scaled and moved to sit on the figure, pushed out where it touched the
-skin; base colour and roughness textures are dropped, the normal map is downscaled to 1024 px.

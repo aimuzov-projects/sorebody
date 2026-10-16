@@ -1114,7 +1114,7 @@
 				<ul class="index__zones">
 					{#each allZones as zone (zone.slug)}
 						{@const count = counts.get(zone) ?? 0}
-						<li class="index__zone-row" class:index__zone-row--whole={zone === whole}>
+						<li class="index__zone-row">
 							<button
 								class="index__zone"
 								type="button"
@@ -1126,10 +1126,11 @@
 								onblur={() => previewZone(null, false)}
 							>
 								<span class="index__count">{count}</span>
+								<span class="index__zone-label">{zone.label}</span>
+								<!-- «Всё тело» -- такая же строка, человечек после названия тихо помечает её -->
 								{#if zone === whole}<span class="index__icon" aria-hidden="true"
 										>{@html PersonStanding}</span
 									>{/if}
-								<span class="index__zone-label">{zone.label}</span>
 							</button>
 						</li>
 					{/each}
@@ -1686,8 +1687,8 @@
 		/* Сдвиг вверх -- на высоту маски над первой строкой, иначе между шапкой и строками дыра.
 		   Двойной класс перебивает отступы строк зоны, объявленные ниже */
 		&__injuries.zone__list {
-			margin-top: -16px;
-			padding-top: 22px;
+			margin-top: -12px;
+			padding-top: 14px;
 
 			@media (width < 700px) {
 				margin-top: -22px;
@@ -1837,17 +1838,11 @@
 			overscroll-behavior: contain;
 			flex: 1;
 			margin: 0;
-			padding: 12px 0 18dvh;
+			/* Сверху маске хватает нескольких пикселей: строки начинаются в ритме блоков выше, а не
+			   через пустую полосу. Края всё равно гаснут, когда список прокручен */
+			padding: 2px 0 18dvh;
 			list-style: none;
-			mask-image: linear-gradient(to bottom, transparent, #000000 16px, #000000 calc(100% - 96px), transparent);
-		}
-
-		&__zone-row--whole {
-			margin-top: 18px;
-
-			@media (width < 700px) {
-				margin-top: 0;
-			}
+			mask-image: linear-gradient(to bottom, transparent, #000000 6px, #000000 calc(100% - 96px), transparent);
 		}
 
 		&__zone {
@@ -2264,9 +2259,9 @@
 			overscroll-behavior: contain;
 			flex: 1;
 			margin: 12px 0 0;
-			padding: 28px 0 22dvh;
+			padding: 14px 0 22dvh;
 			list-style: none;
-			mask-image: linear-gradient(to bottom, transparent, #000000 36px, #000000 calc(100% - 120px), transparent);
+			mask-image: linear-gradient(to bottom, transparent, #000000 18px, #000000 calc(100% - 120px), transparent);
 		}
 
 		&--bottom &__list {

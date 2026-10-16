@@ -30,3 +30,16 @@ node build.mjs body.json body.glb
 python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5
 for c in detail/*.json; do node build.mjs $c ${c%.json}.glb; done
 ```
+
+### Связки, мениски и нервы из Z-Anatomy
+
+В BodyParts3D нет менисков, крестообразных и коллатеральных связок, суставных губ и нервов конечностей. Их берём из
+[Z-Anatomy](https://github.com/Z-Anatomy/Models-of-human-anatomy) (CC BY-SA 4.0, `Z-Anatomy.zip` → `Startup.blend`)
+через Blender: `z_anatomy_export.py` выгружает их с применёнными модификаторами, `z_align.py` подгоняет к костям BP3D
+по каждой зоне (ICP с масштабом). Внутреннее ухо и почку (NC-лицензии) скрипт не берёт.
+
+```bash
+blender -b Startup.blend --python z_anatomy_export.py -- za-export
+blender -b --factory-startup --python z_align.py -- za-export <папка с OBJ> za-aligned <offset x,y,z>
+python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5 za-aligned
+```

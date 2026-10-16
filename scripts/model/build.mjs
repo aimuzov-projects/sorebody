@@ -6,7 +6,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { Document, NodeIO } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
-import { compactPrimitive, dedup, meshopt, prune, quantize, reorder, simplifyPrimitive, weld } from '@gltf-transform/functions'
+import {
+	compactPrimitive,
+	dedup,
+	meshopt,
+	prune,
+	quantize,
+	reorder,
+	simplifyPrimitive,
+	weld,
+} from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -167,7 +176,8 @@ if (cfg.clip) {
 		for (const prim of mesh.listPrimitives()) {
 			const pos = prim.getAttribute('POSITION').getArray()
 			const idx = prim.getIndices().getArray()
-			const near = (v) => Math.hypot(pos[3 * v] - center[0], pos[3 * v + 1] - center[1], pos[3 * v + 2] - center[2]) < radius
+			const near = (v) =>
+				Math.hypot(pos[3 * v] - center[0], pos[3 * v + 1] - center[1], pos[3 * v + 2] - center[2]) < radius
 			const keep = []
 
 			for (let t = 0; t < idx.length; t += 3)

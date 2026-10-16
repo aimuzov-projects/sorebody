@@ -1,10 +1,11 @@
 # Собирает config.json детальных кусков зон для build.mjs: все слои BodyParts3D (кости, мышцы, хрящи
 # и связки, артерии, вены, нервы) в сфере вокруг точки зоны, по куску на точку.
-# usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio>
+# usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio> [<z-anatomy dir>]
+# z-anatomy dir -- выход z_align.py: связки, мениски, губы, капсулы и нервы поверх BP3D
 # offset -- сдвиг из лога сборки фигуры (строка bounds ... offset), чтобы кусок лёг в её координаты
 import json, sys, collections, glob, os
 
-dl, obj_dir, out_dir, offset, ratio = sys.argv[1:]
+dl, obj_dir, out_dir, offset, ratio, *extra = sys.argv[1:]
 off = [float(v) for v in offset.split(',')]
 ratio = float(ratio)
 
@@ -17,7 +18,7 @@ with open(f'{dl}/isa_element_parts.txt') as fh:
 
 # Габариты элементов в координатах фигуры: метры, Y вверх, перед = +Z
 boxes = {}
-for p in glob.glob(f'{obj_dir}/*.obj'):
+for p in glob.glob(f'{obj_dir}/*.obj') + [f for d in extra for f in glob.glob(f'{d}/*.obj')]:
     lo, hi = [1e9] * 3, [-1e9] * 3
     with open(p) as fh:
         for line in fh:
@@ -37,6 +38,9 @@ layers = {
     'veins': by['vein'],
     'nerves': by['nerve'] | by['nerve trunk'],
 }
+for d in extra:
+    for o in json.load(open(f'{d}/manifest.json'))['objects']:
+        layers.setdefault(o['kind'], set()).add(o['file'])
 
 # Точки и радиусы -- как ANCHORS в src/frontend/scene/zones.ts; кусок берём в 1,25 радиуса
 ZONES = {
@@ -65,6 +69,6 @@ for zone, (c, r) in ZONES.items():
             near = sorted(f for f in files if f in boxes and touches(boxes[f], center, radius))
             if near:
                 groups.append({'name': name, 'files': near, 'ratio': ratio, 'error': 0.005})
-        cfg = {'objDirs': [obj_dir], 'offset': off, 'clip': {'center': center, 'radius': radius}, 'groups': groups}
+        cfg = {'objDirs': [obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius}, 'groups': groups}
         json.dump(cfg, open(f'{out_dir}/{zone}-{side}.json', 'w'), indent=1)
         print(zone, side, {g['name']: len(g['files']) for g in groups})

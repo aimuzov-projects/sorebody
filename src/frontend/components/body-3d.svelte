@@ -1072,19 +1072,19 @@
 		<aside class="index" class:index--away={open} aria-label="Травмы движения">
 			<header class="index__head">
 				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
-				<div class="index__brand-row">
-					<Logo href="/" />
-					<a
-						class="index__about"
-						href="/about/"
-						aria-label="О справочнике"
-						aria-describedby="about-tip"
-						bind:this={aboutLink}>{@html INFO_DOT}</a
-					>
-					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
-						>Источники и как сделан справочник</span
-					>
-				</div>
+				<a
+					class="index__brand-row logo-host"
+					href="/about/"
+					aria-label="Wodcare, о справочнике"
+					aria-describedby="about-tip"
+					bind:this={aboutLink}
+				>
+					<Logo />
+					<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
+				</a>
+				<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+					>Источники и как сделан справочник</span
+				>
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
 				>
@@ -1122,19 +1122,19 @@
 	{:else}
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<div class="index__brand-row">
+				<a
+					class="index__brand-row logo-host"
+					href="/about/"
+					aria-label="Wodcare, о справочнике"
+					aria-describedby="about-tip"
+					bind:this={aboutLink}
+				>
 					<Logo />
-					<a
-						class="index__about"
-						href="/about/"
-						aria-label="О справочнике"
-						aria-describedby="about-tip"
-						bind:this={aboutLink}>{@html INFO_DOT}</a
-					>
-					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
-						>Источники и как сделан справочник</span
-					>
-				</div>
+					<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
+				</a>
+				<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+					>Источники и как сделан справочник</span
+				>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>
 			<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
@@ -1656,11 +1656,19 @@
 			gap: 2px;
 		}
 
+		/* Логотип и «i» -- одна ссылка на «О справочнике»: наведение на любую часть красит всё */
 		&__brand-row {
 			display: flex;
 			gap: 8px;
 			align-items: center;
 			justify-self: start;
+			text-decoration: none;
+
+			&:focus-visible {
+				border-radius: 6px;
+				outline: 2px solid var(--a-blue);
+				outline-offset: 4px;
+			}
 		}
 
 		/* Значок «О справочнике»: та же тихая «i», что у другого названия в статье. Сам 13px,
@@ -1681,14 +1689,9 @@
 				inset: -15.5px;
 			}
 
-			&:hover,
-			&:focus-visible {
+			.index__brand-row:hover &,
+			.index__brand-row:focus-visible & {
 				color: var(--a-blue);
-			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 3px;
 			}
 
 			/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
@@ -1928,7 +1931,9 @@
 			display: flex;
 			gap: 10px;
 			align-items: center;
-			width: 100%;
+			/* Наведение -- только по самой строке, а не по всей ширине колонки */
+			width: fit-content;
+			max-width: 100%;
 			padding: 9px 0;
 			border: 0;
 			font: inherit;

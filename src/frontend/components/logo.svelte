@@ -76,6 +76,7 @@
 
 	.logo__body {
 		fill: var(--a-logo);
+		transition: fill 0.4s var(--a-ease);
 	}
 
 	.logo__ear {
@@ -83,23 +84,35 @@
 		transition: stroke 0.4s var(--a-ease);
 	}
 
+	.logo__wod,
 	.logo__care {
-		color: var(--a-care);
 		transition: color 0.4s var(--a-ease);
 	}
 
-	.logo:hover .logo__ear,
-	.logo:focus-visible .logo__ear {
+	.logo__care {
+		color: var(--a-care);
+	}
+
+	/* Наведение на сам логотип-ссылку или на ссылку, в которую он вложен, красит весь знак и слово */
+	.logo:is(:hover, :focus-visible) .logo__body,
+	:global(.logo-host:is(:hover, :focus-visible)) .logo__body {
+		fill: var(--a-blue);
+	}
+
+	.logo:is(:hover, :focus-visible) .logo__ear,
+	:global(.logo-host:is(:hover, :focus-visible)) .logo__ear {
 		stroke: var(--a-blue);
 	}
 
-	.logo:hover .logo__care,
-	.logo:focus-visible .logo__care {
+	.logo:is(:hover, :focus-visible) :is(.logo__wod, .logo__care),
+	:global(.logo-host:is(:hover, :focus-visible)) :is(.logo__wod, .logo__care) {
 		color: var(--a-blue);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.logo__body,
 		.logo__ear,
+		.logo__wod,
 		.logo__care {
 			transition: none;
 		}

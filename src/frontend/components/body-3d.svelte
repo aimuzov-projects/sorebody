@@ -1253,6 +1253,25 @@
 {/if}
 
 <style>
+	/* Длина нижнего затухания списков на главной; регистрация нужна, чтобы её можно было
+	   плавно анимировать и чтобы без анимации она была нулём */
+	@property --zones-fade {
+		syntax: '<length>';
+		inherits: false;
+		initial-value: 0px;
+	}
+
+	@keyframes zones-fade {
+		0%,
+		85% {
+			--zones-fade: 56px;
+		}
+
+		100% {
+			--zones-fade: 0px;
+		}
+	}
+
 	/* Токены (--a-*) объявлены на body в pages/index.astro, тёмная тема -- там же.
 	   Язык страницы: ни карточек, ни рамок, ни разделителей -- только прозрачность,
 	   сдвиги и края, растворённые градиентом */
@@ -1914,10 +1933,28 @@
 			flex: 1;
 			margin: 0;
 			/* Сверху маске хватает нескольких пикселей: строки начинаются в ритме блоков выше, а не
-			   через пустую полосу. Края всё равно гаснут, когда список прокручен */
-			padding: 2px 0 10dvh;
+			   через пустую полосу. Нижний отступ маленький, иначе список, который и так влезает,
+			   начинает прокручиваться ради пустоты */
+			padding: 2px 0 16px;
 			list-style: none;
-			mask-image: linear-gradient(to bottom, transparent, #000000 6px, #000000 calc(100% - 56px), transparent);
+			mask-image: linear-gradient(
+				to bottom,
+				transparent,
+				#000000 6px,
+				#000000 calc(100% - var(--zones-fade)),
+				transparent
+			);
+
+			/* Низ гаснет, только пока есть что докрутить: без переполнения таймлайн неактивен и
+			   --zones-fade остаётся нулём, в конце прокрутки затухание уходит с последней строки.
+			   Только отдельные свойства: краткую запись animation минификатор склеивает
+			   с animation-timeline, и браузер выкидывает правило */
+			@supports (animation-timeline: scroll()) {
+				animation-name: zones-fade;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(self);
+			}
 		}
 
 		&__zone {

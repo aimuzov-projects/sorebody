@@ -114,8 +114,8 @@ export function attachTip(
 
 /**
  * Значок другого названия у заголовка статьи (`[data-alias]`) и его подсказка
- * (`[data-alias-tip]`). Шапка над статьёй: на отдельной странице -- .article-bar, поверх
- * сцены -- полоса своего reader.
+ * (`[data-alias-tip]`). Шапка над статьёй (.site-header): на отдельной странице -- шапка сайта,
+ * поверх сцены -- своя у reader.
  */
 export function initAliasTip(root: Element, scroller: HTMLElement | Window) {
 	const button = root.querySelector<HTMLButtonElement>('[data-alias]')
@@ -123,7 +123,7 @@ export function initAliasTip(root: Element, scroller: HTMLElement | Window) {
 
 	if (!button || !tip) return () => {}
 
-	const bar = root.closest('.reader')?.querySelector('.reader__bar') ?? document.querySelector('.article-bar')
+	const bar = root.closest('.reader')?.querySelector('.site-header') ?? document.querySelector('.site-header')
 
 	return attachTip(button, tip, { column: button.closest('h1') ?? button, bar, scroller, pinOnClick: true })
 }

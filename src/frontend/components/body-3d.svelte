@@ -33,6 +33,7 @@
 	import Logo from '#frontend/components/logo.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
+	import SiteHeader from '#frontend/components/site-header.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import { homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
@@ -453,7 +454,7 @@
 
 	$effect(() => {
 		if (aboutLink && aboutTip)
-			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.index') ?? aboutLink })
+			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
 	onMount(() => {
@@ -1039,25 +1040,29 @@
 		</span>
 	{/each}
 
+	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип с «i», ссылка на about (в Mini App
+	     это единственный путь туда). Справа в той же строке -- переключатель темы из base.astro -->
+	<SiteHeader floating>
+		<a
+			class="index__brand-row logo-host"
+			href="/about/"
+			aria-label="Wodcare, о справочнике"
+			aria-describedby="about-tip"
+			bind:this={aboutLink}
+		>
+			<Logo />
+			<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
+		</a>
+		<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+			>Источники и как сделан справочник</span
+		>
+	</SiteHeader>
+
 	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
 	{#if movementPage}
 		{@const total = movementInjuries.length}
 		<aside class="index" class:index--away={open} aria-label="Травмы движения">
 			<header class="index__head">
-				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
-				<a
-					class="index__brand-row logo-host"
-					href="/about/"
-					aria-label="Wodcare, о справочнике"
-					aria-describedby="about-tip"
-					bind:this={aboutLink}
-				>
-					<Logo />
-					<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
-				</a>
-				<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
-					>Источники и как сделан справочник</span
-				>
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
 				>
@@ -1095,19 +1100,6 @@
 	{:else}
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<a
-					class="index__brand-row logo-host"
-					href="/about/"
-					aria-label="Wodcare, о справочнике"
-					aria-describedby="about-tip"
-					bind:this={aboutLink}
-				>
-					<Logo />
-					<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
-				</a>
-				<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
-					>Источники и как сделан справочник</span
-				>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>
 			<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
@@ -1235,13 +1227,13 @@
 		<div class="reader__progress" aria-hidden="true">
 			<span class="reader__progress-bar" bind:this={progressBar}></span>
 		</div>
-		<div class="reader__bar">
+		<SiteHeader>
 			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
 			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css -->
 			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
-		</div>
+		</SiteHeader>
 		{#if articleStatus === 'loading'}
 			<p class="reader__status">Загружаем статью…</p>
 		{:else if articleStatus === 'error'}
@@ -1543,12 +1535,13 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		left: 6vw;
+		/* Левый край -- общая вертикаль каркаса (styles/global.css), как у оглавления статьи */
+		left: var(--frame-x);
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
 		width: min(380px, 32vw);
-		padding-top: calc(28px + var(--tg-top));
+		padding-top: calc(var(--theme-toggle-top) + var(--header-row) + 16px);
 		transition:
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
@@ -1610,7 +1603,7 @@
 			top: 0;
 			right: -8vw;
 			bottom: 0;
-			left: -6vw;
+			left: -50vw;
 			background: linear-gradient(to right, var(--a-bg) 60%, transparent);
 		}
 
@@ -2141,7 +2134,8 @@
 
 		&__head {
 			flex: none;
-			padding-top: calc(max(32px, 7dvh) + var(--tg-top));
+			/* Под шапкой сцены, на той же высоте, что заголовок индекса */
+			padding-top: calc(var(--theme-toggle-top) + var(--header-row) + 16px);
 		}
 
 		/* «Назад» -- стрелка в строке заголовка, без подписи: место на шапке дороже слова */
@@ -2425,32 +2419,18 @@
 
 	/* Статья на весь экран на чистом фоне; верхний край растворяется под кнопкой "Назад" */
 	.reader {
+		/* Фон шапки статьи -- цвет её страницы */
+		--site-header-bg: var(--a-page);
 		position: fixed;
 		z-index: 2;
 		inset: 0;
 		overflow-y: auto;
+
 		overscroll-behavior: contain;
 		background: var(--a-page);
 
 		&:focus {
 			outline: none;
-		}
-
-		&__bar {
-			position: sticky;
-			z-index: 1;
-			top: 0;
-			display: flex;
-			align-items: center;
-			min-height: calc(52px + var(--tg-top));
-			/* На всю ширину, содержимое -- по краям колонки статьи, как .article-bar в styles/article.css */
-			padding: calc(12px + var(--tg-top)) max(var(--theme-toggle-room), (100% - 1052px) / 2 + 24px) 20px;
-			background: linear-gradient(to bottom, var(--a-page) 62%, transparent);
-
-			/* Справа -- место под переключатель темы: он в углу окна, поверх шапки */
-			@media (width < 600px) {
-				padding-inline: 20px var(--theme-toggle-room);
-			}
 		}
 
 		&__back {

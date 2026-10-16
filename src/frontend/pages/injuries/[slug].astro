@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink } from 'lucide
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
+import SiteHeader from '#frontend/components/site-header.svelte'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
@@ -34,12 +35,12 @@ const nameTail = name.slice(nameHead.length)
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
-	<header class="article-bar">
+	<SiteHeader>
 		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
 		<p class="article-bar__title" aria-hidden="true">
 			{name}
 		</p>
-	</header>
+	</SiteHeader>
 	<main class="article" data-article>
 		<header class="article__hero">
 			{/* Метки чипами, как фильтры раскрытой зоны: зона -- ссылка на её список, частота -- знаком в своём цвете */}

@@ -33,8 +33,8 @@
 	--article-column: 680px;
 	/* Вертикальный ритм лонгрида -- три шага. Перед разделом заметно больше, чем после его
 	   заголовка: заголовок держится за свой текст, а не за предыдущий раздел */
-	--rhythm-section: 44px;
-	--rhythm-heading: 14px;
+	--rhythm-section: 38px;
+	--rhythm-heading: 26px;
 	--rhythm-block: 0.7em;
 
 	width: 100%;

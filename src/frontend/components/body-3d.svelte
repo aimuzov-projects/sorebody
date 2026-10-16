@@ -30,6 +30,7 @@
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
+	import Logo from '#frontend/components/logo.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
@@ -1072,7 +1073,7 @@
 			<header class="index__head">
 				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
 				<div class="index__brand-row">
-					<a class="index__brand" href="/">Wodcare</a>
+					<Logo href="/" />
 					<a
 						class="index__about"
 						href="/about/"
@@ -1122,7 +1123,7 @@
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<div class="index__brand-row">
-					<p class="index__brand">Wodcare</p>
+					<Logo />
 					<a
 						class="index__about"
 						href="/about/"
@@ -1653,22 +1654,6 @@
 		&__head {
 			display: grid;
 			gap: 2px;
-		}
-
-		&__brand {
-			justify-self: start;
-			margin: 0;
-			font-size: 15px;
-			font-weight: 600;
-			color: var(--a-fg2);
-			text-decoration: none;
-			transition: color 0.3s var(--a-ease);
-
-			&[href]:hover,
-			&:focus-visible {
-				color: var(--a-fg);
-				outline: none;
-			}
 		}
 
 		&__brand-row {

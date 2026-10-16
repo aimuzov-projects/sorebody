@@ -58,6 +58,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script is:inline set:html={TELEGRAM_FLAG} />
 		<script is:inline set:html={THEME_BOOT} />
 		<slot name="head" />

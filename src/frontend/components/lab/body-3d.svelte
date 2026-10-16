@@ -9,6 +9,13 @@
 
 		return 'травм'
 	}
+
+	/** Последнее слово отдельно: его склеиваем со стрелкой, чтобы она не уезжала одна на новую строку. */
+	function splitLastWord(text: string) {
+		const at = text.lastIndexOf(' ') + 1
+
+		return [text.slice(0, at), text.slice(at)]
+	}
 </script>
 
 <script lang="ts">
@@ -487,6 +494,7 @@
 			</header>
 			<ul class="zone__list">
 				{#each open.zone.injuries as injury, i (injury.slug)}
+					{@const [head, tail] = splitLastWord(injury.title)}
 					<li class="zone__row" style:--i={i}>
 						<a
 							class="zone__item"
@@ -498,7 +506,9 @@
 									<span class="zone__rare" title="Редкая травма"></span>
 									<span class="zone__hidden">Редкая:</span>
 								{/if}
-								{injury.title}
+								{head}<span class="zone__tail"
+									>{tail}<span class="zone__arrow" aria-hidden="true">→</span></span
+								>
 							</span>
 							<span class="zone__summary">{injury.summary}</span>
 						</a>
@@ -693,6 +703,15 @@
 		width: min(440px, 40vw);
 		animation: fade-in 0.5s var(--a-ease) both;
 
+		/* Наведённая строка остаётся, остальные отходят на второй план. Условие -- курсор
+		   на самой строке, а не на списке: в пустом отступе под строками гасло всё сразу,
+		   а на телефоне после тапа залипало. Поэтому и только для мыши */
+		@media (hover: hover) {
+			&__list:has(&__item:hover) &__item:not(:hover) {
+				opacity: 0.4;
+			}
+		}
+
 		&::before {
 			pointer-events: none;
 			content: '';
@@ -815,10 +834,26 @@
 			}
 		}
 
-		/* Наведённая строка остаётся, остальные отходят на второй план */
-		&__list:hover &__item:not(:hover),
-		&__list:focus-within &__item:not(:focus-visible) {
+		&__list:has(&__item:focus-visible) &__item:not(:focus-visible) {
 			opacity: 0.4;
+		}
+
+		/* Стрелка после названия: видно, что строка -- ссылка */
+		&__tail {
+			white-space: nowrap;
+		}
+
+		&__arrow {
+			display: inline-block;
+			margin-left: 6px;
+			font-weight: 400;
+			color: var(--a-blue);
+			transition: transform 0.35s var(--a-ease);
+		}
+
+		&__item:hover &__arrow,
+		&__item:focus-visible &__arrow {
+			transform: translateX(4px);
 		}
 
 		&__name {

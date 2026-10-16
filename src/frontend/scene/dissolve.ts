@@ -1,7 +1,15 @@
 import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three'
 
 /** Цвета среза у края проёма: снаружи и на изнанке, ширина -- в метрах модели. */
-export type Rim = { front: string; back: string; inner?: string; frontWidth?: number; backWidth?: number }
+export type Rim = {
+	front: string
+	back: string
+	inner?: string
+	/** Цвет изнанки за кромкой; без него изнанка -- цвет слоя на тон темнее. */
+	hollow?: string
+	frontWidth?: number
+	backWidth?: number
+}
 
 /**
  * Кожа: срез толщиной 4 мм. От края проёма наружу -- желтоватая клетчатка (`inner`),
@@ -11,6 +19,8 @@ export const SKIN_RIM: Rim = {
 	front: '#f2cdc2',
 	inner: '#e8d6a8',
 	back: '#e2d0a2',
+	// Изнанка оболочки в проёме, где мышцы не доходят до кожи: тёмная ткань, а не белая пустота
+	hollow: '#7a4034',
 	frontWidth: 0.004,
 	backWidth: 0.006,
 }
@@ -41,6 +51,8 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 		uRimInner: { value: new Color(edge.inner ?? edge.front) },
 		uRimBack: { value: new Color(edge.back) },
 		uRimBackWidth: { value: edge.backWidth ?? 0.003 },
+		uHollow: { value: new Color(edge.hollow ?? '#000000') },
+		uHollowOn: { value: edge.hollow ? 1 : 0 },
 		// Радиус проёма во внешнем слое (кожи): слой виден только там, где тот уже растворён.
 		// Меньше нуля -- внешнего слоя нет
 		uOuter: { value: -1 },
@@ -104,6 +116,8 @@ vFiber = _fiber;
 uniform vec3 uCenter;
 uniform float uRadius;
 uniform float uMidline;
+uniform vec3 uHollow;
+uniform float uHollowOn;
 uniform vec3 uRim;
 uniform float uRimWidth;
 uniform vec3 uRimInner;
@@ -161,7 +175,14 @@ if (uRadius > 0.0) {
 // Изнанка мышц -- чуть темнее лица, без провала в чёрное
 if (!gl_FrontFacing) diffuseColor.rgb *= 0.86;
 #else
-if (!gl_FrontFacing) diffuseColor.rgb *= 0.62;
+if (!gl_FrontFacing && uHollowOn > 0.5) {
+	// Изнанка кожи в проёме -- срез тканей, а не пустая оболочка: мышечная ткань с прожилками
+	// жира и мелкой зернистостью. Шум в координатах модели: рисунок не плывёт при повороте
+	float marble = snoise(vDissolvePos * 90.0) * 0.6 + snoise(vDissolvePos * 240.0) * 0.4;
+	float grain = snoise(vDissolvePos * 900.0);
+	vec3 fat = vec3(0.86, 0.76, 0.52);
+	diffuseColor.rgb = mix(uHollow, fat, smoothstep(0.3, 0.65, marble) * 0.55) * (0.92 + 0.08 * grain);
+} else if (!gl_FrontFacing) diffuseColor.rgb *= 0.62;
 #endif
 #ifdef MUSCLE
 // Волокна: шум по координатам поперёк главной оси мышцы, вдоль неё он не меняется -- выходят

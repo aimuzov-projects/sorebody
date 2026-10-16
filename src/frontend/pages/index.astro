@@ -58,6 +58,8 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 		--a-red: #ff3b30;
 		--a-sep: rgb(0 0 0 / 8%);
 		--a-fill: rgb(0 0 0 / 5%);
+		/* Всплывающие списки: светлее фона, чтобы отделиться от него без рамки */
+		--a-pop: #ffffff;
 
 		/* Отступы под системные кнопки Telegram в полноэкранном Mini App; вне Telegram -- ноль.
 		   Переменные --tg-* ставит SDK Telegram на <html> */
@@ -91,6 +93,7 @@ const movements = MOVEMENTS.filter((m) => injuries.some((i) => i.movements.inclu
 			--a-red: #ff453a;
 			--a-sep: rgb(255 255 255 / 12%);
 			--a-fill: rgb(255 255 255 / 10%);
+			--a-pop: #1c1c1e;
 		}
 	}
 

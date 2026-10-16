@@ -25,6 +25,7 @@
 
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
+	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import { injuryFocus, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
@@ -772,15 +773,7 @@
 					>
 				{/each}
 			</div>
-			<label class="index__movement">
-				<span class="index__movement-label">Движение</span>
-				<select class="index__select" bind:value={movement}>
-					<option value="">любое</option>
-					{#each movements as m (m.slug)}
-						<option value={m.slug}>{m.title}</option>
-					{/each}
-				</select>
-			</label>
+			<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
 		</div>
 		{#if query.trim()}
 			<ul class="index__results" aria-live="polite">
@@ -1324,31 +1317,6 @@
 			&:hover:not([aria-pressed='true']) {
 				color: var(--a-fg);
 			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
-			}
-		}
-
-		&__movement {
-			display: inline-flex;
-			gap: 6px;
-			align-items: baseline;
-			font-size: 16px;
-			color: var(--a-fg2);
-		}
-
-		&__select {
-			cursor: pointer;
-			max-width: 220px;
-			padding: 2px 0;
-			border: 0;
-			font: inherit;
-			color: var(--a-blue);
-			text-overflow: ellipsis;
-			appearance: none;
-			background: none;
 
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);

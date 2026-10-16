@@ -270,12 +270,57 @@
 		}
 	}
 
+	/* Подпись под иллюстрацией -- мельче текста и вторичным цветом, по ширине колонки. Заголовок
+	   рисунка до двоеточия -- цветом текста, пометка «от нейросети» -- тихим чипом в конце */
 	&__caption {
 		max-width: var(--article-column);
-		margin: 4px auto 0;
-		font-size: 14px;
-		line-height: 1.45;
+		margin: 10px auto 0;
+		font-size: 14.5px;
+		line-height: 1.5;
 		color: var(--muted);
+	}
+
+	&__caption-title {
+		font-weight: 600;
+		color: var(--fg);
+	}
+
+	&__ai {
+		cursor: help;
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		margin-left: 6px;
+		padding: 1px 8px 1px 6px;
+		border: 0;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--muted);
+		white-space: nowrap;
+		vertical-align: 1px;
+		background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+		transition:
+			color 0.3s var(--article-ease),
+			background 0.3s var(--article-ease);
+
+		&:hover,
+		&[aria-expanded='true'] {
+			color: var(--fg);
+			background: color-mix(in srgb, var(--fg) 10%, var(--bg));
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__ai-icon {
+		display: inline-flex;
+		width: 12px;
+		height: 12px;
 	}
 
 	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет */

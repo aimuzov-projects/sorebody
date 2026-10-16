@@ -113,17 +113,30 @@ export function attachTip(
 }
 
 /**
- * Значок другого названия у заголовка статьи (`[data-alias]`) и его подсказка
- * (`[data-alias-tip]`). Шапка над статьёй (.site-header): на отдельной странице -- шапка сайта,
- * поверх сцены -- своя у reader.
+ * Подсказки статьи: другое название у заголовка (`[data-alias]` и `[data-alias-tip]`) и пометка
+ * «от нейросети» у подписи иллюстрации (`[data-ai]` и `[data-ai-tip]`). Шапка над статьёй
+ * (.site-header): на отдельной странице -- шапка сайта, поверх сцены -- своя у reader.
  */
-export function initAliasTip(root: Element, scroller: HTMLElement | Window) {
-	const button = root.querySelector<HTMLButtonElement>('[data-alias]')
-	const tip = root.querySelector<HTMLElement>('[data-alias-tip]')
-
-	if (!button || !tip) return () => {}
-
+export function initArticleTips(root: Element, scroller: HTMLElement | Window) {
 	const bar = root.closest('.reader')?.querySelector('.site-header') ?? document.querySelector('.site-header')
+	const stops = [
+		['[data-alias]', '[data-alias-tip]', 'h1'],
+		['[data-ai]', '[data-ai-tip]', 'figcaption'],
+	].flatMap(([buttonSelector, tipSelector, columnSelector]) => {
+		const button = root.querySelector<HTMLElement>(buttonSelector)
+		const tip = root.querySelector<HTMLElement>(tipSelector)
 
-	return attachTip(button, tip, { column: button.closest('h1') ?? button, bar, scroller, pinOnClick: true })
+		if (!button || !tip) return []
+
+		return [
+			attachTip(button, tip, {
+				column: button.closest(columnSelector) ?? button,
+				bar,
+				scroller,
+				pinOnClick: true,
+			}),
+		]
+	})
+
+	return () => stops.forEach((stop) => stop())
 }

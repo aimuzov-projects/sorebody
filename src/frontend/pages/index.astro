@@ -1,28 +1,35 @@
 ---
-import Base from '#frontend/layouts/base.astro'
+import Body3d from '#frontend/components/body-3d.svelte'
+import Footer from '#frontend/components/footer.astro'
 import { site } from '#frontend/data/site.ts'
+import Base from '#frontend/layouts/base.astro'
+import { sceneData } from '#frontend/scene/scene-data.ts'
+import '#frontend/styles/article.css'
+import '#frontend/styles/scene.css'
+
+// meshopt-декодер модели -- WebAssembly; разрешаем его только на страницах с моделью
+Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
+
+const { entries, zones, whole, movements } = await sceneData()
 ---
 
-<Base>
-	<main class="home">
-		<div class="container">
-			<h1 class="home__title">{site.name}</h1>
-			<p class="home__lead">{site.description}</p>
-		</div>
+<Base bare bodyClass="scene-page">
+	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
+	<main>
+		<h1 class="scene-page__title">{site.name}: травмы в кроссфите</h1>
+		<Body3d client:only="svelte" {zones} {whole} {movements} modelUrl="/model/body.glb">
+			<Footer slot="footer" />
+		</Body3d>
 	</main>
+	<noscript>
+		<ul class="scene-page__fallback">
+			{[...entries]
+				.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+				.map(({ id, data }) => (
+					<li>
+						<a href={`/injuries/${id}/`}>{data.title}</a>
+					</li>
+				))}
+		</ul>
+	</noscript>
 </Base>
-
-<style>
-	.home {
-		padding-block: var(--section-y);
-
-		&__title {
-			font-size: clamp(2.4rem, 6vw, 3.6rem);
-		}
-
-		&__lead {
-			max-width: 60ch;
-			color: var(--muted);
-		}
-	}
-</style>

@@ -5,9 +5,7 @@ import { site } from '#frontend/data/site.ts'
 ---
 
 <footer class="footer">
-	<div class="container">
-		<Credit repo={site.repo} />
-	</div>
+	<Credit repo={site.repo} />
 </footer>
 
 <style>
@@ -15,8 +13,11 @@ import { site } from '#frontend/data/site.ts'
 		/* Ссылки подписи из infra-site-kit при наведении подсвечиваются цветом текста. */
 		--credit-hover: var(--fg);
 
+		/* Края -- по сетке шапки: слева вертикаль левой колонки, справа линия значка темы, она
+		   же правый край колонки текста (значок 22px в кнопке 40px, отсюда 9px). Токены в
+		   styles/global.css */
 		margin-top: auto;
-		padding-block: 24px;
+		padding: 24px calc(var(--theme-toggle-right) + 9px) 24px var(--frame-x);
 		font-size: 0.875rem;
 		color: var(--muted);
 	}

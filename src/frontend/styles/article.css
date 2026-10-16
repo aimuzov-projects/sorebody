@@ -1,0 +1,898 @@
+/* Статья-лонгрид. Одни стили для отдельной страницы и для статьи поверх модели на главной.
+   Язык тот же, что у сцены: ни карточек, ни рамок, ни разделителей -- только прозрачность,
+   градиенты и края, растворённые маской. Цвета -- общие токены сайта: на главной их
+   переопределяет сцена, тёмную тему задаёт global.css. */
+
+/* Края иллюстрации. На светлом фоне белая картинка широко растворяется в нём. На тёмном
+   широкий переход от белого к фону читался мутной серой каймой, поэтому край узкий: белый
+   лист с мягким краем. Набор по схеме -- как в global.css, вместе с классами подсмотра темы */
+:root,
+.light {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
+		linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--article-image-mask:
+			linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+			linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+	}
+}
+
+:root[data-theme='dark'],
+.dark {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+		linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+}
+
+.article {
+	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
+	--article-column: 680px;
+	/* Вертикальный ритм лонгрида -- три шага. Перед разделом заметно больше, чем после его
+	   заголовка: заголовок держится за свой текст, а не за предыдущий раздел */
+	--rhythm-section: 38px;
+	--rhythm-heading: 26px;
+	--rhythm-block: 0.7em;
+
+	width: 100%;
+	max-width: calc(var(--article-column) + 260px + 64px + 48px);
+	margin: 0 auto;
+	padding: 16px 24px 96px;
+
+	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
+	color: var(--fg);
+	letter-spacing: -0.012em;
+
+	@media (width < 600px) {
+		padding: 28px 20px 72px;
+	}
+
+	&__hero {
+		display: grid;
+		gap: 20px;
+		max-width: var(--article-column);
+		margin: 0 auto 56px;
+
+		@media (width >= 1100px) {
+			margin-left: calc(260px + 64px);
+		}
+	}
+
+	&__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		margin: 0;
+		font-size: 15px;
+		color: var(--muted);
+	}
+
+	/* Метки над заголовком -- таблетки, как фильтры раскрытой зоны на главной */
+	&__pill {
+		display: inline-flex;
+		gap: 6px;
+		align-items: center;
+		padding: 4px 12px 4px 10px;
+		border-radius: 999px;
+		color: var(--fg);
+		white-space: nowrap;
+		background: color-mix(in srgb, var(--fg) 7%, var(--bg));
+
+		/* Зона ведёт на свой список: подпись «Зона» и стрелка говорят, что это ссылка */
+		&--link {
+			padding-inline: 12px 8px;
+			text-decoration: none;
+			transition: background 0.3s var(--article-ease);
+
+			&:hover {
+				background: color-mix(in srgb, var(--fg) 12%, var(--bg));
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+		}
+
+		&--common {
+			--pill: var(--common);
+		}
+
+		&--rare {
+			--pill: var(--rare);
+		}
+	}
+
+	/* Чуть ближе к цвету текста, чем --muted: на подложке таблетки серый не добирал контраста */
+	&__pill-label {
+		color: color-mix(in srgb, var(--muted) 75%, var(--fg));
+	}
+
+	&__pill-arrow {
+		display: inline-flex;
+		width: 16px;
+		height: 16px;
+		margin-left: -2px;
+		color: var(--muted);
+		transition: transform 0.3s var(--article-ease);
+	}
+
+	&__pill--link:hover &__pill-arrow {
+		transform: translateX(2px);
+	}
+
+	&__pill-icon {
+		display: inline-flex;
+		width: 10px;
+		height: 10px;
+		color: var(--pill);
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& svg {
+			width: 100%;
+			height: 100%;
+			fill: currentcolor;
+		}
+	}
+
+	&__title {
+		margin: 0;
+		/* Длинные названия укладываются в две-три строки, а не в пять */
+		font-size: clamp(1.75rem, 4vw, 3rem);
+		font-weight: 700;
+		line-height: 1.1;
+		/* Переносы по словам: по слогам крупный заголовок рвался на "груд-ной" */
+		hyphens: manual;
+		letter-spacing: -0.03em;
+		overflow-wrap: break-word;
+	}
+
+	&__title-tail {
+		white-space: nowrap;
+	}
+
+	/* Другое название травмы -- тихий значок после заголовка, не текст в нём: серый, без
+	   кольца, как показатель степени -- верх чуть выше прописных. em считается от шрифта
+	   заголовка, поэтому font: inherit */
+	&__alias {
+		--alias-size: max(16px, 0.5em);
+
+		cursor: pointer;
+		position: relative;
+		display: inline-block;
+		width: var(--alias-size);
+		height: var(--alias-size);
+		margin-left: 0.16em;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		font: inherit;
+		color: color-mix(in srgb, var(--muted) 70%, transparent);
+		vertical-align: calc(0.8em - var(--alias-size));
+		background: none;
+		transition: color 0.3s var(--article-ease);
+
+		/* Невидимая зона нажатия 44 на 44 вокруг маленького значка */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: calc((44px - var(--alias-size)) / -2);
+		}
+
+		&:hover,
+		&:focus-visible,
+		&[aria-expanded='true'] {
+			color: var(--accent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 3px;
+		}
+
+		/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
+		& svg {
+			display: block;
+		}
+	}
+
+	&__lead {
+		margin: 0;
+		font-size: clamp(19px, 1.9vw, 22px);
+		line-height: 1.45;
+		color: var(--muted);
+		letter-spacing: -0.015em;
+	}
+
+	/* «Коротко о травме»: метка вторичным цветом и текст крупнее основного цветом текста. Под
+	   блоком -- мягкое нейтральное пятно с едва заметной синевой, гаснущее во все стороны, как
+	   у «Когда сразу к врачу», только спокойнее. Пятно рисует псевдоэлемент: текст стоит ровно
+	   под заголовком, а по бокам пятно выходит не дальше поля страницы -- без вылета на телефоне */
+	&__summary {
+		isolation: isolate;
+		position: relative;
+		display: grid;
+		gap: 8px;
+		margin: 4px 0 0;
+		padding: 8px 0;
+
+		&::before {
+			--summary-tint: color-mix(in srgb, var(--fg) 88%, var(--accent));
+
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			z-index: -1;
+			inset: -28px -20px;
+			background: radial-gradient(
+				closest-side,
+				color-mix(in srgb, var(--summary-tint) 8%, transparent),
+				color-mix(in srgb, var(--summary-tint) 5%, transparent) 55%,
+				transparent
+			);
+		}
+	}
+
+	&__summary-label {
+		display: inline-flex;
+		gap: 6px;
+		align-items: center;
+		margin: 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--muted);
+		letter-spacing: 0.02em;
+	}
+
+	&__summary-icon {
+		display: inline-flex;
+		width: 15px;
+		height: 15px;
+	}
+
+	&__summary-text {
+		margin: 0;
+		font-size: clamp(20px, 2vw, 23px);
+		line-height: 1.45;
+		color: var(--fg);
+		letter-spacing: -0.015em;
+	}
+
+	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
+	&__figure {
+		margin: 16px 0 0;
+
+		@media (width >= 900px) {
+			margin-inline: -48px;
+		}
+	}
+
+	&__image {
+		width: 100%;
+		mask-image: var(--article-image-mask);
+		mask-composite: intersect;
+
+		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только верх и низ -- кости
+		   уходят за кадр и иначе обрывались бы линией */
+		&--cutout {
+			mask-image: linear-gradient(to bottom, transparent, #000000 10%, #000000 85%, transparent);
+		}
+	}
+
+	/* Подпись под иллюстрацией -- мельче текста и вторичным цветом, по ширине колонки. Заголовок
+	   рисунка до двоеточия -- цветом текста, пометка «от нейросети» -- тихим чипом в конце */
+	&__caption {
+		max-width: var(--article-column);
+		margin: 10px auto 0;
+		font-size: 14.5px;
+		line-height: 1.5;
+		color: var(--muted);
+	}
+
+	&__caption-title {
+		font-weight: 600;
+		color: var(--fg);
+	}
+
+	&__ai {
+		cursor: help;
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		margin-left: 6px;
+		padding: 1px 8px 1px 6px;
+		border: 0;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 12px;
+		font-weight: 500;
+		/* Не --muted: мелкий текст на тонированной таблетке с ним едва дотягивал до 4,5:1, axe его ронял */
+		color: color-mix(in srgb, var(--fg) 78%, var(--bg));
+		white-space: nowrap;
+		vertical-align: 1px;
+		background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+		transition:
+			color 0.3s var(--article-ease),
+			background 0.3s var(--article-ease);
+
+		&:hover,
+		&[aria-expanded='true'] {
+			color: var(--fg);
+			background: color-mix(in srgb, var(--fg) 10%, var(--bg));
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__ai-icon {
+		display: inline-flex;
+		width: 12px;
+		height: 12px;
+	}
+
+	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет */
+	&__layout {
+		@media (width >= 1100px) {
+			display: grid;
+			grid-template-columns: 260px minmax(0, var(--article-column));
+			gap: 64px;
+			align-items: start;
+		}
+	}
+
+	&__toc {
+		display: none;
+
+		@media (width >= 1100px) {
+			position: sticky;
+			top: var(--header-clear);
+			overflow-y: auto;
+			display: block;
+			max-height: calc(100dvh - var(--header-clear) - 48px);
+			padding: 12px 0;
+			mask-image: linear-gradient(to bottom, transparent, #000000 12px, #000000 calc(100% - 24px), transparent);
+		}
+	}
+
+	&__toc-list {
+		display: grid;
+		gap: 2px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__toc-link {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		padding: 7px 0;
+		font-size: 15px;
+		color: var(--muted);
+		text-decoration: none;
+		transition: color 0.35s var(--article-ease);
+
+		&:hover,
+		&[aria-current] {
+			color: var(--fg);
+		}
+
+		&[aria-current] {
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__toc-icon,
+	&__source-icon {
+		display: inline-flex;
+		flex: none;
+	}
+
+	&__toc-icon {
+		width: 18px;
+		height: 18px;
+	}
+
+	&__body {
+		max-width: var(--article-column);
+		margin: 0 auto;
+		font-size: 19px;
+		line-height: 1.6;
+
+		@media (width < 600px) {
+			font-size: 17.5px;
+		}
+	}
+
+	&__end {
+		display: grid;
+		gap: 48px;
+		max-width: var(--article-column);
+		margin: 80px auto 0;
+
+		@media (width >= 1100px) {
+			margin-left: calc(260px + 64px);
+		}
+	}
+
+	&__end-title {
+		margin: 0 0 16px;
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+
+	/* Движения -- чипсы без рамки, фон лёгким градиентом */
+	&__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__chip {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		padding: 8px 16px 8px 12px;
+		border-radius: 999px;
+		font-size: 15px;
+		color: var(--fg);
+		text-decoration: none;
+		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), var(--surface));
+		transition:
+			color 0.3s var(--article-ease),
+			background 0.3s var(--article-ease);
+
+		&:hover {
+			color: var(--accent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__chip-icon {
+		display: inline-flex;
+		flex: none;
+		width: 18px;
+		height: 18px;
+		color: var(--accent);
+	}
+
+	&__source-list {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		padding-left: 1.4em;
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--muted);
+	}
+
+	&__source-link {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: text-decoration-color 0.3s var(--article-ease);
+
+		&:hover {
+			text-decoration-color: currentcolor;
+		}
+	}
+
+	&__source-icon {
+		width: 13px;
+		height: 13px;
+	}
+}
+
+/* Разделы статьи из Markdown (lib/article-html.ts): иконка у заголовка, воздух между
+   разделами, акценты у "Когда сразу к врачу" и "Как адаптировать тренировки" */
+.article-section {
+	scroll-margin-top: var(--header-clear);
+	margin-top: var(--rhythm-section);
+
+	&:first-child {
+		margin-top: 0;
+	}
+
+	&__title {
+		display: flex;
+		gap: 14px;
+		align-items: center;
+		margin: 0 0 var(--rhythm-heading);
+		font-size: clamp(24px, 2.4vw, 28px);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.025em;
+	}
+
+	&__icon {
+		display: inline-flex;
+		flex: none;
+		width: 28px;
+		height: 28px;
+		color: var(--accent);
+	}
+
+	/* Красноватый фон гаснет к краям блока (closest-side): края не видно, рамки нет */
+	&--urgent {
+		margin-inline: -32px;
+		padding: calc(var(--rhythm-section) / 2) 32px;
+		background: radial-gradient(
+			closest-side,
+			color-mix(in srgb, var(--danger) 15%, transparent),
+			color-mix(in srgb, var(--danger) 8%, transparent) 60%,
+			transparent
+		);
+
+		@media (width < 600px) {
+			margin-inline: -20px;
+			padding: calc(var(--rhythm-section) / 2) 20px;
+		}
+	}
+
+	&--urgent &__icon {
+		color: var(--danger);
+	}
+}
+
+/* stylelint-disable selector-max-type -- разметка из Markdown приходит без классов */
+.article-section {
+	& p {
+		margin: 0 0 var(--rhythm-block);
+	}
+
+	& ul,
+	& ol {
+		display: grid;
+		gap: calc(var(--rhythm-block) * 0.65);
+		margin: 0 0 var(--rhythm-block);
+		padding-left: 1.25em;
+	}
+
+	& li::marker {
+		color: var(--muted);
+	}
+
+	/* Тонкое подчёркивание, как у ссылок на источники: в тёмной теме одного цвета мало,
+	   чтобы отличить ссылку от текста */
+	& a {
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: text-decoration-color 0.3s var(--article-ease);
+
+		&:hover {
+			text-decoration-color: currentcolor;
+		}
+	}
+
+	& strong {
+		font-weight: 650;
+	}
+}
+/* stylelint-enable selector-max-type */
+
+/* Сноски -- надстрочные номера, без скобок; подпись источника в title */
+.cite {
+	margin-left: 2px;
+	font-size: 0.68em;
+	font-weight: 600;
+	line-height: 0;
+}
+
+.cite__link {
+	position: relative;
+	padding: 0 1px;
+	color: var(--accent);
+	text-decoration: none;
+	opacity: 0.85;
+
+	&:hover,
+	&:focus-visible {
+		opacity: 1;
+	}
+
+	/* Тултип с источником: над номером, подложкой цвета текста, появляется на наведение
+	   и на фокус с клавиатуры. В покое его нет совсем: прозрачный, он всё равно занимал
+	   место, и у сносок у правого края страница на телефоне становилась шире экрана */
+	&[data-tip]::after {
+		pointer-events: none;
+		content: attr(data-tip);
+		position: absolute;
+		z-index: 3;
+		bottom: calc(100% + 10px);
+		left: 50%;
+		transform: translate(-50%, 0);
+		display: none;
+		width: max-content;
+		max-width: min(280px, 80vw);
+		padding: 6px 10px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 1.35;
+		color: var(--bg);
+		text-align: center;
+		letter-spacing: 0;
+		white-space: normal;
+		background: var(--fg);
+		box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+		animation: cite-tip-in 0.2s ease;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
+	}
+
+	&[data-tip]:hover::after,
+	&[data-tip]:focus-visible::after {
+		display: block;
+	}
+}
+
+/* Проценты в разделе о частоте -- крупнее и жирнее */
+.stat {
+	font-size: 1.18em;
+	font-weight: 700;
+	color: var(--fg);
+	letter-spacing: -0.02em;
+}
+
+/* "Было → стало": слева что убрать (приглушено), стрелка, справа на что заменить */
+.swap {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+	margin-left: -1.25em;
+	list-style: none;
+
+	@media (width < 600px) {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+
+	& + & {
+		margin-top: calc(var(--rhythm-block) * 0.6);
+	}
+
+	&__was {
+		color: var(--muted);
+	}
+
+	&__label {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--muted);
+		letter-spacing: 0;
+	}
+
+	&__arrow {
+		display: inline-flex;
+		width: 22px;
+		height: 22px;
+		margin-top: 22px;
+		color: var(--accent);
+
+		@media (width < 600px) {
+			transform: rotate(90deg);
+			margin-top: 0;
+		}
+	}
+
+	&__now {
+		font-weight: 600;
+	}
+
+	&__hint {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent);
+		letter-spacing: 0;
+	}
+}
+
+/* Иконки Lucide тоньше дефолта и тянутся под свой контейнер */
+/* stylelint-disable-next-line selector-max-type -- SVG приходит из lucide-static без класса */
+:is(.article, .article-section, .swap) svg {
+	width: 100%;
+	height: 100%;
+	stroke-width: 1.6;
+}
+
+/* Стрелка назад и маленький заголовок в шапке статьи (components/site-header.svelte) -- на
+   отдельной странице, на about и в статье поверх модели на главной */
+.article-bar__back {
+	/* Подложка 32px на стрелке и 8px до маленького заголовка: он стоит по тексту пунктов
+	   оглавления, а подложка под него не заходит. Зона нажатия добрана ::before влево и по
+	   высоте, к заголовку она не тянется */
+	position: relative;
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	margin: 0 8px 0 -12px;
+	border-radius: 50%;
+	color: var(--accent);
+	transition: background 0.3s ease;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: -6px 0 -6px -6px;
+	}
+
+	[data-telegram] & {
+		display: none;
+	}
+
+	&:hover {
+		background: color-mix(in srgb, var(--fg) 7%, transparent);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--accent);
+		/* Внутрь круга: снаружи рамка подходила бы к заголовку ближе 8px */
+		outline-offset: -2px;
+	}
+
+	/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+	& svg {
+		width: 28px;
+		height: 28px;
+		stroke-width: 2.2;
+	}
+}
+
+/* Маленький заголовок в шапке: одна строка, остальное -- многоточием */
+.article-bar__title {
+	overflow: hidden;
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--fg);
+	text-overflow: ellipsis;
+	letter-spacing: -0.02em;
+	white-space: nowrap;
+}
+
+/* Большой заголовок по мере прокрутки гаснет и уходит вверх, маленький в шапке
+   проявляется. Переход привязан к самой прокрутке, обратный скролл всё возвращает.
+   Где нет scroll-driven animations, долю прокрутки пишет lib/reading.ts */
+@keyframes article-title-out {
+	to {
+		transform: translateY(-24px);
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-in {
+	from {
+		transform: translateY(6px);
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@supports (animation-timeline: scroll()) {
+	/* :root -- чтобы правило перебило основное, даже если минификатор поставит его выше */
+	@media (prefers-reduced-motion: reduce) {
+		:root .article__title {
+			animation-name: article-title-fade-out;
+		}
+
+		:root .article-bar__title {
+			animation-name: article-title-fade-in;
+		}
+	}
+	.article__title {
+		/* Только отдельные свойства: краткую запись animation минификатор склеивает
+		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
+		animation-name: article-title-out;
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: scroll(nearest);
+		animation-range: 0 140px;
+	}
+
+	.article-bar__title {
+		/* Только отдельные свойства: краткую запись animation минификатор склеивает
+		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
+		animation-name: article-title-in;
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: scroll(nearest);
+		animation-range: 80px 160px;
+	}
+}
+
+@supports not (animation-timeline: scroll()) {
+	@media (prefers-reduced-motion: reduce) {
+		:root .article__title,
+		:root .article-bar__title {
+			transform: none;
+		}
+	}
+	.article__title {
+		transform: translateY(calc(var(--title-out, 0) * -24px));
+		opacity: calc(1 - var(--title-out, 0));
+	}
+
+	.article-bar__title {
+		transform: translateY(calc((1 - var(--title-in, 0)) * 6px));
+		opacity: var(--title-in, 0);
+	}
+}
+
+/* Полоса прогресса чтения сверху отдельной страницы */
+.reading-progress {
+	pointer-events: none;
+	position: fixed;
+	z-index: 20;
+	top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+	right: 0;
+	left: 0;
+	height: 3px;
+}
+
+.reading-progress__bar {
+	transform-origin: left;
+	transform: scaleX(0);
+	display: block;
+	height: 100%;
+	background: linear-gradient(to right, transparent, var(--accent) 30%);
+	transition: transform 0.15s linear;
+
+	@media (prefers-reduced-motion: reduce) {
+		transition: none;
+	}
+}
+
+@keyframes cite-tip-in {
+	from {
+		transform: translate(-50%, 4px);
+		opacity: 0;
+	}
+}

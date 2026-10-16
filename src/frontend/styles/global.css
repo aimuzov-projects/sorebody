@@ -1,4 +1,5 @@
-:root {
+:root,
+.light {
 	--font-sans: system-ui, sans-serif;
 
 	--container: 1180px;
@@ -9,8 +10,81 @@
 	--fg: #1d1d1f;
 	--muted: #6e6e73;
 	--accent: #0066cc;
+	--surface: #f5f5f7;
+	--danger: #c4271b;
+	/* Частота травмы: свой цвет и знак у частых и редких, одни на всём сайте */
+	--common: #0b7285;
+	--rare: #8944ab;
+
+	/* Переключатель темы на всех страницах в одной точке: по вертикали на строке шапки (её
+	   верхнее поле 12px, строка 40px), по горизонтали правый край значка -- на правом крае
+	   колонки текста (--frame-right). Значок 22px в кнопке 40px, отсюда 9px. На узком экране
+	   не ближе 16px к краю. Шапка оставляет справа место под него: --theme-toggle-room */
+	--theme-toggle-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px), var(--frame-right) - 9px);
+	--theme-toggle-room: calc(var(--theme-toggle-right) + 40px + 8px);
+
+	/* Каркас страниц. Левый край колонки -- одна вертикаль везде: индекс сцены, оглавление
+	   статьи, поле about и начало шапки. Это край колонки статьи: 1052px по центру и поля
+	   24px (на телефоне 20px). Процент считается там, где токен подставлен, -- от ширины
+	   окна или прокручиваемого контейнера статьи */
+	--frame-pad: 24px;
+	--frame-x: max(var(--frame-pad), env(safe-area-inset-left, 0px), (100% - 1052px) / 2 + 24px);
+	/* Правый край колонки текста, симметрично --frame-x: на широком экране текст стоит справа
+	   от оглавления и кончается у края той же сетки 1052px. Без оглавления (600-1100px) текст
+	   -- колонка 680px по центру */
+	--frame-right: max(var(--frame-pad), env(safe-area-inset-right, 0px), (100% - 1052px) / 2 + 24px);
+	/* Строка шапки: «‹» и заголовок или логотип, справа -- переключатель темы */
+	--header-row: 40px;
+	/* Где под шапкой кончается её мягкий край (градиент и размытие): ниже ничего не прячется.
+	   От этой линии прилипает оглавление статьи и останавливаются переходы к разделам */
+	--header-clear: calc(var(--theme-toggle-top) + var(--header-row) + 28px);
 
 	color-scheme: light;
+}
+
+/* Тёмная тема: по системе, если вручную не выбрана светлая, или выбрана вручную
+   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий.
+   Классы .light и .dark -- у копии страницы в круге подсмотра темы (theme-peek из kit) */
+@media (width < 600px) {
+	:root {
+		--frame-pad: 20px;
+	}
+}
+
+@media (600px <= width < 1100px) {
+	:root {
+		--frame-right: max(var(--frame-pad), env(safe-area-inset-right, 0px), (100% - 680px) / 2);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: #161617;
+		--fg: #f5f5f7;
+		--muted: #a1a1a6;
+		--accent: #2997ff;
+		--surface: rgb(255 255 255 / 10%);
+		--danger: #ff453a;
+		--common: #5ac8d8;
+		--rare: #c983f0;
+
+		color-scheme: dark;
+	}
+}
+
+:root[data-theme='dark'],
+.dark {
+	--bg: #161617;
+	--fg: #f5f5f7;
+	--muted: #a1a1a6;
+	--accent: #2997ff;
+	--surface: rgb(255 255 255 / 10%);
+	--danger: #ff453a;
+	--common: #5ac8d8;
+	--rare: #c983f0;
+
+	color-scheme: dark;
 }
 
 *,
@@ -19,8 +93,10 @@
 	box-sizing: border-box;
 }
 
-/* Колонка не ниже экрана, чтобы на короткой странице подвал оставался внизу. */
-body {
+/* Колонка не ниже экрана, чтобы на короткой странице подвал оставался внизу.
+   .theme-peek -- копия страницы в круге подсмотра темы, она встаёт на место body. */
+body,
+.theme-peek {
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
@@ -31,6 +107,15 @@ body {
 	background: var(--bg);
 }
 
+/* В копии страницы внутри круга подсмотра размытия нет: круг обрезает копию, и backdrop-filter
+   под ним видит только саму копию с перерисованным каждый кадр canvas -- пятно мигало */
+.theme-peek *,
+.theme-peek *::before,
+.theme-peek *::after {
+	-webkit-backdrop-filter: none !important;
+	backdrop-filter: none !important;
+}
+
 /* Safari на iPhone приближает страницу к полю с текстом мельче 16px, стоит в нём встать.
    Класс компонента перебивает это правило, поэтому своё поле на телефоне — тоже от 1rem. */
 input,
@@ -39,6 +124,11 @@ select {
 	@media (--touch) {
 		font-size: max(1rem, 1em);
 	}
+}
+
+/* Ссылки без своего цвета: иначе в тёмной теме браузер красит их в фиолетовый */
+:where(a) {
+	color: var(--accent);
 }
 
 img {
@@ -52,4 +142,76 @@ img {
 	max-width: calc(var(--container) + var(--gutter) * 2);
 	margin-inline: auto;
 	padding-inline: var(--gutter);
+}
+
+/* Полноэкранный Mini App Telegram: содержимое не уходит под системные кнопки сверху и снизу.
+   Переменные ставит SDK Telegram, вне него их нет и отступ нулевой. */
+/* Отступ под системные кнопки Telegram сверху: им пользуются липкие и фиксированные элементы. */
+[data-telegram] {
+	--tg-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+}
+
+[data-telegram] body {
+	padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+	padding-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
+}
+
+/* Подсказка к значку (lib/tip.ts): без рамки -- фон чуть светлее страницы и мягкая тень вместо
+   края. Лежит в верхнем слое (popover), но наследует от места в разметке, например от
+   заголовка статьи, -- шрифт задаём заново */
+.tip {
+	position: fixed;
+	inset: auto;
+	max-width: min(320px, calc(100vw - 32px));
+	margin: 0;
+	padding: 10px 14px;
+	border: 0;
+	border-radius: 14px;
+	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--fg);
+	letter-spacing: -0.01em;
+	white-space: normal;
+	background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+	box-shadow: 0 10px 36px rgb(0 0 0 / 18%);
+	animation: bubble-in 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+
+	@media (prefers-reduced-motion: reduce) {
+		animation-name: bubble-fade;
+	}
+
+	/* Короткая подсказка к значку у края экрана: ниже ростом, чтобы встать над ним */
+	&--compact {
+		padding: 6px 12px;
+		border-radius: 12px;
+		font-size: 14px;
+		white-space: nowrap;
+	}
+
+	/* Под значком (сверху не хватило места) -- выезжает сверху вниз, над ним -- снизу вверх */
+	&[data-side='bottom'] {
+		animation-name: bubble-in-below;
+	}
+}
+
+@keyframes bubble-in {
+	from {
+		transform: translateY(4px);
+		opacity: 0;
+	}
+}
+
+@keyframes bubble-in-below {
+	from {
+		transform: translateY(-4px);
+		opacity: 0;
+	}
+}
+
+@keyframes bubble-fade {
+	from {
+		opacity: 0;
+	}
 }

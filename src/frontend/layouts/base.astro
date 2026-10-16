@@ -1,7 +1,12 @@
 ---
+import { createHash } from 'node:crypto'
+
 import Footer from '#frontend/components/footer.astro'
+import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
+import '@aimuzov-projects/infra-site-kit/theme-peek.css'
 import { site } from '#frontend/data/site.ts'
+import { THEME_BOOT } from '#frontend/lib/theme.ts'
 import { pageTitle } from '#frontend/lib/title.ts'
 
 type Props = {
@@ -11,9 +16,27 @@ type Props = {
 	description?: string
 	/** `false` у служебных страниц вроде 404: без canonical и с запретом индексации. */
 	index?: boolean
+	/** Страница на весь экран без подвала, как главная с 3D-моделью. */
+	bare?: boolean
+	/** Класс на `<body>`: полноэкранной странице нужно задать фон и токены всему документу. */
+	bodyClass?: string
 }
 
-const { title, description = site.description, index = true } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
+
+/**
+ * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
+ * Признаки те же, что в lib/telegram.ts: хеш от Telegram или флаг в sessionStorage.
+ * Inline-скрипты Astro в CSP не хеширует, поэтому хеш считаем сами.
+ */
+const TELEGRAM_FLAG =
+	"try{if(/tgWebApp(Data|Platform)=/.test(location.hash)||sessionStorage.getItem('wodcare:tg'))" +
+	"document.documentElement.dataset.telegram=''}catch{if(/tgWebApp(Data|Platform)=/.test(location.hash))" +
+	"document.documentElement.dataset.telegram=''}"
+
+for (const script of [TELEGRAM_FLAG, THEME_BOOT])
+	Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(script).digest('base64')}`)
+
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
@@ -33,10 +56,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<script is:inline set:html={TELEGRAM_FLAG} />
+		<script is:inline set:html={THEME_BOOT} />
 		<slot name="head" />
 	</head>
-	<body>
+	<body class={bodyClass}>
+		<ThemeToggle />
 		<slot />
-		<Footer />
+		{!bare && <Footer />}
+		<script>
+			import '#frontend/lib/telegram.ts'
+			import { initThemeToggle } from '#frontend/lib/theme.ts'
+
+			initThemeToggle()
+		</script>
 	</body>
 </html>

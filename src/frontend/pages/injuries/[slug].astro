@@ -119,26 +119,17 @@ const [image] = data.images
 					))}
 				</ol>
 			</section>
-
-			<p class="article__disclaimer">
-				Справка не заменяет консультацию врача. Иллюстрации сгенерированы нейросетью, анатомия на них упрощена.
-			</p>
 		</footer>
 	</main>
 </Base>
 
 <script>
+	import { initBackLink } from '#frontend/lib/back-link.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 
 	const root = document.querySelector('[data-article]')
 
 	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
 
-	// Пришли со страницы сайта -- "Назад" возвращает туда же, с её прокруткой; иначе на главную
-	document.querySelector('[data-back]')?.addEventListener('click', (event) => {
-		if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
-			event.preventDefault()
-			history.back()
-		}
-	})
+	initBackLink()
 </script>

@@ -979,7 +979,6 @@
 					</p>
 				</div>
 			{/if}
-			<p class="index__foot">Справка не заменяет консультацию врача</p>
 			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{:else}
@@ -1055,7 +1054,6 @@
 					{/each}
 				</ul>
 			{/if}
-			<p class="index__foot">Справка не заменяет консультацию врача</p>
 			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{/if}
@@ -1847,12 +1845,6 @@
 		&__result-zone,
 		&__empty {
 			font-size: 14px;
-			color: var(--a-fg2);
-		}
-
-		&__foot {
-			margin: 0;
-			font-size: 13px;
 			color: var(--a-fg2);
 		}
 

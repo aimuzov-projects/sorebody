@@ -285,13 +285,6 @@
 		width: 13px;
 		height: 13px;
 	}
-
-	&__disclaimer {
-		margin: 0;
-		font-size: 14px;
-		line-height: 1.5;
-		color: var(--muted);
-	}
 }
 
 /* Разделы статьи из Markdown (lib/article-html.ts): иконка у заголовка, воздух между
@@ -363,12 +356,18 @@
 		color: var(--muted);
 	}
 
+	/* Тонкое подчёркивание, как у ссылок на источники: в тёмной теме одного цвета мало,
+	   чтобы отличить ссылку от текста */
 	& a {
 		color: var(--accent);
-		text-decoration: none;
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: text-decoration-color 0.3s var(--article-ease);
 
 		&:hover {
-			text-decoration: underline;
+			text-decoration-color: currentcolor;
 		}
 	}
 

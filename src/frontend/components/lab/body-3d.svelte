@@ -21,8 +21,6 @@
 
 	let { zones, whole, modelUrl }: Props = $props()
 
-	/** Выдержка наведения до раскрытия меню: сначала растворяется ткань, потом меню. */
-	const HOVER_OPEN_MS = 450
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
 	const PICK_PX = 56
 
@@ -40,11 +38,11 @@
 	)
 	let spotEls = $state<HTMLButtonElement[]>([])
 
-	let hovered = $state<Spot | null>(null)
+	// raw: иначе Svelte обернёт точку в прокси и сравнение hovered === spot всегда ложно
+	let hovered = $state.raw<Spot | null>(null)
 
 	/** Травмы зоны: панель со списком справа, на узком экране -- шторка снизу. */
 	let open = $state<{ zone: LabZone; point: LabZone['points'][number]; layout: 'list' | 'sheet' } | null>(null)
-	let hoverTimer: ReturnType<typeof setTimeout> | undefined
 
 	type Article = { zone: LabZone; point: LabZone['points'][number]; slug: string; title: string }
 
@@ -152,32 +150,21 @@
 		return best
 	}
 
+	/**
+	 * Наведение только подсвечивает точку и придерживает автоповорот, чтобы цель не уезжала
+	 * из-под курсора. Зона раскрывается лишь по клику, тапу или Enter на точке.
+	 */
 	function hover(spot: Spot | null) {
 		if (open || spot === hovered) return
 
 		hovered = spot
-		clearTimeout(hoverTimer)
 
-		if (!body) return
-
-		if (!spot) {
-			body.dissolve(null)
-			body.controls.autoRotate = true
-
-			return
-		}
-
-		const point = spot.zone.points[spot.index]
-
-		body.dissolve(point.position, spot.zone.radius)
-		body.controls.autoRotate = false
-		hoverTimer = setTimeout(() => openMenu(spot), HOVER_OPEN_MS)
+		if (body) body.controls.autoRotate = !spot
 	}
 
 	function openMenu(spot: Spot | null, zone = spot?.zone) {
 		if (!zone || !body) return
 
-		clearTimeout(hoverTimer)
 		const point = spot ? zone.points[spot.index] : zone.points[0]
 
 		body.dissolve(point.position, zone.radius)
@@ -238,7 +225,6 @@
 	) {
 		if (article?.slug === injury.slug) return
 
-		clearTimeout(hoverTimer)
 		open = null
 		hovered = null
 		article = { zone, point, ...injury }
@@ -426,6 +412,7 @@
 	class="body3d"
 	class:body3d--open={open}
 	class:body3d--receded={article}
+	class:body3d--hot={hovered && !open}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
 	onpointerdown={onPointerDown}
@@ -536,6 +523,11 @@
 			&:active {
 				cursor: grabbing;
 			}
+		}
+
+		/* Курсор рядом с точкой зоны: клик раскроет её */
+		&--hot &__canvas {
+			cursor: pointer;
 		}
 
 		/* Сцена под статьёй: отъехала, уменьшилась, размылась и потемнела */

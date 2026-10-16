@@ -55,6 +55,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	const controls = new OrbitControls(camera, canvas)
 
+	// OrbitControls ставит инлайн cursor: auto и глушит курсоры из CSS компонента
+	canvas.style.removeProperty('cursor')
+
 	controls.target.copy(TARGET)
 	controls.enablePan = false
 	controls.enableDamping = true

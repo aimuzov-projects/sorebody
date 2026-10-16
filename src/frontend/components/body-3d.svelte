@@ -2118,8 +2118,8 @@
 	   .footer -- те же токены, что у шапки. Мимо ссылок мышь проходит к сцене: модель можно
 	   крутить и под подвалом */
 	.scene-footer {
-		/* Подложка без размытия: полупрозрачный фон гаснет вверх от самого края экрана по
-		   smoothstep, сплошной полосы нет, край уходит чуть выше строки подвала */
+		/* Подложка без размытия: полупрозрачный фон гаснет вверх от самого края экрана, плотнее
+		   всего на строке подвала, чтобы текст читался поверх фигуры, и сходит на нет над ней */
 		--footer-tail: 24px;
 		--footer-bg: var(--bg);
 		pointer-events: none;
@@ -2142,11 +2142,11 @@
 			inset: calc(-1 * var(--footer-tail)) 0 0;
 			background: linear-gradient(
 				to top,
-				color-mix(in srgb, var(--footer-bg) 72%, transparent),
-				color-mix(in srgb, var(--footer-bg) 64%, transparent) 20%,
-				color-mix(in srgb, var(--footer-bg) 47%, transparent) 40%,
-				color-mix(in srgb, var(--footer-bg) 25%, transparent) 60%,
-				color-mix(in srgb, var(--footer-bg) 8%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 82%, transparent),
+				color-mix(in srgb, var(--footer-bg) 80%, transparent) 20%,
+				color-mix(in srgb, var(--footer-bg) 72%, transparent) 40%,
+				color-mix(in srgb, var(--footer-bg) 50%, transparent) 60%,
+				color-mix(in srgb, var(--footer-bg) 20%, transparent) 80%,
 				transparent
 			);
 		}

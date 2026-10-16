@@ -5,6 +5,9 @@
  * Сноски и якоря меняют хеш и кладут записи в историю той же страницы: одного шага назад
  * мало, их пропускаем. Если за полторы секунды страница так и не ушла (истории сайта нет),
  * уходим по ссылке.
+ *
+ * Esc делает то же, что стрелка, как на сцене главной. Открытую подсказку он сначала закрывает,
+ * а в поле ввода не трогает.
  */
 export function initBackLink() {
 	const link = document.querySelector<HTMLAnchorElement>('[data-back]')
@@ -27,5 +30,15 @@ export function initBackLink() {
 
 			if (!left && location.pathname === path) location.assign(link.href)
 		}, 1500)
+	})
+
+	addEventListener('keydown', (event) => {
+		if (event.key !== 'Escape' || event.defaultPrevented || !link) return
+
+		if (document.querySelector(':popover-open')) return
+
+		if ((event.target as Element).closest?.('input, textarea, select, [contenteditable]')) return
+
+		link.click()
 	})
 }

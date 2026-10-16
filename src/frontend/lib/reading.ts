@@ -1,4 +1,4 @@
-import { initAliasTip } from './alias-tip.ts'
+import { initAliasTip } from './tip.ts'
 
 /**
  * Чтение лонгрида: полоса прогресса сверху и активный раздел в оглавлении. Одно и то же

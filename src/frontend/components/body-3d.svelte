@@ -27,6 +27,7 @@
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
@@ -315,6 +316,33 @@
 	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
 	let articleBody = $state<HTMLDivElement>()
 	let readerElement = $state<HTMLElement>()
+	let readerBar = $state<HTMLElement>()
+
+	/**
+	 * Переключатель темы, пока открыта статья, стоит в её шапке справа, как на отдельной
+	 * странице, а не висит в углу сцены. Узел один, мы его переносим и плавно проявляем;
+	 * статья закрылась -- возвращаем на место в угол.
+	 */
+	$effect(() => {
+		const toggle = document.querySelector<HTMLElement>('.theme-toggle')
+
+		if (!readerBar || !toggle?.parentElement) return
+
+		const home = toggle.parentElement
+		const next = toggle.nextSibling
+		const fadeIn = () => toggle.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduceMotion ? 0 : 300 })
+
+		toggle.classList.add('theme-toggle--inline')
+		readerBar.append(toggle)
+		fadeIn()
+
+		return () => {
+			toggle.classList.remove('theme-toggle--inline')
+			home.insertBefore(toggle, next)
+			fadeIn()
+		}
+	})
+
 	let progressBar = $state<HTMLElement>()
 	let stopReading: (() => void) | undefined
 	let sceneHidden = $state(false)
@@ -431,6 +459,15 @@
 		baseLevel = level - 1
 		sync()
 	}
+
+	/** Значок «О справочнике» у названия сайта: подсказка мышью и с клавиатуры, тап просто ведёт на about. */
+	let aboutLink = $state<HTMLAnchorElement>()
+	let aboutTip = $state<HTMLElement>()
+
+	$effect(() => {
+		if (aboutLink && aboutTip)
+			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.index') ?? aboutLink })
+	})
 
 	onMount(() => {
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
@@ -1038,8 +1075,15 @@
 				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
 				<div class="index__brand-row">
 					<a class="index__brand" href="/">Wodcare</a>
-					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
-						>{@html INFO_DOT}</a
+					<a
+						class="index__about"
+						href="/about/"
+						aria-label="О справочнике"
+						aria-describedby="about-tip"
+						bind:this={aboutLink}>{@html INFO_DOT}</a
+					>
+					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+						>Источники и как сделан справочник</span
 					>
 				</div>
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
@@ -1081,8 +1125,15 @@
 			<header class="index__head">
 				<div class="index__brand-row">
 					<p class="index__brand">Wodcare</p>
-					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
-						>{@html INFO_DOT}</a
+					<a
+						class="index__about"
+						href="/about/"
+						aria-label="О справочнике"
+						aria-describedby="about-tip"
+						bind:this={aboutLink}>{@html INFO_DOT}</a
+					>
+					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+						>Источники и как сделан справочник</span
 					>
 				</div>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
@@ -1220,7 +1271,7 @@
 		<div class="reader__progress" aria-hidden="true">
 			<span class="reader__progress-bar" bind:this={progressBar}></span>
 		</div>
-		<div class="reader__bar">
+		<div class="reader__bar" bind:this={readerBar}>
 			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
@@ -2540,18 +2591,27 @@
 
 		&__back {
 			cursor: pointer;
+			/* Подложка 32px на стрелке и 8px до маленького заголовка: он стоит по тексту пунктов
+			   оглавления, а подложка под него не заходит. Зона нажатия добрана ::before влево и
+			   по высоте, к заголовку она не тянется */
+			position: relative;
 			display: inline-grid;
 			place-items: center;
-			width: 40px;
-			height: 40px;
-			/* Маленький заголовок встаёт ровно по тексту пунктов оглавления под шапкой */
-			margin: 0 -2px 0 -10px;
+			width: 32px;
+			height: 32px;
+			margin: 0 8px 0 -12px;
 			padding: 0;
 			border: 0;
 			border-radius: 50%;
 			color: var(--a-blue);
 			background: none;
 			transition: background 0.3s var(--a-ease);
+
+			&::before {
+				content: '';
+				position: absolute;
+				inset: -6px 0 -6px -6px;
+			}
 
 			:global([data-telegram]) & {
 				display: none;
@@ -2563,7 +2623,8 @@
 
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
+				/* Внутрь круга: снаружи рамка подходила бы к заголовку ближе 8px */
+				outline-offset: -2px;
 			}
 		}
 

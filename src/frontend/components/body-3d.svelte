@@ -247,6 +247,18 @@
 	let canvas: HTMLCanvasElement
 	let body: BodyScene | undefined
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+
+	// --- Загрузка модели: силуэт-скелетон, затем фигура и точки ---
+	/**
+	 * Фигура нарисована с нужной камерой: только тогда видны канвас, точки и метки --
+	 * до первого кадра их координаты ещё не посчитаны и они стояли в левом верхнем углу.
+	 */
+	let live = $state(false)
+	/** Доля скачанного body.glb, если сервер сказал размер; иначе полосы нет. */
+	let progress = $state<number | null>(null)
+	/** Силуэт ещё в DOM: после появления фигуры он гаснет и через полсекунды уходит. */
+	let skeleton = $state(true)
+	const silhouetteId = $props.id()
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
 	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -452,7 +464,7 @@
 		let fpsFrom = performance.now()
 		const mod = import('#frontend/scene/body-scene.ts')
 		const ready = mod.then(async ({ createBodyScene }) => {
-			const scene = await createBodyScene(canvas, modelUrl)
+			const scene = await createBodyScene(canvas, modelUrl, (share) => (progress = share))
 
 			if (disposed) return scene.dispose()
 
@@ -461,6 +473,12 @@
 
 			scene.onFrame = () => {
 				placeSpots()
+
+				// Первый кадр с готовой камерой: точки уже на местах, можно показывать
+				if (status === 'ready' && !live) {
+					live = true
+					setTimeout(() => (skeleton = false), 700)
+				}
 
 				if (showFps) {
 					frames++
@@ -478,7 +496,7 @@
 			// Адрес мог открыть зону или статью до того, как модель загрузилась
 			sync()
 			focusOpen()
-			homeFrame()
+			homeFrame(true)
 
 			if (sceneHidden) scene.pause(true)
 		})
@@ -707,11 +725,11 @@
 	}
 
 	/** Кадр главной: фигура правее индекса, на телефоне -- выше нижней панели. */
-	function homeFrame() {
+	function homeFrame(instant = false) {
 		if (!body || open) return
 
-		if (wrap.clientWidth < 700) body.frame(0, 0.27, 1.9)
-		else body.frame(0.17, 0)
+		if (wrap.clientWidth < 700) body.frame(0, 0.27, 1.9, instant)
+		else body.frame(0.17, 0, 1, instant)
 	}
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
@@ -917,6 +935,7 @@
 	class:body3d--hidden={sceneHidden}
 	class:body3d--hot={hovered && !open}
 	class:body3d--movement={movementPage}
+	class:body3d--live={live}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
 	onpointerdown={onPointerDown}
@@ -926,12 +945,56 @@
 >
 	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
-	{#if status !== 'ready' && !open}
-		<p class="body3d__status">
-			{status === 'loading'
-				? 'Загружаем модель…'
-				: 'Не получилось показать 3D: ваш браузер не поддерживает WebGL.'}
-		</p>
+	<!-- Пока грузится модель -- силуэт там, где встанет фигура, с медленным бликом -->
+	{#if skeleton && status !== 'error'}
+		<div class="body3d__skeleton" class:body3d__skeleton--out={live} aria-hidden="true">
+			<svg class="body3d__silhouette" viewBox="0 0 100 220">
+				<defs>
+					<clipPath id="{silhouetteId}-body">
+						<ellipse cx="50" cy="15" rx="8.5" ry="11" />
+						<rect x="45.5" y="23" width="9" height="12" rx="3" />
+						<path d="M31 42 Q31 33 41 32 L59 32 Q69 33 69 42 L66 72 Q65 98 64 112 L36 112 Q35 98 34 72 Z" />
+						<rect x="-4" y="0" width="8" height="78" rx="4" transform="translate(33 37) rotate(9)" />
+						<rect x="-4" y="0" width="8" height="78" rx="4" transform="translate(67 37) rotate(-9)" />
+						<rect x="-6.5" y="0" width="13" height="106" rx="6.5" transform="translate(43 104) rotate(2)" />
+						<rect
+							x="-6.5"
+							y="0"
+							width="13"
+							height="106"
+							rx="6.5"
+							transform="translate(57 104) rotate(-2)"
+						/>
+					</clipPath>
+					<linearGradient id="{silhouetteId}-shine" x1="0" x2="1" y1="0" y2="0">
+						<stop offset="0" stop-color="var(--a-fg)" stop-opacity="0" />
+						<stop offset="0.5" stop-color="var(--a-fg)" stop-opacity="0.07" />
+						<stop offset="1" stop-color="var(--a-fg)" stop-opacity="0" />
+					</linearGradient>
+					<!-- Мягкий край: силуэт -- намёк на фигуру, а не чёткая пиктограмма -->
+					<filter id="{silhouetteId}-soft"><feGaussianBlur stdDeviation="1.6" /></filter>
+				</defs>
+				<!-- Размытие снаружи обрезки: иначе clip-path срезал бы мягкий край -->
+				<g filter="url(#{silhouetteId}-soft)">
+					<g clip-path="url(#{silhouetteId}-body)">
+						<rect class="body3d__silhouette-fill" width="100" height="220" />
+						<rect
+							class="body3d__silhouette-shine"
+							width="60"
+							height="220"
+							fill="url(#{silhouetteId}-shine)"
+						/>
+					</g>
+				</g>
+			</svg>
+			{#if progress !== null}
+				<span class="body3d__progress"><span class="body3d__progress-bar" style:--p={progress}></span></span>
+			{/if}
+		</div>
+	{/if}
+
+	{#if status === 'error' && !open}
+		<p class="body3d__status">Не получилось показать 3D: ваш браузер не поддерживает WebGL.</p>
 	{/if}
 
 	{#each spots as spot, i (i)}
@@ -943,7 +1006,8 @@
 			class:body3d__spot--empty={counts.get(spot.zone) === 0}
 			bind:this={spotEls[i]}
 			type="button"
-			hidden={status !== 'ready'}
+			style:--i={i}
+			hidden={!live}
 			aria-label="{spot.zone.label}: {counts.get(spot.zone)} {plural(counts.get(spot.zone) ?? 0)}"
 			onclick={() => openZone(spot.zone, spot.index)}
 			onfocus={() => hover(spot)}
@@ -959,7 +1023,7 @@
 			class:body3d__mark--accent={mark.key === 'lead' || (accent && mark.slugs.includes(accent.slug))}
 			class:body3d__mark--dim={accent && !mark.slugs.includes(accent.slug)}
 			bind:this={markEls[i]}
-			hidden={status !== 'ready'}
+			hidden={!live}
 			aria-hidden="true"
 		>
 			<span class="body3d__mark-dot"></span>
@@ -1205,6 +1269,8 @@
 			display: block;
 			width: 100%;
 			height: 100%;
+			opacity: 0;
+			transition: opacity 0.6s var(--a-ease);
 
 			&:active {
 				cursor: grabbing;
@@ -1214,6 +1280,80 @@
 		/* Курсор рядом с точкой зоны: клик раскроет её */
 		&--hot &__canvas {
 			cursor: pointer;
+		}
+
+		/* --- Загрузка: силуэт, потом фигура и каскадом точки --- */
+		&--live &__canvas {
+			opacity: 1;
+		}
+
+		/* У точек и меток свой display: без этого атрибут hidden их не прятал */
+		&__spot[hidden],
+		&__mark[hidden] {
+			display: none;
+		}
+
+		/* Силуэт там же, где встанет фигура: правее индекса, на телефоне выше нижней панели */
+		&__skeleton {
+			pointer-events: none;
+			position: absolute;
+			top: 4dvh;
+			bottom: 4dvh;
+			left: 67%;
+			transform: translateX(-50%);
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			transition: opacity 0.6s var(--a-ease);
+
+			@media (width < 700px) {
+				top: 6dvh;
+				bottom: auto;
+				left: 50%;
+				height: 40dvh;
+			}
+
+			&--out {
+				opacity: 0;
+			}
+		}
+
+		/* Силуэт занимает всё, что осталось над полосой загрузки */
+		&__silhouette {
+			flex: 1;
+			min-height: 0;
+		}
+
+		&__silhouette-fill {
+			fill: color-mix(in srgb, var(--a-fg) 6%, transparent);
+		}
+
+		&__silhouette-shine {
+			animation: silhouette-shine 1.8s ease-in-out infinite;
+
+			@media (--reduced-motion) {
+				opacity: 0;
+				animation: none;
+			}
+		}
+
+		&__progress {
+			overflow: hidden;
+			flex: none;
+			width: 64px;
+			height: 2px;
+			margin-top: 12px;
+			border-radius: 1px;
+			background: color-mix(in srgb, var(--a-fg) 8%, transparent);
+		}
+
+		&__progress-bar {
+			transform-origin: left;
+			transform: scaleX(var(--p));
+			display: block;
+			height: 100%;
+			background: var(--a-blue);
+			transition: transform 0.2s linear;
 		}
 
 		&--open &__spot {
@@ -1251,6 +1391,8 @@
 			border: 0;
 			background: none;
 			transition: opacity 0.4s var(--a-ease);
+			/* Появляются каскадом, когда фигура уже на месте */
+			animation: spot-in 0.5s var(--a-ease) calc(var(--i, 0) * 40ms) both;
 
 			/* Навели на другую зону в индексе: эта точка отступает на второй план.
 			   Выше правил скрытия, чтобы скрытая точка не проступала */
@@ -2486,6 +2628,22 @@
 			@media (--reduced-motion) {
 				transition: none;
 			}
+		}
+	}
+
+	@keyframes silhouette-shine {
+		from {
+			transform: translateX(-60px);
+		}
+
+		to {
+			transform: translateX(100px);
+		}
+	}
+
+	@keyframes spot-in {
+		from {
+			opacity: 0;
 		}
 	}
 

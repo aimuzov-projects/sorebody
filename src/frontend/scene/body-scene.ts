@@ -40,7 +40,11 @@ export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
  * фарфоровая оболочка с растворением и кости под ней. Наружу отдаёт проекцию точек на экран
  * и `dissolve()` -- плавно открыть сферу вокруг точки или закрыть её.
  */
-export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: string) {
+export async function createBodyScene(
+	canvas: HTMLCanvasElement,
+	modelUrl: string,
+	onProgress?: (share: number) => void,
+) {
 	const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
 
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -104,7 +108,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	const DEEP_SHARE = 0.45
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
-	const gltf = await loader.loadAsync(modelUrl)
+	// Доля загруженного body.glb -- для полосы под силуэтом; без размера ответа её нет
+	const gltf = await loader.loadAsync(modelUrl, (event) => {
+		if (event.lengthComputable && event.total) onProgress?.(event.loaded / event.total)
+	})
 
 	gltf.scene.traverse((obj) => {
 		if (!(obj instanceof Mesh)) return
@@ -444,10 +451,16 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			onFrame = fn
 		},
 		/** Сдвиг кадра в долях экрана: x вправо, y вверх. Плавно, в цикле отрисовки. */
-		frame(x: number, y: number, scale = 1) {
+		/** `instant` -- без доезда: первый кадр после загрузки сразу встаёт на место. */
+		frame(x: number, y: number, scale = 1, instant = false) {
 			shiftTo.x = x
 			shiftTo.y = y
 			shiftTo.s = scale
+
+			if (instant) {
+				Object.assign(shift, shiftTo)
+				applyFrame()
+			}
 		},
 		glow(on: boolean) {
 			glowTo = on ? 0.16 : 0

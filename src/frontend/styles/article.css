@@ -202,25 +202,32 @@
 		letter-spacing: -0.015em;
 	}
 
-	/* «Коротко о травме»: метка вторичным цветом и текст крупнее основного цветом текста. Слева
-	   тонкая синяя линия, гаснущая сверху и снизу, висит в поле колонки: текст стоит ровно
-	   под заголовком. Ни рамки, ни подложки */
+	/* «Коротко о травме»: метка вторичным цветом и текст крупнее основного цветом текста. Под
+	   блоком -- мягкое нейтральное пятно с едва заметной синевой, гаснущее во все стороны, как
+	   у «Когда сразу к врачу», только спокойнее. Пятно рисует псевдоэлемент: текст стоит ровно
+	   под заголовком, а по бокам пятно выходит не дальше поля страницы -- без вылета на телефоне */
 	&__summary {
+		isolation: isolate;
 		position: relative;
 		display: grid;
 		gap: 8px;
-		margin: 4px 0 0 -16px;
-		padding: 6px 0 6px 16px;
+		margin: 4px 0 0;
+		padding: 8px 0;
 
 		&::before {
+			--summary-tint: color-mix(in srgb, var(--fg) 88%, var(--accent));
+
+			pointer-events: none;
 			content: '';
 			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			width: 2px;
-			border-radius: 1px;
-			background: linear-gradient(to bottom, transparent, var(--accent) 22%, var(--accent) 78%, transparent);
+			z-index: -1;
+			inset: -28px -20px;
+			background: radial-gradient(
+				closest-side,
+				color-mix(in srgb, var(--summary-tint) 8%, transparent),
+				color-mix(in srgb, var(--summary-tint) 5%, transparent) 55%,
+				transparent
+			);
 		}
 	}
 

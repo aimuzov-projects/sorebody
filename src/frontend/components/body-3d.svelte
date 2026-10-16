@@ -1911,14 +1911,25 @@
 		}
 
 		/* Колонка вплотную к зоне: зона у центра экрана, список начинается сразу за ним.
-		   Подложка под текстом растворяется к зоне градиентом и уходит до края экрана */
+		   Подложка уходит до края экрана, а к зоне растворяется на 25vw маской по smoothstep:
+		   без ступеньки, рука модели не обрезается полосой. Под текстом она уже сплошная */
 		&--left {
 			right: calc(50% + 32px);
 
 			&::before {
-				right: -3vw;
+				right: -27vw;
 				left: -50vw;
-				background: linear-gradient(to left, transparent, var(--a-bg) 5vw);
+				background: var(--a-bg);
+				mask-image: linear-gradient(
+					to left,
+					rgb(0 0 0 / 0%) calc(0px + 25vw * 0 / 6),
+					rgb(0 0 0 / 7%) calc(0px + 25vw * 1 / 6),
+					rgb(0 0 0 / 26%) calc(0px + 25vw * 2 / 6),
+					rgb(0 0 0 / 50%) calc(0px + 25vw * 3 / 6),
+					rgb(0 0 0 / 74%) calc(0px + 25vw * 4 / 6),
+					rgb(0 0 0 / 93%) calc(0px + 25vw * 5 / 6),
+					rgb(0 0 0 / 100%) calc(0px + 25vw * 6 / 6)
+				);
 			}
 		}
 
@@ -1927,8 +1938,18 @@
 
 			&::before {
 				right: -50vw;
-				left: -3vw;
-				background: linear-gradient(to right, transparent, var(--a-bg) 5vw);
+				left: -27vw;
+				background: var(--a-bg);
+				mask-image: linear-gradient(
+					to right,
+					rgb(0 0 0 / 0%) calc(0px + 25vw * 0 / 6),
+					rgb(0 0 0 / 7%) calc(0px + 25vw * 1 / 6),
+					rgb(0 0 0 / 26%) calc(0px + 25vw * 2 / 6),
+					rgb(0 0 0 / 50%) calc(0px + 25vw * 3 / 6),
+					rgb(0 0 0 / 74%) calc(0px + 25vw * 4 / 6),
+					rgb(0 0 0 / 93%) calc(0px + 25vw * 5 / 6),
+					rgb(0 0 0 / 100%) calc(0px + 25vw * 6 / 6)
+				);
 			}
 		}
 
@@ -1939,18 +1960,56 @@
 			width: auto;
 			padding-inline: 24px;
 
+			/* Шапка сверху и строки снизу на сплошном фоне, к зоне между ними фон
+			   растворяется по smoothstep */
 			&::before {
 				inset: 0;
 				background:
-					linear-gradient(to bottom, var(--a-bg) 14%, transparent 26%),
-					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
+					linear-gradient(
+						to bottom,
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 12%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 15%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 18%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 21%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 24%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 27%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 30%
+					),
+					linear-gradient(
+						to top,
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
+					);
 			}
 
 			/* Под фильтром шапка выше на строку: фон под ней тянется дальше */
 			&:has(.zone__filters)::before {
 				background:
-					linear-gradient(to bottom, var(--a-bg) 21%, transparent 33%),
-					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
+					linear-gradient(
+						to bottom,
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 19%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 22%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 25%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 28%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 31%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 34%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 37%
+					),
+					linear-gradient(
+						to top,
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
+					);
 			}
 		}
 

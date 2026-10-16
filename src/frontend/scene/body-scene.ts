@@ -482,7 +482,7 @@ export async function createBodyScene(
 				skin.uniforms.uTintRadius.value = radius
 			}
 
-			tintTo = points?.length ? 0.55 : 0
+			tintTo = points?.length ? 0.7 : 0
 		},
 		/**
 		 * Проём в коже вокруг точки на `size`; `null` закрывает. `depth` -- травма глубже мышц:

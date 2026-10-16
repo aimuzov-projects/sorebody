@@ -310,7 +310,8 @@
 		font: inherit;
 		font-size: 12px;
 		font-weight: 500;
-		color: var(--muted);
+		/* Не --muted: мелкий текст на тонированной таблетке с ним едва дотягивал до 4,5:1, axe его ронял */
+		color: color-mix(in srgb, var(--fg) 78%, var(--bg));
 		white-space: nowrap;
 		vertical-align: 1px;
 		background: color-mix(in srgb, var(--fg) 6%, var(--bg));

@@ -6,7 +6,9 @@ import {
 	MeshStandardMaterial,
 	NeutralToneMapping,
 	OrthographicCamera,
+	PlaneGeometry,
 	Scene,
+	ShaderMaterial,
 	SRGBColorSpace,
 	Vector3,
 	WebGLRenderer,
@@ -17,9 +19,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { createDissolveMaterial } from './dissolve.ts'
 
-/** Высота кадра в метрах модели: фигура 1,72 м плюс поля. */
 type Vec3 = [number, number, number]
 
+/** Высота кадра в метрах модели: фигура 1,72 м плюс поля. */
 const FRAME = 2.0
 const TARGET = new Vector3(0, 0.9, 0)
 
@@ -42,16 +44,25 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	camera.position.set(2.6, 2.2, 3.4)
 
-	scene.add(new HemisphereLight('#fffaf2', '#c9bfb1', 1.6))
-	scene.add(new AmbientLight('#ffffff', 0.25))
-	const key = new DirectionalLight('#fff4e6', 1.9)
+	// Студийный свет продуктового рендера: мягкий верхний, ключ спереди-слева, заполняющий
+	// справа и контровой сзади, чтобы силуэт отделялся от фона
+	scene.add(new HemisphereLight('#ffffff', '#d4d4d9', 1.25))
+	scene.add(new AmbientLight('#ffffff', 0.2))
 
-	key.position.set(2, 3, 2.5)
-	scene.add(key)
-	const rim = new DirectionalLight('#e8eef7', 0.9)
+	const lights: [string, number, Vec3][] = [
+		['#ffffff', 2.1, [-1.6, 3, 2.8]],
+		['#f2f4f8', 0.7, [2.8, 1.2, 1.4]],
+		['#ffffff', 1.5, [0.4, 2.2, -3.2]],
+	]
 
-	rim.position.set(-2.5, 1.5, -2)
-	scene.add(rim)
+	for (const [color, intensity, [x, y, z]] of lights) {
+		const light = new DirectionalLight(color, intensity)
+
+		light.position.set(x, y, z)
+		scene.add(light)
+	}
+
+	scene.add(createContactShadow())
 
 	const controls = new OrbitControls(camera, canvas)
 
@@ -70,9 +81,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	controls.update()
 
 	// Слои снаружи внутрь: кожа раскрывается на весь радиус, мышцы -- на часть, кости целы
-	const skin = createDissolveMaterial('#f4f1ec', '#d98a4e')
-	const muscles = createDissolveMaterial('#e6dcd2', '#b8643a')
-	const bones = new MeshStandardMaterial({ color: '#efdcc0', roughness: 0.7, metalness: 0 })
+	// Сатиновая керамика снаружи, кромка среза -- синяя, как акцент интерфейса
+	const skin = createDissolveMaterial('#f5f5f3', '#4a9bff', 0.42)
+	const muscles = createDissolveMaterial('#e8e4df', '#0071e3', 0.6)
+	const bones = new MeshStandardMaterial({ color: '#efe7da', roughness: 0.5, metalness: 0 })
 	const MUSCLE_SHARE = 0.6
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
@@ -242,4 +254,36 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			renderer.dispose()
 		},
 	}
+}
+
+/**
+ * Мягкая контактная тень под стопами, как у продуктового рендера: плоскость на полу
+ * с радиальным спадом прозрачности. Настоящие тени от света тут дороже и резче.
+ */
+function createContactShadow() {
+	const material = new ShaderMaterial({
+		transparent: true,
+		depthWrite: false,
+		vertexShader: `
+varying vec2 vUv;
+void main() {
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`,
+		fragmentShader: `
+varying vec2 vUv;
+void main() {
+	float r = length(vUv - 0.5) * 2.0;
+	float core = 1.0 - smoothstep(0.0, 0.45, r);
+	float halo = 1.0 - smoothstep(0.2, 1.0, r);
+	gl_FragColor = vec4(0.0, 0.0, 0.0, core * 0.22 + halo * 0.12);
+}`,
+	})
+	const shadow = new Mesh(new PlaneGeometry(0.9, 0.6), material)
+
+	shadow.rotation.x = -Math.PI / 2
+	shadow.position.y = 0.002
+	shadow.renderOrder = -1
+
+	return shadow
 }

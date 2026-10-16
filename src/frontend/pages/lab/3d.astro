@@ -15,6 +15,7 @@ const injuries = (await getCollection('injuries')).map(({ id, data }) => ({
 	slug: id,
 	title: data.title,
 	summary: data.summary,
+	rare: data.frequency === 'rare',
 	region: data.region,
 }))
 const { zones, whole } = buildZones(injuries)
@@ -46,10 +47,53 @@ const { zones, whole } = buildZones(injuries)
 </html>
 
 <style>
+	/* Визуальный язык страниц Apple: системный шрифт, нейтральная палитра, синий акцент.
+	   Токены на body, потому что панель статьи живёт рядом со сценой, а не внутри неё */
 	.lab {
+		--a-font: -apple-system, blinkmacsystemfont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
+		--a-bg: #f5f5f7;
+		--a-glow: #ffffff;
+		--a-fg: #1d1d1f;
+		--a-fg2: #6e6e73;
+		--a-blue: #0071e3;
+		--a-red: #ff3b30;
+		--a-sep: rgb(0 0 0 / 8%);
+		--a-fill: rgb(0 0 0 / 5%);
+		--a-vibrancy: rgb(255 255 255 / 72%);
+		--a-group: rgb(255 255 255 / 80%);
+		--a-shadow: 0 8px 40px rgb(0 0 0 / 8%);
+
+		/* Общие токены сайта, которыми пользуется вставленная статья */
+		--fg: var(--a-fg);
+		--muted: var(--a-fg2);
+		--accent: var(--a-blue);
+		--surface: var(--a-fill);
+		--danger: var(--a-red);
+
 		overflow: hidden;
 		height: 100dvh;
-		background: #ebe8e3;
+		font-family: var(--a-font);
+		font-size: 17px;
+		line-height: 1.47;
+		color: var(--a-fg);
+		letter-spacing: -0.022em;
+		color-scheme: light dark;
+		background: var(--a-bg);
+
+		@media (prefers-color-scheme: dark) {
+			--a-bg: #000000;
+			--a-glow: #1d1d1f;
+			--a-fg: #f5f5f7;
+			--a-fg2: #a1a1a6;
+			--a-blue: #2997ff;
+			--a-red: #ff453a;
+			--a-sep: rgb(255 255 255 / 12%);
+			--a-fill: rgb(255 255 255 / 10%);
+			--a-vibrancy: rgb(29 29 31 / 72%);
+			--a-group: rgb(44 44 46 / 72%);
+			--a-shadow: 0 8px 40px rgb(0 0 0 / 50%);
+		}
 
 		&__title {
 			position: absolute;

@@ -251,10 +251,10 @@
 
 		if (reduceMotion) return body.focus(null)
 
-		// Широкий экран: панель справа, фигура видна слева. Телефон: зона в полоске над панелью
-		if (w >= 1000) body.focus([0, 0.9, 0], 0.9, { x: -0.34, y: 0 })
-		else if (w < 600) body.focus(point.position, 1.6, { x: 0, y: 0.44 })
-		else body.focus([0, 0.9, 0], 0.85)
+		// Статья -- карточка по центру, фигура за ней видна по бокам. На телефоне карточка
+		// почти во весь экран, а раскрытая зона остаётся в полоске сверху
+		if (w < 600) body.focus(point.position, 1.6, { x: 0, y: 0.44 })
+		else body.focus([0, 0.9, 0], 0.9)
 	}
 
 	async function loadArticle(slug: string) {
@@ -325,7 +325,8 @@
 	function panelIn(node: HTMLElement) {
 		return {
 			duration: reduceMotion ? 200 : 520,
-			easing: (t: number) => 1 - (1 - t) ** 3,
+			// Близко к cubic-bezier(0.25, 1, 0.5, 1) из CSS: быстрый старт, мягкая посадка
+			easing: (t: number) => 1 - (1 - t) ** 4,
 			tick: (t: number) => {
 				node.style.opacity = String(t)
 				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 56}px)`
@@ -450,22 +451,36 @@
 	</button>
 
 	{#if open}
+		{@const count = open.zone.injuries.length}
 		<nav class="picker picker--{open.layout}" aria-label={open.zone.label}>
+			{#if open.layout === 'sheet'}
+				<span class="picker__grabber" aria-hidden="true"></span>
+			{/if}
 			<header class="picker__head">
-				<strong class="picker__zone">{open.zone.label}</strong>
-				<span class="picker__count">{open.zone.injuries.length} {plural(open.zone.injuries.length)}</span>
-				<button class="picker__close" type="button" aria-label="Закрыть" onclick={closeMenu}>×</button>
+				<div class="picker__heading">
+					<h2 class="picker__zone">{open.zone.label}</h2>
+					<p class="picker__count">{count} {plural(count)}</p>
+				</div>
+				<button class="picker__close" type="button" aria-label="Закрыть" onclick={closeMenu}>
+					<span aria-hidden="true">×</span>
+				</button>
 			</header>
-			<ul class="picker__list">
+			<ul class="picker__group">
 				{#each open.zone.injuries as injury (injury.slug)}
-					<li>
+					<li class="picker__row">
 						<a
 							class="picker__item"
 							href="/injuries/{injury.slug}/"
 							onclick={(event) => onItemClick(event, injury)}
 						>
-							<span class="picker__title">{injury.title}</span>
-							<span class="picker__summary">{injury.summary}</span>
+							<span class="picker__text">
+								<span class="picker__title">
+									{injury.title}
+									{#if injury.rare}<span class="picker__badge">Редко</span>{/if}
+								</span>
+								<span class="picker__summary">{injury.summary}</span>
+							</span>
+							<span class="picker__chevron" aria-hidden="true">›</span>
 						</a>
 					</li>
 				{/each}
@@ -482,9 +497,14 @@
 	<section class="panel" transition:panelIn aria-label={article.title} aria-busy={articleStatus === 'loading'}>
 		<header class="panel__bar">
 			<a class="panel__standalone" href="/injuries/{article.slug}/">Открыть отдельной страницей</a>
-			<button class="panel__close" type="button" bind:this={closeButton} onclick={requestCloseArticle}>
-				<span class="panel__close-icon" aria-hidden="true">×</span>
-				<span class="panel__close-label">Закрыть</span>
+			<button
+				class="panel__close"
+				type="button"
+				aria-label="Закрыть"
+				bind:this={closeButton}
+				onclick={requestCloseArticle}
+			>
+				<span aria-hidden="true">×</span>
 			</button>
 		</header>
 		{#if articleStatus === 'loading'}
@@ -499,16 +519,15 @@
 {/if}
 
 <style>
+	/* Токены (--a-*) объявлены на body в pages/lab/3d.astro, тёмная тема -- там же */
 	.body3d {
-		--porcelain-bg: #ebe8e3;
-		--rim: #d98a4e;
 		touch-action: pan-y;
 		user-select: none;
 
 		position: fixed;
 		inset: 0;
 		overflow: hidden;
-		background: radial-gradient(ellipse at 50% 40%, #f6f4f0 0%, var(--porcelain-bg) 70%);
+		background: radial-gradient(ellipse 60% 70% at 50% 45%, var(--a-glow) 0%, var(--a-bg) 70%);
 
 		&__canvas {
 			cursor: grab;
@@ -516,8 +535,8 @@
 			width: 100%;
 			height: 100%;
 			transition:
-				transform 0.8s cubic-bezier(0.22, 0.8, 0.25, 1),
-				filter 0.8s ease,
+				transform 0.6s var(--a-ease),
+				filter 0.6s var(--a-ease),
 				opacity 0.4s ease;
 
 			&:active {
@@ -530,27 +549,33 @@
 			cursor: pointer;
 		}
 
-		/* Сцена под статьёй: отъехала, уменьшилась, размылась и потемнела */
+		/* Сцена под статьёй уходит назад, как карточка под модалкой iOS */
 		&--receded &__canvas {
 			cursor: default;
-			transform: scale(0.82);
-			filter: blur(3px) brightness(0.86) saturate(0.9);
+			transform: scale(0.92);
+			filter: blur(6px) brightness(0.94);
+
+			@media (prefers-color-scheme: dark) {
+				filter: blur(6px) brightness(0.6);
+			}
 
 			@media (--below-sm) {
-				transform: scale(0.94);
-				filter: blur(1.5px) brightness(0.9);
+				transform: scale(0.96);
+				filter: blur(3px);
 			}
 
 			@media (--reduced-motion) {
 				transform: none;
-				opacity: 0.5;
+				opacity: 0.4;
 				filter: none;
 				transition: opacity 0.2s ease;
 			}
 		}
 
 		&--receded &__spot,
-		&--receded &__whole {
+		&--receded &__whole,
+		&--open &__spot,
+		&--open &__whole {
 			pointer-events: none;
 			opacity: 0;
 		}
@@ -562,7 +587,7 @@
 			place-items: center;
 			margin: 0;
 			padding: 24px;
-			color: var(--muted);
+			color: var(--a-fg2);
 			text-align: center;
 		}
 
@@ -573,13 +598,13 @@
 			left: 0;
 			display: grid;
 			place-items: center;
-			width: 36px;
-			height: 36px;
-			margin: -18px 0 0 -18px;
+			width: 40px;
+			height: 40px;
+			margin: -20px 0 0 -20px;
 			padding: 0;
 			border: 0;
 			background: none;
-			transition: opacity 0.2s;
+			transition: opacity 0.3s var(--a-ease);
 
 			&:global([data-hidden='true']) {
 				pointer-events: none;
@@ -588,186 +613,265 @@
 
 			&:focus-visible {
 				border-radius: 50%;
-				outline: 2px solid var(--accent);
+				outline: 2px solid var(--a-blue);
+				outline-offset: -4px;
 			}
 		}
 
+		/* Белая точка в тонком синем кольце и мягкий пульс вокруг */
 		&__spot-dot {
-			width: 10px;
-			height: 10px;
+			position: relative;
+			width: 9px;
+			height: 9px;
 			border-radius: 50%;
-			background: var(--rim);
-			box-shadow: 0 0 0 5px color-mix(in srgb, var(--rim) 25%, transparent);
-			transition: transform 0.2s;
+			background: #ffffff;
+			box-shadow:
+				0 0 0 1.5px var(--a-blue),
+				0 1px 4px rgb(0 0 0 / 25%);
+			transition:
+				transform 0.4s var(--a-ease),
+				box-shadow 0.4s var(--a-ease);
+
+			&::after {
+				content: '';
+				position: absolute;
+				inset: -7px;
+				border: 1.5px solid var(--a-blue);
+				border-radius: 50%;
+				opacity: 0;
+				animation: spot-pulse 2.4s var(--a-ease) infinite;
+
+				@media (--reduced-motion) {
+					animation: none;
+				}
+			}
 		}
 
 		&__spot--hover &__spot-dot {
-			transform: scale(1.4);
-		}
-
-		&--open &__spot,
-		&--open &__whole {
-			pointer-events: none;
-			opacity: 0;
+			transform: scale(1.2);
+			box-shadow:
+				0 0 0 3px var(--a-blue),
+				0 2px 8px rgb(0 0 0 / 25%);
 		}
 
 		&__whole {
 			cursor: pointer;
 			position: absolute;
-			bottom: 16px;
+			bottom: 28px;
 			left: 50%;
 			transform: translateX(-50%);
-			padding: 8px 16px;
-			border: 1px solid #d8d2c8;
-			border-radius: 999px;
+			padding: 10px 20px;
+			border: 0;
+			border-radius: 980px;
 			font: inherit;
-			font-size: 0.9rem;
-			color: var(--fg);
-			background: #f8f6f2cc;
+			font-size: 15px;
+			font-weight: 500;
+			color: var(--a-blue);
+			letter-spacing: -0.01em;
+			background: var(--a-vibrancy);
+			backdrop-filter: saturate(180%) blur(20px);
+			box-shadow: var(--a-shadow);
+			transition: opacity 0.3s var(--a-ease);
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 
 		&__fps {
 			position: absolute;
-			top: 10px;
-			left: 12px;
+			top: 12px;
+			left: 16px;
 			font:
-				600 0.8rem/1 ui-monospace,
+				600 12px/1 ui-monospace,
 				monospace;
-			color: var(--muted);
+			color: var(--a-fg2);
 		}
 	}
 
-	/* Список травм зоны: панель справа на десктопе, шторка снизу на телефоне */
+	/* Список травм зоны: vibrancy-панель справа, на телефоне шторка; внутри -- группированный
+	   список iOS со шевроном */
 	.picker {
 		position: absolute;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		border: 1px solid #ffffff99;
-		background: #faf8f5d9;
-		backdrop-filter: blur(18px) saturate(1.2);
-		box-shadow: 0 24px 80px #2b221a2e;
+		background: var(--a-vibrancy);
+		backdrop-filter: saturate(180%) blur(20px);
+		box-shadow: var(--a-shadow);
 
 		&--list {
 			top: 50%;
 			right: 4vw;
 			transform: translateY(-50%);
-			width: min(400px, 36vw);
-			max-height: 82dvh;
-			border-radius: 20px;
-			animation: list-in 0.4s cubic-bezier(0.22, 0.8, 0.25, 1) both;
+			width: min(420px, 38vw);
+			max-height: 84dvh;
+			border-radius: 22px;
+			animation: list-in 0.55s var(--a-ease) both;
 		}
 
 		&--sheet {
 			right: 0;
 			bottom: 0;
 			left: 0;
-			max-height: 56dvh;
-			border-radius: 20px 20px 0 0;
-			animation: sheet-in 0.4s cubic-bezier(0.22, 0.8, 0.25, 1) both;
+			max-height: 58dvh;
+			border-radius: 22px 22px 0 0;
+			animation: sheet-in 0.55s var(--a-ease) both;
+		}
+
+		&__grabber {
+			display: block;
+			width: 36px;
+			height: 5px;
+			margin: 8px auto 0;
+			border-radius: 3px;
+			background: var(--a-sep);
 		}
 
 		&__head {
-			position: sticky;
-			top: 0;
 			display: flex;
-			gap: 8px;
-			align-items: baseline;
-			padding: 14px 16px 10px 20px;
-			border-bottom: 1px solid #00000010;
-			background: #faf8f5;
+			gap: 12px;
+			align-items: flex-start;
+			justify-content: space-between;
+			padding: 20px 20px 12px;
 		}
 
 		&__zone {
-			font-size: 1.05rem;
+			margin: 0;
+			font-size: 28px;
+			font-weight: 700;
+			line-height: 1.1;
+			letter-spacing: -0.025em;
 		}
 
 		&__count {
-			font-size: 0.85rem;
-			color: var(--muted);
+			margin: 4px 0 0;
+			font-size: 15px;
+			color: var(--a-fg2);
 		}
 
 		&__close {
 			cursor: pointer;
-			margin-left: auto;
-			padding: 0 6px;
-			border: 0;
-			font-size: 1.4rem;
-			line-height: 1;
-			color: var(--muted);
-			background: none;
-		}
-
-		&__list {
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
-
-		&__item {
 			display: grid;
-			gap: 4px;
-			padding: 12px 20px;
-			border-bottom: 1px solid #0000000a;
-			color: var(--fg);
-			text-decoration: none;
+			flex: none;
+			place-items: center;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			font-size: 20px;
+			line-height: 1;
+			color: var(--a-fg2);
+			background: var(--a-fill);
 
-			&:hover,
-			&:focus-visible {
-				background: #ffffffb3;
+			&:hover {
+				color: var(--a-fg);
 			}
 		}
 
+		&__group {
+			overflow: hidden;
+			margin: 0 16px 16px;
+			padding: 0;
+			border-radius: 14px;
+			list-style: none;
+			background: var(--a-group);
+		}
+
+		/* Разделитель с отступом слева, как в iOS: у первой строки его нет */
+		&__row + &__row &__item::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			left: 16px;
+			height: 1px;
+			background: var(--a-sep);
+		}
+
+		&__item {
+			position: relative;
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: 12px;
+			align-items: center;
+			padding: 12px 14px 12px 16px;
+			color: var(--a-fg);
+			text-decoration: none;
+			transition: background 0.2s;
+
+			&:hover,
+			&:focus-visible {
+				background: var(--a-fill);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: -2px;
+			}
+		}
+
+		&__text {
+			display: grid;
+			gap: 2px;
+		}
+
 		&__title {
+			font-size: 17px;
+			font-weight: 500;
+			line-height: 1.3;
+		}
+
+		&__badge {
+			display: inline-block;
+			margin-left: 6px;
+			padding: 1px 7px;
+			border-radius: 980px;
+			font-size: 12px;
 			font-weight: 600;
-			line-height: 1.25;
+			color: var(--a-red);
+			letter-spacing: 0;
+			vertical-align: 2px;
+			background: color-mix(in srgb, var(--a-red) 12%, transparent);
 		}
 
 		&__summary {
-			font-size: 0.85rem;
-			line-height: 1.35;
-			color: var(--muted);
+			overflow: hidden;
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+			line-clamp: 2;
+			font-size: 14px;
+			line-height: 1.4;
+			color: var(--a-fg2);
+			letter-spacing: -0.01em;
+		}
+
+		&__chevron {
+			font-size: 22px;
+			line-height: 1;
+			color: var(--a-fg2);
+			opacity: 0.6;
 		}
 	}
 
-	@keyframes list-in {
-		from {
-			transform: translate(24px, -50%);
-			opacity: 0;
-		}
-	}
-
-	@keyframes sheet-in {
-		from {
-			transform: translateY(40px);
-			opacity: 0;
-		}
-	}
-
-	/* Стекло поверх ушедшей вглубь сцены. Широкий экран: справа, фигура видна слева.
-	   Средний: по центру. Телефон: почти весь экран, сверху полоска сцены */
+	/* Статья -- модальная карточка поверх ушедшей назад сцены, колонка около 680 px */
 	.panel {
 		position: fixed;
 		z-index: 2;
-		inset: 4dvh 4vw 4dvh auto;
+		inset: 5dvh 0 0;
 		overflow-y: auto;
 		overscroll-behavior: contain;
-		width: min(720px, 56vw);
-		border: 1px solid #ffffff99;
-		border-radius: 20px;
-		background: #faf8f5b3;
-		backdrop-filter: blur(18px) saturate(1.2);
-		box-shadow: 0 24px 80px #2b221a33;
-
-		@media (--below-lg) {
-			inset-inline: 0;
-			width: min(720px, 92vw);
-			margin-inline: auto;
-		}
+		width: min(760px, calc(100vw - 48px));
+		margin-inline: auto;
+		border-radius: 22px 22px 0 0;
+		background: var(--a-vibrancy);
+		backdrop-filter: saturate(180%) blur(20px);
+		box-shadow: var(--a-shadow);
 
 		@media (--below-sm) {
 			inset: 16dvh 0 0;
 			width: auto;
-			border-radius: 20px 20px 0 0;
 		}
 
 		&__bar {
@@ -778,58 +882,90 @@
 			gap: 12px;
 			align-items: center;
 			justify-content: space-between;
-			padding: 12px 16px 12px 24px;
-			border-bottom: 1px solid #00000010;
-			font-size: 0.85rem;
-			background: #faf8f5d9;
-			backdrop-filter: blur(12px);
+			padding: 14px 16px 14px 24px;
+			font-size: 14px;
+			background: var(--a-vibrancy);
+			backdrop-filter: saturate(180%) blur(20px);
 		}
 
 		&__standalone {
-			color: var(--muted);
+			color: var(--a-blue);
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 
+		/* Круглая полупрозрачная кнопка с крестиком, как в модалках iOS */
 		&__close {
 			cursor: pointer;
-			display: inline-flex;
-			gap: 6px;
-			align-items: center;
-			padding: 6px 12px;
-			border: 1px solid #d8d2c8;
-			border-radius: 999px;
-			font: inherit;
-			color: var(--fg);
-			background: #ffffffcc;
-		}
-
-		&__close-icon {
-			font-size: 1.2rem;
+			display: grid;
+			flex: none;
+			place-items: center;
+			width: 32px;
+			height: 32px;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			font-size: 22px;
 			line-height: 1;
+			color: var(--a-fg2);
+			background: var(--a-fill);
+
+			&:hover {
+				color: var(--a-fg);
+			}
 		}
 
 		&__status {
-			margin: 0;
-			padding: 32px 24px;
-			color: var(--muted);
+			max-width: 680px;
+			margin: 0 auto;
+			padding: 48px 24px;
+			color: var(--a-fg2);
 		}
 
-		/* Разметка статьи приходит с /injuries/<slug>/ без её scoped-стилей, повторяем главное */
+		/* Разметка статьи приходит с /injuries/<slug>/ без её scoped-стилей, задаём здесь */
 		&__body {
-			padding: 8px 24px 32px;
+			max-width: 680px;
+			margin: 0 auto;
+			padding: 8px 24px 80px;
 
 			& :global(.injury) {
 				display: grid;
-				gap: 18px;
+				gap: 24px;
 				max-width: none;
 				padding: 0;
 			}
 
-			/* У заголовка статьи нет своего класса, а разметку правит не эта страница */
+			/* У заголовков статьи нет своих классов, а разметку правит не эта страница */
 			/* stylelint-disable-next-line selector-max-type */
 			& :global(h1) {
 				margin: 0;
-				font-size: clamp(1.6rem, 4vw, 2.2rem);
-				line-height: 1.15;
+				font-size: clamp(32px, 5vw, 48px);
+				font-weight: 700;
+				line-height: 1.08;
+				letter-spacing: -0.03em;
+			}
+
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(h2) {
+				margin: 32px 0 0;
+				font-size: 28px;
+				font-weight: 600;
+				line-height: 1.14;
+				letter-spacing: -0.02em;
+			}
+
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(a) {
+				color: var(--a-blue);
+				text-decoration: none;
+			}
+
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(a:hover) {
+				text-decoration: underline;
 			}
 
 			& :global(.injury__meta) {
@@ -838,61 +974,99 @@
 				gap: 8px;
 				align-items: center;
 				margin: 0;
-				font-size: 0.9rem;
+				font-size: 15px;
 			}
 
 			& :global(.injury__lead) {
 				margin: 0;
-				font-size: 1.1rem;
-				color: var(--muted);
+				font-size: 21px;
+				line-height: 1.38;
+				color: var(--a-fg2);
+				letter-spacing: -0.015em;
 			}
 
 			& :global(.injury__figure) {
-				margin: 0;
+				margin: 8px 0;
 			}
 
 			& :global(.injury__image) {
-				border-radius: 12px;
+				border-radius: 18px;
 				background: #ffffff;
 			}
 
 			& :global(.injury__caption) {
-				margin-top: 6px;
-				font-size: 0.85rem;
-				color: var(--muted);
+				margin-top: 10px;
+				font-size: 14px;
+				color: var(--a-fg2);
+			}
+
+			& :global(.injury__body) {
+				display: grid;
+				gap: 4px;
 			}
 
 			& :global(.injury__movements) {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 8px 16px;
+				gap: 8px 20px;
 				padding: 0;
 				list-style: none;
 			}
 
 			& :global(.injury__sources) {
-				font-size: 0.9rem;
+				font-size: 14px;
+				color: var(--a-fg2);
 			}
 
 			& :global(.badge) {
-				padding: 2px 8px;
-				border-radius: 999px;
-				font-size: 0.8rem;
-				background: var(--surface);
+				padding: 2px 10px;
+				border-radius: 980px;
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--a-fg2);
+				letter-spacing: 0;
+				background: var(--a-fill);
 			}
 
 			& :global(.badge--rare) {
-				color: #ffffff;
-				background: var(--danger);
+				color: var(--a-red);
+				background: color-mix(in srgb, var(--a-red) 12%, transparent);
 			}
 
 			& :global(.disclaimer) {
-				padding: 12px 16px;
-				border-radius: 12px;
-				font-size: 0.9rem;
-				color: var(--muted);
-				background: #ffffff99;
+				margin-top: 24px;
+				padding: 16px 20px;
+				border-radius: 18px;
+				font-size: 15px;
+				color: var(--a-fg2);
+				background: var(--a-group);
 			}
+		}
+	}
+
+	@keyframes spot-pulse {
+		0% {
+			transform: scale(0.5);
+			opacity: 0.7;
+		}
+
+		100% {
+			transform: scale(1.6);
+			opacity: 0;
+		}
+	}
+
+	@keyframes list-in {
+		from {
+			transform: translate(24px, -50%) scale(0.98);
+			opacity: 0;
+		}
+	}
+
+	@keyframes sheet-in {
+		from {
+			transform: translateY(48px);
+			opacity: 0;
 		}
 	}
 </style>

@@ -5,7 +5,7 @@ import { Color, DoubleSide, MeshStandardMaterial, Vector3 } from 'three'
  * граница рвётся 3D-шумом и подсвечивается тёплой кромкой. Внутренняя сторона оболочки темнее,
  * чтобы срез читался как толща ткани, а не как дыра.
  */
-export function createDissolveMaterial(color: string, rim: string) {
+export function createDissolveMaterial(color: string, rim: string, roughness = 0.92) {
 	const uniforms = {
 		uCenter: { value: new Vector3() },
 		uRadius: { value: 0 },
@@ -13,7 +13,7 @@ export function createDissolveMaterial(color: string, rim: string) {
 		uInset: { value: 0 },
 		uRim: { value: new Color(rim) },
 	}
-	const material = new MeshStandardMaterial({ color, roughness: 0.92, metalness: 0, side: DoubleSide })
+	const material = new MeshStandardMaterial({ color, roughness, metalness: 0, side: DoubleSide })
 
 	material.onBeforeCompile = (shader) => {
 		Object.assign(shader.uniforms, uniforms)

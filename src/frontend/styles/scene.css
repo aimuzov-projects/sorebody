@@ -42,31 +42,31 @@
 /* Тёмная тема сцены -- при тех же условиях, что в global.css: по системе или выбрана вручную */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) .scene-page {
-		--a-bg: #000000;
-		--a-page: #000000;
-		--a-glow: #1d1d1f;
+		--a-bg: #161617;
+		--a-page: #161617;
+		--a-glow: #2c2c2e;
 		--a-fg: #f5f5f7;
 		--a-fg2: #a1a1a6;
 		--a-blue: #2997ff;
 		--a-red: #ff453a;
 		--a-sep: rgb(255 255 255 / 12%);
 		--a-fill: rgb(255 255 255 / 10%);
-		--a-pop: #1c1c1e;
+		--a-pop: #242426;
 	}
 }
 
 :root[data-theme='dark'] .scene-page,
 .scene-page .dark {
-	--a-bg: #000000;
-	--a-page: #000000;
-	--a-glow: #1d1d1f;
+	--a-bg: #161617;
+	--a-page: #161617;
+	--a-glow: #2c2c2e;
 	--a-fg: #f5f5f7;
 	--a-fg2: #a1a1a6;
 	--a-blue: #2997ff;
 	--a-red: #ff453a;
 	--a-sep: rgb(255 255 255 / 12%);
 	--a-fill: rgb(255 255 255 / 10%);
-	--a-pop: #1c1c1e;
+	--a-pop: #242426;
 }
 
 /* Копия страницы в круге подсмотра темы: фон и шрифт сцены, а не общие токены сайта */

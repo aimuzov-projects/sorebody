@@ -136,6 +136,9 @@ float n = snoise(vDissolvePos * 4.0) * 0.7 + snoise(vDissolvePos * 11.0) * 0.3;
 if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.007 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {
 	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.007 * smoothstep(0.0, 0.05, uRadius);
+	// Проём сбоку от середины тела не переходит за неё: сфера паха иначе вскрывала и вторую
+	// ногу с пахом. Пересечение со слоем x > 3 см на стороне зоны, край считается так же
+	if (abs(uCenter.x) > 0.05) d = max(d, 0.03 - vDissolvePos.x * sign(uCenter.x) + n * 0.004);
 	if (d < 0.0 && !kept) discard;
 	if (!kept) dissolveEdge = d / (gl_FrontFacing ? uRimWidth : uRimBackWidth);
 }`,

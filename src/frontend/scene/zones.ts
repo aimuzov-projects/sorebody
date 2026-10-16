@@ -39,13 +39,13 @@ export type ZoneInjury = {
  */
 export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
 	shoulder: { radius: 0.13, points: pair([0.165, 1.39, -0.024], 1, 0.3, { azimuth: 40, polar: 70 }) },
-	elbow: { radius: 0.09, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
+	elbow: { radius: 0.07, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
 	'wrist-hand': { radius: 0.1, points: pair([0.25, 0.874, 0.021], 1, 0.3, { azimuth: 70, polar: 74 }) },
 	lumbar: {
 		radius: 0.15,
 		points: [{ position: [0, 1.066, -0.034], normal: [0, 0, -1], view: { azimuth: 160, polar: 76 } }],
 	},
-	'hip-groin': { radius: 0.14, points: pair([0.107, 0.882, -0.025], 0.6, 1, { azimuth: 35, polar: 76 }) },
+	'hip-groin': { radius: 0.12, points: pair([0.107, 0.882, -0.025], 0.6, 1, { azimuth: 35, polar: 76 }) },
 	knee: { radius: 0.085, points: pair([0.081, 0.459, 0.011], 0.4, 1, { azimuth: 25, polar: 76 }) },
 	'ankle-foot': { radius: 0.09, points: pair([0.07, 0.064, -0.024], 0.5, 1, { azimuth: 40, polar: 62 }) },
 }

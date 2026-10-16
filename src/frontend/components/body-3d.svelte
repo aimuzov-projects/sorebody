@@ -65,6 +65,22 @@
 
 	const allZones = $derived([...zones, whole])
 	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
+	/** Какие фильтры включены, словами: в шапке раскрытой зоны рядом со счётчиком. */
+	const filterNames = $derived(
+		[
+			query.trim() && `«${query.trim()}»`,
+			frequency !== 'all' && FREQUENCIES.find(([value]) => value === frequency)?.[1],
+			movement && movements.find((m) => m.slug === movement)?.title,
+		]
+			.filter(Boolean)
+			.join(', '),
+	)
+
+	function resetFilters() {
+		query = ''
+		frequency = 'all'
+		movement = ''
+	}
 	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
 	const results = $derived(
 		query.trim()
@@ -829,11 +845,15 @@
 			<header class="zone__head">
 				<button class="zone__back" type="button" onclick={up}><span aria-hidden="true">←</span> Назад</button>
 				<h2 class="zone__title">{open.zone.label}</h2>
-				<p class="zone__count">
-					{filtering
-						? `${shown.length} из ${total} ${plural(total)} по фильтру`
-						: `${total} ${plural(total)}`}
-				</p>
+				{#if filtering}
+					<p class="zone__count zone__count--filtered">
+						<span class="zone__filter">{shown.length} из {total} {plural(total)}</span>
+						<span class="zone__filter-names">{filterNames}</span>
+						<button class="zone__reset" type="button" onclick={resetFilters}>Сбросить</button>
+					</p>
+				{:else}
+					<p class="zone__count">{total} {plural(total)}</p>
+				{/if}
 			</header>
 			<ul class="zone__list" onscroll={onListScroll}>
 				{#each shown as injury, i (injury.slug)}
@@ -1504,6 +1524,13 @@
 					linear-gradient(to bottom, var(--a-bg) 14%, transparent 26%),
 					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
 			}
+
+			/* Под фильтром шапка выше на строку: фон под ней тянется дальше */
+			&:has(.zone__count--filtered)::before {
+				background:
+					linear-gradient(to bottom, var(--a-bg) 21%, transparent 33%),
+					linear-gradient(to top, var(--a-bg) 46%, transparent 62%);
+			}
 		}
 
 		&__head {
@@ -1549,6 +1576,50 @@
 			margin: 6px 0 0;
 			font-size: 17px;
 			color: var(--a-fg2);
+
+			/* Под фильтром список неполный: счётчик -- синей таблеткой, рядом что отфильтровано
+			   и как вернуть всё */
+			&--filtered {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px 10px;
+				align-items: center;
+				margin-top: 12px;
+				font-size: 15px;
+			}
+		}
+
+		&__filter {
+			padding: 4px 12px;
+			border-radius: 999px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			color: var(--a-blue);
+			white-space: nowrap;
+			background: color-mix(in srgb, var(--a-blue) 13%, var(--a-bg));
+		}
+
+		&__filter-names {
+			color: var(--a-fg);
+		}
+
+		&__reset {
+			cursor: pointer;
+			padding: 2px;
+			border: 0;
+			font: inherit;
+			color: var(--a-blue);
+			background: none;
+			transition: opacity 0.3s var(--a-ease);
+
+			&:hover {
+				opacity: 0.7;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
 		}
 
 		/* Скроллятся только строки, к краям они гаснут маской, а не обрезаются */

@@ -199,7 +199,8 @@
 		body.focus(
 			target.position,
 			phone ? Math.min(zoom * 0.55, 1.4) : Math.min(zoom, 2.4),
-			{ x: 0, y: phone ? 0.3 : 0 },
+			// Доли экрана: на десктопе -- там же, где на общем плане стоит фигура
+			{ x: phone ? 0 : 0.17, y: phone ? 0.3 : 0 },
 			target.view,
 			true,
 		)
@@ -219,6 +220,7 @@
 		if (!zone || zone === whole) {
 			body.focus(null)
 			body.controls.autoRotate = true
+			homeFrame()
 
 			return
 		}
@@ -226,8 +228,10 @@
 		const point = zone.points[facingIndex(zone)]
 
 		body.controls.autoRotate = false
-		// Кадр главной уже сдвинут вправо от индекса: точка встаёт в середину свободной части
-		body.focus(point.position, clamp(0.26 / zone.radius, 1, 2.2), { x: 0, y: 0 }, point.view, true)
+		// Точка встаёт туда же, где на общем плане стоит фигура: в середину свободной части
+		const at = wrap.clientWidth < 700 ? { x: 0, y: 0.27 } : { x: 0.17, y: 0 }
+
+		body.focus(point.position, clamp(0.26 / zone.radius, 1, 2.2), at, point.view, true)
 	}
 
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */

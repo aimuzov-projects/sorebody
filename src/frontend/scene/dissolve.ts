@@ -50,6 +50,10 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 		uTint: { value: [new Vector3(), new Vector3()] },
 		uTintRadius: { value: 0.1 },
 		uTintStrength: { value: 0 },
+		// Прошлое место подсветки: гаснет, пока новое разгорается, а не перескакивает разом
+		uTintPrev: { value: [new Vector3(), new Vector3()] },
+		uTintPrevRadius: { value: 0.1 },
+		uTintPrevStrength: { value: 0 },
 		uTintColor: { value: new Color('#3d8bfd') },
 		// Подсветка мышц травмы: номера мышц из `_part` (до 8, -1 -- пусто) и сила свечения
 		uParts: { value: Array.from({ length: 8 }, () => -1) },
@@ -108,6 +112,9 @@ uniform float uCutSide;
 uniform vec3 uTint[2];
 uniform float uTintRadius;
 uniform float uTintStrength;
+uniform vec3 uTintPrev[2];
+uniform float uTintPrevRadius;
+uniform float uTintPrevStrength;
 uniform vec3 uTintColor;
 uniform float uParts[8];
 uniform float uHighlight;
@@ -176,6 +183,10 @@ if (uHighlight > 0.0) {
 if (uTintStrength > 0.0) {
 	float near = min(distance(vDissolvePos, uTint[0]), distance(vDissolvePos, uTint[1]));
 	totalEmissiveRadiance += uTintColor * uTintStrength * (1.0 - smoothstep(0.0, uTintRadius, near));
+}
+if (uTintPrevStrength > 0.0) {
+	float near = min(distance(vDissolvePos, uTintPrev[0]), distance(vDissolvePos, uTintPrev[1]));
+	totalEmissiveRadiance += uTintColor * uTintPrevStrength * (1.0 - smoothstep(0.0, uTintPrevRadius, near));
 }
 #ifdef MUSCLE
 totalEmissiveRadiance += diffuseColor.rgb * 0.5 * uHighlight * hit;

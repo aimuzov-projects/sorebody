@@ -315,7 +315,11 @@ export async function createBodyScene(
 		}
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
-		skin.uniforms.uTintStrength.value += (tintTo - skin.uniforms.uTintStrength.value) * ease
+		// Подсветка медленнее камеры: резкое появление пятна на коже бросалось в глаза
+		const tintEase = 1 - Math.exp(-dt * 3.5)
+
+		skin.uniforms.uTintStrength.value += (tintTo - skin.uniforms.uTintStrength.value) * tintEase
+		skin.uniforms.uTintPrevStrength.value *= 1 - tintEase
 
 		const goal = manual ? null : (focusTo ?? restore)
 
@@ -476,6 +480,17 @@ export async function createBodyScene(
 		tint(points: Vec3[] | null, radius = 0.1) {
 			if (points?.length) {
 				const [a, b = a] = points
+				const { uTint, uTintPrev, uTintStrength, uTintPrevStrength } = skin.uniforms
+				const moved = !uTint.value[0].equals(new Vector3(...a)) || !uTint.value[1].equals(new Vector3(...b))
+
+				// Другое место -- перетекание: старое пятно гаснет на месте, новое разгорается с нуля
+				if (moved && uTintStrength.value > 0.01) {
+					uTintPrev.value[0].copy(uTint.value[0])
+					uTintPrev.value[1].copy(uTint.value[1])
+					skin.uniforms.uTintPrevRadius.value = skin.uniforms.uTintRadius.value
+					uTintPrevStrength.value = Math.max(uTintPrevStrength.value, uTintStrength.value)
+					uTintStrength.value = 0
+				}
 
 				skin.uniforms.uTint.value[0].set(...a)
 				skin.uniforms.uTint.value[1].set(...b)

@@ -3,6 +3,31 @@
    градиенты и края, растворённые маской. Цвета -- общие токены сайта: на главной их
    переопределяет сцена, тёмную тему задаёт global.css. */
 
+/* Края иллюстрации. На светлом фоне белая картинка широко растворяется в нём. На тёмном
+   широкий переход от белого к фону читался мутной серой каймой, поэтому край узкий: белый
+   лист с мягким краем. Набор по схеме -- как в global.css, вместе с классами подсмотра темы */
+:root,
+.light {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
+		linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--article-image-mask:
+			linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+			linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+	}
+}
+
+:root[data-theme='dark'],
+.dark {
+	--article-image-mask:
+		linear-gradient(to bottom, transparent, #000000 4px, #000000 calc(100% - 4px), transparent),
+		linear-gradient(to right, transparent, #000000 4px, #000000 calc(100% - 4px), transparent);
+}
+
 .article {
 	--article-ease: cubic-bezier(0.25, 1, 0.5, 1);
 	--article-column: 680px;
@@ -10,7 +35,7 @@
 	width: 100%;
 	max-width: calc(var(--article-column) + 260px + 64px + 48px);
 	margin: 0 auto;
-	padding: 48px 24px 96px;
+	padding: 16px 24px 96px;
 	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
 	color: var(--fg);
 	letter-spacing: -0.012em;
@@ -71,7 +96,8 @@
 		font-size: clamp(34px, 6vw, 56px);
 		font-weight: 700;
 		line-height: 1.07;
-		hyphens: auto;
+		/* Переносы по словам: по слогам крупный заголовок рвался на "груд-ной" */
+		hyphens: manual;
 		letter-spacing: -0.03em;
 		overflow-wrap: break-word;
 	}
@@ -95,9 +121,7 @@
 
 	&__image {
 		width: 100%;
-		mask-image:
-			linear-gradient(to bottom, transparent, #000000 8%, #000000 82%, transparent),
-			linear-gradient(to right, transparent, #000000 10%, #000000 90%, transparent);
+		mask-image: var(--article-image-mask);
 		mask-composite: intersect;
 
 		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только верх и низ -- кости
@@ -284,13 +308,6 @@
 		width: 13px;
 		height: 13px;
 	}
-
-	&__disclaimer {
-		margin: 0;
-		font-size: 14px;
-		line-height: 1.5;
-		color: var(--muted);
-	}
 }
 
 /* Разделы статьи из Markdown (lib/article-html.ts): иконка у заголовка, воздух между
@@ -362,12 +379,18 @@
 		color: var(--muted);
 	}
 
+	/* Тонкое подчёркивание, как у ссылок на источники: в тёмной теме одного цвета мало,
+	   чтобы отличить ссылку от текста */
 	& a {
 		color: var(--accent);
-		text-decoration: none;
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: text-decoration-color 0.3s var(--article-ease);
 
 		&:hover {
-			text-decoration: underline;
+			text-decoration-color: currentcolor;
 		}
 	}
 
@@ -503,6 +526,153 @@
 	width: 100%;
 	height: 100%;
 	stroke-width: 1.6;
+}
+
+/* Шапка статьи: стрелка назад и маленький заголовок. Без плашки: фон растворяется
+   вниз градиентом, текст уходит под неё. На главной это полоса reader в body-3d.svelte */
+.article-bar {
+	position: sticky;
+	z-index: 10;
+	top: 0;
+	display: flex;
+	align-items: center;
+	/* На всю ширину окна: градиент под шапкой не обрывается сбоку, а содержимое стоит по краям
+	   колонки статьи -- те же 1052px и поля, что у .article. body -- flex-колонка, ширину
+	   задаём явно, иначе шапка сжалась бы по содержимому */
+	width: 100%;
+	padding: calc(12px + var(--tg-top, 0px)) max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-right, 0px)) 20px
+		max(24px, (100% - 1052px) / 2 + 24px, env(safe-area-inset-left, 0px));
+	background: linear-gradient(to bottom, var(--bg) 62%, transparent);
+
+	@media (width < 600px) {
+		padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
+	}
+}
+
+.article-bar__back {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	/* Маленький заголовок встаёт ровно по тексту пунктов оглавления под шапкой */
+	margin: 0 -2px 0 -10px;
+	border-radius: 50%;
+	color: var(--accent);
+	transition: background 0.3s ease;
+
+	[data-telegram] & {
+		display: none;
+	}
+
+	&:hover {
+		background: color-mix(in srgb, var(--fg) 7%, transparent);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+	& svg {
+		width: 28px;
+		height: 28px;
+		stroke-width: 2.2;
+	}
+}
+
+/* Маленький заголовок в шапке: одна строка, остальное -- многоточием */
+.article-bar__title {
+	overflow: hidden;
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	font-size: 17px;
+	font-weight: 600;
+	color: var(--fg);
+	text-overflow: ellipsis;
+	letter-spacing: -0.02em;
+	white-space: nowrap;
+}
+
+/* Большой заголовок по мере прокрутки гаснет и уходит вверх, маленький в шапке
+   проявляется. Переход привязан к самой прокрутке, обратный скролл всё возвращает.
+   Где нет scroll-driven animations, долю прокрутки пишет lib/reading.ts */
+@keyframes article-title-out {
+	to {
+		transform: translateY(-24px);
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-in {
+	from {
+		transform: translateY(6px);
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes article-title-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@supports (animation-timeline: scroll()) {
+	/* :root -- чтобы правило перебило основное, даже если минификатор поставит его выше */
+	@media (prefers-reduced-motion: reduce) {
+		:root .article__title {
+			animation-name: article-title-fade-out;
+		}
+
+		:root .article-bar__title {
+			animation-name: article-title-fade-in;
+		}
+	}
+	.article__title {
+		/* Только отдельные свойства: краткую запись animation минификатор склеивает
+		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
+		animation-name: article-title-out;
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: scroll(nearest);
+		animation-range: 0 140px;
+	}
+
+	.article-bar__title {
+		/* Только отдельные свойства: краткую запись animation минификатор склеивает
+		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
+		animation-name: article-title-in;
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: scroll(nearest);
+		animation-range: 80px 160px;
+	}
+}
+
+@supports not (animation-timeline: scroll()) {
+	@media (prefers-reduced-motion: reduce) {
+		:root .article__title,
+		:root .article-bar__title {
+			transform: none;
+		}
+	}
+	.article__title {
+		transform: translateY(calc(var(--title-out, 0) * -24px));
+		opacity: calc(1 - var(--title-out, 0));
+	}
+
+	.article-bar__title {
+		transform: translateY(calc((1 - var(--title-in, 0)) * 6px));
+		opacity: var(--title-in, 0);
+	}
 }
 
 /* Полоса прогресса чтения сверху отдельной страницы */

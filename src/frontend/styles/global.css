@@ -24,7 +24,7 @@
    Классы .light и .dark -- у копии страницы в круге подсмотра темы (theme-peek из kit) */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
-		--bg: #000000;
+		--bg: #161617;
 		--fg: #f5f5f7;
 		--muted: #a1a1a6;
 		--accent: #2997ff;
@@ -39,7 +39,7 @@
 
 :root[data-theme='dark'],
 .dark {
-	--bg: #000000;
+	--bg: #161617;
 	--fg: #f5f5f7;
 	--muted: #a1a1a6;
 	--accent: #2997ff;

@@ -2,7 +2,6 @@
 import Credit from '@aimuzov-projects/infra-site-kit/credit.astro'
 
 import { site } from '#frontend/data/site.ts'
-import { themeSwitchHtml } from '#frontend/lib/theme.ts'
 ---
 
 <footer class="footer">
@@ -11,7 +10,6 @@ import { themeSwitchHtml } from '#frontend/lib/theme.ts'
 			<nav class="footer__nav" aria-label="Разделы">
 				<a href="/">Все травмы</a> · <a href="/about/">О справочнике</a>
 			</nav>
-			<Fragment set:html={themeSwitchHtml()} />
 		</div>
 		<Credit repo={site.repo} />
 	</div>

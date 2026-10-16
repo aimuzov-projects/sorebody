@@ -182,6 +182,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	let radius = 0
 	let radiusTo = 0
+	// Центр проёма тоже доезжает плавно: при смене травмы в зоне проём переползает к ней
+	const center = skin.uniforms.uCenter.value
+	const centerTo = new Vector3()
 	let glowTo = 0
 	let tintTo = 0
 	let last = performance.now()
@@ -224,6 +227,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		last = now
 		radius += (radiusTo - radius) * (1 - Math.exp(-dt * 7))
+		center.lerp(centerTo, 1 - Math.exp(-dt * 6))
+		muscles.uniforms.uCenter.value.copy(center)
 
 		if (Math.abs(radiusTo - radius) < 0.0005) radius = radiusTo
 
@@ -377,19 +382,21 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 			tintTo = points?.length ? 0.55 : 0
 		},
-		dissolve(center: Vec3 | null, radius = 0) {
-			if (center) {
-				skin.uniforms.uCenter.value.set(...center)
-				muscles.uniforms.uCenter.value.set(...center)
+		dissolve(point: Vec3 | null, size = 0) {
+			if (point) {
+				centerTo.set(...point)
+
+				// Проём закрыт -- открываем сразу на месте, а не ведём центр через всё тело
+				if (radius < 0.005) center.copy(centerTo)
 			}
 
-			radiusTo = center ? radius : 0
+			radiusTo = point ? size : 0
 		},
 		/**
-		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях кадра от центра
-		 * (x вправо, y вверх). `view` -- ракурс в градусах: азимут от лица (+Z) к левому боку
-		 * (+X) и угол от вертикали; без него ракурс остаётся текущим. `spring` -- доезд пружиной.
-		 * `null` возвращает камеру как было до наезда.
+		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях экрана от
+		 * центра (x вправо, y вверх); сдвиг кадра задаёт сам наезд. `view` -- ракурс в градусах:
+		 * азимут от лица (+Z) к левому боку (+X) и угол от вертикали; без него ракурс остаётся
+		 * текущим. `spring` -- доезд пружиной. `null` возвращает камеру как было до наезда.
 		 */
 		focus(
 			point: Vec3 | null,
@@ -414,13 +421,17 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			restore ??= now
 			const azimuth = view ? MathUtils.degToRad(view.azimuth) : now.azimuth
 			const polar = view ? MathUtils.degToRad(view.polar) : now.polar
+			// Центр орбиты -- на оси тела, на высоте точки: фигура и в зоне вертится вокруг
+			// своей оси, а не вокруг локтя. В `at` точку ставит сдвиг окна кадра, а не центра.
 			// Сдвиг считаем в осях будущего ракурса, а не текущего: камера ещё повернётся
+			const target = new Vector3(0, point[1], 0)
 			const toCamera = new Vector3().setFromSphericalCoords(1, polar, azimuth)
 			const right = new Vector3(0, 1, 0).cross(toCamera).normalize()
 			const up = toCamera.clone().cross(right)
-			const target = new Vector3(...point)
-				.addScaledVector(right, (-at.x * 2 * halfWidth) / zoom)
-				.addScaledVector(up, (-at.y * 2 * half) / zoom)
+			const off = new Vector3(...point).sub(target)
+
+			shiftTo.x = at.x - (off.dot(right) * zoom) / (2 * halfWidth * shiftTo.s)
+			shiftTo.y = at.y - (off.dot(up) * zoom) / (2 * half * shiftTo.s)
 
 			// OrbitControls зажимает зум в своих пределах на каждом update()
 			controls.maxZoom = Math.max(MAX_ZOOM, zoom)

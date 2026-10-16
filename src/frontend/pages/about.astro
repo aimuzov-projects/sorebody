@@ -1,44 +1,141 @@
 ---
-import Disclaimer from '#frontend/components/disclaimer.astro'
+// src/frontend/pages/about.astro
+import { BookOpen, ChevronLeft, FlaskConical, PersonStanding, Sparkles, Stethoscope } from 'lucide-static'
+
+import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import Base from '#frontend/layouts/base.astro'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+import '#frontend/styles/article.css'
+
+const title = 'О справочнике'
+
+/** Разделы для оглавления сбоку: та же разметка, что строит lib/article-html.ts у статей. */
+const SECTIONS = [
+	{ id: 'method', title: 'Методика', icon: FlaskConical },
+	{ id: 'numbers', title: 'Откуда цифры', icon: BookOpen },
+	{ id: 'ai', title: 'Тексты и иллюстрации', icon: Sparkles },
+	{ id: 'model', title: '3D-модель', icon: PersonStanding },
+	{ id: 'doctor', title: 'Это не консультация', icon: Stethoscope },
+]
+const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 ---
 
-<Base title="О справочнике" description="Как собран Wodcare: источники, методика и ограничения.">
-	<main class="about container">
-		<h1>О справочнике</h1>
-		<p>
-			Список травм и цифры взяты из систематических обзоров и исследований травматизма в кроссфите и
-			функциональном тренинге высокой интенсивности, найденных на PubMed. Главный ориентир — метаанализ
-			<a href={pubmedUrl('35278328')}>Knapik 2022</a>: 28 исследований, 11 089 человек, в среднем 4,3 травмы на
-			1000 часов тренировок.
+<Base {title} description="Как собран Wodcare: источники, методика и ограничения." themeToggle={false}>
+	<div class="reading-progress" aria-hidden="true">
+		<span class="reading-progress__bar"></span>
+	</div>
+	<header class="article-bar">
+		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
+		<p class="article-bar__title" aria-hidden="true">
+			{title}
 		</p>
-		<p>
-			Цифры взяты из аннотаций статей, а большинство исследований — ретроспективные опросы, поэтому оценки частоты
-			сильно расходятся. У каждой цифры в статье есть ссылка на источник.
-		</p>
-		<p>
-			Тексты написаны с помощью ИИ и помечены как черновики, пока их не проверил врач. Иллюстрации сгенерированы
-			нейросетью Nano Banana и проверены на явные анатомические ошибки, но остаются схемами.
-		</p>
-		<p>
-			3D-модель тела на <a href="/">главной</a> собрана из
-			<a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">BodyParts3D</a>, © The Database Center for Life
-			Science, лицензия <a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">CC BY-SA 2.1 JP</a>.
-			Мы упростили и сжали её, изменённая модель распространяется на тех же условиях.
-		</p>
-		<p>
-			Исходный код и тексты — <a href="https://github.com/aimuzov-projects/wodcare">на GitHub</a>.
-		</p>
-		<Disclaimer />
+		<ThemeToggle inline />
+	</header>
+	<main class="article" data-article>
+		<header class="article__hero">
+			<h1 class="article__title">{title}</h1>
+			<p class="article__lead">
+				Как собран Wodcare: откуда взяты травмы и цифры, кто писал тексты и рисовал иллюстрации и чего справка
+				не умеет.
+			</p>
+		</header>
+
+		<div class="article__layout">
+			<nav class="article__toc" aria-label="Разделы страницы" data-toc>
+				<ol class="article__toc-list">
+					{SECTIONS.map((s) => (
+						<li>
+							<a class="article__toc-link" href={`#${s.id}`}>
+								<span class="article__toc-icon" aria-hidden="true" set:html={s.icon} />
+								{s.title}
+							</a>
+						</li>
+					))}
+				</ol>
+			</nav>
+
+			<div class="article__body">
+				<section class="article-section" id="method" aria-labelledby="method-title">
+					<h2 class="article-section__title" id="method-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.method.icon} />
+						{section.method.title}
+					</h2>
+					<p>
+						Список травм собран по систематическим обзорам и исследованиям травматизма в кроссфите и
+						функциональном тренинге высокой интенсивности, найденным на PubMed. Главный ориентир —
+						метаанализ <a href={pubmedUrl('35278328')}>Knapik 2022</a>: 28 исследований, 11 089 человек, в
+						среднем 4,3 травмы на 1000 часов тренировок.
+					</p>
+					<p>
+						Статьи устроены одинаково: что это за травма, как часто она случается в кроссфите, на каких
+						движениях, как её узнать, когда сразу идти к врачу, первые шаги, как адаптировать тренировки и
+						как не получить её снова.
+					</p>
+				</section>
+
+				<section class="article-section" id="numbers" aria-labelledby="numbers-title">
+					<h2 class="article-section__title" id="numbers-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.numbers.icon} />
+						{section.numbers.title}
+					</h2>
+					<p>
+						Цифры взяты из аннотаций статей. Большинство исследований — ретроспективные опросы, поэтому
+						оценки частоты сильно расходятся, и к ним стоит относиться как к порядку величины.
+					</p>
+					<p>
+						У каждой цифры в статье есть сноска: номер ведёт к источнику на PubMed, полный список — в конце
+						статьи.
+					</p>
+				</section>
+
+				<section class="article-section" id="ai" aria-labelledby="ai-title">
+					<h2 class="article-section__title" id="ai-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.ai.icon} />
+						{section.ai.title}
+					</h2>
+					<p>Тексты написаны с помощью ИИ и пока не проверены врачом: все статьи помечены как черновики.</p>
+					<p>
+						Иллюстрации сгенерированы нейросетью Nano Banana и проверены на явные анатомические ошибки, но
+						это схемы: анатомия на них упрощена.
+					</p>
+				</section>
+
+				<section class="article-section" id="model" aria-labelledby="model-title">
+					<h2 class="article-section__title" id="model-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.model.icon} />
+						{section.model.title}
+					</h2>
+					<p>
+						Фигура на <a href="/">главной</a> и на страницах движений собрана из{' '}
+						<a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/">BodyParts3D</a>, © The Database
+						Center for Life Science, лицензия{' '}
+						<a href="https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en">CC BY-SA 2.1 JP</a>. Мы
+						упростили и сжали модель, изменённая версия распространяется на тех же условиях.
+					</p>
+				</section>
+
+				<section class="article-section article-section--urgent" id="doctor" aria-labelledby="doctor-title">
+					<h2 class="article-section__title" id="doctor-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.doctor.icon} />
+						{section.doctor.title}
+					</h2>
+					<p>
+						Справка не заменяет консультацию врача. Иллюстрации сгенерированы нейросетью, анатомия на них
+						упрощена.
+					</p>
+				</section>
+			</div>
+		</div>
 	</main>
 </Base>
 
-<style>
-	.about {
-		display: grid;
-		gap: 16px;
-		max-width: calc(72ch + var(--gutter) * 2);
-		padding-block: var(--section-y);
-	}
-</style>
+<script>
+	import { initBackLink } from '#frontend/lib/back-link.ts'
+	import { initReading } from '#frontend/lib/reading.ts'
+
+	const root = document.querySelector('[data-article]')
+
+	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
+
+	initBackLink()
+</script>

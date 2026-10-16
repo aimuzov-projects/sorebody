@@ -2,8 +2,8 @@
 import { createHash } from 'node:crypto'
 
 import Footer from '#frontend/components/footer.astro'
+import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
-import '#frontend/styles/theme-switch.css'
 import '@aimuzov-projects/infra-site-kit/theme-peek.css'
 import { site } from '#frontend/data/site.ts'
 import { THEME_BOOT } from '#frontend/lib/theme.ts'
@@ -20,9 +20,11 @@ type Props = {
 	bare?: boolean
 	/** Класс на `<body>`: полноэкранной странице нужно задать фон и токены всему документу. */
 	bodyClass?: string
+	/** `false`, если страница ставит переключатель темы сама -- в шапку лонгрида. */
+	themeToggle?: boolean
 }
 
-const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass, themeToggle = true } = Astro.props
 
 /**
  * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
@@ -61,13 +63,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
+		{themeToggle && <ThemeToggle />}
 		<slot />
 		{!bare && <Footer />}
 		<script>
 			import '#frontend/lib/telegram.ts'
-			import { initThemeSwitch } from '#frontend/lib/theme.ts'
+			import { initThemeToggle } from '#frontend/lib/theme.ts'
 
-			initThemeSwitch()
+			initThemeToggle()
 		</script>
 	</body>
 </html>

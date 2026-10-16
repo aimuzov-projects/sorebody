@@ -27,6 +27,7 @@
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
@@ -419,6 +420,15 @@
 		baseLevel = level - 1
 		sync()
 	}
+
+	/** Значок «О справочнике» у названия сайта: подсказка мышью и с клавиатуры, тап просто ведёт на about. */
+	let aboutLink = $state<HTMLAnchorElement>()
+	let aboutTip = $state<HTMLElement>()
+
+	$effect(() => {
+		if (aboutLink && aboutTip)
+			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.index') ?? aboutLink })
+	})
 
 	onMount(() => {
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
@@ -963,8 +973,15 @@
 				<!-- «О справочнике» -- тихий значок у названия; в Mini App это единственный путь на about -->
 				<div class="index__brand-row">
 					<a class="index__brand" href="/">Wodcare</a>
-					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
-						>{@html INFO_DOT}</a
+					<a
+						class="index__about"
+						href="/about/"
+						aria-label="О справочнике"
+						aria-describedby="about-tip"
+						bind:this={aboutLink}>{@html INFO_DOT}</a
+					>
+					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+						>Источники и как сделан справочник</span
 					>
 				</div>
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
@@ -1006,8 +1023,15 @@
 			<header class="index__head">
 				<div class="index__brand-row">
 					<p class="index__brand">Wodcare</p>
-					<a class="index__about" href="/about/" aria-label="О справочнике" title="О справочнике"
-						>{@html INFO_DOT}</a
+					<a
+						class="index__about"
+						href="/about/"
+						aria-label="О справочнике"
+						aria-describedby="about-tip"
+						bind:this={aboutLink}>{@html INFO_DOT}</a
+					>
+					<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
+						>Источники и как сделан справочник</span
 					>
 				</div>
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>

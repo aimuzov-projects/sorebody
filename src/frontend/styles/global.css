@@ -110,3 +110,63 @@ img {
 	padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	padding-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
 }
+
+/* Подсказка к значку (lib/tip.ts): без рамки -- фон чуть светлее страницы и мягкая тень вместо
+   края. Лежит в верхнем слое (popover), но наследует от места в разметке, например от
+   заголовка статьи, -- шрифт задаём заново */
+.tip {
+	position: fixed;
+	inset: auto;
+	max-width: min(320px, calc(100vw - 32px));
+	margin: 0;
+	padding: 10px 14px;
+	border: 0;
+	border-radius: 14px;
+	font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--fg);
+	letter-spacing: -0.01em;
+	white-space: normal;
+	background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+	box-shadow: 0 10px 36px rgb(0 0 0 / 18%);
+	animation: bubble-in 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+
+	@media (prefers-reduced-motion: reduce) {
+		animation-name: bubble-fade;
+	}
+
+	/* Короткая подсказка к значку у края экрана: ниже ростом, чтобы встать над ним */
+	&--compact {
+		padding: 6px 12px;
+		border-radius: 12px;
+		font-size: 14px;
+		white-space: nowrap;
+	}
+
+	/* Под значком (сверху не хватило места) -- выезжает сверху вниз, над ним -- снизу вверх */
+	&[data-side='bottom'] {
+		animation-name: bubble-in-below;
+	}
+}
+
+@keyframes bubble-in {
+	from {
+		transform: translateY(4px);
+		opacity: 0;
+	}
+}
+
+@keyframes bubble-in-below {
+	from {
+		transform: translateY(-4px);
+		opacity: 0;
+	}
+}
+
+@keyframes bubble-fade {
+	from {
+		opacity: 0;
+	}
+}

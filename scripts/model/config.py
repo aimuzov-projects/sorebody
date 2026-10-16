@@ -1,8 +1,10 @@
 # Собирает config.json для build.mjs из списков элементов BodyParts3D (IS-A дерево).
-# usage: python3 -I config.py <dl dir> <obj dir> <out.json> <muscle ratio> <bone ratio> [--skin]
+# usage: python3 -I config.py <dl dir> <obj dir> <out.json> <muscle ratio> <bone ratio> [--skin] [--muscles <dir>]
+# --muscles -- выход remesh.py: оттуда build.mjs берёт мышцы, остальное из obj dir
 import json, sys, collections, glob
 
 dl, obj_dir, out, m_ratio, b_ratio, *flags = sys.argv[1:]
+muscle_dirs = [flags[flags.index('--muscles') + 1]] if '--muscles' in flags else []
 
 by = collections.defaultdict(set)
 with open(f'{dl}/isa_element_parts.txt') as fh:
@@ -62,5 +64,5 @@ groups = [
 if '--skin' in flags:
     groups.append({'name': 'skin', 'files': sorted(by['skin'] & set(names)), 'ratio': 0.3, 'error': 0.01})
 
-json.dump({'objDirs': [obj_dir], 'groups': groups, 'anchors': anchors}, open(out, 'w'), indent=1)
+json.dump({'objDirs': [*muscle_dirs, obj_dir], 'groups': groups, 'anchors': anchors}, open(out, 'w'), indent=1)
 print({g['name']: len(g['files']) for g in groups})

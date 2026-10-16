@@ -291,9 +291,17 @@ await doc.transform(weld({}))
 for (const mesh of doc.getRoot().listMeshes()) {
 	const { ratio, error, parts } = mesh.getExtras()
 
+	// Воксельные мышцы (remesh.py) без RegularizeLight упрощаются с зарубками
+	const simplifier = parts
+		? {
+				...MeshoptSimplifier,
+				simplify: (...a) => MeshoptSimplifier.simplify(...a.slice(0, 5), [...a[5], 'RegularizeLight']),
+			}
+		: MeshoptSimplifier
+
 	for (const prim of mesh.listPrimitives()) {
 		// ratio 1 -- исходная сетка без упрощения
-		if (ratio < 1) simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio, error, lockBorder: false })
+		if (ratio < 1) simplifyPrimitive(prim, { simplifier, ratio, error, lockBorder: false })
 
 		console.log(mesh.getName(), 'tris after', prim.getIndices().getCount() / 3)
 	}

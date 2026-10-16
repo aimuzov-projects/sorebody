@@ -1,12 +1,19 @@
 # Собирает config.json детальных кусков зон для build.mjs: слои BodyParts3D (кости, мышцы, хрящи,
 # артерии, вены) в сфере вокруг точки зоны, по куску на точку. Нервы -- отдельным куском
 # `<зона>-<сторона>.nerves`, его слабые устройства не грузят.
-# usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio> [<z-anatomy dir>]
+# usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio> [<z-anatomy dir>] [--muscles <dir> <ratio>]
 # z-anatomy dir -- выход z_align.py: связки, мениски, губы, капсулы и нервы поверх BP3D
 # offset -- сдвиг из лога сборки фигуры (строка bounds ... offset), чтобы кусок лёг в её координаты
+# --muscles -- выход remesh.py и доля треугольников мышц BP3D: воксельные сетки плотнее исходных
 import json, sys, collections, glob, os, re
 
-dl, obj_dir, out_dir, offset, ratio, *extra = sys.argv[1:]
+args = sys.argv[1:]
+muscle_dirs, muscle_ratio = [], None
+if '--muscles' in args:
+    k = args.index('--muscles')
+    muscle_dirs, muscle_ratio = [args[k + 1]], float(args[k + 2])
+    del args[k:k + 3]
+dl, obj_dir, out_dir, offset, ratio, *extra = args
 off = [float(v) for v in offset.split(',')]
 ratio = float(ratio)
 
@@ -100,8 +107,9 @@ for zone, (c, r) in ZONES.items():
             near = sorted(f for f in files if f in boxes and touches(boxes[f], center, radius))
             if near:
                 # Мышцы помечаются по вершинам: номер мышцы и направление волокон (см. build.mjs)
-                groups.append({'name': name, 'files': near, 'ratio': ratio * RATIO.get(zone, 1), 'error': 0.005, 'parts': name == 'muscles'})
-        base = {'objDirs': [obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},
+                share = muscle_ratio if name == 'muscles' and muscle_ratio else ratio
+                groups.append({'name': name, 'files': near, 'ratio': share * RATIO.get(zone, 1), 'error': 0.005, 'parts': name == 'muscles'})
+        base = {'objDirs': [*muscle_dirs, obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},
                 'skinClip': {'skin': skin[0], 'groups': ['ligaments', 'nerves']}}
         for suffix, part in (('', [g for g in groups if g['name'] != 'nerves']), ('.nerves', [g for g in groups if g['name'] == 'nerves'])):
             if part:

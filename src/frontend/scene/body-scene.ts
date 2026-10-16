@@ -503,8 +503,12 @@ export async function createBodyScene(
 		 * Проём в коже вокруг точки на `size`; `null` закрывает. `depth` -- травма глубже мышц:
 		 * мышцы у точки расходятся сферой поменьше, под ними связки, кости, сосуды и нервы.
 		 * `peeled` -- та же сфера снимает только мышцы над подсвеченными (см. highlight).
+		 * `midline` -- проём не переходит середину тела, нужен паху.
 		 */
-		dissolve(point: Vec3 | null, size = 0, depth: 'muscle' | 'deep' = 'muscle', peeled = false) {
+		dissolve(point: Vec3 | null, size = 0, depth: 'muscle' | 'deep' = 'muscle', peeled = false, midline = false) {
+			skin.uniforms.uMidline.value = midline ? 1 : 0
+			muscles.uniforms.uMidline.value = midline ? 1 : 0
+
 			if (point) {
 				centerTo.set(...point)
 

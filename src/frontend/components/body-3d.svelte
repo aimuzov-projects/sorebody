@@ -682,7 +682,14 @@
 		// нерв) раскрывает их малой сферой у места травмы, мышечная -- подсвечивает свои мышцы
 		const layer = accent ? injuryLayer(accent.slug) : null
 
-		body.dissolve(injury?.position ?? point.position, open.zone.radius, layer?.depth, layer?.peel)
+		body.dissolve(
+			injury?.position ?? point.position,
+			open.zone.radius,
+			layer?.depth,
+			layer?.peel,
+			open.zone.slug === 'hip-groin',
+		)
+
 		body.highlight(layer?.depth === 'muscle' ? (layer.muscles ?? null) : null)
 		// Связки, мениски, сосуды и нервы зоны -- отдельным куском, только когда зона открыта
 		body.showDetail(open.zone === whole ? null : open.zone.slug, point.position, open.zone.radius)
@@ -2111,7 +2118,6 @@
 	   .footer -- те же токены, что у шапки. Мимо ссылок мышь проходит к сцене: модель можно
 	   крутить и под подвалом */
 	.scene-footer {
-
 		/* Подложка как у шапки сцены (site-header.svelte), только зеркально: полупрозрачный фон
 		   и размытие гаснут вверх по smoothstep, мягкий край уходит выше строки подвала */
 		--footer-tail: 56px;

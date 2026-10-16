@@ -30,6 +30,8 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 	const uniforms = {
 		uCenter: { value: new Vector3() },
 		uRadius: { value: 0 },
+		// 1 -- проём не переходит середину тела (пах), 0 -- обычная сфера
+		uMidline: { value: 0 },
 		// Сдвиг внутрь по нормали в единицах меша: после упрощения мышцы местами пробивают кожу
 		uInset: { value: 0 },
 		// Срез у края проёма: снаружи -- узкая полоса `front`, на изнанке -- более широкая `back`.
@@ -101,6 +103,7 @@ vFiber = _fiber;
 				`#include <common>
 uniform vec3 uCenter;
 uniform float uRadius;
+uniform float uMidline;
 uniform vec3 uRim;
 uniform float uRimWidth;
 uniform vec3 uRimInner;
@@ -143,9 +146,10 @@ float n = snoise(vDissolvePos * 4.0) * 0.7 + snoise(vDissolvePos * 11.0) * 0.3;
 if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.007 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {
 	float d = distance(vDissolvePos, uCenter) - uRadius + n * 0.007 * smoothstep(0.0, 0.05, uRadius);
-	// Проём сбоку от середины тела не переходит за неё: сфера паха иначе вскрывала и вторую
-	// ногу с пахом. Пересечение со слоем x > 3 см на стороне зоны, край считается так же
-	if (abs(uCenter.x) > 0.05) d = max(d, 0.03 - vDissolvePos.x * sign(uCenter.x) + n * 0.004);
+	// Проём паха не переходит середину тела: сфера иначе вскрывала и вторую ногу. Пересечение
+	// со слоем x > 3 см на стороне зоны, край считается так же. Только где попросили: у плеча
+	// такая граница резала грудь прямой линией
+	if (uMidline > 0.5 && abs(uCenter.x) > 0.05) d = max(d, 0.03 - vDissolvePos.x * sign(uCenter.x) + n * 0.004);
 	if (d < 0.0 && !kept) discard;
 	if (!kept) dissolveEdge = d / (gl_FrontFacing ? uRimWidth : uRimBackWidth);
 }`,

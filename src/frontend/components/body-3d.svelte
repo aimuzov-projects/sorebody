@@ -1191,7 +1191,7 @@
 					<button class="zone__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 						><span class="zone__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 					>
-					<h2 class="zone__title">{open.zone.label}</h2>
+					<h2 class="zone__title" style:--chars={open.zone.label.length}>{open.zone.label}</h2>
 				</div>
 				{#if filtering}
 					<div class="zone__filters">
@@ -2315,6 +2315,7 @@
 
 		/* «Назад» -- стрелка в строке заголовка, без подписи: место на шапке дороже слова */
 		&__heading {
+			container-type: inline-size;
 			display: flex;
 			gap: 6px;
 			align-items: center;
@@ -2367,7 +2368,10 @@
 
 		&__title {
 			margin: 0;
-			font-size: clamp(32px, 4vw, 48px);
+			/* Длинное название зоны («Голеностоп и стопа») мельчает, чтобы встать в одну строку
+			   рядом со стрелкой: средний знак этого жирного начертания -- около 0,56 em.
+			   Короткие остаются крупными, перенос остаётся запасным вариантом */
+			font-size: min(clamp(32px, 4vw, 48px), calc((100cqi - 48px) / (var(--chars, 1) * 0.56)));
 			font-weight: 700;
 			line-height: 1.08;
 			letter-spacing: -0.03em;

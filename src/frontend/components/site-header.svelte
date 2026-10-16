@@ -57,8 +57,8 @@
 			   с резким краем оно читалось полосой поверх сцены */
 			--blur-from: 40%;
 			--blur-fade: calc(100% - var(--blur-from));
-			-webkit-backdrop-filter: blur(12px);
-			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(6px);
+			backdrop-filter: blur(6px);
 
 			mask-image: linear-gradient(
 				to bottom,

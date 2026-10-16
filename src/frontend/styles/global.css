@@ -16,11 +16,12 @@
 	--common: #0b7285;
 	--rare: #8944ab;
 
-	/* Переключатель темы на всех страницах в одной точке окна: правый верхний угол, по
-	   вертикали на линии шапки статьи (её верхнее поле 12px, строка 40px). Шапка статьи
-	   оставляет справа место под него: --theme-toggle-room */
+	/* Переключатель темы на всех страницах в одной точке: по вертикали на строке шапки (её
+	   верхнее поле 12px, строка 40px), по горизонтали правый край значка -- на правом крае
+	   колонки текста (--frame-right). Значок 22px в кнопке 40px, отсюда 9px. На узком экране
+	   не ближе 16px к краю. Шапка оставляет справа место под него: --theme-toggle-room */
 	--theme-toggle-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
-	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px));
+	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px), var(--frame-right) - 9px);
 	--theme-toggle-room: calc(var(--theme-toggle-right) + 40px + 8px);
 
 	/* Каркас страниц. Левый край колонки -- одна вертикаль везде: индекс сцены, оглавление
@@ -29,6 +30,10 @@
 	   окна или прокручиваемого контейнера статьи */
 	--frame-pad: 24px;
 	--frame-x: max(var(--frame-pad), env(safe-area-inset-left, 0px), (100% - 1052px) / 2 + 24px);
+	/* Правый край колонки текста, симметрично --frame-x: на широком экране текст стоит справа
+	   от оглавления и кончается у края той же сетки 1052px. Без оглавления (600-1100px) текст
+	   -- колонка 680px по центру */
+	--frame-right: max(var(--frame-pad), env(safe-area-inset-right, 0px), (100% - 1052px) / 2 + 24px);
 	/* Строка шапки: «‹» и заголовок или логотип, справа -- переключатель темы */
 	--header-row: 40px;
 
@@ -41,6 +46,12 @@
 @media (width < 600px) {
 	:root {
 		--frame-pad: 20px;
+	}
+}
+
+@media (600px <= width < 1100px) {
+	:root {
+		--frame-right: max(var(--frame-pad), env(safe-area-inset-right, 0px), (100% - 680px) / 2);
 	}
 }
 

@@ -34,13 +34,8 @@
 		/* body -- flex-колонка: ширину задаём явно, иначе шапка сжалась бы по содержимому */
 		width: 100%;
 		min-height: calc(var(--theme-toggle-top) + var(--header-row) + var(--header-fade));
-		padding: var(--theme-toggle-top) max(var(--theme-toggle-room), (100% - 1052px) / 2 + 24px) var(--header-fade)
-			var(--frame-x);
+		padding: var(--theme-toggle-top) var(--theme-toggle-room) var(--header-fade) var(--frame-x);
 		background: linear-gradient(to bottom, var(--site-header-bg, var(--bg)) 62%, transparent);
-
-		@media (width < 600px) {
-			padding-right: var(--theme-toggle-room);
-		}
 	}
 
 	.site-header--floating {

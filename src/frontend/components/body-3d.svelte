@@ -756,7 +756,7 @@
 			<input
 				class="index__input"
 				type="search"
-				placeholder="ПКС, плечо, рабдо…"
+				placeholder="Травма или часть тела"
 				aria-label="Поиск по травмам"
 				bind:value={query}
 			/>
@@ -1288,32 +1288,40 @@
 		&__filters {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 8px 20px;
-			align-items: baseline;
+			gap: 12px 20px;
+			align-items: center;
 		}
 
-		/* Частота: слова через точку, выбранное -- основным цветом и жирнее */
+		/* Частота -- переключатель из трёх положений: общая подложка без рамки, выбранное
+		   положение -- залитая таблетка, его видно сразу, а не по жирности шрифта */
 		&__freq {
-			display: flex;
-			gap: 14px;
+			display: inline-flex;
+			gap: 2px;
+			padding: 3px;
+			border-radius: 999px;
+			background: var(--a-fill);
 		}
 
 		&__chip {
 			cursor: pointer;
-			padding: 2px 0;
+			padding: 5px 14px;
 			border: 0;
+			border-radius: 999px;
 			font: inherit;
-			font-size: 16px;
+			font-size: 15px;
 			color: var(--a-fg2);
-			background: none;
-			transition: color 0.3s var(--a-ease);
+			background: transparent;
+			transition:
+				color 0.3s var(--a-ease),
+				background 0.3s var(--a-ease);
 
 			&[aria-pressed='true'] {
 				font-weight: 600;
-				color: var(--a-fg);
+				color: var(--a-bg);
+				background: var(--a-fg);
 			}
 
-			&:hover {
+			&:hover:not([aria-pressed='true']) {
 				color: var(--a-fg);
 			}
 

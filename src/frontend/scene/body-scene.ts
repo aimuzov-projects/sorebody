@@ -182,6 +182,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	let radius = 0
 	let radiusTo = 0
+	// Центр проёма тоже доезжает плавно: при смене травмы в зоне проём переползает к ней
+	const center = skin.uniforms.uCenter.value
+	const centerTo = new Vector3()
 	let glowTo = 0
 	let tintTo = 0
 	let last = performance.now()
@@ -224,6 +227,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		last = now
 		radius += (radiusTo - radius) * (1 - Math.exp(-dt * 7))
+		center.lerp(centerTo, 1 - Math.exp(-dt * 6))
+		muscles.uniforms.uCenter.value.copy(center)
 
 		if (Math.abs(radiusTo - radius) < 0.0005) radius = radiusTo
 
@@ -377,13 +382,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 			tintTo = points?.length ? 0.55 : 0
 		},
-		dissolve(center: Vec3 | null, radius = 0) {
-			if (center) {
-				skin.uniforms.uCenter.value.set(...center)
-				muscles.uniforms.uCenter.value.set(...center)
+		dissolve(point: Vec3 | null, size = 0) {
+			if (point) {
+				centerTo.set(...point)
+
+				// Проём закрыт -- открываем сразу на месте, а не ведём центр через всё тело
+				if (radius < 0.005) center.copy(centerTo)
 			}
 
-			radiusTo = center ? radius : 0
+			radiusTo = point ? size : 0
 		},
 		/**
 		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях экрана от

@@ -601,13 +601,17 @@
 		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? 0.12 : -0.12, y: 0 }
 		const zoom = clamp(0.3 / open.zone.radius, 1, 2.4)
 
+		const injury = accent ? injuryFocus(open.zone, open.index, accent.slug) : null
+
 		body.frame(0, 0)
-		body.dissolve(point.position, open.zone.radius)
+		// Место травмы бывает у края зоны или за ним (широчайшая, задняя поверхность бедра):
+		// проём того же размера переезжает к нему: под точкой видно, на что она указывает
+		body.dissolve(injury?.position ?? point.position, open.zone.radius)
 		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
 		body.controls.autoRotate = false
 
-		// При reduced motion камера не ездит за строками: акцент только на маркере
-		const target = accent && !reduceMotion ? injuryFocus(open.zone, open.index, accent.slug) : null
+		// При reduced motion камера не ездит за строками: акцент только на маркере и проёме
+		const target = reduceMotion ? null : injury
 
 		// На телефоне зона над списком и под шапкой: ближе 3,2 она уже заезжает под заголовок
 		const maxZoom = open.side === 'bottom' ? 3.2 : 4.6

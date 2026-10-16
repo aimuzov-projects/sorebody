@@ -1,5 +1,6 @@
 import {
 	AmbientLight,
+	Box3,
 	DirectionalLight,
 	HemisphereLight,
 	MathUtils,
@@ -20,16 +21,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 import { createDetail, DETAIL_REACH, detailKey, partIds } from './detail.ts'
 import { createDissolveMaterial } from './dissolve.ts'
+import { AZIMUTH_DEG, FRAME, NARROW, POLAR_DEG, TARGET_Y } from './frame.ts'
 
 type Vec3 = [number, number, number]
 
-/** Высота кадра в метрах модели: фигура 1,72 м плюс поля. */
-const FRAME = 2.0
-const TARGET = new Vector3(0, 0.9, 0)
+const TARGET = new Vector3(0, TARGET_Y, 0)
 /** Предел зума колёсиком и щипком: ближе фигура заходит на индекс слева. Наезд на зону и травму его поднимает. */
 const MAX_ZOOM = 2.6
-/** Наклон камеры главной: чуть сверху, как у продуктового снимка. */
-const POLAR = MathUtils.degToRad(73)
+const POLAR = MathUtils.degToRad(POLAR_DEG)
 /** Ракурсы зон по наклону лежат в этих пределах; ниже горизонта камера не опускается. */
 const POLAR_RANGE = [MathUtils.degToRad(50), MathUtils.degToRad(80)] as const
 
@@ -54,7 +53,8 @@ export async function createBodyScene(
 	const scene = new Scene()
 	const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 20)
 
-	camera.position.set(2.6, 2.2, 3.4)
+	// Стартовый ракурс -- из frame.ts: по тем же числам до загрузки встаёт постер фигуры
+	camera.position.setFromSphericalCoords(5, POLAR, MathUtils.degToRad(AZIMUTH_DEG)).add(TARGET)
 
 	// Студийный свет продуктового рендера: мягкий верхний, ключ спереди-слева, заполняющий
 	// справа и контровой сзади, чтобы силуэт отделялся от фона
@@ -130,6 +130,11 @@ export async function createBodyScene(
 
 	scene.add(gltf.scene)
 
+	// Коробка фигуры вместе с тенью на полу: по ней скрипт режет постер, а страница его ставит
+	const bounds = new Box3()
+		.setFromObject(gltf.scene)
+		.union(new Box3(new Vector3(-0.45, 0, -0.3), new Vector3(0.45, 0, 0.3)))
+
 	// Слабый GPU (см. adaptPixelRatio) не получает нервов в детальных кусках зон
 	let slow = false
 	const detail = createDetail({
@@ -165,7 +170,7 @@ export async function createBodyScene(
 		const aspect = w / h
 
 		// В узком кадре фигура упирается в ширину, а не в высоту
-		half = aspect < 0.62 ? (FRAME * 0.62) / aspect / 2 : FRAME / 2
+		half = aspect < NARROW ? (FRAME * NARROW) / aspect / 2 : FRAME / 2
 		halfWidth = half * aspect
 		applyFrame()
 	}
@@ -435,6 +440,8 @@ export async function createBodyScene(
 	renderer.setAnimationLoop(loop)
 
 	return {
+		/** Коробка фигуры с тенью, метры модели (scripts/poster). */
+		bounds: { min: bounds.min.toArray(), max: bounds.max.toArray() },
 		resize,
 		/** Заранее загрузить детальный кусок зоны (наведение на строку или точку). */
 		prefetchDetail(slug: string, point: Vec3) {

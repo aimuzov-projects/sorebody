@@ -32,6 +32,8 @@
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
+	import { homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
+	import poster from '#frontend/scene/poster.json'
 	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
@@ -255,11 +257,21 @@
 	 * до первого кадра их координаты ещё не посчитаны и они стояли в левом верхнем углу.
 	 */
 	let live = $state(false)
-	/** Доля скачанного body.glb, если сервер сказал размер; иначе полосы нет. */
-	let progress = $state<number | null>(null)
-	/** Силуэт ещё в DOM: после появления фигуры он гаснет и через полсекунды уходит. */
-	let skeleton = $state(true)
-	const silhouetteId = $props.id()
+	/**
+	 * Постер -- картинка фигуры из стартового кадра (scripts/poster). До загрузки модели он
+	 * стоит ровно там, где появится фигура: место считается по тем же числам камеры. Нет, если
+	 * адрес сразу открывает зону или статью: там первый кадр другой.
+	 */
+	let posterRect = $state<{ left: number; top: number; width: number; height: number } | null>(null)
+	/** Постер ещё в DOM: после первого кадра он гаснет и уходит. */
+	let posterShown = $state(true)
+
+	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
+	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
+
+	function placePoster() {
+		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, homeShift(innerWidth))
+	}
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
 	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -491,6 +503,13 @@
 			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
 
 		baseLevel = parseHash().level
+
+		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
+		if (!location.hash) {
+			placePoster()
+			window.addEventListener('resize', placePoster)
+		}
+
 		sync()
 		window.addEventListener('popstate', sync)
 		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
@@ -501,7 +520,7 @@
 		let fpsFrom = performance.now()
 		const mod = import('#frontend/scene/body-scene.ts')
 		const ready = mod.then(async ({ createBodyScene }) => {
-			const scene = await createBodyScene(canvas, modelUrl, (share) => (progress = share))
+			const scene = await createBodyScene(canvas, modelUrl)
 
 			if (disposed) return scene.dispose()
 
@@ -514,7 +533,14 @@
 				// Первый кадр с готовой камерой: точки уже на местах, можно показывать
 				if (status === 'ready' && !live) {
 					live = true
-					setTimeout(() => (skeleton = false), 700)
+
+					// Рендер постера (scripts/poster): фигура замирает в стартовом кадре
+					if (posterMode) {
+						scene.controls.autoRotate = false
+						Object.assign(window, { posterBounds: scene.bounds })
+					}
+
+					setTimeout(() => (posterShown = false), 400)
 				}
 
 				if (showFps) {
@@ -555,6 +581,8 @@
 		visibility.observe(canvas)
 
 		return () => {
+			window.removeEventListener('resize', placePoster)
+
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
 			window.removeEventListener('popstate', sync)
@@ -765,8 +793,9 @@
 	function homeFrame(instant = false) {
 		if (!body || open) return
 
-		if (wrap.clientWidth < 700) body.frame(0, 0.27, 1.9, instant)
-		else body.frame(0.17, 0, 1, instant)
+		const { x, y, s } = posterMode ? POSTER_SHIFT : homeShift(wrap.clientWidth)
+
+		body.frame(x, y, s, instant)
 	}
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
@@ -982,52 +1011,20 @@
 >
 	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
-	<!-- Пока грузится модель -- силуэт там, где встанет фигура, с медленным бликом -->
-	{#if skeleton && status !== 'error'}
-		<div class="body3d__skeleton" class:body3d__skeleton--out={live} aria-hidden="true">
-			<svg class="body3d__silhouette" viewBox="0 0 100 220">
-				<defs>
-					<clipPath id="{silhouetteId}-body">
-						<ellipse cx="50" cy="15" rx="8.5" ry="11" />
-						<rect x="45.5" y="23" width="9" height="12" rx="3" />
-						<path d="M31 42 Q31 33 41 32 L59 32 Q69 33 69 42 L66 72 Q65 98 64 112 L36 112 Q35 98 34 72 Z" />
-						<rect x="-4" y="0" width="8" height="78" rx="4" transform="translate(33 37) rotate(9)" />
-						<rect x="-4" y="0" width="8" height="78" rx="4" transform="translate(67 37) rotate(-9)" />
-						<rect x="-6.5" y="0" width="13" height="106" rx="6.5" transform="translate(43 104) rotate(2)" />
-						<rect
-							x="-6.5"
-							y="0"
-							width="13"
-							height="106"
-							rx="6.5"
-							transform="translate(57 104) rotate(-2)"
-						/>
-					</clipPath>
-					<linearGradient id="{silhouetteId}-shine" x1="0" x2="1" y1="0" y2="0">
-						<stop offset="0" stop-color="var(--a-fg)" stop-opacity="0" />
-						<stop offset="0.5" stop-color="var(--a-fg)" stop-opacity="0.07" />
-						<stop offset="1" stop-color="var(--a-fg)" stop-opacity="0" />
-					</linearGradient>
-					<!-- Мягкий край: силуэт -- намёк на фигуру, а не чёткая пиктограмма -->
-					<filter id="{silhouetteId}-soft"><feGaussianBlur stdDeviation="1.6" /></filter>
-				</defs>
-				<!-- Размытие снаружи обрезки: иначе clip-path срезал бы мягкий край -->
-				<g filter="url(#{silhouetteId}-soft)">
-					<g clip-path="url(#{silhouetteId}-body)">
-						<rect class="body3d__silhouette-fill" width="100" height="220" />
-						<rect
-							class="body3d__silhouette-shine"
-							width="60"
-							height="220"
-							fill="url(#{silhouetteId}-shine)"
-						/>
-					</g>
-				</g>
-			</svg>
-			{#if progress !== null}
-				<span class="body3d__progress"><span class="body3d__progress-bar" style:--p={progress}></span></span>
-			{/if}
-		</div>
+	<!-- Пока грузится модель, на месте фигуры -- её постер; с первым кадром он уступает канвасу -->
+	{#if posterShown && posterRect && status !== 'error'}
+		<picture class="body3d__poster" class:body3d__poster--out={live} aria-hidden="true">
+			<source srcset="/model/poster.webp" type="image/webp" />
+			<img
+				class="body3d__poster-image"
+				src="/model/poster.png"
+				alt=""
+				style:left="{posterRect.left}px"
+				style:top="{posterRect.top}px"
+				style:width="{posterRect.width}px"
+				style:height="{posterRect.height}px"
+			/>
+		</picture>
 	{/if}
 
 	{#if status === 'error' && !open}
@@ -1321,7 +1318,7 @@
 			width: 100%;
 			height: 100%;
 			opacity: 0;
-			transition: opacity 0.6s var(--a-ease);
+			transition: opacity 0.3s var(--a-ease);
 
 			&:active {
 				cursor: grabbing;
@@ -1344,67 +1341,21 @@
 			display: none;
 		}
 
-		/* Силуэт там же, где встанет фигура: правее индекса, на телефоне выше нижней панели */
-		&__skeleton {
+		/* Постер стоит поверх канваса, пока тот прозрачный, и гаснет вместе с его проявлением */
+		&__poster {
 			pointer-events: none;
 			position: absolute;
-			top: 4dvh;
-			bottom: 4dvh;
-			left: 67%;
-			transform: translateX(-50%);
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			transition: opacity 0.6s var(--a-ease);
-
-			@media (width < 700px) {
-				top: 6dvh;
-				bottom: auto;
-				left: 50%;
-				height: 40dvh;
-			}
+			inset: 0;
+			transition: opacity 0.3s var(--a-ease);
 
 			&--out {
 				opacity: 0;
 			}
 		}
 
-		/* Силуэт занимает всё, что осталось над полосой загрузки */
-		&__silhouette {
-			flex: 1;
-			min-height: 0;
-		}
-
-		&__silhouette-fill {
-			fill: color-mix(in srgb, var(--a-fg) 6%, transparent);
-		}
-
-		&__silhouette-shine {
-			animation: silhouette-shine 1.8s ease-in-out infinite;
-
-			@media (--reduced-motion) {
-				opacity: 0;
-				animation: none;
-			}
-		}
-
-		&__progress {
-			overflow: hidden;
-			flex: none;
-			width: 64px;
-			height: 2px;
-			margin-top: 12px;
-			border-radius: 1px;
-			background: color-mix(in srgb, var(--a-fg) 8%, transparent);
-		}
-
-		&__progress-bar {
-			transform-origin: left;
-			transform: scaleX(var(--p));
-			display: block;
-			height: 100%;
-			background: var(--a-blue);
-			transition: transform 0.2s linear;
+		&__poster-image {
+			position: absolute;
+			max-width: none;
 		}
 
 		&--open &__spot {
@@ -1443,7 +1394,7 @@
 			background: none;
 			transition: opacity 0.4s var(--a-ease);
 			/* Появляются каскадом, когда фигура уже на месте */
-			animation: spot-in 0.5s var(--a-ease) calc(var(--i, 0) * 40ms) both;
+			animation: spot-in 0.5s var(--a-ease) calc(300ms + var(--i, 0) * 40ms) both;
 
 			/* Навели на другую зону в индексе: эта точка отступает на второй план.
 			   Выше правил скрытия, чтобы скрытая точка не проступала */
@@ -2689,16 +2640,6 @@
 			@media (--reduced-motion) {
 				transition: none;
 			}
-		}
-	}
-
-	@keyframes silhouette-shine {
-		from {
-			transform: translateX(-60px);
-		}
-
-		to {
-			transform: translateX(100px);
 		}
 	}
 

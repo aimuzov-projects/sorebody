@@ -26,6 +26,7 @@
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
@@ -859,7 +860,8 @@
 	zoneLabel: string,
 	onAccent: (on: boolean, pointer: boolean) => void,
 )}
-	{@const [head, tail] = splitLastWord(injury.title)}
+	<!-- Без другого названия в скобках: его показывает статья, а поиск ищет по полному -->
+	{@const [head, tail] = splitLastWord(splitTitle(injury.title).name)}
 	<li class="zone__row" style:--i={i}>
 		<a
 			class="zone__item"
@@ -1018,14 +1020,16 @@
 			{#if query.trim()}
 				<ul class="index__results" aria-live="polite">
 					{#each results as { zone, injury } (injury.slug)}
+						{@const { name, alias } = splitTitle(injury.title)}
 						<li>
 							<a
 								class="index__result"
 								href="/injuries/{injury.slug}/"
 								onclick={(event) => onItemClick(event, injury)}
 							>
-								<span class="index__result-title">{injury.title}</span>
-								<span class="index__result-zone">{zone.label}</span>
+								<span class="index__result-title">{name}</span>
+								<span class="index__result-zone">{alias ? `${zone.label} · ${alias}` : zone.label}</span
+								>
 							</a>
 						</li>
 					{:else}
@@ -1126,7 +1130,7 @@
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
 			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css -->
-			<p class="article-bar__title" aria-hidden="true">{article.title}</p>
+			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
 		</div>
 		{#if articleStatus === 'loading'}
 			<p class="reader__status">Загружаем статью…</p>

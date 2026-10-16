@@ -1,3 +1,5 @@
+import { initAliasTip } from './alias-tip.ts'
+
 /**
  * Чтение лонгрида: полоса прогресса сверху и активный раздел в оглавлении. Одно и то же
  * для отдельной страницы статьи (скроллится окно) и статьи поверх модели на главной
@@ -53,7 +55,10 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 
 	root.addEventListener('click', onClick)
 
+	const stopAliasTip = initAliasTip(root, scroller)
+
 	return () => {
+		stopAliasTip()
 		scroller.removeEventListener('scroll', onScroll)
 		root.removeEventListener('click', onClick)
 		cancelAnimationFrame(frame)

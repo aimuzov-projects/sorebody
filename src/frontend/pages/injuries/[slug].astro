@@ -1,7 +1,7 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
 import { getCollection } from 'astro:content'
-import { ChevronLeft, Diamond, ExternalLink } from 'lucide-static'
+import { ChevronLeft, Diamond, ExternalLink, Info } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
@@ -10,6 +10,7 @@ import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
 export async function getStaticPaths() {
@@ -23,6 +24,10 @@ const { data } = entry
 const { html, sections } = enhanceArticle(entry.rendered?.html ?? '', data.sources)
 const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(m.slug))
 const [image] = data.images
+// Другое название из скобок в конце -- не текстом в заголовке, а значком со всплывашкой
+const { name, alias } = splitTitle(data.title)
+const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
+const nameTail = name.slice(nameHead.length)
 ---
 
 <Base title={data.title} description={data.summary} themeToggle={false}>
@@ -32,7 +37,7 @@ const [image] = data.images
 	<header class="article-bar">
 		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
 		<p class="article-bar__title" aria-hidden="true">
-			{data.title}
+			{name}
 		</p>
 		<ThemeToggle inline />
 	</header>
@@ -49,7 +54,31 @@ const [image] = data.images
 					</span>
 				)}
 			</p>
-			<h1 class="article__title">{data.title}</h1>
+			<h1 class="article__title">
+				{alias ? (
+					<>
+						{nameHead}
+						{/* Значок склеен с последним словом: не уезжает один на новую строку */}
+						<span class="article__title-tail">
+							{nameTail}
+							<button
+								class="article__alias"
+								type="button"
+								aria-label={`Другие названия: ${alias}`}
+								aria-expanded="false"
+								aria-controls="article-alias"
+								data-alias
+								set:html={Info}
+							/>
+						</span>
+						<span class="article__alias-tip" id="article-alias" popover="auto" data-alias-tip>
+							Также называют: {alias}
+						</span>
+					</>
+				) : (
+					name
+				)}
+			</h1>
 			<p class="article__lead">{data.summary}</p>
 			{image && (
 				<figure class="article__figure">

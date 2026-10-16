@@ -224,7 +224,8 @@
 
 			spot.x = p.x
 			spot.y = p.y
-			spot.visible = body.facing(point.normal) > -0.3
+			// Точки, повёрнутые от камеры, прячем: с обратной стороны тела их не нажать по ошибке
+			spot.visible = body.facing(point.normal) > 0.05
 			const el = spotEls[i]
 
 			if (!el) continue
@@ -265,9 +266,10 @@
 	}
 
 	/**
-	 * Раскрыть зону и поставить список в свободную от неё половину экрана: зона справа --
-	 * список слева, и наоборот. Камера сдвигает зону на другую сторону. На узком экране
-	 * свободной половины нет: зона уходит наверх, список -- в нижнюю половину.
+	 * Раскрыть зону: камера облетает к её ракурсу, а список встаёт вплотную к зоне с внешней
+	 * стороны тела -- у левой зоны справа, у правой слева, -- чтобы не закрывать фигуру.
+	 * Зона у центра экрана, колонка начинается сразу за центром. На узком экране сбоку места
+	 * нет: зона уходит наверх, список -- в нижнюю половину.
 	 */
 	function showZone(zone: LabZone, index: number) {
 		if (!body) return
@@ -275,15 +277,14 @@
 		if (open?.zone === zone && open.index === index) return
 
 		const point = zone.points[index]
-		const w = wrap.clientWidth
-		const side = w < 700 ? 'bottom' : body.project(point.position).x > w / 2 ? 'left' : 'right'
-		const at = side === 'bottom' ? { x: 0, y: 0.26 } : { x: side === 'left' ? 0.24 : -0.24, y: 0 }
+		const side = wrap.clientWidth < 700 ? 'bottom' : point.position[0] >= 0 ? 'right' : 'left'
+		const at = side === 'bottom' ? { x: 0, y: 0.14 } : { x: side === 'left' ? 0.12 : -0.12, y: 0 }
 
 		hovered = null
 		body.dissolve(point.position, zone.radius)
 		body.controls.autoRotate = false
 		body.controls.enabled = false
-		body.focus(point.position, clamp(0.3 / zone.radius, 1, 2.4), at)
+		body.focus(point.position, clamp(0.3 / zone.radius, 1, 2.4), at, point.view)
 		open = { zone, index, side }
 	}
 
@@ -700,7 +701,7 @@
 		bottom: 0;
 		display: flex;
 		flex-direction: column;
-		width: min(440px, 40vw);
+		width: min(440px, calc(50vw - 32px - 4vw));
 		animation: fade-in 0.5s var(--a-ease) both;
 
 		/* Наведённая строка остаётся, остальные отходят на второй план. Условие -- курсор
@@ -717,22 +718,29 @@
 			content: '';
 			position: absolute;
 			z-index: -1;
-			inset: 0 -14vw;
+			top: 0;
+			bottom: 0;
 		}
 
+		/* Колонка вплотную к зоне: зона у центра экрана, список начинается сразу за ним.
+		   Подложка под текстом растворяется к зоне градиентом и уходит до края экрана */
 		&--left {
-			left: 6vw;
+			right: calc(50% + 32px);
 
 			&::before {
-				background: linear-gradient(to right, var(--a-bg) 45%, transparent);
+				right: -3vw;
+				left: -50vw;
+				background: linear-gradient(to left, transparent, var(--a-bg) 5vw);
 			}
 		}
 
 		&--right {
-			right: 6vw;
+			left: calc(50% + 32px);
 
 			&::before {
-				background: linear-gradient(to left, var(--a-bg) 45%, transparent);
+				right: -50vw;
+				left: -3vw;
+				background: linear-gradient(to right, transparent, var(--a-bg) 5vw);
 			}
 		}
 

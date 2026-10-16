@@ -2,6 +2,7 @@ import {
 	AmbientLight,
 	DirectionalLight,
 	HemisphereLight,
+	MathUtils,
 	Mesh,
 	MeshStandardMaterial,
 	NeutralToneMapping,
@@ -9,6 +10,7 @@ import {
 	PlaneGeometry,
 	Scene,
 	ShaderMaterial,
+	Spherical,
 	SRGBColorSpace,
 	Vector3,
 	WebGLRenderer,
@@ -148,10 +150,21 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let radiusTo = 0
 	let last = performance.now()
 	let onFrame: (() => void) | undefined
-	// Наезд на зону: куда сдвинуть центр орбиты и какой зум, и что вернуть после
-	let focusTo: { target: Vector3; zoom: number } | null = null
-	let restore: { target: Vector3; zoom: number } | null = null
+
+	// Наезд на зону: куда сдвинуть центр орбиты, какой зум и ракурс, и что вернуть после
+	type Shot = { target: Vector3; zoom: number; azimuth: number; polar: number }
+
+	let focusTo: Shot | null = null
+	let restore: Shot | null = null
 	const step = new Vector3()
+	const offset = new Vector3()
+	const orbit = new Spherical()
+
+	function currentShot(): Shot {
+		orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
+
+		return { target: controls.target.clone(), zoom: camera.zoom, azimuth: orbit.theta, polar: orbit.phi }
+	}
 
 	const loop = (now: number) => {
 		const dt = Math.min((now - last) / 1000, 0.1)
@@ -175,7 +188,22 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			camera.zoom += (goal.zoom - camera.zoom) * k
 			camera.updateProjectionMatrix()
 
-			if (!focusTo && step.lengthSq() < 1e-10 && Math.abs(goal.zoom - camera.zoom) < 1e-3) restore = null
+			// Облёт к ракурсу вокруг центра орбиты, по азимуту -- кратчайшей дугой
+			orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
+			const turn = Math.atan2(Math.sin(goal.azimuth - orbit.theta), Math.cos(goal.azimuth - orbit.theta))
+
+			orbit.theta += turn * k
+			orbit.phi += (goal.polar - orbit.phi) * k
+			camera.position.copy(controls.target).add(offset.setFromSpherical(orbit))
+			camera.lookAt(controls.target)
+
+			const settled =
+				step.lengthSq() < 1e-10 &&
+				Math.abs(goal.zoom - camera.zoom) < 1e-3 &&
+				Math.abs(turn) < 1e-3 &&
+				Math.abs(goal.polar - orbit.phi) < 1e-3
+
+			if (!focusTo && settled) restore = null
 		}
 
 		controls.update(dt)
@@ -224,23 +252,31 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/**
 		 * Наехать на точку так, чтобы при зуме `zoom` она встала в `at` -- долях кадра от центра
-		 * (x вправо, y вверх). `null` возвращает камеру как было до наезда.
+		 * (x вправо, y вверх). `view` -- ракурс в градусах: азимут от лица (+Z) к левому боку
+		 * (+X) и угол от вертикали; без него ракурс остаётся текущим. `null` возвращает камеру
+		 * как было до наезда.
 		 */
-		focus(point: Vec3 | null, zoom = 1, at = { x: 0, y: 0 }) {
+		focus(point: Vec3 | null, zoom = 1, at = { x: 0, y: 0 }, view?: { azimuth: number; polar: number }) {
 			if (!point) {
 				focusTo = null
 
 				return
 			}
 
-			restore ??= { target: controls.target.clone(), zoom: camera.zoom }
-			const right = new Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
-			const up = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+			const now = currentShot()
+
+			restore ??= now
+			const azimuth = view ? MathUtils.degToRad(view.azimuth) : now.azimuth
+			const polar = view ? MathUtils.degToRad(view.polar) : now.polar
+			// Сдвиг считаем в осях будущего ракурса, а не текущего: камера ещё повернётся
+			const toCamera = new Vector3().setFromSphericalCoords(1, polar, azimuth)
+			const right = new Vector3(0, 1, 0).cross(toCamera).normalize()
+			const up = toCamera.clone().cross(right)
 			const target = new Vector3(...point)
 				.addScaledVector(right, (-at.x * (camera.right - camera.left)) / zoom)
 				.addScaledVector(up, (-at.y * (camera.top - camera.bottom)) / zoom)
 
-			focusTo = { target, zoom }
+			focusTo = { target, zoom, azimuth, polar }
 		},
 		pause(paused: boolean) {
 			last = performance.now()

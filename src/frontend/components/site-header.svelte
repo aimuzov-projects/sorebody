@@ -39,7 +39,8 @@
 		min-height: calc(var(--theme-toggle-top) + var(--header-row) + var(--header-fade));
 		padding: var(--theme-toggle-top) var(--theme-toggle-room) var(--header-fade) var(--frame-x);
 
-		/* Под строкой шапки контент не обрывается: фон гаснет вниз по плавной кривой
+		/* Фон полупрозрачный, чтобы под ним читалось размытие. Под строкой шапки контент
+		   не обрывается: фон гаснет вниз по плавной кривой
 		   (smoothstep, без резкого перепада у линейного градиента), а под ним -- размытие,
 		   которое сходит на нет к низу. Где backdrop-filter нет, остаётся один градиент */
 		&::before,
@@ -71,10 +72,10 @@
 
 			background: linear-gradient(
 				to bottom,
-				var(--header-bg) var(--fade-from),
-				color-mix(in srgb, var(--header-bg) 84%, transparent) calc(var(--fade-from) + var(--fade) * 0.25),
-				color-mix(in srgb, var(--header-bg) 50%, transparent) calc(var(--fade-from) + var(--fade) * 0.5),
-				color-mix(in srgb, var(--header-bg) 16%, transparent) calc(var(--fade-from) + var(--fade) * 0.75),
+				color-mix(in srgb, var(--header-bg) 72%, transparent) var(--fade-from),
+				color-mix(in srgb, var(--header-bg) 60%, transparent) calc(var(--fade-from) + var(--fade) * 0.25),
+				color-mix(in srgb, var(--header-bg) 36%, transparent) calc(var(--fade-from) + var(--fade) * 0.5),
+				color-mix(in srgb, var(--header-bg) 12%, transparent) calc(var(--fade-from) + var(--fade) * 0.75),
 				transparent
 			);
 		}
@@ -88,11 +89,6 @@
 		z-index: 3;
 		right: 0;
 		left: 0;
-
-		&::before,
-		&::after {
-			display: none;
-		}
 
 		& > :global(*) {
 			pointer-events: auto;

@@ -14,8 +14,8 @@ export const SKIN_RIM: Rim = {
 	frontWidth: 0.004,
 	backWidth: 0.006,
 }
-/** Мышцы и кости: срез в тон слоя, без неона. */
-export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#4e1414' }
+/** Кости: срез в тон слоя. Мышцам цвет кромки не нужен: их срез -- та же мышца на тон темнее. */
+export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#6b1d1d' }
 export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
 
 /**
@@ -143,7 +143,12 @@ if (uRadius > 0.0) {
 			.replace(
 				'#include <color_fragment>',
 				`#include <color_fragment>
+#ifdef MUSCLE
+// Изнанка мышц -- чуть темнее лица, без провала в чёрное
+if (!gl_FrontFacing) diffuseColor.rgb *= 0.86;
+#else
 if (!gl_FrontFacing) diffuseColor.rgb *= 0.62;
+#endif
 #ifdef MUSCLE
 // Волокна: шум по координатам поперёк главной оси мышцы, вдоль неё он не меняется -- выходят
 // тонкие продольные тяжи, как на атласе. У мышц без оси (мимо build.mjs) волокон нет
@@ -179,7 +184,12 @@ totalEmissiveRadiance += diffuseColor.rgb * 0.5 * uHighlight * hit;
 // Изнанка у края: у самого среза -- цвет \`back\`, дальше мягко в обычную тёмную изнанку
 float edgeMix = smoothstep(0.7, 1.0, dissolveEdge);
 // Снаружи у самого края -- нижний слой (inner), за ним мягко верхний (front)
+#ifdef MUSCLE
+// Срез мышцы -- та же мышца, только на тон темнее: без отдельного цвета кромки
+vec3 cut = gl_FragColor.rgb * 0.78;
+#else
 vec3 cut = gl_FrontFacing ? mix(uRimInner, uRim, smoothstep(0.45, 0.65, dissolveEdge)) : uRimBack;
+#endif
 gl_FragColor.rgb = mix(cut, gl_FragColor.rgb, edgeMix);`,
 			)
 	}

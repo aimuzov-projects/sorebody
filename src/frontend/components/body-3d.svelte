@@ -2552,18 +2552,10 @@
 		&__body {
 			padding-bottom: 40px;
 
-			/* Под липкой полосой с "Назад": статье меньше верхнего отступа, оглавлению и
-			   якорям разделов -- запас на её высоту */
+			/* Под липкой шапкой статье меньше верхнего отступа. Оглавление и якоря разделов
+			   отступают от шапки сами: --header-clear в styles/global.css */
 			& :global(.article) {
 				padding-top: 8px;
-			}
-
-			& :global(.article__toc) {
-				top: calc(76px + var(--tg-top));
-			}
-
-			& :global(.article-section) {
-				scroll-margin-top: calc(84px + var(--tg-top));
 			}
 		}
 

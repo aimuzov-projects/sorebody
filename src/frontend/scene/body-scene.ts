@@ -4,7 +4,6 @@ import {
 	HemisphereLight,
 	MathUtils,
 	Mesh,
-	MeshStandardMaterial,
 	NeutralToneMapping,
 	OrthographicCamera,
 	PlaneGeometry,
@@ -19,6 +18,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
+import { createDetail, DETAIL_REACH, detailKey } from './detail.ts'
 import { createDissolveMaterial } from './dissolve.ts'
 
 type Vec3 = [number, number, number]
@@ -97,7 +97,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	skin.material.emissive.set('#3d8bfd')
 	skin.material.emissiveIntensity = 0
 	const muscles = createDissolveMaterial('#e8e4df', '#0071e3', 0.6)
-	const bones = new MeshStandardMaterial({ color: '#efe7da', roughness: 0.5, metalness: 0 })
+	// Кости -- тот же материал без растворения: так в них работает вырез под детальный кусок зоны
+	const bones = createDissolveMaterial('#efe7da', '#0071e3', 0.5)
 	const MUSCLE_SHARE = 0.6
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
@@ -112,13 +113,23 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		if (obj.name.startsWith('muscles')) muscles.uniforms.uInset.value = 0.003 / obj.getWorldScale(new Vector3()).x
 
 		obj.material = obj.name.startsWith('bones')
-			? bones
+			? bones.material
 			: obj.name.startsWith('muscles')
 				? muscles.material
 				: skin.material
 	})
 
 	scene.add(gltf.scene)
+
+	// Слабый GPU (см. adaptPixelRatio) не получает нервов в детальных кусках зон
+	let slow = false
+	const detail = createDetail({
+		scene,
+		loader,
+		base: [muscles, bones],
+		baseUrl: modelUrl.replace(/[^/]*$/, 'detail/'),
+		lowPower: () => slow,
+	})
 
 	function resize() {
 		const { clientWidth: w, clientHeight: h } = canvas
@@ -237,6 +248,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		// Мышцы видны только в проёме кожи: в BodyParts3D сухожилия у колена и мышцы шеи
 		// местами выходят за кожу и проступали серыми полосами. Без проёма мышц нет вовсе
 		muscles.uniforms.uOuter.value = radius
+		detail.sync(center, radius, MUSCLE_SHARE)
 
 		const ease = 1 - Math.exp(-dt * 6)
 
@@ -335,16 +347,40 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let windowFrom = performance.now()
 	let windowFrames = 0
 
+	// Распаковка детального куска сама съедает кадры: пока куски грузятся, не меряем
+	let loading = 0
+
+	function quiet(task: Promise<unknown>) {
+		loading++
+
+		void task.finally(() => {
+			loading--
+			windowFrom = performance.now()
+			windowFrames = 0
+		})
+	}
+
 	function adaptPixelRatio(now: number) {
-		if (renderer.getPixelRatio() <= 1) return
+		if (slow) return
+
+		if (loading) {
+			windowFrom = now
+			windowFrames = 0
+
+			return
+		}
 
 		windowFrames++
 
 		if (now - windowFrom < 1000) return
 
 		if (windowFrames < 45) {
-			renderer.setPixelRatio(1)
-			resize()
+			slow = true
+
+			if (renderer.getPixelRatio() > 1) {
+				renderer.setPixelRatio(1)
+				resize()
+			}
 		}
 
 		windowFrom = now
@@ -355,6 +391,14 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	return {
 		resize,
+		/** Заранее загрузить детальный кусок зоны (наведение на строку или точку). */
+		prefetchDetail(slug: string, point: Vec3) {
+			quiet(detail.prefetch(detailKey(slug, point)))
+		},
+		/** Детальный кусок зоны вокруг точки `point` для зоны радиуса `size`; `null` -- убрать. */
+		showDetail(slug: string | null, point?: Vec3, size = 0) {
+			quiet(detail.show(slug && point ? detailKey(slug, point) : null, point, size * DETAIL_REACH))
+		},
 		project,
 		facing,
 		controls,

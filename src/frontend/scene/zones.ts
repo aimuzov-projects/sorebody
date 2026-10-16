@@ -37,7 +37,7 @@ export type ZoneInjury = {
  * Ракурсы подобраны по снимкам: плечо и таз спереди-сбоку, локоть и кисть сбоку, чтобы их
  * не закрывало туловище, поясница сзади, голеностоп чуть сверху.
  */
-const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
+export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
 	shoulder: { radius: 0.13, points: pair([0.165, 1.39, -0.024], 1, 0.3, { azimuth: 40, polar: 70 }) },
 	elbow: { radius: 0.09, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
 	'wrist-hand': { radius: 0.1, points: pair([0.25, 0.874, 0.021], 1, 0.3, { azimuth: 70, polar: 74 }) },

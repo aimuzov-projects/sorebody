@@ -1,4 +1,4 @@
-import { Color, DoubleSide, MeshStandardMaterial, Vector3 } from 'three'
+import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three'
 
 /**
  * Матовый "фарфор" с растворением в сфере: фрагменты ближе `uRadius` к `uCenter` отбрасываются,
@@ -15,6 +15,10 @@ export function createDissolveMaterial(color: string, rim: string, roughness = 0
 		// Радиус проёма во внешнем слое (кожи): слой виден только там, где тот уже растворён.
 		// Меньше нуля -- внешнего слоя нет
 		uOuter: { value: -1 },
+		// Вырез под детальный кусок зоны: сфера xyz + радиус w. Сторона 1 -- слой не рисуется внутри
+		// сферы (там его заменяет кусок), -1 -- рисуется только внутри (сам кусок), 0 -- выреза нет
+		uCut: { value: new Vector4() },
+		uCutSide: { value: 0 },
 		// Подсветка зоны: голубое свечение вокруг двух точек (парная зона), к краю -- в серый
 		uTint: { value: [new Vector3(), new Vector3()] },
 		uTintRadius: { value: 0.1 },
@@ -42,6 +46,8 @@ uniform vec3 uCenter;
 uniform float uRadius;
 uniform vec3 uRim;
 uniform float uOuter;
+uniform vec4 uCut;
+uniform float uCutSide;
 uniform vec3 uTint[2];
 uniform float uTintRadius;
 uniform float uTintStrength;
@@ -52,6 +58,7 @@ ${NOISE}`,
 			.replace(
 				'#include <clipping_planes_fragment>',
 				`#include <clipping_planes_fragment>
+if ((distance(vDissolvePos, uCut.xyz) - uCut.w) * uCutSide < 0.0) discard;
 float dissolveEdge = 1.0;
 float n = snoise(vDissolvePos * 12.0) * 0.7 + snoise(vDissolvePos * 34.0) * 0.3;
 // Граница проёма во внешнем слое -- той же формулой с шумом, что у него самого

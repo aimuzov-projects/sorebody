@@ -138,6 +138,8 @@
 		setHighlight(zone)
 		clearTimeout(previewTimer)
 
+		if (body && zone && zone !== whole) body.prefetchDetail(zone.slug, zone.points[facingIndex(zone)].position)
+
 		if (pointer && noHover) return
 
 		// Без движения камера стоит, но и автоповорот замирает: подсвеченная точка не уплывает
@@ -569,6 +571,9 @@
 		tintZone(spot?.zone ?? null)
 
 		if (body) body.controls.autoRotate = !spot
+
+		// Вероятно, зону сейчас откроют: её детальный кусок начинаем грузить заранее
+		if (body && spot) body.prefetchDetail(spot.zone.slug, spot.zone.points[spot.index].position)
 	}
 
 	/**
@@ -608,6 +613,8 @@
 		// Место травмы бывает у края зоны или за ним (широчайшая, задняя поверхность бедра):
 		// проём того же размера переезжает к нему: под точкой видно, на что она указывает
 		body.dissolve(injury?.position ?? point.position, open.zone.radius)
+		// Связки, мениски, сосуды и нервы зоны -- отдельным куском, только когда зона открыта
+		body.showDetail(open.zone === whole ? null : open.zone.slug, point.position, open.zone.radius)
 		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
 		body.controls.autoRotate = false
 
@@ -680,6 +687,7 @@
 		if (!body) return
 
 		body.dissolve(null)
+		body.showDetail(null)
 		body.focus(null)
 		body.controls.enabled = true
 		body.controls.autoRotate = true

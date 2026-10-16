@@ -1,12 +1,24 @@
 // Сборка GLB из OBJ BodyParts3D: группы (skin / muscles / bones) сливаются в один меш каждая,
 // упрощаются meshoptimizer и пишутся с квантованием + EXT_meshopt_compression.
+// Детальный кусок зоны: `offset` из сборки фигуры (те же координаты) и `clip` -- сфера вокруг точки.
 // usage: node build.mjs <config.json> <out.glb>
 import fs from 'node:fs'
 import path from 'node:path'
 import { Document, NodeIO } from '@gltf-transform/core'
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
-import { dedup, meshopt, prune, quantize, reorder, simplifyPrimitive, weld } from '@gltf-transform/functions'
+import {
+	compactPrimitive,
+	dedup,
+	meshopt,
+	prune,
+	quantize,
+	reorder,
+	simplifyPrimitive,
+	weld,
+} from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
+
+import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
 const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'))
@@ -104,9 +116,9 @@ console.log('missing files', missing)
 			}
 	}
 
-	const off = [-(min[0] + max[0]) / 2, -min[1], -(min[2] + max[2]) / 2]
+	const off = cfg.offset ?? [-(min[0] + max[0]) / 2, -min[1], -(min[2] + max[2]) / 2]
 
-	console.log('bounds', min, max)
+	console.log('bounds', min, max, 'offset', off)
 
 	for (const acc of doc.getRoot().listAccessors()) {
 		if (acc.getType() !== 'VEC3') continue
@@ -155,7 +167,56 @@ console.log('missing files', missing)
 		anchors.push({ zone: an.zone, side: an.side, position: c })
 	}
 
-	fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
+	if (cfg.anchors) fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
+}
+
+// Оставляем треугольники, у которых хоть одна вершина в сфере `clip`. Слои из `skinClip.groups`
+// (взятые из другой модели) ещё и обрезаем по коже BP3D: что вышло наружу, висело бы над телом
+if (cfg.clip) {
+	const { center, radius } = cfg.clip
+	let outside = () => false
+
+	if (cfg.skinClip) {
+		const { v, f } = readObj(findObj(cfg.skinClip.skin))
+		const off = cfg.offset
+
+		for (let i = 0; i < v.length; i++) v[i] += off[i % 3]
+
+		const where = createSkinTest(v, f)
+
+		outside = (pos, i) => where(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]) === 'outside'
+	}
+
+	for (const mesh of doc.getRoot().listMeshes())
+		for (const prim of mesh.listPrimitives()) {
+			const pos = prim.getAttribute('POSITION').getArray()
+			const idx = prim.getIndices().getArray()
+			const near = (v) =>
+				Math.hypot(pos[3 * v] - center[0], pos[3 * v + 1] - center[1], pos[3 * v + 2] - center[2]) < radius
+			const skinClip = cfg.skinClip?.groups.includes(mesh.getName())
+			const keep = []
+
+			for (let t = 0; t < idx.length; t += 3) {
+				const tri = [idx[t], idx[t + 1], idx[t + 2]]
+
+				if (!tri.some(near)) continue
+
+				if (skinClip && tri.some((v) => outside(pos, v))) continue
+
+				keep.push(...tri)
+			}
+
+			prim.getIndices().setArray(new Uint32Array(keep))
+			compactPrimitive(prim)
+			console.log(mesh.getName(), 'tris in clip', keep.length / 3)
+		}
+
+	// Пустые группы (в сфере нет ни одного элемента) выкидываем
+	for (const node of doc.getRoot().listNodes())
+		if (node.getMesh()?.listPrimitives()[0].getIndices().getCount() === 0) {
+			node.getMesh().dispose()
+			node.dispose()
+		}
 }
 
 await MeshoptSimplifier.ready
@@ -166,7 +227,9 @@ for (const mesh of doc.getRoot().listMeshes()) {
 	const { ratio, error } = mesh.getExtras()
 
 	for (const prim of mesh.listPrimitives()) {
-		simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio, error, lockBorder: false })
+		// ratio 1 -- исходная сетка без упрощения
+		if (ratio < 1) simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio, error, lockBorder: false })
+
 		console.log(mesh.getName(), 'tris after', prim.getIndices().getCount() / 3)
 	}
 

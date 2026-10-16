@@ -2,12 +2,21 @@
  * Внутри Telegram сайт подхватывает тему клиента и показывает системную кнопку «назад».
  * SDK грузится только если Telegram при открытии передал `tgWebAppData` или `tgWebAppPlatform` в хеше,
  * в обычном браузере модуль ничего не делает и не ходит на telegram.org.
+ *
+ * На главной шаги -- сцена, список зоны, статья -- ведёт сама сцена: пишет текущий шаг в
+ * `<html data-step>` и шлёт событие `wodcare:step`. Кнопка «назад» видна на шагах зоны и
+ * статьи, а нажатие уходит обратно событием `wodcare:back`: сцена поднимается на шаг тем же
+ * путём, что и своя кнопка «Назад», которую в Mini App прячет атрибут `data-telegram`.
  */
+import { BACK_EVENT, STEP_EVENT } from './telegram-events.ts'
+
 type WebApp = {
 	initData: string
 	themeParams: Record<string, string | undefined>
 	ready(): void
 	expand(): void
+	isVersionAtLeast?(version: string): boolean
+	requestFullscreen?(): void
 	BackButton: { show(): void; hide(): void; onClick(cb: () => void): void }
 }
 
@@ -16,6 +25,7 @@ const getApp = () => (window as { Telegram?: { WebApp?: WebApp } }).Telegram?.We
 function init(app: WebApp | undefined) {
 	if (!app?.initData) return
 
+	const root = document.documentElement
 	const theme = app.themeParams
 	const vars: Record<string, string | undefined> = {
 		'--bg': theme.bg_color,
@@ -25,9 +35,22 @@ function init(app: WebApp | undefined) {
 		'--surface': theme.secondary_bg_color,
 	}
 
-	for (const [name, value] of Object.entries(vars)) if (value) document.documentElement.style.setProperty(name, value)
+	for (const [name, value] of Object.entries(vars)) if (value) root.style.setProperty(name, value)
 
-	if (location.pathname !== '/') {
+	root.dataset.telegram = ''
+
+	if (location.pathname === '/') {
+		// Обработчик один: что делать по нажатию, решает сцена, она знает, откуда пришли
+		const sync = () =>
+			root.dataset.step && root.dataset.step !== 'scene' ? app.BackButton.show() : app.BackButton.hide()
+
+		app.BackButton.onClick(() => window.dispatchEvent(new Event(BACK_EVENT)))
+		window.addEventListener(STEP_EVENT, sync)
+		sync()
+
+		// Сцене нужен весь экран; полноэкранный режим есть с Bot API 8.0
+		if (app.isVersionAtLeast?.('8.0')) app.requestFullscreen?.()
+	} else {
 		app.BackButton.show()
 		app.BackButton.onClick(() => (history.length > 1 ? history.back() : location.assign('/')))
 	}

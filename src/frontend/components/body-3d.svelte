@@ -23,6 +23,7 @@
 
 	import { PersonStanding, Search } from 'lucide-static'
 
+	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { Zone } from '#frontend/scene/zones.ts'
 
@@ -143,6 +144,12 @@
 		return { level: 0 }
 	}
 
+	// Текущий шаг -- на <html> и событием: по нему Telegram показывает или прячет свою кнопку «назад»
+	$effect(() => {
+		document.documentElement.dataset.step = article ? 'article' : open ? 'zone' : 'scene'
+		window.dispatchEvent(new Event(STEP_EVENT))
+	})
+
 	/** Привести экран к адресу: открыть или закрыть зону и статью. */
 	function sync() {
 		const place = parseHash()
@@ -212,6 +219,8 @@
 		baseLevel = parseHash().level
 		sync()
 		window.addEventListener('popstate', sync)
+		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
+		window.addEventListener(BACK_EVENT, up)
 
 		let disposed = false
 		let frames = 0
@@ -267,6 +276,7 @@
 
 		return () => {
 			window.removeEventListener('popstate', sync)
+			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
 			disposed = true
 			resizer.disconnect()
@@ -872,7 +882,7 @@
 		flex-direction: column;
 		gap: 20px;
 		width: min(380px, 32vw);
-		padding-top: max(32px, 7dvh);
+		padding-top: calc(max(32px, 7dvh) + var(--tg-top));
 		transition:
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
@@ -884,7 +894,7 @@
 			gap: 14px;
 			width: auto;
 			max-height: 56dvh;
-			padding: 28px 20px max(16px, env(safe-area-inset-bottom));
+			padding: 28px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
 
 			&::before {
 				inset: -40px 0 0;
@@ -1260,18 +1270,24 @@
 
 		&__head {
 			flex: none;
-			padding-top: max(32px, 7dvh);
+			padding-top: calc(max(32px, 7dvh) + var(--tg-top));
 		}
 
 		&__back {
 			cursor: pointer;
 			margin: 0 0 16px -2px;
+
 			padding: 4px 2px;
 			border: 0;
 			font: inherit;
 			color: var(--a-blue);
 			background: none;
 			transition: opacity 0.3s var(--a-ease);
+
+			/* В Mini App своя «Назад» не нужна: у Telegram есть системная кнопка */
+			:global([data-telegram]) & {
+				display: none;
+			}
 
 			&:hover {
 				opacity: 0.7;
@@ -1399,13 +1415,14 @@
 			top: 0;
 			max-width: 728px;
 			margin: 0 auto;
-			padding: 20px 24px 36px;
+			padding: calc(20px + var(--tg-top)) 24px 36px;
 			background: linear-gradient(to bottom, var(--a-page) 55%, transparent);
 		}
 
 		&__back {
 			cursor: pointer;
 			margin-left: -2px;
+
 			padding: 4px 2px;
 			border: 0;
 			font: inherit;
@@ -1413,6 +1430,10 @@
 			color: var(--a-blue);
 			background: none;
 			transition: opacity 0.3s var(--a-ease);
+
+			:global([data-telegram]) & {
+				display: none;
+			}
 
 			&:hover {
 				opacity: 0.7;
@@ -1437,8 +1458,10 @@
 			margin: 0 auto;
 			padding: 0 24px 120px;
 
+			/* minmax(0, 1fr): иначе длинное слово в заголовке растягивает колонку шире экрана */
 			& :global(.injury) {
 				display: grid;
+				grid-template-columns: minmax(0, 1fr);
 				gap: 28px;
 				max-width: none;
 				padding: 0;
@@ -1448,10 +1471,12 @@
 			/* stylelint-disable-next-line selector-max-type */
 			& :global(h1) {
 				margin: 0;
-				font-size: clamp(36px, 6vw, 56px);
+				font-size: clamp(32px, 6vw, 56px);
 				font-weight: 700;
 				line-height: 1.07;
+				hyphens: auto;
 				letter-spacing: -0.03em;
+				overflow-wrap: break-word;
 			}
 
 			/* stylelint-disable-next-line selector-max-type */

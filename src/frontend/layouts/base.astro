@@ -1,4 +1,6 @@
 ---
+import { createHash } from 'node:crypto'
+
 import Footer from '#frontend/components/footer.astro'
 import '#frontend/styles/global.css'
 import { site } from '#frontend/data/site.ts'
@@ -18,6 +20,18 @@ type Props = {
 }
 
 const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
+
+/**
+ * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
+ * Признаки те же, что в lib/telegram.ts: хеш от Telegram или флаг в sessionStorage.
+ * Inline-скрипты Astro в CSP не хеширует, поэтому хеш считаем сами.
+ */
+const TELEGRAM_FLAG =
+	"try{if(/tgWebApp(Data|Platform)=/.test(location.hash)||sessionStorage.getItem('wodcare:tg'))" +
+	"document.documentElement.dataset.telegram=''}catch{if(/tgWebApp(Data|Platform)=/.test(location.hash))" +
+	"document.documentElement.dataset.telegram=''}"
+
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
@@ -37,6 +51,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={description} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<script is:inline set:html={TELEGRAM_FLAG} />
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>

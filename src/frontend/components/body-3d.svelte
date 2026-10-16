@@ -79,6 +79,49 @@
 		body?.glow(zone === whole)
 	}
 
+	/**
+	 * Наведение (или фокус) на строку зоны в индексе: точки зоны крупнее, остальные
+	 * притушены, камера подъезжает к зоне, но не раскрывает её. Камера отвечает с задержкой,
+	 * чтобы при быстром проходе по строкам не металась. На таче только подсветка.
+	 */
+	let previewTimer: ReturnType<typeof setTimeout> | undefined
+
+	function previewZone(zone: Zone | null, pointer = true) {
+		setHighlight(zone)
+		clearTimeout(previewTimer)
+
+		if (pointer && noHover) return
+
+		// Без движения камера стоит, но и автоповорот замирает: подсвеченная точка не уплывает
+		if (reduceMotion) {
+			if (body && !open) body.controls.autoRotate = !zone
+
+			return
+		}
+
+		previewTimer = setTimeout(() => focusPreview(zone), zone ? 120 : 220)
+	}
+
+	function focusPreview(zone: Zone | null) {
+		if (!body || open) return
+
+		if (!zone || zone === whole) {
+			body.focus(null)
+			body.controls.autoRotate = true
+
+			return
+		}
+
+		// Из двух точек парной зоны -- та, что сейчас смотрит на камеру
+		const point = zone.points.reduce((a, b) => (body!.facing(b.normal) > body!.facing(a.normal) ? b : a))
+
+		body.controls.autoRotate = false
+		// Кадр главной сдвинут вправо от индекса; точка встаёт в середину свободной части
+		const at = wrap.clientWidth < 700 ? { x: 0, y: 0 } : { x: -0.17, y: 0 }
+
+		body.focus(point.position, clamp(0.26 / zone.radius, 1, 2.2), at, point.view, true)
+	}
+
 	/** Радиус "магнита" вокруг точки зоны, пиксели. */
 	const PICK_PX = 56
 	/** Сколько гаснет сцена перед статьёй; после этого рендер останавливается. */
@@ -393,6 +436,7 @@
 
 		hovered = null
 		setHighlight(null)
+		clearTimeout(previewTimer)
 		clearAccent()
 		open = { zone, index, side }
 		focusOpen()
@@ -417,8 +461,8 @@
 		// При reduced motion камера не ездит за строками: акцент только на маркере
 		const target = accent && !reduceMotion ? injuryFocus(open.zone, open.index, accent.slug) : null
 
-		// На телефоне зона над списком и под шапкой: ближе 3 она уже заезжает под заголовок
-		const maxZoom = open.side === 'bottom' ? 3 : 4
+		// На телефоне зона над списком и под шапкой: ближе 3,2 она уже заезжает под заголовок
+		const maxZoom = open.side === 'bottom' ? 3.2 : 4.6
 
 		if (target) body.focus(target.position, Math.min(zoom * target.zoom, maxZoom), at, target.view, true)
 		else body.focus(point.position, zoom, at, point.view, spring)
@@ -674,6 +718,7 @@
 		<button
 			class="body3d__spot"
 			class:body3d__spot--hover={hovered === spot || highlighted === spot.zone}
+			class:body3d__spot--dim={highlighted && highlighted !== whole && highlighted !== spot.zone}
 			class:body3d__spot--empty={counts.get(spot.zone) === 0}
 			bind:this={spotEls[i]}
 			type="button"
@@ -764,10 +809,10 @@
 							type="button"
 							disabled={count === 0}
 							onclick={() => openZone(zone, 0)}
-							onpointerenter={() => setHighlight(zone)}
-							onpointerleave={() => setHighlight(null)}
-							onfocus={() => setHighlight(zone)}
-							onblur={() => setHighlight(null)}
+							onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
+							onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
+							onfocus={() => previewZone(zone, false)}
+							onblur={() => previewZone(null, false)}
 						>
 							{#if zone === whole}<span class="index__icon" aria-hidden="true"
 									>{@html PersonStanding}</span
@@ -937,6 +982,12 @@
 			background: none;
 			transition: opacity 0.4s var(--a-ease);
 
+			/* Навели на другую зону в индексе: эта точка отступает на второй план.
+			   Выше правил скрытия, чтобы скрытая точка не проступала */
+			&--dim {
+				opacity: 0.25;
+			}
+
 			&:global([data-hidden='true']) {
 				pointer-events: none;
 				opacity: 0;
@@ -966,7 +1017,7 @@
 				0 0 0 1.5px var(--a-blue),
 				0 1px 4px rgb(0 0 0 / 25%);
 			transition:
-				transform 0.4s var(--a-ease),
+				transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
 				box-shadow 0.4s var(--a-ease);
 
 			&::after {
@@ -1046,8 +1097,12 @@
 			}
 		}
 
+		&__spot--hover &__spot-dot::after {
+			animation-duration: 1.6s;
+		}
+
 		&__spot--hover &__spot-dot {
-			transform: scale(1.2);
+			transform: scale(1.6);
 			box-shadow:
 				0 0 0 3px var(--a-blue),
 				0 2px 8px rgb(0 0 0 / 25%);

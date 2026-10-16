@@ -96,12 +96,12 @@ export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
 const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; zoom?: number }> = {
 	// Колено: надколенник спереди, ПКС в центре сустава, мениск -- по суставной щели изнутри
 	'patellofemoral-pain': { offset: [0, 0.02, 0.05], normal: [0.2, 0, 1], view: { azimuth: 12, polar: 78 } },
-	'acl-tear': { offset: [0, 0, 0], zoom: 1.7 },
+	'acl-tear': { offset: [0, 0, 0], zoom: 2 },
 	'meniscus-tear': { offset: [-0.035, -0.015, 0.015], normal: [-0.3, 0, 1], view: { azimuth: 0, polar: 78 } },
 	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
 	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
 	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },
-	'labral-tear-slap': { offset: [0, 0, 0], zoom: 1.7 },
+	'labral-tear-slap': { offset: [0, 0, 0], zoom: 2 },
 	'subscapularis-biceps-pulley': { offset: [0, -0.01, 0.045], normal: [0.3, 0, 1], view: { azimuth: 20, polar: 74 } },
 	'pectoralis-major-rupture': { offset: [-0.07, -0.05, 0.08], normal: [0, 0, 1], view: { azimuth: 10, polar: 74 } },
 	'paget-schroetter-syndrome': { offset: [-0.07, 0.02, 0.06], normal: [0, 0.3, 1], view: { azimuth: 8, polar: 70 } },
@@ -122,7 +122,7 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 		view: { azimuth: 0, polar: 78 },
 	},
 	// Поясница: диск по центру, мышцы -- сбоку от позвоночника
-	'lumbar-disc-herniation': { offset: [0, -0.03, 0], zoom: 1.5 },
+	'lumbar-disc-herniation': { offset: [0, -0.03, 0], zoom: 1.8 },
 	'low-back-strain': { offset: [0.05, 0, -0.04], normal: [0.3, 0, -1] },
 	// Всё тело: шея и лицо
 	'cervical-artery-dissection': {
@@ -142,7 +142,7 @@ export function injuryFocus(zone: Zone, index: number, slug: string): InjuryFocu
 	const entry = INJURY_FOCUS[slug]
 	const s = point.position[0] < 0 ? -1 : 1
 
-	if (!entry) return { ...point, zoom: 1.5 }
+	if (!entry) return { ...point, zoom: 1.8 }
 
 	const [dx, dy, dz] = entry.offset
 	const [x, y, z] = point.position
@@ -152,6 +152,6 @@ export function injuryFocus(zone: Zone, index: number, slug: string): InjuryFocu
 		position: [x + s * dx, y + dy, z + dz],
 		normal,
 		view: entry.view ? { azimuth: s * entry.view.azimuth, polar: entry.view.polar } : point.view,
-		zoom: entry.zoom ?? 1.5,
+		zoom: entry.zoom ?? 1.8,
 	}
 }

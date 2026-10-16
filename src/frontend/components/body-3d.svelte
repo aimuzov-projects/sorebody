@@ -535,7 +535,7 @@
 >
 	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
-	{#if status !== 'ready'}
+	{#if status !== 'ready' && !open}
 		<p class="body3d__status">
 			{status === 'loading'
 				? 'Загружаем модель…'
@@ -751,15 +751,20 @@
 			opacity: 0;
 		}
 
+		/* Загрузка или ошибка WebGL -- там, где стоит фигура: справа от индекса, на телефоне над ним */
 		&__status {
 			position: absolute;
-			inset: 0;
+			inset: 0 0 0 38vw;
 			display: grid;
 			place-items: center;
 			margin: 0;
 			padding: 24px;
 			color: var(--a-fg2);
 			text-align: center;
+
+			@media (width < 700px) {
+				inset: 0 0 56dvh;
+			}
 		}
 
 		&__spot {

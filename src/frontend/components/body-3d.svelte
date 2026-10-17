@@ -21,7 +21,7 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
+	import { ChevronDown, ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
@@ -1290,7 +1290,16 @@
 					{/if}
 				</div>
 				<div class="index__panel" id="index-tools" bind:this={toolsPanel}>
-					<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+					<div class="index__search-row">
+						<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+						<button
+							class="index__panel-close"
+							type="button"
+							aria-label="Свернуть поиск"
+							onclick={closeTools}
+							><span class="index__island-icon" aria-hidden="true">{@html ChevronDown}</span></button
+						>
+					</div>
 					<div class="index__filters">
 						<div class="index__freq" role="group" aria-label="Частота">
 							{#each FREQUENCIES as [value, label, icon] (value)}
@@ -1327,7 +1336,6 @@
 							{/each}
 						</ul>
 					{/if}
-					<button class="index__panel-done" type="button" onclick={closeTools}>Готово</button>
 				</div>
 			</div>
 			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->
@@ -2101,12 +2109,13 @@
 		/* Остров поиска и фильтров. На десктопе обёртки не участвуют в раскладке: поле, фильтры
 		   и результаты стоят в колонке, как стояли */
 		&__tools,
-		&__panel {
+		&__panel,
+		&__search-row {
 			display: contents;
 		}
 
 		&__island,
-		&__panel-done {
+		&__panel-close {
 			display: none;
 		}
 
@@ -2458,7 +2467,7 @@
 					100dvh - var(--keyboard, 0px) - var(--theme-toggle-top) - var(--header-row) - 32px -
 						max(16px, env(safe-area-inset-bottom)) - var(--tg-bottom)
 				);
-				padding: 8px 16px 12px;
+				padding: 8px 12px 16px 16px;
 				border-radius: 24px;
 				animation: island-grow 0.3s var(--a-ease) both;
 
@@ -2476,17 +2485,47 @@
 				padding-bottom: 4px;
 			}
 
-			& .index__panel-done {
+			/* Свернуть -- иконкой в строке поиска, а не кнопкой "Готово" отдельной строкой внизу:
+			   карточка ниже на эту строку */
+			& .index__search-row {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+
+				& > :first-child {
+					flex: 1;
+					min-width: 0;
+				}
+			}
+
+			& .index__panel-close {
 				cursor: pointer;
-				display: block;
-				align-self: flex-end;
-				padding: 6px 4px;
+				display: inline-grid;
+				flex: none;
+				place-items: center;
+				width: 36px;
+				height: 36px;
+				padding: 0;
 				border: 0;
-				font: inherit;
-				font-size: 16px;
-				font-weight: 600;
-				color: var(--a-blue);
-				background: none;
+				border-radius: 50%;
+				color: var(--a-fg2);
+				background: var(--a-fill);
+
+				&:focus-visible {
+					outline: 2px solid var(--a-blue);
+					outline-offset: 2px;
+				}
+			}
+
+			/* Частота на всю ширину карточки: три положения поровну */
+			& .index__freq {
+				display: flex;
+				width: 100%;
+			}
+
+			& .index__chip {
+				flex: 1;
+				justify-content: center;
 			}
 		}
 	}

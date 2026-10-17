@@ -1740,9 +1740,9 @@
 				position: absolute;
 				z-index: -1;
 				inset: calc(-0.8 * var(--edge-y)) calc(-0.8 * var(--edge-x));
-				background: color-mix(in srgb, var(--a-bg) 55%, transparent);
-				-webkit-backdrop-filter: blur(12px);
-				backdrop-filter: blur(12px);
+				background: color-mix(in srgb, var(--a-bg) 78%, transparent);
+				-webkit-backdrop-filter: blur(4px);
+				backdrop-filter: blur(4px);
 				/* Край по smoothstep: с линейным спадом угол пятна читался прямоугольником */
 				mask-image:
 					linear-gradient(

@@ -25,6 +25,7 @@
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
+	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
@@ -68,8 +69,6 @@
 	let query = $state('')
 	let frequency = $state<'all' | 'common' | 'rare'>('all')
 	let movement = $state('')
-
-	const normalize = (s: string) => s.toLowerCase().replaceAll('ё', 'е').trim()
 
 	function matches(injury: Injury) {
 		const q = normalize(query)

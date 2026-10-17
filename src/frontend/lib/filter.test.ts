@@ -76,3 +76,12 @@ test('ё and е are interchangeable in both query and text', () => {
 		['yo'],
 	)
 })
+
+test('a non-breaking space in the text matches a regular space in the query', () => {
+	const glued: InjuryListItem[] = [{ ...list[0]!, slug: 'glued', summary: 'К врачу в тот же день' }]
+
+	assert.deepEqual(
+		filterInjuries(glued, { query: 'в тот же день' }).map((i) => i.slug),
+		['glued'],
+	)
+})

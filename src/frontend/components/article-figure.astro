@@ -24,54 +24,58 @@ const caption = splitCaption(image.caption)
 		height="669"
 		loading={id === 'figure-0' ? 'eager' : 'lazy'}
 	/>
-	{/* Подпись: заголовок рисунка, текст и чипы "от нейросети" и "атлас" */}
+	{/* Подпись: заголовок рисунка и текст, под ними строкой чипы "атлас" и "от нейросети" */}
 	<figcaption class="article__caption">
 		{caption.title && <strong class="article__caption-title">{caption.title}:</strong>} {caption.text}
-		{caption.generated && (
-			<>
-				<button
-					class="article__note"
-					type="button"
-					aria-describedby={`${id}-ai`}
-					aria-expanded="false"
-					data-tip-for={`${id}-ai`}
-				>
-					<span class="article__note-icon" aria-hidden="true" set:html={Sparkles} />
-					Схема, ИИ
-				</button>
-				<span class="tip" id={`${id}-ai`} popover="auto">
-					Схематичная иллюстрация, сгенерирована нейросетью; анатомия упрощена
-				</span>
-			</>
-		)}
-		{image.atlas && (
-			<>
-				<button
-					class="article__note"
-					type="button"
-					aria-controls={`${id}-atlas`}
-					aria-expanded="false"
-					data-tip-for={`${id}-atlas`}
-				>
-					<span class="article__note-icon" aria-hidden="true" set:html={BookOpen} />
-					Сверено с атласом
-				</button>
-				<span class="tip tip--atlas" id={`${id}-atlas`} popover="auto">
-					<img
-						class="tip__plate"
-						src={atlasSrc(image.atlas.file)}
-						alt={`Таблица из «Анатомии Грея»: ${image.atlas.caption}`}
-						loading="lazy"
-					/>
-					<span class="tip__plate-caption">
-						{image.atlas.caption}. «Анатомия Грея», 1918, общественное достояние.
-					</span>
-					<a class="tip__plate-link" href={atlasUrl(image.atlas.file)} target="_blank" rel="noopener">
-						Открыть в Wikimedia Commons
-						<span class="tip__plate-icon" aria-hidden="true" set:html={ExternalLink} />
-					</a>
-				</span>
-			</>
+		{(image.atlas || caption.generated) && (
+			<span class="article__notes">
+				{image.atlas && (
+					<>
+						<button
+							class="article__note"
+							type="button"
+							aria-controls={`${id}-atlas`}
+							aria-expanded="false"
+							data-tip-for={`${id}-atlas`}
+						>
+							<span class="article__note-icon" aria-hidden="true" set:html={BookOpen} />
+							Сверено с атласом
+						</button>
+						<span class="tip tip--atlas" id={`${id}-atlas`} popover="auto">
+							<img
+								class="tip__plate"
+								src={atlasSrc(image.atlas.file)}
+								alt={`Таблица из «Анатомии Грея»: ${image.atlas.caption}`}
+								loading="lazy"
+							/>
+							<span class="tip__plate-caption">
+								{image.atlas.caption}. «Анатомия Грея», 1918, общественное достояние.
+							</span>
+							<a class="tip__plate-link" href={atlasUrl(image.atlas.file)} target="_blank" rel="noopener">
+								Открыть в Wikimedia Commons
+								<span class="tip__plate-icon" aria-hidden="true" set:html={ExternalLink} />
+							</a>
+						</span>
+					</>
+				)}
+				{caption.generated && (
+					<>
+						<button
+							class="article__note"
+							type="button"
+							aria-describedby={`${id}-ai`}
+							aria-expanded="false"
+							data-tip-for={`${id}-ai`}
+						>
+							<span class="article__note-icon" aria-hidden="true" set:html={Sparkles} />
+							Схема, ИИ
+						</button>
+						<span class="tip" id={`${id}-ai`} popover="auto">
+							Схематичная иллюстрация, сгенерирована нейросетью; анатомия упрощена
+						</span>
+					</>
+				)}
+			</span>
 		)}
 	</figcaption>
 </figure>

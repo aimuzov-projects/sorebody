@@ -198,8 +198,8 @@ img {
 		animation-name: bubble-in-below;
 	}
 
-	&[data-side='left'] {
-		animation-name: bubble-in-left;
+	&[data-side='right'] {
+		animation-name: bubble-in-right;
 	}
 
 	/* Таблица атласа: гравюра на светлой бумаге в обеих темах, как вклейка из книги */
@@ -264,9 +264,9 @@ img {
 	}
 }
 
-@keyframes bubble-in-left {
+@keyframes bubble-in-right {
 	from {
-		transform: translateX(4px);
+		transform: translateX(-4px);
 		opacity: 0;
 	}
 }

@@ -39,3 +39,23 @@ test('the figure box projects right of the index on desktop and above the panel 
 
 	assert.ok(phone.top >= 0 && phone.top + phone.height < 812 * 0.6, JSON.stringify(phone))
 })
+
+test('on phones the figure fills the free band between the header and the sheet', () => {
+	for (const [width, height, top, bottom] of [
+		[375, 812, 52, 480],
+		[375, 663, 52, 330],
+		[430, 932, 64, 600],
+	]) {
+		const r = frame.projectBox(
+			poster.box as never,
+			width,
+			height,
+			frame.fitShift(poster.box as never, width, height, top, bottom),
+		)
+		const free = bottom - top
+
+		assert.ok(r.top >= top && r.top + r.height <= bottom, JSON.stringify({ width, height, r }))
+		assert.ok(r.height >= free * 0.85, JSON.stringify({ width, height, r }))
+		assert.ok(Math.abs(r.top + r.height / 2 - (top + free / 2)) < 1, JSON.stringify({ width, height, r }))
+	}
+})

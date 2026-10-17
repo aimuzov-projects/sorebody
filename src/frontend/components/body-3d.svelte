@@ -21,7 +21,17 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
+	import {
+		ChevronDown,
+		ChevronLeft,
+		Circle,
+		Diamond,
+		FunnelX,
+		PersonStanding,
+		Search,
+		TextQuote,
+		X,
+	} from 'lucide-static'
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
@@ -36,7 +46,7 @@
 	import SearchField from '#frontend/components/search-field.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
-	import { homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
+	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
@@ -315,8 +325,22 @@
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
 
+	/**
+	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
+	 * зависит от экрана и от того, что в шторке, поэтому меряем по месту. offsetTop, а не
+	 * getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
+	 */
+	function startShift(width: number, height: number) {
+		const header = wrap?.querySelector<HTMLElement>('.site-header')
+		const index = wrap?.querySelector<HTMLElement>('.index')
+
+		if (width >= 700 || !header || !index) return homeShift(width)
+
+		return fitShift(poster.box as never, width, height, header.offsetHeight, index.offsetTop)
+	}
+
 	function placePoster() {
-		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, homeShift(innerWidth))
+		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
 	}
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
@@ -644,6 +668,14 @@
 			el.dataset.hidden = String(!spot.visible)
 		}
 
+		// У парной зоны подпись левой точки -- слева от неё, наружу от тела: справа она ложилась
+		// на правую точку и её цифру, особенно у таза и колен на телефоне
+		for (const [i, spot] of spots.entries()) {
+			const twin = spots.find((other) => other.zone === spot.zone && other !== spot)
+
+			spotEls[i]?.toggleAttribute('data-left', twin !== undefined && spot.x < twin.x)
+		}
+
 		for (const [i, mark] of marks.entries()) {
 			const el = markEls[i]
 
@@ -841,7 +873,7 @@
 	function homeFrame(instant = false) {
 		if (!body || open) return
 
-		const { x, y, s } = posterMode ? POSTER_SHIFT : homeShift(wrap.clientWidth)
+		const { x, y, s } = posterMode ? POSTER_SHIFT : startShift(wrap.clientWidth, wrap.clientHeight)
 
 		body.frame(x, y, s, instant)
 		// На телефоне общий план -- карта зон над панелью: щипок увеличивал фигуру под шапку и
@@ -1242,6 +1274,8 @@
 				onkeydown={onToolsKey}
 				role="presentation"
 			>
+				<!-- Фон под раскрытым островом: гасит и чуть размывает экран, тап по нему сворачивает остров -->
+				<div class="index__scrim" onclick={closeTools} role="presentation"></div>
 				<div class="index__island">
 					<button
 						class="index__island-open"
@@ -1268,7 +1302,16 @@
 					{/if}
 				</div>
 				<div class="index__panel" id="index-tools" bind:this={toolsPanel}>
-					<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+					<div class="index__search-row">
+						<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+						<button
+							class="index__panel-close"
+							type="button"
+							aria-label="Свернуть поиск"
+							onclick={closeTools}
+							><span class="index__island-icon" aria-hidden="true">{@html ChevronDown}</span></button
+						>
+					</div>
 					<div class="index__filters">
 						<div class="index__freq" role="group" aria-label="Частота">
 							{#each FREQUENCIES as [value, label, icon] (value)}
@@ -1305,7 +1348,6 @@
 							{/each}
 						</ul>
 					{/if}
-					<button class="index__panel-done" type="button" onclick={closeTools}>Готово</button>
 				</div>
 			</div>
 			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->
@@ -1408,7 +1450,26 @@
 			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
 		</SiteHeader>
 		{#if articleStatus === 'loading'}
-			<p class="reader__status">Загружаем статью…</p>
+			<!-- Скелетон из тех же классов, что у статьи: название и "Коротко" уже известны из списка
+			     и сразу стоят на своих местах, вместо иллюстрации и текста -- плашки. Подмена на
+			     загруженную статью их не сдвигает, а не строка "Загружаем" на месте заголовка -->
+			<div class="reader__body reader__skeleton" aria-hidden="true">
+				<div class="article">
+					<header class="article__hero">
+						<h1 class="article__title">{splitTitle(article.title).name}</h1>
+						<div class="article__summary">
+							<p class="article__summary-label">
+								<span class="article__summary-icon">{@html TextQuote}</span>Коротко
+							</p>
+							<p class="article__summary-text">{article.summary}</p>
+						</div>
+						<div class="reader__bone reader__bone--figure"></div>
+						{#each [92, 100, 84, 96, 60] as width, i (i)}
+							<div class="reader__bone" style:width="{width}%"></div>
+						{/each}
+					</header>
+				</div>
+			</div>
 		{:else if articleStatus === 'error'}
 			<p class="reader__status">
 				Не получилось загрузить статью. <a href="/injuries/{article.slug}/">Открыть отдельно</a>
@@ -1756,6 +1817,12 @@
 			display: inline;
 		}
 
+		/* Левая точка парной зоны: подпись зеркально, по другую сторону от точки */
+		&__spot:global([data-left]) &__spot-count {
+			right: 36px;
+			left: auto;
+		}
+
 		&__fps {
 			position: absolute;
 			top: 12px;
@@ -2073,12 +2140,14 @@
 		/* Остров поиска и фильтров. На десктопе обёртки не участвуют в раскладке: поле, фильтры
 		   и результаты стоят в колонке, как стояли */
 		&__tools,
-		&__panel {
+		&__panel,
+		&__search-row {
 			display: contents;
 		}
 
 		&__island,
-		&__panel-done {
+		&__panel-close,
+		&__scrim {
 			display: none;
 		}
 
@@ -2408,7 +2477,9 @@
 			display: none;
 		}
 
-		/* Раскрытый остров -- карточка во всю ширину: поле с фокусом, фильтры, результаты */
+		/* Раскрытый остров -- карточка во всю ширину: результаты, под ними поле с фокусом и фильтры.
+		   Карточка прижата к низу и растёт вверх: поле стоит у клавиатуры и не уезжает, когда
+		   появляются результаты, а до них дотягивается палец, без прокрутки под клавиатуру */
 		.index__tools--open {
 			right: 12px;
 			left: 12px;
@@ -2428,7 +2499,7 @@
 					100dvh - var(--keyboard, 0px) - var(--theme-toggle-top) - var(--header-row) - 32px -
 						max(16px, env(safe-area-inset-bottom)) - var(--tg-bottom)
 				);
-				padding: 8px 16px 12px;
+				padding: 8px 12px 16px 16px;
 				border-radius: 24px;
 				animation: island-grow 0.3s var(--a-ease) both;
 
@@ -2439,22 +2510,91 @@
 
 			& .index__results {
 				flex: 1 1 auto;
+				order: -1;
 				min-height: 0;
 				max-height: none;
+				margin-top: 8px;
 				padding-bottom: 4px;
 			}
 
-			& .index__panel-done {
-				cursor: pointer;
+			/* Под карточкой экран гаснет и чуть размывается: внимание на поиске, а модель и шторка
+			   уходят на второй план. Слой внутри острова, под карточкой, но поверх всей сцены */
+			& .index__scrim {
+				position: fixed;
+				z-index: -1;
+				inset: 0;
 				display: block;
-				align-self: flex-end;
-				padding: 6px 4px;
-				border: 0;
-				font: inherit;
+				background: color-mix(in srgb, var(--a-bg) 45%, transparent);
+				-webkit-backdrop-filter: blur(6px);
+				backdrop-filter: blur(6px);
+				animation: fade-in 0.3s var(--a-ease) both;
+
+				@media (prefers-reduced-transparency: reduce) {
+					backdrop-filter: none;
+				}
+			}
+
+			/* Результаты в острове -- одной строкой и мельче: над клавиатурой места мало, а часть
+			   тела видна по самому названию */
+			& .index__result {
+				padding: 8px 0;
+			}
+
+			& .index__result-title {
+				overflow: hidden;
+				min-width: 0;
 				font-size: 16px;
-				font-weight: 600;
-				color: var(--a-blue);
-				background: none;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			& .index__result-zone {
+				display: none;
+			}
+
+			/* Свернуть -- иконкой в строке поиска, а не кнопкой "Готово" отдельной строкой внизу:
+			   карточка ниже на эту строку */
+			& .index__search-row {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+
+				/* Корень SearchField -- чужой компонент: без :global селектор получал наш хэш и не
+				   срабатывал, поле стояло по ширине текста */
+				& > :global(:first-child) {
+					flex: 1;
+					min-width: 0;
+				}
+			}
+
+			& .index__panel-close {
+				cursor: pointer;
+				display: inline-grid;
+				flex: none;
+				place-items: center;
+				width: 36px;
+				height: 36px;
+				padding: 0;
+				border: 0;
+				border-radius: 50%;
+				color: var(--a-fg2);
+				background: var(--a-fill);
+
+				&:focus-visible {
+					outline: 2px solid var(--a-blue);
+					outline-offset: 2px;
+				}
+			}
+
+			/* Частота на всю ширину карточки: три положения поровну */
+			& .index__freq {
+				display: flex;
+				width: 100%;
+			}
+
+			& .index__chip {
+				flex: 1;
+				justify-content: center;
 			}
 		}
 	}
@@ -3074,6 +3214,26 @@
 			color: var(--a-fg2);
 		}
 
+		/* Плашки скелетона: заливка цвета подложек, тихо дышит, пока статья грузится */
+		&__bone {
+			height: 14px;
+			margin-top: 12px;
+			border-radius: 7px;
+			background: var(--a-fill);
+			animation: bone-pulse 1.4s ease-in-out infinite;
+
+			@media (--reduced-motion) {
+				animation: none;
+			}
+
+			&--figure {
+				aspect-ratio: 4 / 3;
+				height: auto;
+				margin: 24px 0 28px;
+				border-radius: 16px;
+			}
+		}
+
 		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */
 		&__body {
 			padding-bottom: 40px;
@@ -3139,6 +3299,12 @@
 		from {
 			transform: translateY(12px);
 			opacity: 0;
+		}
+	}
+
+	@keyframes bone-pulse {
+		50% {
+			opacity: 0.5;
 		}
 	}
 

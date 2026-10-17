@@ -22,6 +22,26 @@ export function homeShift(width: number) {
 }
 
 /**
+ * Кадр главной на телефоне по свободной полосе между шапкой и шторкой (`top`, `bottom` --
+ * пиксели от верха окна). С постоянным сдвигом фигура стояла мелкой на любом экране: на
+ * высоком телефоне и под шторкой без поиска над ней оставалась пустота. Фигура заполняет
+ * полосу по высоте, но не крупнее кадра без масштаба.
+ */
+export function fitShift(box: Box, width: number, height: number, top: number, bottom: number) {
+	const base = projectBox(box, width, height, { x: 0, y: 0, s: 1 })
+	const free = bottom - top
+	const s = Math.max(1, base.height / (free * FIT_FILL))
+	// Центр коробки после масштаба встаёт в середину полосы
+	const centre = height / 2 + (base.top + base.height / 2 - height / 2) / s
+	const y = (centre - (top + free / 2)) / height
+
+	return { x: 0, y, s }
+}
+
+/** Доля свободной полосы, которую занимает фигура: остальное -- поля под подписи у точек. */
+const FIT_FILL = 0.9
+
+/**
  * Кадр рендера постера: по центру и чуть мельче, чтобы коробка с тенью целиком влезла в окно.
  * Картинку фигуры сдвиг кадра не меняет, только переносит и масштабирует.
  */

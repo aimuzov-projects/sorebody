@@ -13,7 +13,7 @@
 
 ```bash
 python3 -I config.py <папка со списками> <папка с OBJ> body.json 0.011 0.12 --skin --muscles mus
-blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 body.json
+blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 1 body.json
 node build.mjs body.json body.glb
 ```
 
@@ -45,7 +45,8 @@ BodyParts3D (`skinClip`, `skin-test.mjs`): что вышло наружу, ви�
 
 Сетки мышц BodyParts3D мнутся складками и прорастают сами в себя: в раскрытой зоне это тёмные рваные полосы, и
 упрощение тут ни при чём, без него картина та же. `remesh.py` пересобирает каждую мышцу через voxel remesh Blender
-(воксель 1 мм) в гладкую замкнутую оболочку, дальше её упрощает `build.mjs`. Если воксели съели тонкий лист (площадь
+(воксель 1 мм) в гладкую замкнутую оболочку, сглаживает ступеньки вокселей и раздувает на 1 мм: сглаживание поджимает
+мышцы, и в щелях между ними иначе светит кость. Дальше оболочку упрощает `build.mjs`. Если воксели съели тонкий лист (площадь
 упала больше чем на 10%), остаётся исходный файл, скрипт пишет такие в лог. Готовые файлы в `mus` он не пересчитывает,
 поэтому второй вызов для кусков добавляет только мышцы, которых не было в фигуре.
 
@@ -68,7 +69,7 @@ BP3D по каждой зоне (ICP с масштабом по костям с�
 blender -b Startup.blend --python z_anatomy_export.py -- za-export
 blender -b --factory-startup --python z_align.py -- za-export <папка с OBJ> za-aligned <offset x,y,z>
 python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5 za-aligned --muscles mus 0.1
-blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 detail/*-*.json
+blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 1 detail/*-*.json
 for c in detail/*-*.json; do node build.mjs $c ${c%.json}.glb; done
 cp detail/*.glb detail/index.json ../../public/model/detail/
 ```

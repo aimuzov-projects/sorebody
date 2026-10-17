@@ -1,13 +1,13 @@
 # Перестраивает оболочки мышц BodyParts3D через voxel remesh (Blender): исходные сетки мнутся складками,
 # прорастают сами в себя и в соседей, а в сцене это рваные тёмные полосы. Воксельная оболочка гладкая
 # и замкнутая, дальше её как обычно упрощает build.mjs.
-# usage: blender -b --factory-startup --python remesh.py -- <obj dir> <out dir> <voxel мм> <проходы сглаживания> <config.json> [...]
+# usage: blender -b --factory-startup --python remesh.py -- <obj dir> <out dir> <voxel мм> <проходы сглаживания> <раздуть мм> <config.json> [...]
 # Берёт файлы BP3D из групп muscles всех конфигов, готовые в out не пересчитывает. Если оболочка потеряла заметную часть площади
 # (тонкий лист распался на вокселях), в out кладётся исходный файл.
 import bpy, bmesh, sys, os, json, shutil
 
 a = sys.argv[sys.argv.index('--') + 1:]
-src, out, voxel, SMOOTH, configs = a[0], a[1], float(a[2]), int(a[3]), a[4:]
+src, out, voxel, SMOOTH, GROW, configs = a[0], a[1], float(a[2]), int(a[3]), float(a[4]), a[5:]
 # Доля площади, ниже которой считаем, что воксели съели лист
 MIN_AREA = 0.9
 
@@ -52,6 +52,13 @@ for i in files:
         m.iterations = SMOOTH
         with bpy.context.temp_override(object=ob, active_object=ob):
             bpy.ops.object.modifier_apply(modifier='s')
+    # Сглаживание поджимает мышцы, и в щелях между ними светит кость: возвращаем толщину по нормалям
+    if GROW:
+        m = ob.modifiers.new('g', 'DISPLACE')
+        m.strength = GROW
+        m.mid_level = 0
+        with bpy.context.temp_override(object=ob, active_object=ob):
+            bpy.ops.object.modifier_apply(modifier='g')
     me = ob.data
     bm = bmesh.new()
     bm.from_mesh(me)

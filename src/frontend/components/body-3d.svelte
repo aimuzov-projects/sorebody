@@ -1119,7 +1119,6 @@
 					</p>
 				</div>
 			{/if}
-			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{:else}
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
@@ -1189,7 +1188,6 @@
 					{/each}
 				</ul>
 			{/if}
-			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{/if}
 
@@ -1237,7 +1235,7 @@
 	{/if}
 
 	<!-- Подвал на десктопе -- строкой внизу сцены по сетке шапки: от левой колонки до линии
-	     значка темы. На телефоне он внутри панели индекса (.index__footer) -->
+	     значка темы. На телефоне на главной его нет: место под шапкой отдано индексу -->
 	{#if footer}<div class="scene-footer">{@render footer()}</div>{/if}
 
 	{#if showFps}
@@ -2134,29 +2132,6 @@
 			font-size: 14px;
 			color: var(--a-fg2);
 		}
-
-		/* Подвал сайта, тот же, что на остальных страницах, -- внизу индекса, без своих полей */
-		&__footer {
-			margin-bottom: 16px;
-			font-size: 13px;
-
-			/* На десктопе подвал -- отдельной строкой внизу сцены (.scene-footer) */
-			@media (width >= 700px) {
-				display: none;
-			}
-
-			/* На телефоне у страницы движения место под шапкой -- списку травм: подвал есть под статьёй */
-			@media (width < 700px) {
-				.body3d--movement & {
-					display: none;
-				}
-			}
-
-			/* Внутри индекса подвал -- по краям его колонки, без своих полей */
-			& :global(.footer) {
-				padding: 0;
-			}
-		}
 	}
 
 	/* Подвал сцены на десктопе: строка у нижнего края поверх сцены, без фона. Поля даёт сам
@@ -2199,13 +2174,49 @@
 			);
 		}
 
+		/* Текст ближе к основному цвету, чем --muted: серый терялся на фигуре и под градиентом */
 		& :global(.footer) {
 			padding-block: 0 max(16px, env(safe-area-inset-bottom, 0px));
+			color: color-mix(in srgb, var(--a-fg) 60%, var(--a-fg2));
 		}
 
-		/* Подпись раскрывает ссылки по наведению на себя: без этого hover до неё не доходит */
+		/* Подпись раскрывает ссылки по наведению на себя: без этого hover до неё не доходит.
+		   Поля -- место под плашку текста: подпись обрезает всё за краем, чтобы прятать
+		   выезжающую строку. Отрицательные отступы возвращают текст на прежнее место */
 		& :global(.credit) {
+			--pill-y: 6px;
+			--pill-x: 12px;
 			pointer-events: auto;
+			width: calc(100% + 2 * var(--pill-x));
+			margin: calc(-1 * var(--pill-y)) calc(-1 * var(--pill-x));
+			padding: var(--pill-y) var(--pill-x);
+		}
+
+		& :global(.credit__peek) {
+			inset: var(--pill-y) var(--pill-x);
+		}
+
+		/* Под текстом слева та же плашка, что под логотипом в шапке: светлая фигура
+		   съедала серую подпись */
+		& :global(.credit__group) {
+			isolation: isolate;
+			position: relative;
+
+			&::after {
+				pointer-events: none;
+				content: '';
+				position: absolute;
+				z-index: -1;
+				inset: calc(-1 * var(--pill-y)) calc(-1 * var(--pill-x));
+				border-radius: 999px;
+				background: color-mix(in srgb, var(--a-bg) 15%, transparent);
+				-webkit-backdrop-filter: blur(4px);
+				backdrop-filter: blur(4px);
+
+				@media (prefers-reduced-transparency: reduce) {
+					backdrop-filter: none;
+				}
+			}
 		}
 
 		/* stylelint-disable-next-line selector-max-type -- ссылки подписи из infra-site-kit без своего класса */

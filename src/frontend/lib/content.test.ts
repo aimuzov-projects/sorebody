@@ -130,6 +130,13 @@ for (const { slug, data, body } of articles) {
 		}
 	})
 
+	test(`${slug}: every chart marker has data and every chart is placed`, () => {
+		const placed = [...body.matchAll(/<div data-chart="([^"]+)"><\/div>/g)].map((m) => m[1])
+		const defined = (data.charts ?? []).map((c: { id: string }) => c.id)
+
+		assert.deepEqual([...placed].sort(), [...defined].sort())
+	})
+
 	test(`${slug}: images and their atlas plates exist in public/`, () => {
 		for (const { src, atlas } of data.images) {
 			assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)

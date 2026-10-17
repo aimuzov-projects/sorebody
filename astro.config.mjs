@@ -1,6 +1,9 @@
+import { satteri } from '@astrojs/markdown-satteri'
 import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
 import { defineConfig } from 'astro/config'
+
+import { chartsPlugin } from './src/frontend/lib/markdown-charts.ts'
 
 export default defineConfig({
 	// Сайт живёт в `src/frontend` для того чтобы рядом поместились `src/backend`
@@ -15,7 +18,8 @@ export default defineConfig({
 	// с ванильными скриптами.
 	integrations: [svelte(), sitemap()],
 	// Подсветка Shiki несовместима с CSP.
-	markdown: { syntaxHighlight: false },
+	// Маркеры `data-chart` в статьях превращаются в пиктограммы из frontmatter.
+	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [chartsPlugin] }) },
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
 	// `frame-ancestors` в `<meta>` не работает, встраивание блокирует Caddy
 	// через `X-Frame-Options`.

@@ -276,3 +276,65 @@ img {
 		opacity: 0;
 	}
 }
+
+/* Пиктограмма «N из 10» из `lib/icon-array.ts`. Разметку вставляет Markdown-плагин, поэтому стили
+   глобальные, а не в компоненте страницы. */
+.icon-array {
+	display: grid;
+	gap: 16px;
+	margin: 1.5em 0;
+	padding: 20px;
+	border-radius: 12px;
+	background: var(--surface);
+
+	&__title {
+		margin: 0;
+		font-weight: 600;
+	}
+
+	&__row {
+		display: grid;
+		gap: 6px;
+	}
+
+	&__label {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	&__line {
+		display: grid;
+		grid-template-columns: 4.5em minmax(0, 15rem) auto;
+		gap: 12px;
+		align-items: center;
+		font-size: 0.85rem;
+	}
+
+	&__group {
+		color: var(--muted);
+	}
+
+	&__icons {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	&__icon--on {
+		fill: var(--accent);
+	}
+
+	&__icon--off {
+		fill: color-mix(in srgb, var(--muted) 30%, transparent);
+	}
+
+	&__value {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	&__caption {
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+}

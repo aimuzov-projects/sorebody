@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/aimuzov-projects/wodcare/compare/v1.1.0...v1.2.0) (2026-10-17)
+
+
+### Features
+
+* **scene:** number injury markers and zone list rows ([#13](https://github.com/aimuzov-projects/wodcare/issues/13)) ([60ade87](https://github.com/aimuzov-projects/wodcare/commit/60ade87ab9ed616a0dc4f52f638b315cb7197111))
+
+
+### Bug Fixes
+
+* **model:** keep bones covered by the remeshed muscles ([#14](https://github.com/aimuzov-projects/wodcare/issues/14)) ([1058889](https://github.com/aimuzov-projects/wodcare/commit/10588895d71799ef3daf278f1e296d06cbd0b7da))
+* **scene:** draw the reading progress above the reader header ([#10](https://github.com/aimuzov-projects/wodcare/issues/10)) ([899d6ec](https://github.com/aimuzov-projects/wodcare/commit/899d6ec9dd06a693e2fed6e2b24e8ba2254bc0db))
+* **scene:** softer header and footer over the 3D scene ([#15](https://github.com/aimuzov-projects/wodcare/issues/15)) ([23c8f82](https://github.com/aimuzov-projects/wodcare/commit/23c8f82ca2810c7cdb3a5313ec422b4db1650bf5))
+
 ## [1.1.0](https://github.com/aimuzov-projects/wodcare/compare/v1.0.0...v1.1.0) (2026-10-17)
 
 

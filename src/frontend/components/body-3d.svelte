@@ -1119,7 +1119,6 @@
 					</p>
 				</div>
 			{/if}
-			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{:else}
 		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
@@ -1189,7 +1188,6 @@
 					{/each}
 				</ul>
 			{/if}
-			{#if footer}<div class="index__footer">{@render footer()}</div>{/if}
 		</aside>
 	{/if}
 
@@ -1237,7 +1235,7 @@
 	{/if}
 
 	<!-- Подвал на десктопе -- строкой внизу сцены по сетке шапки: от левой колонки до линии
-	     значка темы. На телефоне он внутри панели индекса (.index__footer) -->
+	     значка темы. На телефоне на главной его нет: место под шапкой отдано индексу -->
 	{#if footer}<div class="scene-footer">{@render footer()}</div>{/if}
 
 	{#if showFps}
@@ -1721,11 +1719,31 @@
 
 		/* Логотип и «i» -- одна ссылка на «О справочнике»: наведение на любую часть красит всё */
 		&__brand-row {
+			isolation: isolate;
+			position: relative;
 			display: flex;
 			gap: 8px;
 			align-items: center;
 			justify-self: start;
 			text-decoration: none;
+
+			/* Под логотипом фигура: светлое лицо съедало серое «care». Под строкой лёгкая дымка
+			   фона с размытием, плашкой с полукруглыми торцами */
+			&::after {
+				pointer-events: none;
+				content: '';
+				position: absolute;
+				z-index: -1;
+				inset: -8px -16px;
+				border-radius: 999px;
+				background: color-mix(in srgb, var(--a-bg) 15%, transparent);
+				-webkit-backdrop-filter: blur(4px);
+				backdrop-filter: blur(4px);
+
+				@media (prefers-reduced-transparency: reduce) {
+					backdrop-filter: none;
+				}
+			}
 
 			&:focus-visible {
 				border-radius: 6px;
@@ -2114,29 +2132,6 @@
 			font-size: 14px;
 			color: var(--a-fg2);
 		}
-
-		/* Подвал сайта, тот же, что на остальных страницах, -- внизу индекса, без своих полей */
-		&__footer {
-			margin-bottom: 16px;
-			font-size: 13px;
-
-			/* На десктопе подвал -- отдельной строкой внизу сцены (.scene-footer) */
-			@media (width >= 700px) {
-				display: none;
-			}
-
-			/* На телефоне у страницы движения место под шапкой -- списку травм: подвал есть под статьёй */
-			@media (width < 700px) {
-				.body3d--movement & {
-					display: none;
-				}
-			}
-
-			/* Внутри индекса подвал -- по краям его колонки, без своих полей */
-			& :global(.footer) {
-				padding: 0;
-			}
-		}
 	}
 
 	/* Подвал сцены на десктопе: строка у нижнего края поверх сцены, без фона. Поля даёт сам
@@ -2144,8 +2139,8 @@
 	   крутить и под подвалом */
 	.scene-footer {
 		/* Подложка без размытия: полупрозрачный фон гаснет вверх от самого края экрана, плотнее
-		   всего на строке подвала, чтобы текст читался поверх фигуры, и сходит на нет над ней */
-		--footer-tail: 24px;
+		   всего у края, и сходит на нет без плато -- так же, как шапка над сценой */
+		--footer-tail: 12px;
 		--footer-bg: var(--bg);
 		pointer-events: none;
 		position: absolute;
@@ -2167,22 +2162,61 @@
 			inset: calc(-1 * var(--footer-tail)) 0 0;
 			background: linear-gradient(
 				to top,
-				color-mix(in srgb, var(--footer-bg) 82%, transparent),
-				color-mix(in srgb, var(--footer-bg) 80%, transparent) 20%,
-				color-mix(in srgb, var(--footer-bg) 72%, transparent) 40%,
-				color-mix(in srgb, var(--footer-bg) 50%, transparent) 60%,
-				color-mix(in srgb, var(--footer-bg) 20%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 58%, transparent),
+				color-mix(in srgb, var(--footer-bg) 50%, transparent) 10%,
+				color-mix(in srgb, var(--footer-bg) 40%, transparent) 22%,
+				color-mix(in srgb, var(--footer-bg) 29%, transparent) 35%,
+				color-mix(in srgb, var(--footer-bg) 18%, transparent) 50%,
+				color-mix(in srgb, var(--footer-bg) 10%, transparent) 65%,
+				color-mix(in srgb, var(--footer-bg) 4%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 1%, transparent) 92%,
 				transparent
 			);
 		}
 
+		/* Текст ближе к основному цвету, чем --muted: серый терялся на фигуре и под градиентом */
 		& :global(.footer) {
 			padding-block: 0 max(16px, env(safe-area-inset-bottom, 0px));
+			color: color-mix(in srgb, var(--a-fg) 60%, var(--a-fg2));
 		}
 
-		/* Подпись раскрывает ссылки по наведению на себя: без этого hover до неё не доходит */
+		/* Подпись раскрывает ссылки по наведению на себя: без этого hover до неё не доходит.
+		   Поля -- место под плашку текста: подпись обрезает всё за краем, чтобы прятать
+		   выезжающую строку. Отрицательные отступы возвращают текст на прежнее место */
 		& :global(.credit) {
+			--pill-y: 6px;
+			--pill-x: 12px;
 			pointer-events: auto;
+			width: calc(100% + 2 * var(--pill-x));
+			margin: calc(-1 * var(--pill-y)) calc(-1 * var(--pill-x));
+			padding: var(--pill-y) var(--pill-x);
+		}
+
+		& :global(.credit__peek) {
+			inset: var(--pill-y) var(--pill-x);
+		}
+
+		/* Под текстом слева та же плашка, что под логотипом в шапке: светлая фигура
+		   съедала серую подпись */
+		& :global(.credit__group) {
+			isolation: isolate;
+			position: relative;
+
+			&::after {
+				pointer-events: none;
+				content: '';
+				position: absolute;
+				z-index: -1;
+				inset: calc(-1 * var(--pill-y)) calc(-1 * var(--pill-x));
+				border-radius: 999px;
+				background: color-mix(in srgb, var(--a-bg) 15%, transparent);
+				-webkit-backdrop-filter: blur(4px);
+				backdrop-filter: blur(4px);
+
+				@media (prefers-reduced-transparency: reduce) {
+					backdrop-filter: none;
+				}
+			}
 		}
 
 		/* stylelint-disable-next-line selector-max-type -- ссылки подписи из infra-site-kit без своего класса */
@@ -2376,6 +2410,8 @@
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
 				width: 100%;
 				height: 100%;
 				stroke-width: 2.4;
@@ -2533,9 +2569,9 @@
 			display: grid;
 			grid-template-columns: 28px 1fr;
 			row-gap: 4px;
-			column-gap: 14px;
+			column-gap: 16px;
 			margin-inline: -14px;
-			padding: 14px 14px 14px 10px;
+			padding: 14px 14px 14px 8px;
 			border-radius: 16px;
 			color: var(--a-fg);
 			text-decoration: none;
@@ -2700,6 +2736,8 @@
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
 				width: 100%;
 				height: 100%;
 				stroke-width: 2.2;

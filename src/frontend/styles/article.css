@@ -761,6 +761,9 @@
 
 	/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 	& svg {
+		/* Стрелка по рамке стоит ровно, но в круге на глаз уходит вправо: открытая
+		   сторона "<" пустая. Оптическая поправка влево */
+		translate: -6% 0;
 		width: 28px;
 		height: 28px;
 		stroke-width: 2.2;

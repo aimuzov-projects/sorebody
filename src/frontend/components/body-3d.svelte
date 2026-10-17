@@ -294,27 +294,33 @@
 	let scrollTimer: ReturnType<typeof setTimeout> | undefined
 	const noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
 
-	/** Маркеры травм раскрытой зоны: травмы с одним местом делят маркер. */
-	type Mark = { key: string; focus: InjuryFocus; slugs: string[] }
+	/**
+	 * Маркеры травм раскрытой зоны: травмы с одним местом делят маркер. `numbers` -- номера
+	 * строк списка, по ним маркер на модели сверяется со строкой.
+	 */
+	type Mark = { key: string; focus: InjuryFocus; slugs: string[]; numbers: number[] }
 
 	const marks: Mark[] = $derived.by(() => {
 		if (!open) {
 			if (!lead) return []
 
 			const focus = injuryFocus(lead.zone, lead.index, lead.injury.slug)
+			const number = movementInjuries.findIndex((entry) => entry.injury === lead?.injury) + 1
 
-			return [{ key: 'lead', focus, slugs: [lead.injury.slug] }]
+			return [{ key: 'lead', focus, slugs: [lead.injury.slug], numbers: [number] }]
 		}
 
 		const byKey = new Map<string, Mark>()
 
-		for (const injury of open.zone.injuries.filter(matches)) {
+		for (const [i, injury] of open.zone.injuries.filter(matches).entries()) {
 			const focus = injuryFocus(open.zone, open.index, injury.slug)
 			const key = focus.position.map((v) => v.toFixed(3)).join()
 			const mark = byKey.get(key)
 
-			if (mark) mark.slugs.push(injury.slug)
-			else byKey.set(key, { key, focus, slugs: [injury.slug] })
+			if (mark) {
+				mark.slugs.push(injury.slug)
+				mark.numbers.push(i + 1)
+			} else byKey.set(key, { key, focus, slugs: [injury.slug], numbers: [i + 1] })
 		}
 
 		return [...byKey.values()]
@@ -957,7 +963,7 @@
 	<li class="zone__row" style:--i={i}>
 		<a
 			class="zone__item"
-			class:zone__item--accent={noHover && active}
+			class:zone__item--current={active}
 			href="/injuries/{injury.slug}/"
 			data-slug={injury.slug}
 			onclick={(event) => onItemClick(event, injury)}
@@ -966,6 +972,7 @@
 			onfocus={() => onAccent(true, false)}
 			onblur={() => onAccent(false, false)}
 		>
+			<span class="zone__num" aria-hidden="true">{i + 1}</span>
 			<span class="zone__name">
 				{head}<span class="zone__tail">{tail}<span class="zone__arrow" aria-hidden="true">→</span></span>
 			</span>
@@ -1053,7 +1060,7 @@
 			hidden={!live}
 			aria-hidden="true"
 		>
-			<span class="body3d__mark-dot"></span>
+			<span class="body3d__mark-dot">{mark.numbers.join(',')}</span>
 		</span>
 	{/each}
 
@@ -1480,36 +1487,50 @@
 				opacity: 0;
 			}
 
+			/* Номера остальных маркеров читаются и рядом с текущим: по ним сверяют список */
 			&--dim {
-				opacity: 0.25;
+				opacity: 0.6;
 			}
 		}
 
+		/* Маркер травмы -- кружок с номером строки списка, у общего места -- через запятую */
 		&__mark-dot {
 			position: relative;
-			width: 9px;
-			height: 9px;
-			border-radius: 50%;
+			display: grid;
+			place-items: center;
+			min-width: 20px;
+			height: 20px;
+			padding: 0 5px;
+			border-radius: 10px;
+			font-size: 11px;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+			line-height: 1;
+			color: var(--a-blue);
 			background: #ffffff;
 			box-shadow:
 				0 0 0 1.5px var(--a-blue),
 				0 1px 4px rgb(0 0 0 / 25%);
 			transition:
 				transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+				color 0.35s var(--a-ease),
+				background 0.35s var(--a-ease),
 				box-shadow 0.45s var(--a-ease);
 
 			&::after {
 				content: '';
 				position: absolute;
-				inset: -7px;
+				inset: -6px;
 				border: 1.5px solid var(--a-blue);
-				border-radius: 50%;
+				border-radius: 16px;
 				opacity: 0;
 			}
 		}
 
 		&__mark--accent &__mark-dot {
-			transform: scale(1.7);
+			transform: scale(1.2);
+			color: #ffffff;
+			background: var(--a-blue);
 			box-shadow:
 				0 0 0 2px var(--a-blue),
 				0 2px 8px rgb(0 0 0 / 25%);
@@ -2185,15 +2206,6 @@
 		   колонку корнем для backdrop-filter, и подложка размывала бы только саму себя */
 		animation: fade-in 0.5s var(--a-ease) backwards;
 
-		/* Наведённая строка остаётся, остальные отходят на второй план. Условие -- курсор
-		   на самой строке, а не на списке: в пустом отступе под строками гасло всё сразу,
-		   а на телефоне после тапа залипало. Поэтому и только для мыши */
-		@media (hover: hover) {
-			&__list:has(&__item:hover) &__item:not(:hover) {
-				opacity: 0.4;
-			}
-		}
-
 		&::before {
 			pointer-events: none;
 			content: '';
@@ -2513,29 +2525,53 @@
 			}
 		}
 
+		/* Номер слева -- тот же, что на маркере травмы на модели. Подложка выходит за текст
+		   полями, а не сдвигает его: строки стоят на месте, когда она появляется */
 		&__item {
 			display: grid;
-			gap: 4px;
-			padding: 14px 0;
+			grid-template-columns: auto 1fr;
+			row-gap: 4px;
+			column-gap: 12px;
+			margin-inline: -12px;
+			padding: 14px 12px;
+			border-radius: 16px;
 			color: var(--a-fg);
 			text-decoration: none;
-			transition:
-				opacity 0.35s var(--a-ease),
-				color 0.35s var(--a-ease);
+			transition: background 0.35s var(--a-ease);
 
 			&:focus-visible {
-				color: var(--a-blue);
-				outline: none;
+				outline: 2px solid var(--a-blue);
+				outline-offset: -2px;
 			}
 		}
 
-		/* Тач: строка у центра списка, к которой подъехала камера */
-		&__list:has(&__item--accent) &__item:not(&__item--accent) {
-			opacity: 0.4;
+		&__num {
+			display: grid;
+			grid-row: span 2;
+			place-items: center;
+			width: 24px;
+			height: 24px;
+			margin-top: 1px;
+			border-radius: 50%;
+			font-size: 13px;
+			font-weight: 600;
+			font-variant-numeric: tabular-nums;
+			color: var(--a-blue);
+			box-shadow: inset 0 0 0 1.5px var(--a-blue);
+			transition:
+				color 0.35s var(--a-ease),
+				background 0.35s var(--a-ease);
 		}
 
-		&__list:has(&__item:focus-visible) &__item:not(:focus-visible) {
-			opacity: 0.4;
+		/* Текущая строка -- та, к которой подъехала камера: наведение мышью, на таче строка
+		   у центра списка. Остальные не гаснут, текущая выделена номером и подложкой */
+		&__item--current {
+			background: var(--a-fill);
+		}
+
+		&__item--current &__num {
+			color: #ffffff;
+			background: var(--a-blue);
 		}
 
 		/* Стрелка после названия: видно, что строка -- ссылка */

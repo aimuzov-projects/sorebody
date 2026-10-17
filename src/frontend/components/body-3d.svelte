@@ -2333,20 +2333,23 @@
 				pointer-events: auto;
 			}
 
-			/* Строки снизу на сплошном фоне, к зоне фон растворяется по smoothstep. Сверху своей
-			   подложки нет: там тот же полупрозрачный край шапки сцены, что на десктопе, и модель
-			   видна под заголовком, а не за глухой полосой */
+			/* Под строками та же подложка, что у колонки на десктопе: полупрозрачная, с размытием,
+			   к зоне растворяется по smoothstep. Сверху своей подложки нет: там тот же
+			   полупрозрачный край шапки сцены, и модель видна под заголовком */
 			&::before {
 				inset: 0;
-				background: linear-gradient(
+				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				mask-image: linear-gradient(
 					to top,
-					color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
-					color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
-					color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
-					color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
-					color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
-					color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
-					color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
+					rgb(0 0 0 / 100%) 44%,
+					rgb(0 0 0 / 93%) 47.7%,
+					rgb(0 0 0 / 74%) 51.3%,
+					rgb(0 0 0 / 50%) 55%,
+					rgb(0 0 0 / 26%) 58.7%,
+					rgb(0 0 0 / 7%) 62.3%,
+					rgb(0 0 0 / 0%) 66%
 				);
 			}
 		}

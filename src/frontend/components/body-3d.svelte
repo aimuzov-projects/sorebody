@@ -1738,9 +1738,9 @@
 				z-index: -1;
 				inset: -8px -16px;
 				border-radius: 999px;
-				background: color-mix(in srgb, var(--a-bg) 10%, transparent);
-				-webkit-backdrop-filter: blur(2px);
-				backdrop-filter: blur(2px);
+				background: color-mix(in srgb, var(--a-bg) 15%, transparent);
+				-webkit-backdrop-filter: blur(4px);
+				backdrop-filter: blur(4px);
 
 				@media (prefers-reduced-transparency: reduce) {
 					backdrop-filter: none;

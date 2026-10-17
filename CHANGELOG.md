@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/aimuzov-projects/wodcare/compare/v1.4.0...v1.5.0) (2026-10-17)
+
+
+### Features
+
+* **scene:** fit the phone home figure and lift search results ([#22](https://github.com/aimuzov-projects/wodcare/issues/22)) ([1171a07](https://github.com/aimuzov-projects/wodcare/commit/1171a0746e1d8a75269ebbcb1a3255d46f8ceccb))
+
 ## [1.4.0](https://github.com/aimuzov-projects/wodcare/compare/v1.3.0...v1.4.0) (2026-10-17)
 
 

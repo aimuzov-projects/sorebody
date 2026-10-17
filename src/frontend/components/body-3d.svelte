@@ -679,7 +679,7 @@
 		// Сдвигается окно камеры, а не модель: фигура вертится вокруг своей оси
 		// Но и не вплотную: срез плеча при 0,1 заходил под размытую подложку списка
 		const half = 0.19 + 8 / wrap.clientWidth
-		const at = open.side === 'bottom' ? { x: 0, y: 0.14 } : { x: open.side === 'left' ? half : -half, y: 0 }
+		const at = open.side === 'bottom' ? { x: 0, y: 0.2 } : { x: open.side === 'left' ? half : -half, y: 0 }
 		// «Всё тело» на телефоне мельче: между шапкой и шторкой должна уместиться почти вся фигура
 		const zoom = open.zone === whole && open.side === 'bottom' ? 0.6 : clamp(0.3 / open.zone.radius, 1, 2.4)
 
@@ -1073,6 +1073,7 @@
 	<SiteHeader floating>
 		<a
 			class="index__brand-row logo-host"
+			class:index__brand-row--away={open?.side === 'bottom'}
 			href="/about/"
 			aria-label="Wodcare, о справочнике"
 			aria-describedby="about-tip"
@@ -1746,6 +1747,13 @@
 				outline: 2px solid var(--a-blue);
 				outline-offset: 4px;
 			}
+
+			/* В раскрытой зоне на телефоне строку шапки занимает стрелка назад с названием зоны */
+			&--away {
+				pointer-events: none;
+				visibility: hidden;
+				opacity: 0;
+			}
 		}
 
 		/* Значок «О справочнике»: та же тихая «i», что у другого названия в статье. Сам 13px,
@@ -2310,6 +2318,8 @@
 
 		/* Телефон: шапка прибита к верху, строки -- в нижней половине под зоной */
 		&--bottom {
+			/* Над шапкой сцены: заголовок зоны стоит в её строке, и её дымка мутила его */
+			z-index: 4;
 			right: 0;
 			left: 0;
 			width: auto;
@@ -2322,13 +2332,13 @@
 				background:
 					linear-gradient(
 						to bottom,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 12%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 15%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 18%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 21%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 24%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 27%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 30%
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 7%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 9.5%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 12%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 14.5%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 17%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 19.5%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 22%
 					),
 					linear-gradient(
 						to top,
@@ -2347,13 +2357,13 @@
 				background:
 					linear-gradient(
 						to bottom,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 19%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 22%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 25%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 28%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 31%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 34%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 37%
+						color-mix(in srgb, var(--a-bg) 100%, transparent) 13%,
+						color-mix(in srgb, var(--a-bg) 93%, transparent) 15.5%,
+						color-mix(in srgb, var(--a-bg) 74%, transparent) 18%,
+						color-mix(in srgb, var(--a-bg) 50%, transparent) 20.5%,
+						color-mix(in srgb, var(--a-bg) 26%, transparent) 23%,
+						color-mix(in srgb, var(--a-bg) 7%, transparent) 25.5%,
+						color-mix(in srgb, var(--a-bg) 0%, transparent) 28%
 					),
 					linear-gradient(
 						to top,
@@ -2373,6 +2383,13 @@
 			/* Под шапкой сцены и ниже её мягкого края: на высоте заголовка индекса крупный
 			   заголовок зоны тонул в градиенте шапки */
 			padding-top: calc(var(--theme-toggle-top) + var(--header-row) + 40px);
+
+			/* На телефоне заголовок зоны встаёт в строку шапки вместо логотипа, справа от него --
+			   переключатель темы: крупный заголовок под шапкой съедал треть экрана над зоной */
+			.zone--bottom & {
+				padding-top: calc(var(--theme-toggle-top) + (var(--header-row) - 44px) / 2);
+				padding-right: calc(var(--theme-toggle-room) - 24px);
+			}
 		}
 
 		/* «Назад» -- стрелка в строке заголовка, без подписи: место на шапке дороже слова */
@@ -2439,6 +2456,11 @@
 			font-weight: 700;
 			line-height: 1.08;
 			letter-spacing: -0.03em;
+
+			/* В строке шапки -- кегль под её высоту */
+			.zone--bottom & {
+				font-size: min(28px, calc((100cqi - 48px) / (var(--chars, 1) * 0.56)));
+			}
 		}
 
 		/* Под фильтром список неполный: слева, под стрелкой "Назад", -- сброс иконкой, дальше

@@ -1729,16 +1729,16 @@
 			justify-self: start;
 			text-decoration: none;
 
-			/* Под логотипом фигура: светлое лицо съедало серое «care». Пятно почти глухое, размытие
-			   лишь сглаживает то, что просвечивает. Форма -- овал шире строки: концы слова ещё
-			   на плотной части, а углов, по которым пятно читалось прямоугольником, нет */
+			/* Под логотипом фигура: светлое лицо съедало серое «care». Под словом лёгкая дымка
+			   фона с размытием. Форма -- овал шире строки: концы слова ещё на плотной части,
+			   а углов, по которым пятно читалось прямоугольником, нет */
 			&::after {
 				pointer-events: none;
 				content: '';
 				position: absolute;
 				z-index: -1;
 				inset: -18px -44px;
-				background: color-mix(in srgb, var(--a-bg) 94%, transparent);
+				background: color-mix(in srgb, var(--a-bg) 20%, transparent);
 				-webkit-backdrop-filter: blur(4px);
 				backdrop-filter: blur(4px);
 				/* Спад по smoothstep: с линейным край пятна читался ободком */

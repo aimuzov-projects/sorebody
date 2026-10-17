@@ -25,6 +25,8 @@ export function attachTip(
 	let pinned = false
 	// Мышь ушла со значка: даём ей дойти до подсказки, там в карточке бывает ссылка
 	let leaving = 0
+	// Мышь лишь пролетает над значком по пути к соседней подсказке: та не должна закрыться
+	let opening = 0
 	// Открыта ли подсказка до нажатия: тап мимо popover="auto" закрывает её уже на pointerdown
 	let wasOpen = false
 	const isOpen = () => tip.matches(':popover-open')
@@ -46,7 +48,7 @@ export function attachTip(
 		const { width, height } = tip.getBoundingClientRect()
 		const box = column.getBoundingClientRect()
 		const viewport = document.documentElement.clientWidth
-		const left = rect.left - width - 12
+		const left = rect.left - width - 4
 
 		if (side === 'left' && left >= 16) {
 			const bottom = document.documentElement.clientHeight - 8
@@ -77,13 +79,18 @@ export function attachTip(
 		if (event.pointerType !== 'mouse') return
 
 		clearTimeout(leaving)
-		show()
+		clearTimeout(opening)
+
+		if (isOpen()) return
+
+		opening = window.setTimeout(show, 150)
 	}
 
 	// Мышь ушла и со значка, и с подсказки -- закрываем, даже закреплённую кликом
 	const onLeave = (event: PointerEvent) => {
 		if (event.pointerType !== 'mouse') return
 
+		clearTimeout(opening)
 		clearTimeout(leaving)
 		leaving = window.setTimeout(hide, 200)
 	}
@@ -141,6 +148,7 @@ export function attachTip(
 
 	return () => {
 		clearTimeout(leaving)
+		clearTimeout(opening)
 		hide()
 		tip.removeEventListener('pointerenter', onTipEnter)
 		tip.removeEventListener('pointerleave', onLeave)

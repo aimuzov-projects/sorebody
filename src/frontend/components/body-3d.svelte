@@ -2376,6 +2376,8 @@
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
 				width: 100%;
 				height: 100%;
 				stroke-width: 2.4;
@@ -2703,6 +2705,8 @@
 				width: 100%;
 				height: 100%;
 				stroke-width: 2.2;
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
 			}
 		}
 

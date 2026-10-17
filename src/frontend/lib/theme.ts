@@ -14,16 +14,28 @@ export const THEME_BOOT =
 	`try{var t=localStorage.getItem('${KEY}');` +
 	"if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch{}"
 
-/** Переключатель один и ходит по кругу, как во всех проектах: система, светлая, тёмная. */
-const NEXT: Record<Theme, Theme> = { auto: 'light', light: 'dark', dark: 'auto' }
+const LABEL: Record<Theme, string> = { auto: 'как в системе', light: 'светлая', dark: 'тёмная' }
+const ENABLE: Record<Scheme, string> = { light: 'Включить светлую', dark: 'Включить тёмную' }
 
-export const THEME_VIEW: Record<Theme, { label: string; action: string }> = {
-	auto: { label: 'как в системе', action: 'Включить светлую' },
-	light: { label: 'светлая', action: 'Включить тёмную' },
-	dark: { label: 'тёмная', action: 'Вернуть как в системе' },
+/**
+ * Клик всегда переворачивает видимую схему, иначе из "как в системе" можно было попасть
+ * в ту же схему, и клик выглядел пустым. Если новая схема совпала с системной, это снова
+ * "как в системе", а не выбор, прибитый к localStorage.
+ */
+function nextTheme(theme: Theme, system: Scheme): Theme {
+	const next = (theme === 'auto' ? system : theme) === 'dark' ? 'light' : 'dark'
+
+	return next === system ? 'auto' : next
 }
 
-export const themeLabel = (theme: Theme) => `Тема: ${THEME_VIEW[theme].label}. ${THEME_VIEW[theme].action}`
+/** Действие следующего клика. Без `system` (на сервере) считаем систему светлой. */
+export function themeAction(theme: Theme, system: Scheme = 'light') {
+	const next = nextTheme(theme, system)
+
+	return next === 'auto' ? 'Вернуть как в системе' : ENABLE[next]
+}
+
+export const themeLabel = (theme: Theme, system?: Scheme) => `Тема: ${LABEL[theme]}. ${themeAction(theme, system)}`
 
 function current(): Theme {
 	const theme = document.documentElement.dataset.theme
@@ -31,8 +43,8 @@ function current(): Theme {
 	return theme === 'light' || theme === 'dark' ? theme : 'auto'
 }
 
-const systemScheme = (): Scheme => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-const schemeOf = (theme: Theme): Scheme => (theme === 'auto' ? systemScheme() : theme)
+const media = () => matchMedia('(prefers-color-scheme: dark)')
+const systemScheme = (): Scheme => (media().matches ? 'dark' : 'light')
 
 /**
  * В копии страницы канвас 3D-модели пустой: cloneNode не переносит картинку. Кадр WebGL
@@ -91,9 +103,9 @@ export function initThemeToggle() {
 	}
 
 	const sync = () => {
-		button.setAttribute('aria-label', themeLabel(current()))
+		button.setAttribute('aria-label', themeLabel(current(), systemScheme()))
 
-		if (tip) tip.textContent = THEME_VIEW[current()].action
+		if (tip) tip.textContent = themeAction(current(), systemScheme())
 
 		place()
 	}
@@ -116,7 +128,7 @@ export function initThemeToggle() {
 	addEventListener('resize', place)
 
 	button.addEventListener('click', () => {
-		const theme = NEXT[current()]
+		const theme = nextTheme(current(), systemScheme())
 
 		if (theme === 'auto') delete document.documentElement.dataset.theme
 		else document.documentElement.dataset.theme = theme
@@ -131,14 +143,10 @@ export function initThemeToggle() {
 		sync()
 	})
 
-	// Следующий клик может не сменить схему (тёмная -> система в тёмной ОС): тогда круга нет
-	themePeek(button, {
-		target: (scheme) => {
-			const next = schemeOf(NEXT[current()])
-
-			return next === scheme ? undefined : next
-		},
-	})
+	// Круг по умолчанию показывает противоположную схему, ровно её и даст клик
+	themePeek(button)
+	// Подпись зависит от системной схемы, а та может смениться, пока страница открыта
+	media().addEventListener('change', sync)
 
 	// Копия страницы в круге подсмотра заполняется заново при каждой смене схемы
 	new MutationObserver((records) => {

@@ -1721,11 +1721,63 @@
 
 		/* Логотип и «i» -- одна ссылка на «О справочнике»: наведение на любую часть красит всё */
 		&__brand-row {
+			isolation: isolate;
+			position: relative;
 			display: flex;
 			gap: 8px;
 			align-items: center;
 			justify-self: start;
 			text-decoration: none;
+
+			/* Под логотипом фигура: светлое лицо съедало серое «care». Пятно размытия с фоном
+			   по форме строки, плотное под словом и мягкое к краям. Две маски вместо одного
+			   эллипса: эллипс оставлял концы слова почти без подложки */
+			&::after {
+				--edge-x: 32px;
+				--edge-y: 20px;
+				pointer-events: none;
+				content: '';
+				position: absolute;
+				z-index: -1;
+				inset: calc(-0.8 * var(--edge-y)) calc(-0.8 * var(--edge-x));
+				background: color-mix(in srgb, var(--a-bg) 55%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				/* Край по smoothstep: с линейным спадом угол пятна читался прямоугольником */
+				mask-image:
+					linear-gradient(
+						to right,
+						transparent,
+						rgb(0 0 0 / 16%) calc(var(--edge-x) * 0.25),
+						rgb(0 0 0 / 50%) calc(var(--edge-x) * 0.5),
+						rgb(0 0 0 / 84%) calc(var(--edge-x) * 0.75),
+						#000000 var(--edge-x),
+						#000000 calc(100% - var(--edge-x)),
+						rgb(0 0 0 / 84%) calc(100% - var(--edge-x) * 0.75),
+						rgb(0 0 0 / 50%) calc(100% - var(--edge-x) * 0.5),
+						rgb(0 0 0 / 16%) calc(100% - var(--edge-x) * 0.25),
+						transparent
+					),
+					linear-gradient(
+						to bottom,
+						transparent,
+						rgb(0 0 0 / 16%) calc(var(--edge-y) * 0.25),
+						rgb(0 0 0 / 50%) calc(var(--edge-y) * 0.5),
+						rgb(0 0 0 / 84%) calc(var(--edge-y) * 0.75),
+						#000000 var(--edge-y),
+						#000000 calc(100% - var(--edge-y)),
+						rgb(0 0 0 / 84%) calc(100% - var(--edge-y) * 0.75),
+						rgb(0 0 0 / 50%) calc(100% - var(--edge-y) * 0.5),
+						rgb(0 0 0 / 16%) calc(100% - var(--edge-y) * 0.25),
+						transparent
+					);
+				mask-composite: intersect;
+
+				@media (prefers-reduced-transparency: reduce) {
+					background: color-mix(in srgb, var(--a-bg) 70%, transparent);
+					backdrop-filter: none;
+				}
+			}
 
 			&:focus-visible {
 				border-radius: 6px;
@@ -2167,14 +2219,14 @@
 			inset: calc(-1 * var(--footer-tail)) 0 0;
 			background: linear-gradient(
 				to top,
-				color-mix(in srgb, var(--footer-bg) 82%, transparent),
-				color-mix(in srgb, var(--footer-bg) 74%, transparent) 10%,
-				color-mix(in srgb, var(--footer-bg) 62%, transparent) 22%,
-				color-mix(in srgb, var(--footer-bg) 48%, transparent) 35%,
-				color-mix(in srgb, var(--footer-bg) 33%, transparent) 50%,
-				color-mix(in srgb, var(--footer-bg) 20%, transparent) 65%,
-				color-mix(in srgb, var(--footer-bg) 9%, transparent) 80%,
-				color-mix(in srgb, var(--footer-bg) 3%, transparent) 92%,
+				color-mix(in srgb, var(--footer-bg) 58%, transparent),
+				color-mix(in srgb, var(--footer-bg) 50%, transparent) 10%,
+				color-mix(in srgb, var(--footer-bg) 40%, transparent) 22%,
+				color-mix(in srgb, var(--footer-bg) 29%, transparent) 35%,
+				color-mix(in srgb, var(--footer-bg) 18%, transparent) 50%,
+				color-mix(in srgb, var(--footer-bg) 10%, transparent) 65%,
+				color-mix(in srgb, var(--footer-bg) 4%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 1%, transparent) 92%,
 				transparent
 			);
 		}
@@ -2705,11 +2757,11 @@
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
 				width: 100%;
 				height: 100%;
 				stroke-width: 2.2;
-				/* Оптическая поправка влево, как у .article-bar__back */
-				translate: -6% 0;
 			}
 		}
 

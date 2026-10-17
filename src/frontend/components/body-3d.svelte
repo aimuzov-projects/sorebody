@@ -21,7 +21,17 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronDown, ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
+	import {
+		ChevronDown,
+		ChevronLeft,
+		Circle,
+		Diamond,
+		FunnelX,
+		PersonStanding,
+		Search,
+		TextQuote,
+		X,
+	} from 'lucide-static'
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
@@ -1440,7 +1450,26 @@
 			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
 		</SiteHeader>
 		{#if articleStatus === 'loading'}
-			<p class="reader__status">Загружаем статью…</p>
+			<!-- Скелетон из тех же классов, что у статьи: название и "Коротко" уже известны из списка
+			     и сразу стоят на своих местах, вместо иллюстрации и текста -- плашки. Подмена на
+			     загруженную статью их не сдвигает, а не строка "Загружаем" на месте заголовка -->
+			<div class="reader__body reader__skeleton" aria-hidden="true">
+				<div class="article">
+					<header class="article__hero">
+						<h1 class="article__title">{splitTitle(article.title).name}</h1>
+						<div class="article__summary">
+							<p class="article__summary-label">
+								<span class="article__summary-icon">{@html TextQuote}</span>Коротко
+							</p>
+							<p class="article__summary-text">{article.summary}</p>
+						</div>
+						<div class="reader__bone reader__bone--figure"></div>
+						{#each [92, 100, 84, 96, 60] as width, i (i)}
+							<div class="reader__bone" style:width="{width}%"></div>
+						{/each}
+					</header>
+				</div>
+			</div>
 		{:else if articleStatus === 'error'}
 			<p class="reader__status">
 				Не получилось загрузить статью. <a href="/injuries/{article.slug}/">Открыть отдельно</a>
@@ -3185,6 +3214,26 @@
 			color: var(--a-fg2);
 		}
 
+		/* Плашки скелетона: заливка цвета подложек, тихо дышит, пока статья грузится */
+		&__bone {
+			height: 14px;
+			margin-top: 12px;
+			border-radius: 7px;
+			background: var(--a-fill);
+			animation: bone-pulse 1.4s ease-in-out infinite;
+
+			@media (--reduced-motion) {
+				animation: none;
+			}
+
+			&--figure {
+				aspect-ratio: 4 / 3;
+				height: auto;
+				margin: 24px 0 28px;
+				border-radius: 16px;
+			}
+		}
+
 		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */
 		&__body {
 			padding-bottom: 40px;
@@ -3250,6 +3299,12 @@
 		from {
 			transform: translateY(12px);
 			opacity: 0;
+		}
+	}
+
+	@keyframes bone-pulse {
+		50% {
+			opacity: 0.5;
 		}
 	}
 

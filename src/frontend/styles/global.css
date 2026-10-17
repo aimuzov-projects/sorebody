@@ -278,23 +278,44 @@ img {
 }
 
 /* Пиктограмма «N из 10» из `lib/icon-array.ts`. Разметку вставляет Markdown-плагин, поэтому стили
-   глобальные, а не в компоненте страницы. */
+   глобальные, а не в компоненте страницы. Колонки общие через subgrid: фигурки во всех строках
+   начинаются с одного места при любой длине подписи группы. На телефоне подпись встаёт над ними.
+   Подписи на всю ширину не участвуют в расчёте колонок (`contain: inline-size`), иначе длинный
+   заголовок раздувает колонки по содержимому и фигуркам не остаётся места. */
 .icon-array {
 	display: grid;
-	gap: 16px;
+	grid-template-columns: minmax(0, 15rem) max-content;
+	gap: 16px 12px;
 	margin: 1.5em 0;
 	padding: 20px;
 	border-radius: 12px;
 	background: var(--surface);
+
+	@media (--sm) {
+		grid-template-columns: max-content minmax(0, 15rem) max-content;
+	}
+
+	&__title,
+	&__label,
+	&__caption {
+		contain: inline-size;
+		grid-column: 1 / -1;
+	}
 
 	&__title {
 		margin: 0;
 		font-weight: 600;
 	}
 
-	&__row {
+	&__row,
+	&__line {
 		display: grid;
-		gap: 6px;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+	}
+
+	&__row {
+		row-gap: 6px;
 	}
 
 	&__label {
@@ -303,15 +324,20 @@ img {
 	}
 
 	&__line {
-		display: grid;
-		grid-template-columns: 4.5em minmax(0, 15rem) auto;
-		gap: 12px;
+		row-gap: 2px;
 		align-items: center;
 		font-size: 0.85rem;
 	}
 
 	&__group {
+		contain: inline-size;
+		grid-column: 1 / -1;
 		color: var(--muted);
+
+		@media (--sm) {
+			contain: none;
+			grid-column: auto;
+		}
 	}
 
 	&__icons {

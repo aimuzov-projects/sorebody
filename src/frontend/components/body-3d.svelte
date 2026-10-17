@@ -705,6 +705,7 @@
 		body.showDetail(open.zone === whole ? null : open.zone.slug, point.position, open.zone.radius)
 		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
 		body.controls.autoRotate = false
+		body.controls.enableZoom = true
 
 		// При reduced motion камера не ездит за строками: акцент только на маркере и проёме
 		const target = reduceMotion ? null : injury
@@ -790,6 +791,9 @@
 		const { x, y, s } = posterMode ? POSTER_SHIFT : homeShift(wrap.clientWidth)
 
 		body.frame(x, y, s, instant)
+		// На телефоне общий план -- карта зон над панелью: щипок увеличивал фигуру под шапку и
+		// панель. Крупный план даёт раскрытая зона
+		body.controls.enableZoom = wrap.clientWidth >= 700
 	}
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
@@ -1040,7 +1044,7 @@
 			hidden={!live}
 			aria-label="{spot.zone.label}: {counts.get(spot.zone)} {plural(counts.get(spot.zone) ?? 0)}"
 			onclick={() => openZone(spot.zone, spot.index)}
-			onfocus={() => hover(spot)}
+			onfocus={() => !noHover && hover(spot)}
 		>
 			<span class="body3d__spot-dot"></span>
 			<span class="body3d__spot-count" aria-hidden="true"
@@ -1645,32 +1649,13 @@
 			top: auto;
 			right: 0;
 			left: 0;
-			gap: 14px;
+			gap: 10px;
 			width: auto;
 			max-height: 56dvh;
-			padding: 28px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
-
-			&::before {
-				inset: -40px 0 0;
-				background: linear-gradient(to top, var(--a-bg) 70%, transparent);
-			}
-
-			&--away {
-				transform: translateY(16px);
-			}
+			padding: 20px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
 		}
 
 		@media (width < 700px) {
-			/* На телефоне зоны -- строка с горизонтальной прокруткой, края гаснут маской */
-			&__zones {
-				overflow: auto hidden;
-				display: flex;
-				flex: none;
-				gap: 22px;
-				padding: 4px 0;
-				mask-image: linear-gradient(to right, #000000 85%, transparent);
-			}
-
 			&__results {
 				max-height: 26dvh;
 				padding-bottom: 32px;
@@ -1700,12 +1685,23 @@
 			bottom: 0;
 			left: -50vw;
 			background: linear-gradient(to right, var(--a-bg) 60%, transparent);
+
+			/* Переопределения для телефона -- здесь, а не в блоке шторки выше: там их перебивало это
+			   правило, и шторка получала боковую подложку с резким верхним краем поперёк ореола */
+			@media (width < 700px) {
+				inset: -40px 0 0;
+				background: linear-gradient(to top, var(--a-bg) 70%, transparent);
+			}
 		}
 
 		&--away {
 			pointer-events: none;
 			transform: translateX(-16px);
 			opacity: 0;
+
+			@media (width < 700px) {
+				transform: translateY(16px);
+			}
 
 			@media (--reduced-motion) {
 				transform: none;
@@ -2047,6 +2043,22 @@
 			}
 		}
 
+		/* На телефоне зоны переносятся в несколько рядов: в прокручиваемой строке половина зон
+		   пряталась за правым краем, и ничто не намекало, что строку можно листать. После общего
+		   правила, иначе его прокрутка и маска перебивают перенос */
+		&__zones {
+			@media (width < 700px) {
+				overflow: visible;
+				display: flex;
+				flex: none;
+				flex-wrap: wrap;
+				gap: 0 20px;
+				padding: 0;
+				mask-image: none;
+				animation-name: none;
+			}
+		}
+
 		&__zone {
 			cursor: pointer;
 			display: flex;
@@ -2069,7 +2081,7 @@
 				opacity 0.3s var(--a-ease);
 
 			@media (width < 700px) {
-				padding: 6px 0;
+				padding: 3px 0;
 				font-size: 17px;
 			}
 

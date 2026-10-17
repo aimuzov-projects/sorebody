@@ -2538,9 +2538,9 @@
 			display: grid;
 			grid-template-columns: 28px 1fr;
 			row-gap: 4px;
-			column-gap: 14px;
+			column-gap: 16px;
 			margin-inline: -14px;
-			padding: 14px 14px 14px 10px;
+			padding: 14px 14px 14px 8px;
 			border-radius: 16px;
 			color: var(--a-fg);
 			text-decoration: none;

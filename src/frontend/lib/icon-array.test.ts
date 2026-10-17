@@ -44,6 +44,13 @@ test('numbers stay readable as text next to the hidden svg', () => {
 	assert.match(html, /8 из 10 · 84%/)
 })
 
+test('fractional percent uses a decimal comma', () => {
+	const html = iconArrayHtml({ ...chart, rows: [{ label: 'Выступ', values: [54.8, 23.1] }] })
+
+	assert.match(html, /5 из 10 · 54,8%/)
+	assert.match(html, /2 из 10 · 23,1%/)
+})
+
 test('text from frontmatter is escaped', () => {
 	assert.match(iconArrayHtml(chart), /&lt;находка&gt;/)
 })

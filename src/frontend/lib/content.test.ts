@@ -5,6 +5,7 @@ import { parse } from 'yaml'
 
 import { REGIONS } from '#frontend/data/regions.ts'
 
+import { atlasSrc } from './atlas.ts'
 import { injurySchema } from './injury-schema.ts'
 import { citedPmids } from './pubmed.ts'
 
@@ -129,8 +130,12 @@ for (const { slug, data, body } of articles) {
 		}
 	})
 
-	test(`${slug}: images exist in public/`, () => {
-		for (const { src } of data.images) assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
+	test(`${slug}: images and their atlas plates exist in public/`, () => {
+		for (const { src, atlas } of data.images) {
+			assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
+
+			if (atlas) assert.ok(existsSync(new URL(`.${atlasSrc(atlas.file)}`, `${PUBLIC}/`)), atlas.file)
+		}
 	})
 
 	test(`${slug}: images are 1200x669 JPEG or WebP with alpha`, () => {

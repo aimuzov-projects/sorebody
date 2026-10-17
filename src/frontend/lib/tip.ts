@@ -7,20 +7,26 @@ type TipOptions = {
 	scroller?: HTMLElement | Window
 	/** Клик закрепляет подсказку и открывает её с пальца. Для ссылки -- нет, клик ведёт по ней. */
 	pinOnClick?: boolean
+	/** Слева от значка, если там хватает места: большая карточка не влезает над ним. */
+	side?: 'left'
 }
 
 /**
- * Подсказка к значку в языке сайта: без рамки, в верхнем слое (popover="auto", поэтому Esc
- * и тап мимо закрывают её сами). Мышь открывает её наведением, клавиатура -- фокусом. Место
- * ставим сами: над значком, а если сверху не хватает места до шапки -- под ним; по горизонтали
+ * Подсказка к значку в языке сайта: без рамки, в верхнем слое (popover="auto": Esc и
+ * тап мимо закрывают её сами). Мышь держит её, пока она над значком или подсказкой,
+ * клавиатура открывает фокусом. Встаёт над значком, без места до шапки -- под ним,
  * не шире колонки и экрана. Возвращает функцию снятия.
  */
 export function attachTip(
 	button: HTMLElement,
 	tip: HTMLElement,
-	{ column, bar = null, scroller = window, pinOnClick = false }: TipOptions,
+	{ column, bar = null, scroller = window, pinOnClick = false, side }: TipOptions,
 ) {
 	let pinned = false
+	// Мышь ушла со значка: даём ей дойти до подсказки, там в карточке бывает ссылка
+	let leaving = 0
+	// Мышь лишь пролетает над значком по пути к соседней подсказке: та не должна закрыться
+	let opening = 0
 	// Открыта ли подсказка до нажатия: тап мимо popover="auto" закрывает её уже на pointerdown
 	let wasOpen = false
 	const isOpen = () => tip.matches(':popover-open')
@@ -42,6 +48,18 @@ export function attachTip(
 		const { width, height } = tip.getBoundingClientRect()
 		const box = column.getBoundingClientRect()
 		const viewport = document.documentElement.clientWidth
+		const left = rect.left - width - 4
+
+		if (side === 'left' && left >= 16) {
+			const bottom = document.documentElement.clientHeight - 8
+
+			tip.dataset.side = 'left'
+			tip.style.top = `${Math.max(top, Math.min(rect.top + rect.height / 2 - height / 2, bottom - height))}px`
+			tip.style.left = `${left}px`
+
+			return
+		}
+
 		const above = rect.top - height - 10 >= top
 		const from = Math.max(16, box.left)
 		const to = Math.min(viewport - 16, Math.max(box.right, from + width))
@@ -57,10 +75,37 @@ export function attachTip(
 		place()
 	}
 
-	const onEnter = (event: PointerEvent) => event.pointerType === 'mouse' && show()
-	const onLeave = (event: PointerEvent) => event.pointerType === 'mouse' && !pinned && hide()
+	const onEnter = (event: PointerEvent) => {
+		if (event.pointerType !== 'mouse') return
+
+		clearTimeout(leaving)
+		clearTimeout(opening)
+
+		if (isOpen()) return
+
+		opening = window.setTimeout(show, 150)
+	}
+
+	// Мышь ушла и со значка, и с подсказки -- закрываем, даже закреплённую кликом
+	const onLeave = (event: PointerEvent) => {
+		if (event.pointerType !== 'mouse') return
+
+		clearTimeout(opening)
+		clearTimeout(leaving)
+		leaving = window.setTimeout(hide, 200)
+	}
+
+	const onTipEnter = (event: PointerEvent) => event.pointerType === 'mouse' && clearTimeout(leaving)
 	const onFocus = () => button.matches(':focus-visible') && show()
-	const onBlur = () => !pinned && hide()
+
+	// Фокус ушёл со значка и подсказки; Tab со значка на ссылку внутри неё -- не уход
+	const onFocusOut = (event: FocusEvent) => {
+		const to = event.relatedTarget as Node | null
+
+		if (to && (to === button || tip.contains(to))) return
+
+		hide()
+	}
 	const onDown = () => {
 		wasOpen = isOpen()
 	}
@@ -87,7 +132,7 @@ export function attachTip(
 	button.addEventListener('pointerenter', onEnter)
 	button.addEventListener('pointerleave', onLeave)
 	button.addEventListener('focus', onFocus)
-	button.addEventListener('blur', onBlur)
+	button.addEventListener('focusout', onFocusOut)
 
 	if (pinOnClick) {
 		button.addEventListener('pointerdown', onDown)
@@ -95,15 +140,23 @@ export function attachTip(
 	}
 
 	tip.addEventListener('toggle', onToggle)
+	tip.addEventListener('focusout', onFocusOut)
+	tip.addEventListener('pointerenter', onTipEnter)
+	tip.addEventListener('pointerleave', onLeave)
 	scroller.addEventListener('scroll', place, { passive: true })
 	addEventListener('resize', place)
 
 	return () => {
+		clearTimeout(leaving)
+		clearTimeout(opening)
 		hide()
+		tip.removeEventListener('pointerenter', onTipEnter)
+		tip.removeEventListener('pointerleave', onLeave)
 		button.removeEventListener('pointerenter', onEnter)
 		button.removeEventListener('pointerleave', onLeave)
 		button.removeEventListener('focus', onFocus)
-		button.removeEventListener('blur', onBlur)
+		button.removeEventListener('focusout', onFocusOut)
+		tip.removeEventListener('focusout', onFocusOut)
 		button.removeEventListener('pointerdown', onDown)
 		button.removeEventListener('click', onClick)
 		tip.removeEventListener('toggle', onToggle)
@@ -113,27 +166,25 @@ export function attachTip(
 }
 
 /**
- * Подсказки статьи: другое название у заголовка (`[data-alias]` и `[data-alias-tip]`) и пометка
- * «от нейросети» у подписи иллюстрации (`[data-ai]` и `[data-ai-tip]`). Шапка над статьёй
- * (.site-header): на отдельной странице -- шапка сайта, поверх сцены -- своя у reader.
+ * Подсказки статьи: другое название у заголовка, пометка "от нейросети" и таблица
+ * атласа у подписи каждой иллюстрации. Кнопка называет id своей подсказки в
+ * `data-tip-for`. Шапка над статьёй (.site-header): на отдельной странице -- шапка
+ * сайта, поверх сцены -- своя у reader.
  */
 export function initArticleTips(root: Element, scroller: HTMLElement | Window) {
 	const bar = root.closest('.reader')?.querySelector('.site-header') ?? document.querySelector('.site-header')
-	const stops = [
-		['[data-alias]', '[data-alias-tip]', 'h1'],
-		['[data-ai]', '[data-ai-tip]', 'figcaption'],
-	].flatMap(([buttonSelector, tipSelector, columnSelector]) => {
-		const button = root.querySelector<HTMLElement>(buttonSelector)
-		const tip = root.querySelector<HTMLElement>(tipSelector)
+	const stops = [...root.querySelectorAll<HTMLElement>('[data-tip-for]')].flatMap((button) => {
+		const tip = root.querySelector<HTMLElement>(`#${button.dataset.tipFor}`)
 
-		if (!button || !tip) return []
+		if (!tip) return []
 
 		return [
 			attachTip(button, tip, {
-				column: button.closest(columnSelector) ?? button,
+				column: button.closest('h1, figcaption') ?? button,
 				bar,
 				scroller,
 				pinOnClick: true,
+				side: tip.classList.contains('tip--atlas') ? 'left' : undefined,
 			}),
 		]
 	})

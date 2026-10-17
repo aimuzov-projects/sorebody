@@ -283,13 +283,13 @@
 		}
 	}
 
-	/* Подпись под иллюстрацией -- мельче текста и вторичным цветом, по ширине колонки. Заголовок
-	   рисунка до двоеточия -- цветом текста, пометка «от нейросети» -- тихим чипом в конце */
+	/* Подпись под иллюстрацией -- мельче и вторичным цветом, по ширине колонки. Заголовок
+	   рисунка -- цветом текста, пометки -- тихими чипами в конце */
 	&__caption {
 		max-width: var(--article-column);
 		margin: 10px auto 0;
 		font-size: 14.5px;
-		line-height: 1.5;
+		line-height: 1.7;
 		color: var(--muted);
 	}
 
@@ -298,12 +298,12 @@
 		color: var(--fg);
 	}
 
-	&__ai {
+	&__note {
 		cursor: help;
 		display: inline-flex;
 		gap: 4px;
 		align-items: center;
-		margin-left: 6px;
+		margin-left: 10px;
 		padding: 1px 8px 1px 6px;
 		border: 0;
 		border-radius: 999px;
@@ -331,7 +331,7 @@
 		}
 	}
 
-	&__ai-icon {
+	&__note-icon {
 		display: inline-flex;
 		width: 12px;
 		height: 12px;

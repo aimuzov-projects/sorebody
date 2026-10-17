@@ -36,7 +36,7 @@
 	import SearchField from '#frontend/components/search-field.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
-	import { homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
+	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
 
@@ -315,8 +315,22 @@
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
 
+	/**
+	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
+	 * зависит от экрана и от того, что в шторке, поэтому меряем по месту. offsetTop, а не
+	 * getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
+	 */
+	function startShift(width: number, height: number) {
+		const header = wrap?.querySelector<HTMLElement>('.site-header')
+		const index = wrap?.querySelector<HTMLElement>('.index')
+
+		if (width >= 700 || !header || !index) return homeShift(width)
+
+		return fitShift(poster.box as never, width, height, header.offsetHeight, index.offsetTop)
+	}
+
 	function placePoster() {
-		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, homeShift(innerWidth))
+		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
 	}
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
@@ -644,6 +658,14 @@
 			el.dataset.hidden = String(!spot.visible)
 		}
 
+		// У парной зоны подпись левой точки -- слева от неё, наружу от тела: справа она ложилась
+		// на правую точку и её цифру, особенно у таза и колен на телефоне
+		for (const [i, spot] of spots.entries()) {
+			const twin = spots.find((other) => other.zone === spot.zone && other !== spot)
+
+			spotEls[i]?.toggleAttribute('data-left', twin !== undefined && spot.x < twin.x)
+		}
+
 		for (const [i, mark] of marks.entries()) {
 			const el = markEls[i]
 
@@ -841,7 +863,7 @@
 	function homeFrame(instant = false) {
 		if (!body || open) return
 
-		const { x, y, s } = posterMode ? POSTER_SHIFT : homeShift(wrap.clientWidth)
+		const { x, y, s } = posterMode ? POSTER_SHIFT : startShift(wrap.clientWidth, wrap.clientHeight)
 
 		body.frame(x, y, s, instant)
 		// На телефоне общий план -- карта зон над панелью: щипок увеличивал фигуру под шапку и
@@ -1756,6 +1778,12 @@
 			display: inline;
 		}
 
+		/* Левая точка парной зоны: подпись зеркально, по другую сторону от точки */
+		&__spot:global([data-left]) &__spot-count {
+			right: 36px;
+			left: auto;
+		}
+
 		&__fps {
 			position: absolute;
 			top: 12px;
@@ -2408,7 +2436,9 @@
 			display: none;
 		}
 
-		/* Раскрытый остров -- карточка во всю ширину: поле с фокусом, фильтры, результаты */
+		/* Раскрытый остров -- карточка во всю ширину: результаты, под ними поле с фокусом и фильтры.
+		   Карточка прижата к низу и растёт вверх: поле стоит у клавиатуры и не уезжает, когда
+		   появляются результаты, а до них дотягивается палец, без прокрутки под клавиатуру */
 		.index__tools--open {
 			right: 12px;
 			left: 12px;
@@ -2439,8 +2469,10 @@
 
 			& .index__results {
 				flex: 1 1 auto;
+				order: -1;
 				min-height: 0;
 				max-height: none;
+				margin-top: 8px;
 				padding-bottom: 4px;
 			}
 

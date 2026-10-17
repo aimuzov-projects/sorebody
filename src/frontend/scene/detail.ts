@@ -121,10 +121,9 @@ export function createDetail(options: {
 					obj.geometry.computeVertexNormals()
 					const layer = obj.name.split('.')[0]
 
+					// Без сдвига внутрь (uInset), как у фигуры: мышцы куска видны только в проёме, где кожи
+					// нет, а сдвиг на 3 мм съедал тонкие листы вроде грудной, и сквозь них светила кость
 					obj.material = (materials[layer] ?? materials.muscles).material
-
-					// Сдвиг мышц внутрь -- 3 мм в единицах квантованного меша, как у фигуры
-					if (layer === 'muscles') obj.userData.inset = 0.003 / obj.getWorldScale(new Vector3()).x
 				})
 
 				return gltf.scene
@@ -203,14 +202,7 @@ export function createDetail(options: {
 			// У зоны нет куска («Всё тело») или он не загрузился -- остаётся лёгкая фигура
 			if (!groups.length) return cut(null, 0)
 
-			for (const group of groups) {
-				group.traverse((obj) => {
-					if (obj instanceof Mesh && obj.userData.inset)
-						materials.muscles.uniforms.uInset.value = obj.userData.inset
-				})
-
-				scene.add(group)
-			}
+			for (const group of groups) scene.add(group)
 
 			cut(point, radius)
 			applyHighlight()

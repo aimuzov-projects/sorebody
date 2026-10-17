@@ -1729,27 +1729,18 @@
 			justify-self: start;
 			text-decoration: none;
 
-			/* Под логотипом фигура: светлое лицо съедало серое «care». Под словом лёгкая дымка
-			   фона с размытием. Форма -- овал шире строки: концы слова ещё на плотной части,
-			   а углов, по которым пятно читалось прямоугольником, нет */
+			/* Под логотипом фигура: светлое лицо съедало серое «care». Под строкой лёгкая дымка
+			   фона с размытием, плашкой с полукруглыми торцами */
 			&::after {
 				pointer-events: none;
 				content: '';
 				position: absolute;
 				z-index: -1;
-				inset: -18px -44px;
-				background: color-mix(in srgb, var(--a-bg) 20%, transparent);
-				-webkit-backdrop-filter: blur(4px);
-				backdrop-filter: blur(4px);
-				/* Спад по smoothstep: с линейным край пятна читался ободком */
-				mask-image: radial-gradient(
-					closest-side,
-					#000000 55%,
-					rgb(0 0 0 / 84%) 66%,
-					rgb(0 0 0 / 50%) 77%,
-					rgb(0 0 0 / 16%) 88%,
-					transparent
-				);
+				inset: -8px -16px;
+				border-radius: 999px;
+				background: color-mix(in srgb, var(--a-bg) 10%, transparent);
+				-webkit-backdrop-filter: blur(2px);
+				backdrop-filter: blur(2px);
 
 				@media (prefers-reduced-transparency: reduce) {
 					backdrop-filter: none;

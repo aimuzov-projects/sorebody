@@ -47,6 +47,10 @@
 
 <label class="search search--{variant}" class:search--filled={value}>
 	<span class="search__icon" aria-hidden="true">{@html Search}</span>
+	<!-- С текстом на месте лупы -- крестик очистки: под большим пальцем слева, а не у края поля -->
+	<button class="search__clear" type="button" aria-label="Очистить поиск" onclick={clear}
+		><span class="search__clear-icon" aria-hidden="true">{@html X}</span></button
+	>
 	<input
 		class="search__input"
 		type="search"
@@ -61,9 +65,6 @@
 	/>
 	<!-- Подсказка клавиши: только там, где есть клавиатура и курсор, и пока поле пустое -->
 	<kbd class="search__key" aria-hidden="true">/</kbd>
-	<button class="search__clear" type="button" aria-label="Очистить поиск" onclick={clear}
-		><span class="search__clear-icon" aria-hidden="true">{@html X}</span></button
-	>
 </label>
 
 <style>
@@ -150,6 +151,10 @@
 			color: var(--a-fg);
 		}
 
+		&--filled &__icon {
+			display: none;
+		}
+
 		&__input {
 			flex: 1;
 			min-width: 0;
@@ -205,7 +210,8 @@
 		}
 
 		/* Очистка: кружок 18px в приглушённом цвете с тонким крестиком цвета фона. Проявляется
-		   с текстом; зона нажатия 44 на 44 -- невидимым ::before */
+		   с текстом на месте лупы, поля по 1px -- по её ширине 20px, чтобы текст не прыгал;
+		   зона нажатия 44 на 44 -- невидимым ::before */
 		&__clear {
 			cursor: pointer;
 			position: relative;
@@ -214,7 +220,7 @@
 			place-items: center;
 			width: 18px;
 			height: 18px;
-			margin-right: 2px;
+			margin: 0 1px;
 			padding: 0;
 			border: 0;
 			border-radius: 50%;

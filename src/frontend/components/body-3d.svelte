@@ -1264,6 +1264,8 @@
 				onkeydown={onToolsKey}
 				role="presentation"
 			>
+				<!-- Фон под раскрытым островом: гасит и чуть размывает экран, тап по нему сворачивает остров -->
+				<div class="index__scrim" onclick={closeTools} role="presentation"></div>
 				<div class="index__island">
 					<button
 						class="index__island-open"
@@ -2115,7 +2117,8 @@
 		}
 
 		&__island,
-		&__panel-close {
+		&__panel-close,
+		&__scrim {
 			display: none;
 		}
 
@@ -2485,6 +2488,41 @@
 				padding-bottom: 4px;
 			}
 
+			/* Под карточкой экран гаснет и чуть размывается: внимание на поиске, а модель и шторка
+			   уходят на второй план. Слой внутри острова, под карточкой, но поверх всей сцены */
+			& .index__scrim {
+				position: fixed;
+				z-index: -1;
+				inset: 0;
+				display: block;
+				background: color-mix(in srgb, var(--a-bg) 45%, transparent);
+				-webkit-backdrop-filter: blur(6px);
+				backdrop-filter: blur(6px);
+				animation: fade-in 0.3s var(--a-ease) both;
+
+				@media (prefers-reduced-transparency: reduce) {
+					backdrop-filter: none;
+				}
+			}
+
+			/* Результаты в острове -- одной строкой и мельче: над клавиатурой места мало, а часть
+			   тела видна по самому названию */
+			& .index__result {
+				padding: 8px 0;
+			}
+
+			& .index__result-title {
+				overflow: hidden;
+				min-width: 0;
+				font-size: 16px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			& .index__result-zone {
+				display: none;
+			}
+
 			/* Свернуть -- иконкой в строке поиска, а не кнопкой "Готово" отдельной строкой внизу:
 			   карточка ниже на эту строку */
 			& .index__search-row {
@@ -2492,7 +2530,9 @@
 				gap: 6px;
 				align-items: center;
 
-				& > :first-child {
+				/* Корень SearchField -- чужой компонент: без :global селектор получал наш хэш и не
+				   срабатывал, поле стояло по ширине текста */
+				& > :global(:first-child) {
 					flex: 1;
 					min-width: 0;
 				}

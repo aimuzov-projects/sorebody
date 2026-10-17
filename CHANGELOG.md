@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/aimuzov-projects/wodcare/compare/v1.2.0...v1.3.0) (2026-10-17)
+
+
+### Features
+
+* **content:** add icon-array charts to articles ([#19](https://github.com/aimuzov-projects/wodcare/issues/19)) ([b609704](https://github.com/aimuzov-projects/wodcare/commit/b609704a062f5f361eef8f3f867543b8d1de02d9))
+* **scene:** rework the phone layout of the scene ([#18](https://github.com/aimuzov-projects/wodcare/issues/18)) ([30e31df](https://github.com/aimuzov-projects/wodcare/commit/30e31df85af199d1f08a9081ed2356b7619d5048))
+
+
+### Bug Fixes
+
+* **article:** put figure badges on their own line, atlas first ([#17](https://github.com/aimuzov-projects/wodcare/issues/17)) ([29168ec](https://github.com/aimuzov-projects/wodcare/commit/29168ecee298d1887e6e0af77bcbf09180474cb7))
+* **theme:** flip the visible scheme on every toggle click ([#11](https://github.com/aimuzov-projects/wodcare/issues/11)) ([a1cd88c](https://github.com/aimuzov-projects/wodcare/commit/a1cd88cb4b5d186549d460585dc3afc1dfe345eb))
+
 ## [1.2.0](https://github.com/aimuzov-projects/wodcare/compare/v1.1.0...v1.2.0) (2026-10-17)
 
 

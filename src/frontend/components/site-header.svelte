@@ -89,16 +89,34 @@
 		}
 	}
 
+	/* Над сценой -- как подвал сцены (.scene-footer в body-3d.svelte), только зеркально:
+	   без размытия, оно мылило голову фигуры. Полупрозрачный фон плотнее всего у верхнего
+	   края и сходит на нет чуть ниже строки шапки */
 	.site-header--floating {
 		--header-fade: 0px;
-		/* Над сценой край длиннее: под шапкой не текст, а контрастная фигура */
-		--header-tail: 56px;
+		--header-tail: 24px;
 
 		pointer-events: none;
 		position: absolute;
 		z-index: 3;
 		right: 0;
 		left: 0;
+
+		&::before {
+			display: none;
+		}
+
+		&::after {
+			background: linear-gradient(
+				to bottom,
+				color-mix(in srgb, var(--header-bg) 82%, transparent),
+				color-mix(in srgb, var(--header-bg) 80%, transparent) 20%,
+				color-mix(in srgb, var(--header-bg) 72%, transparent) 40%,
+				color-mix(in srgb, var(--header-bg) 50%, transparent) 60%,
+				color-mix(in srgb, var(--header-bg) 20%, transparent) 80%,
+				transparent
+			);
+		}
 
 		& > :global(*) {
 			pointer-events: auto;

@@ -2503,8 +2503,9 @@
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			flex: 1;
-			margin: 12px 0 0;
-			padding: 14px 0 22dvh;
+			/* Поля по бокам -- место под подложку строк: прокрутка обрезает всё за краем списка */
+			margin: 12px -14px 0;
+			padding: 14px 14px 22dvh;
 			list-style: none;
 			mask-image: linear-gradient(to bottom, transparent, #000000 18px, #000000 calc(100% - 120px), transparent);
 		}
@@ -2525,15 +2526,16 @@
 			}
 		}
 
-		/* Номер слева -- тот же, что на маркере травмы на модели. Подложка выходит за текст
-		   полями, а не сдвигает его: строки стоят на месте, когда она появляется */
+		/* Номер слева -- тот же, что на маркере травмы на модели. Сетка общая с заголовком:
+		   номер по центру под стрелкой «назад», текст на линии названия зоны. Подложка выходит
+		   за них полями, а не сдвигает: строки стоят на месте, когда она появляется */
 		&__item {
 			display: grid;
-			grid-template-columns: auto 1fr;
+			grid-template-columns: 28px 1fr;
 			row-gap: 4px;
-			column-gap: 12px;
-			margin-inline: -12px;
-			padding: 14px 12px;
+			column-gap: 14px;
+			margin-inline: -14px;
+			padding: 14px 14px 14px 10px;
 			border-radius: 16px;
 			color: var(--a-fg);
 			text-decoration: none;
@@ -2549,11 +2551,11 @@
 			display: grid;
 			grid-row: span 2;
 			place-items: center;
-			width: 24px;
-			height: 24px;
-			margin-top: 1px;
+			width: 28px;
+			height: 28px;
+			margin-top: -1px;
 			border-radius: 50%;
-			font-size: 13px;
+			font-size: 15px;
 			font-weight: 600;
 			font-variant-numeric: tabular-nums;
 			color: var(--a-blue);

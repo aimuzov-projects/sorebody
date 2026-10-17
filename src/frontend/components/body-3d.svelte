@@ -2333,56 +2333,21 @@
 				pointer-events: auto;
 			}
 
-			/* Шапка сверху и строки снизу на сплошном фоне, к зоне между ними фон
-			   растворяется по smoothstep */
+			/* Строки снизу на сплошном фоне, к зоне фон растворяется по smoothstep. Сверху своей
+			   подложки нет: там тот же полупрозрачный край шапки сцены, что на десктопе, и модель
+			   видна под заголовком, а не за глухой полосой */
 			&::before {
 				inset: 0;
-				background:
-					linear-gradient(
-						to bottom,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 7%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 9.5%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 12%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 14.5%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 17%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 19.5%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 22%
-					),
-					linear-gradient(
-						to top,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
-					);
-			}
-
-			/* Под фильтром шапка выше на строку: фон под ней тянется дальше */
-			&:has(.zone__filters)::before {
-				background:
-					linear-gradient(
-						to bottom,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 13%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 15.5%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 18%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 20.5%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 23%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 25.5%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 28%
-					),
-					linear-gradient(
-						to top,
-						color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
-						color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
-						color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
-						color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
-						color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
-						color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
-						color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
-					);
+				background: linear-gradient(
+					to top,
+					color-mix(in srgb, var(--a-bg) 100%, transparent) 44%,
+					color-mix(in srgb, var(--a-bg) 93%, transparent) 47.7%,
+					color-mix(in srgb, var(--a-bg) 74%, transparent) 51.3%,
+					color-mix(in srgb, var(--a-bg) 50%, transparent) 55%,
+					color-mix(in srgb, var(--a-bg) 26%, transparent) 58.7%,
+					color-mix(in srgb, var(--a-bg) 7%, transparent) 62.3%,
+					color-mix(in srgb, var(--a-bg) 0%, transparent) 66%
+				);
 			}
 		}
 

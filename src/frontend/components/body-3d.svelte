@@ -19,9 +19,9 @@
 </script>
 
 <script lang="ts">
-	import { onMount, tick, type Snippet } from 'svelte'
+	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search } from 'lucide-static'
+	import { ChevronLeft, Circle, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
 
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
@@ -106,6 +106,50 @@
 		frequency = 'all'
 		movement = ''
 	}
+
+	/** Остров поиска и фильтров на телефоне: раскрыт или свёрнут в таблетку. */
+	let toolsOpen = $state(false)
+	let toolsPanel = $state<HTMLDivElement>()
+	/** Высота клавиатуры над низом окна: iOS не сжимает под неё окно, и раскрытый остров уходил бы под неё. */
+	let keyboard = $state(0)
+
+	function openTools() {
+		// Синхронно, ещё в обработчике нажатия: иначе iOS не поднимет клавиатуру по focus()
+		flushSync(() => (toolsOpen = true))
+		toolsPanel?.querySelector('input')?.focus()
+	}
+
+	function closeTools() {
+		toolsOpen = false
+
+		;(document.activeElement as HTMLElement | null)?.blur()
+	}
+
+	function onToolsKey(event: KeyboardEvent) {
+		if (event.key !== 'Escape' || !toolsOpen) return
+
+		event.stopPropagation()
+		closeTools()
+	}
+
+	$effect(() => {
+		const viewport = window.visualViewport
+
+		if (!toolsOpen || !viewport) return
+
+		const update = () => (keyboard = Math.max(0, innerHeight - viewport.height - viewport.offsetTop))
+
+		update()
+		viewport.addEventListener('resize', update)
+		viewport.addEventListener('scroll', update)
+
+		return () => {
+			viewport.removeEventListener('resize', update)
+			viewport.removeEventListener('scroll', update)
+			keyboard = 0
+		}
+	})
+
 	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
 	const results = $derived(
 		query.trim()
@@ -657,6 +701,7 @@
 
 		const side = wrap.clientWidth < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
 
+		toolsOpen = false
 		hovered = null
 		lead = null
 		setHighlight(null)
@@ -664,6 +709,10 @@
 		clearAccent()
 		open = { zone, index, side }
 		focusOpen()
+
+		// На телефоне текущая травма -- прилипшая к верху строка, и при открытии это первая: маркер
+		// и камера сразу показывают, о чём верхняя строка
+		if (side === 'bottom' && noHover) setAccent(zone.injuries.find(matches) ?? null)
 	}
 
 	/**
@@ -745,13 +794,17 @@
 
 		scrollTimer = setTimeout(() => {
 			const box = list.getBoundingClientRect()
-			const middle = box.top + box.height * 0.4
+			const style = getComputedStyle(list)
+			// Список зоны на телефоне прилипает строками к верху: текущая -- прилипшая. Без прилипания
+			// (список движения) -- строка у линии на 40% высоты
+			const snap = style.scrollSnapType !== 'none'
+			const line = snap ? box.top + (parseFloat(style.scrollPaddingTop) || 0) : box.top + box.height * 0.4
 			let best: HTMLElement | undefined
 			let bestD = Infinity
 
 			for (const item of list.querySelectorAll<HTMLElement>('[data-slug]')) {
 				const r = item.getBoundingClientRect()
-				const d = Math.abs(r.top + r.height / 2 - middle)
+				const d = Math.abs((snap ? r.top : r.top + r.height / 2) - line)
 
 				if (d < bestD) {
 					best = item
@@ -801,6 +854,7 @@
 		if (article?.slug === injury.slug) return
 
 		article = injury
+		toolsOpen = false
 		// Камера возвращается к кадру зоны, пока сцена скрыта: после статьи акцент начнётся заново
 		accent = null
 		focusOpen()
@@ -924,9 +978,16 @@
 
 		if (moved) return
 
-		// Список ловит клики сам, клик по сцене мимо него -- на уровень вверх
+		// Список ловит клики сам. Клик по маркеру травмы делает её текущей, мимо маркеров мышью --
+		// на уровень вверх. На таче тап мимо ничего не делает: модель крутят пальцем, а случайный тап
+		// не должен закрывать зону, назад ведёт стрелка
 		if (open) {
-			if (!(event.target as Element).closest('.zone')) up()
+			if ((event.target as Element).closest('.zone')) return
+
+			const mark = nearestMark(event.clientX, event.clientY, event.pointerType === 'mouse' ? 24 : 36)
+
+			if (mark) pickInjury(mark.slugs[0])
+			else if (event.pointerType === 'mouse') up()
 
 			return
 		}
@@ -936,6 +997,48 @@
 		const spot = nearest(x, y, event.pointerType === 'mouse' ? PICK_PX : PICK_PX * 1.3)
 
 		if (spot) openZone(spot.zone, spot.index)
+	}
+
+	/** Маркер травмы ближе `radius` пикселей к точке в координатах окна. */
+	function nearestMark(x: number, y: number, radius: number) {
+		let best: Mark | undefined
+		let bestD = radius
+
+		for (const [i, mark] of marks.entries()) {
+			const el = markEls[i]
+
+			if (!el || el.hidden || el.dataset.hidden === 'true') continue
+
+			const r = el.getBoundingClientRect()
+			const d = Math.hypot(r.left + r.width / 2 - x, r.top + r.height / 2 - y)
+
+			if (d < bestD) {
+				best = mark
+				bestD = d
+			}
+		}
+
+		return best
+	}
+
+	/** Травма с маркера: она текущая, а список подъезжает к её строке. */
+	function pickInjury(slug: string) {
+		const injury = open?.zone.injuries.find((i) => i.slug === slug)
+
+		if (!injury) return
+
+		setAccent(injury)
+
+		const list = wrap.querySelector<HTMLElement>('.zone__list')
+		const row = list?.querySelector(`[data-slug="${CSS.escape(slug)}"]`)?.closest('li')
+
+		if (!list || !row) return
+
+		// Сам список, а не scrollIntoView: тот докручивал и колонку с overflow: hidden, и она уезжала
+		const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top
+		const pad = parseFloat(getComputedStyle(list).scrollPaddingTop) || 0
+
+		list.scrollTo({ top: list.scrollTop + top - pad, behavior: reduceMotion ? 'auto' : 'smooth' })
 	}
 
 	function onKey(event: KeyboardEvent) {
@@ -1130,69 +1233,106 @@
 			<header class="index__head">
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>
-			<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
-			<div class="index__filters">
-				<div class="index__freq" role="group" aria-label="Частота">
-					{#each FREQUENCIES as [value, label, icon] (value)}
-						<button
-							class="index__chip index__chip--{value}"
-							type="button"
-							aria-pressed={frequency === value}
-							onclick={() => (frequency = value)}
-							>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span>{/if}<span
-								class="index__chip-label"
-								data-label={label}>{label}</span
-							></button
+			<!-- Поиск и фильтры. На десктопе обёртки прозрачны для раскладки, на телефоне это остров
+			     внизу экрана: свёрнутым он показывает включённые фильтры, по нажатию раскрывается -->
+			<div
+				class="index__tools"
+				class:index__tools--open={toolsOpen}
+				style:--keyboard="{keyboard}px"
+				onkeydown={onToolsKey}
+				role="presentation"
+			>
+				<div class="index__island">
+					<button
+						class="index__island-open"
+						type="button"
+						aria-expanded={toolsOpen}
+						aria-controls="index-tools"
+						onclick={openTools}
+					>
+						<span class="index__island-icon" aria-hidden="true">{@html Search}</span>
+						<span class="index__island-label"
+							>{activeFilters.length
+								? activeFilters.map((f) => f.label).join(' · ')
+								: 'Поиск и фильтры'}</span
 						>
-					{/each}
+					</button>
+					{#if filtering}
+						<button
+							class="index__island-reset"
+							type="button"
+							aria-label="Сбросить фильтры"
+							onclick={resetFilters}
+							><span class="index__island-icon" aria-hidden="true">{@html X}</span></button
+						>
+					{/if}
 				</div>
-				<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
-			</div>
-			{#if query.trim()}
-				<ul class="index__results" aria-live="polite">
-					{#each results as { zone, injury } (injury.slug)}
-						{@const { name, alias } = splitTitle(injury.title)}
-						<li>
-							<a
-								class="index__result"
-								href="/injuries/{injury.slug}/"
-								onclick={(event) => onItemClick(event, injury)}
-							>
-								<span class="index__result-title">{name}</span>
-								<span class="index__result-zone">{alias ? `${zone.label} · ${alias}` : zone.label}</span
+				<div class="index__panel" id="index-tools" bind:this={toolsPanel}>
+					<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+					<div class="index__filters">
+						<div class="index__freq" role="group" aria-label="Частота">
+							{#each FREQUENCIES as [value, label, icon] (value)}
+								<button
+									class="index__chip index__chip--{value}"
+									type="button"
+									aria-pressed={frequency === value}
+									onclick={() => (frequency = value)}
+									>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
+										>{/if}<span class="index__chip-label" data-label={label}>{label}</span></button
 								>
-							</a>
-						</li>
-					{:else}
-						<li class="index__empty">Ничего не нашлось</li>
-					{/each}
-				</ul>
-			{:else}
-				<ul class="index__zones">
-					{#each allZones as zone (zone.slug)}
-						{@const count = counts.get(zone) ?? 0}
-						<li class="index__zone-row">
-							<button
-								class="index__zone"
-								type="button"
-								disabled={count === 0}
-								onclick={() => openZone(zone, 0)}
-								onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
-								onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
-								onfocus={() => previewZone(zone, false)}
-								onblur={() => previewZone(null, false)}
-							>
-								<span class="index__count">{count}</span>
-								<span class="index__zone-label">{zone.label}</span>
-								<!-- «Всё тело» -- такая же строка, человечек после названия тихо помечает её -->
-								{#if zone === whole}<span class="index__icon" aria-hidden="true"
-										>{@html PersonStanding}</span
-									>{/if}
-							</button>
-						</li>
-					{/each}
-				</ul>
-			{/if}
+							{/each}
+						</div>
+						<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
+					</div>
+					{#if query.trim()}
+						<ul class="index__results" aria-live="polite">
+							{#each results as { zone, injury } (injury.slug)}
+								{@const { name, alias } = splitTitle(injury.title)}
+								<li>
+									<a
+										class="index__result"
+										href="/injuries/{injury.slug}/"
+										onclick={(event) => onItemClick(event, injury)}
+									>
+										<span class="index__result-title">{name}</span>
+										<span class="index__result-zone"
+											>{alias ? `${zone.label} · ${alias}` : zone.label}</span
+										>
+									</a>
+								</li>
+							{:else}
+								<li class="index__empty">Ничего не нашлось</li>
+							{/each}
+						</ul>
+					{/if}
+					<button class="index__panel-done" type="button" onclick={closeTools}>Готово</button>
+				</div>
+			</div>
+			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->
+			<ul class="index__zones" class:index__zones--searching={query.trim()}>
+				{#each allZones as zone (zone.slug)}
+					{@const count = counts.get(zone) ?? 0}
+					<li class="index__zone-row">
+						<button
+							class="index__zone"
+							type="button"
+							disabled={count === 0}
+							onclick={() => openZone(zone, 0)}
+							onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
+							onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
+							onfocus={() => previewZone(zone, false)}
+							onblur={() => previewZone(null, false)}
+						>
+							<span class="index__count">{count}</span>
+							<span class="index__zone-label">{zone.label}</span>
+							<!-- «Всё тело» -- такая же строка, человечек после названия тихо помечает её -->
+							{#if zone === whole}<span class="index__icon" aria-hidden="true"
+									>{@html PersonStanding}</span
+								>{/if}
+						</button>
+					</li>
+				{/each}
+			</ul>
 		</aside>
 	{/if}
 
@@ -1654,6 +1794,11 @@
 			width: auto;
 			max-height: 56dvh;
 			padding: 20px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
+
+			/* Под строками место под остров поиска: он висит над нижним краем поверх шторки */
+			&:has(.index__tools) {
+				padding-bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom) + 64px);
+			}
 		}
 
 		@media (width < 700px) {
@@ -1925,6 +2070,25 @@
 			align-items: center;
 		}
 
+		/* Остров поиска и фильтров. На десктопе обёртки не участвуют в раскладке: поле, фильтры
+		   и результаты стоят в колонке, как стояли */
+		&__tools,
+		&__panel {
+			display: contents;
+		}
+
+		&__island,
+		&__panel-done {
+			display: none;
+		}
+
+		/* Под запросом на десктопе зоны уступают место результатам */
+		&__zones--searching {
+			@media (width >= 700px) {
+				display: none;
+			}
+		}
+
 		/* Частота -- переключатель из трёх положений: общая подложка без рамки, выбранное
 		   положение -- залитая таблетка, его видно сразу, а не по жирности шрифта */
 		&__freq {
@@ -2151,6 +2315,147 @@
 		&__empty {
 			font-size: 14px;
 			color: var(--a-fg2);
+		}
+	}
+
+	/* Телефон: таблетка по центру над нижним краем, в зоне большого пальца. Шторке остаются
+	   заголовок и зоны, модели -- больше места */
+	@media (width < 700px) {
+		.index__tools {
+			position: fixed;
+			z-index: 5;
+			bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom) + var(--keyboard, 0px));
+			left: 50%;
+			translate: -50% 0;
+			display: block;
+			max-width: calc(100% - 32px);
+		}
+
+		.index__island,
+		.index__panel {
+			border-radius: 999px;
+			background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
+			box-shadow:
+				0 8px 24px rgb(0 0 0 / 18%),
+				inset 0 0 0 1px var(--a-fill);
+		}
+
+		.index__island {
+			display: flex;
+			gap: 2px;
+			align-items: center;
+			padding: 4px;
+		}
+
+		.index__island-open,
+		.index__island-reset {
+			cursor: pointer;
+			display: inline-flex;
+			flex: none;
+			gap: 8px;
+			align-items: center;
+			justify-content: center;
+			height: 40px;
+			border: 0;
+			border-radius: 999px;
+			font: inherit;
+			font-size: 15px;
+			font-weight: 600;
+			color: var(--a-fg);
+			background: none;
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: -2px;
+			}
+		}
+
+		.index__island-open {
+			flex: 1 1 auto;
+			min-width: 0;
+			padding: 0 16px 0 14px;
+		}
+
+		.index__island-reset {
+			width: 40px;
+			color: var(--a-fg2);
+			background: var(--a-fill);
+		}
+
+		.index__island-label {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.index__island-icon {
+			display: inline-flex;
+			flex: none;
+			width: 18px;
+			height: 18px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 2.2;
+			}
+		}
+
+		.index__panel {
+			display: none;
+		}
+
+		/* Раскрытый остров -- карточка во всю ширину: поле с фокусом, фильтры, результаты */
+		.index__tools--open {
+			right: 12px;
+			left: 12px;
+			translate: none;
+			max-width: none;
+
+			& .index__island {
+				display: none;
+			}
+
+			& .index__panel {
+				transform-origin: 50% 100%;
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+				max-height: calc(
+					100dvh - var(--keyboard, 0px) - var(--theme-toggle-top) - var(--header-row) - 32px -
+						max(16px, env(safe-area-inset-bottom)) - var(--tg-bottom)
+				);
+				padding: 8px 16px 12px;
+				border-radius: 24px;
+				animation: island-grow 0.3s var(--a-ease) both;
+
+				@media (--reduced-motion) {
+					animation-name: fade-in;
+				}
+			}
+
+			& .index__results {
+				flex: 1 1 auto;
+				min-height: 0;
+				max-height: none;
+				padding-bottom: 4px;
+			}
+
+			& .index__panel-done {
+				cursor: pointer;
+				display: block;
+				align-self: flex-end;
+				padding: 6px 4px;
+				border: 0;
+				font: inherit;
+				font-size: 16px;
+				font-weight: 600;
+				color: var(--a-blue);
+				background: none;
+			}
 		}
 	}
 
@@ -2556,11 +2861,19 @@
 			mask-image: linear-gradient(to bottom, transparent, #000000 18px, #000000 calc(100% - 120px), transparent);
 		}
 
+		/* На телефоне строки прилипают к верху списка, текущая травма -- прилипшая. Снизу запас почти
+		   на высоту списка: иначе последние строки до верха не доезжали и стать текущими не могли */
 		&--bottom &__list {
+			scroll-padding-top: 14px;
+			scroll-snap-type: y mandatory;
 			flex: none;
 			height: 50dvh;
 			margin-top: auto;
-			padding-bottom: 12dvh;
+			padding-bottom: calc(50dvh - 140px);
+		}
+
+		&--bottom &__row {
+			scroll-snap-align: start;
 		}
 
 		&__row {
@@ -2825,6 +3138,13 @@
 	@keyframes row-in {
 		from {
 			transform: translateY(12px);
+			opacity: 0;
+		}
+	}
+
+	@keyframes island-grow {
+		from {
+			transform: scale(0.94);
 			opacity: 0;
 		}
 	}

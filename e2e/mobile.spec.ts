@@ -13,6 +13,21 @@ test('все зоны помещаются в шторку без горизон
 	expect(await zones.evaluate((list) => list.scrollWidth <= list.clientWidth)).toBe(true)
 })
 
+test('поиск и фильтры прячутся в остров и раскрываются по нажатию', async ({ page }) => {
+	await page.goto('/')
+
+	const island = page.locator('.index__island-open')
+
+	await expect(page.locator('.search__input')).toBeHidden()
+	await island.tap()
+	await expect(page.locator('.search__input')).toBeFocused()
+
+	await page.locator('.index__chip', { hasText: 'Редкие' }).tap()
+	await page.locator('.index__panel-done').tap()
+	await expect(island).toHaveText(/Редкие/)
+	await expect(page.locator('.search__input')).toBeHidden()
+})
+
 test('тап по зоне раскрывает её список', async ({ page }) => {
 	await page.goto('/')
 	await page.locator('.index__zone', { hasText: 'Плечо' }).tap()

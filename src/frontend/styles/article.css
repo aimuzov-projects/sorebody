@@ -284,7 +284,7 @@
 	}
 
 	/* Подпись под иллюстрацией -- мельче и вторичным цветом, по ширине колонки. Заголовок
-	   рисунка -- цветом текста, пометки -- тихими чипами в конце */
+	   рисунка -- цветом текста, пометки -- тихими чипами отдельной строкой ниже */
 	&__caption {
 		max-width: var(--article-column);
 		margin: 10px auto 0;
@@ -298,12 +298,18 @@
 		color: var(--fg);
 	}
 
+	&__notes {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 8px;
+		margin-top: 6px;
+	}
+
 	&__note {
 		cursor: help;
 		display: inline-flex;
 		gap: 4px;
 		align-items: center;
-		margin-left: 10px;
 		padding: 1px 8px 1px 6px;
 		border: 0;
 		border-radius: 999px;
@@ -313,7 +319,6 @@
 		/* Не --muted: мелкий текст на тонированной таблетке с ним едва дотягивал до 4,5:1, axe его ронял */
 		color: color-mix(in srgb, var(--fg) 78%, var(--bg));
 		white-space: nowrap;
-		vertical-align: 1px;
 		background: color-mix(in srgb, var(--fg) 6%, var(--bg));
 		transition:
 			color 0.3s var(--article-ease),

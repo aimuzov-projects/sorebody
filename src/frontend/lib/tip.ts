@@ -7,8 +7,8 @@ type TipOptions = {
 	scroller?: HTMLElement | Window
 	/** Клик закрепляет подсказку и открывает её с пальца. Для ссылки -- нет, клик ведёт по ней. */
 	pinOnClick?: boolean
-	/** Слева от значка, если там хватает места: большая карточка не влезает над ним. */
-	side?: 'left'
+	/** Справа от значка, если там хватает места: большая карточка не влезает над ним. */
+	side?: 'right'
 }
 
 /**
@@ -48,12 +48,12 @@ export function attachTip(
 		const { width, height } = tip.getBoundingClientRect()
 		const box = column.getBoundingClientRect()
 		const viewport = document.documentElement.clientWidth
-		const left = rect.left - width - 4
+		const left = rect.right + 4
 
-		if (side === 'left' && left >= 16) {
+		if (side === 'right' && left + width <= viewport - 16) {
 			const bottom = document.documentElement.clientHeight - 8
 
-			tip.dataset.side = 'left'
+			tip.dataset.side = 'right'
 			tip.style.top = `${Math.max(top, Math.min(rect.top + rect.height / 2 - height / 2, bottom - height))}px`
 			tip.style.left = `${left}px`
 
@@ -143,6 +143,8 @@ export function attachTip(
 	tip.addEventListener('focusout', onFocusOut)
 	tip.addEventListener('pointerenter', onTipEnter)
 	tip.addEventListener('pointerleave', onLeave)
+	// Гравюра атласа грузится лениво, уже в открытой карточке: с ней та вырастает и встаёт иначе
+	tip.addEventListener('load', place, true)
 	scroller.addEventListener('scroll', place, { passive: true })
 	addEventListener('resize', place)
 
@@ -152,6 +154,7 @@ export function attachTip(
 		hide()
 		tip.removeEventListener('pointerenter', onTipEnter)
 		tip.removeEventListener('pointerleave', onLeave)
+		tip.removeEventListener('load', place, true)
 		button.removeEventListener('pointerenter', onEnter)
 		button.removeEventListener('pointerleave', onLeave)
 		button.removeEventListener('focus', onFocus)
@@ -184,7 +187,7 @@ export function initArticleTips(root: Element, scroller: HTMLElement | Window) {
 				bar,
 				scroller,
 				pinOnClick: true,
-				side: tip.classList.contains('tip--atlas') ? 'left' : undefined,
+				side: tip.classList.contains('tip--atlas') ? 'right' : undefined,
 			}),
 		]
 	})

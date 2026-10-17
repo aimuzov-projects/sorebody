@@ -94,10 +94,11 @@ export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
  * `zoom` -- во сколько раз ближе кадра зоны. Травмы без записи наезжают на центр зоны.
  */
 const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; zoom?: number }> = {
-	// Колено: надколенник спереди, ПКС в центре сустава, мениск -- по суставной щели изнутри
+	// Колено: надколенник спереди, ПКС в центре сустава, мениск -- по суставной щели изнутри, ИТТ -- снаружи
 	'patellofemoral-pain': { offset: [0, 0.02, 0.05], normal: [0.2, 0, 1], view: { azimuth: 12, polar: 78 } },
 	'acl-tear': { offset: [0, 0, 0], zoom: 2 },
 	'meniscus-tear': { offset: [-0.035, -0.015, 0.015], normal: [-0.3, 0, 1], view: { azimuth: 0, polar: 78 } },
+	'iliotibial-band-syndrome': { offset: [0.045, 0.02, 0], normal: [1, 0, 0], view: { azimuth: 80, polar: 78 } },
 	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
 	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
 	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },
@@ -111,10 +112,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 		normal: [0, 0, -1],
 		view: { azimuth: 150, polar: 72 },
 	},
-	// Таз и бедро: пах спереди изнутри, ИТТ сбоку, задняя поверхность бедра сзади
+	// Таз и бедро: пах спереди изнутри, задняя поверхность бедра сзади
 	'inguinal-hernia': { offset: [-0.055, 0, 0.085], normal: [0, 0, 1], view: { azimuth: 10, polar: 76 } },
 	'meralgia-paresthetica': { offset: [0.03, -0.07, 0.07], normal: [0.5, 0, 1], view: { azimuth: 35, polar: 76 } },
-	'iliotibial-band-syndrome': { offset: [0.055, -0.17, 0], normal: [1, 0, 0], view: { azimuth: 80, polar: 76 } },
 	'hamstring-strain': { offset: [0, -0.15, -0.07], normal: [0, 0, -1], view: { azimuth: 155, polar: 76 } },
 	'stress-urinary-incontinence': {
 		offset: [-0.107, 0.01, 0.07],
@@ -169,7 +169,7 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 		peel: true,
 	},
 	'meralgia-paresthetica': { depth: 'deep' },
-	'iliotibial-band-syndrome': { depth: 'muscle', muscles: ['iliotibial tract', 'tensor fasciae latae'] },
+	'iliotibial-band-syndrome': { depth: 'muscle', muscles: ['iliotibial tract'] },
 	'hamstring-strain': { depth: 'muscle', muscles: ['biceps femoris', 'semitendinosus', 'semimembranosus'] },
 	'stress-urinary-incontinence': { depth: 'muscle', muscles: ['coccygeus', 'levator ani'], peel: true },
 	'femoroacetabular-impingement': { depth: 'deep' },

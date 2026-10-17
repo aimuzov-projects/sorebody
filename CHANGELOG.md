@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/aimuzov-projects/wodcare/compare/v1.3.0...v1.4.0) (2026-10-17)
+
+
+### Features
+
+* **content:** add charts to incontinence and elbow articles ([#20](https://github.com/aimuzov-projects/wodcare/issues/20)) ([4451820](https://github.com/aimuzov-projects/wodcare/commit/4451820b2435de32dffbb557b298122a4801e517))
+
 ## [1.3.0](https://github.com/aimuzov-projects/wodcare/compare/v1.2.0...v1.3.0) (2026-10-17)
 
 

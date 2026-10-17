@@ -94,7 +94,7 @@
 	   края и сходит на нет чуть ниже строки шапки */
 	.site-header--floating {
 		--header-fade: 0px;
-		--header-tail: 24px;
+		--header-tail: 12px;
 
 		pointer-events: none;
 		position: absolute;
@@ -106,14 +106,19 @@
 			display: none;
 		}
 
+		/* Спад начинается от самого края и идёт без плато: с плотной серединой граница
+		   читалась полосой поперёк фигуры */
 		&::after {
 			background: linear-gradient(
 				to bottom,
 				color-mix(in srgb, var(--header-bg) 82%, transparent),
-				color-mix(in srgb, var(--header-bg) 80%, transparent) 20%,
-				color-mix(in srgb, var(--header-bg) 72%, transparent) 40%,
-				color-mix(in srgb, var(--header-bg) 50%, transparent) 60%,
-				color-mix(in srgb, var(--header-bg) 20%, transparent) 80%,
+				color-mix(in srgb, var(--header-bg) 74%, transparent) 10%,
+				color-mix(in srgb, var(--header-bg) 62%, transparent) 22%,
+				color-mix(in srgb, var(--header-bg) 48%, transparent) 35%,
+				color-mix(in srgb, var(--header-bg) 33%, transparent) 50%,
+				color-mix(in srgb, var(--header-bg) 20%, transparent) 65%,
+				color-mix(in srgb, var(--header-bg) 9%, transparent) 80%,
+				color-mix(in srgb, var(--header-bg) 3%, transparent) 92%,
 				transparent
 			);
 		}

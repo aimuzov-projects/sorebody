@@ -2144,8 +2144,8 @@
 	   крутить и под подвалом */
 	.scene-footer {
 		/* Подложка без размытия: полупрозрачный фон гаснет вверх от самого края экрана, плотнее
-		   всего на строке подвала, чтобы текст читался поверх фигуры, и сходит на нет над ней */
-		--footer-tail: 24px;
+		   всего у края, и сходит на нет без плато -- так же, как шапка над сценой */
+		--footer-tail: 12px;
 		--footer-bg: var(--bg);
 		pointer-events: none;
 		position: absolute;
@@ -2168,10 +2168,13 @@
 			background: linear-gradient(
 				to top,
 				color-mix(in srgb, var(--footer-bg) 82%, transparent),
-				color-mix(in srgb, var(--footer-bg) 80%, transparent) 20%,
-				color-mix(in srgb, var(--footer-bg) 72%, transparent) 40%,
-				color-mix(in srgb, var(--footer-bg) 50%, transparent) 60%,
-				color-mix(in srgb, var(--footer-bg) 20%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 74%, transparent) 10%,
+				color-mix(in srgb, var(--footer-bg) 62%, transparent) 22%,
+				color-mix(in srgb, var(--footer-bg) 48%, transparent) 35%,
+				color-mix(in srgb, var(--footer-bg) 33%, transparent) 50%,
+				color-mix(in srgb, var(--footer-bg) 20%, transparent) 65%,
+				color-mix(in srgb, var(--footer-bg) 9%, transparent) 80%,
+				color-mix(in srgb, var(--footer-bg) 3%, transparent) 92%,
 				transparent
 			);
 		}

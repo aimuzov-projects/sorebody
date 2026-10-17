@@ -160,7 +160,10 @@ img {
    края. Лежит в верхнем слое (popover), но наследует от места в разметке, например от
    заголовка статьи, -- шрифт задаём заново */
 .tip {
+	/* Без верхнего слоя (браузер без popover) сноски с position: relative ниже по разметке
+	   рисовались поверх подсказки */
 	position: fixed;
+	z-index: 100;
 	inset: auto;
 	max-width: min(320px, calc(100vw - 32px));
 	margin: 0;
@@ -194,6 +197,57 @@ img {
 	&[data-side='bottom'] {
 		animation-name: bubble-in-below;
 	}
+
+	&[data-side='left'] {
+		animation-name: bubble-in-left;
+	}
+
+	/* Таблица атласа: гравюра на светлой бумаге в обеих темах, как вклейка из книги */
+	/* display только у открытой: иначе он перебивает display: none закрытого popover, и
+	   карточка оставалась на экране вне верхнего слоя */
+	&--atlas:popover-open {
+		display: grid;
+	}
+
+	&--atlas {
+		gap: 8px;
+		width: min(340px, calc(100vw - 32px));
+		max-width: none;
+		padding: 10px;
+		font-size: 13px;
+	}
+
+	&__plate {
+		width: 100%;
+		max-height: min(360px, 50vh);
+		border-radius: 8px;
+		object-fit: contain;
+		background: #ffffff;
+	}
+
+	&__plate-caption {
+		padding: 0 4px;
+		color: var(--muted);
+	}
+
+	&__plate-link {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		padding: 0 4px 2px;
+		color: var(--accent);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&__plate-icon {
+		display: inline-flex;
+		width: 12px;
+		height: 12px;
+	}
 }
 
 @keyframes bubble-in {
@@ -206,6 +260,13 @@ img {
 @keyframes bubble-in-below {
 	from {
 		transform: translateY(-4px);
+		opacity: 0;
+	}
+}
+
+@keyframes bubble-in-left {
+	from {
+		transform: translateX(4px);
 		opacity: 0;
 	}
 }

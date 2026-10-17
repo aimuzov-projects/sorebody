@@ -2,6 +2,7 @@ import { z } from 'astro/zod'
 
 import { MOVEMENT_SLUGS } from '#frontend/data/movements.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
+import { ATLAS_FILE } from '#frontend/lib/atlas.ts'
 
 /**
  * Frontmatter статьи. Общая для `content.config.ts` и тестов контента, чтобы правила не разъехались.
@@ -21,6 +22,7 @@ export const injurySchema = z.strictObject({
 			src: z.string().regex(/^\/injuries\/[a-z0-9-]+\.(jpg|webp)$/),
 			alt: z.string().min(10),
 			caption: z.string().min(10),
+			atlas: z.strictObject({ file: z.string().regex(ATLAS_FILE), caption: z.string().min(10) }).optional(),
 		}),
 	),
 	sources: z.array(z.object({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) })).min(1),

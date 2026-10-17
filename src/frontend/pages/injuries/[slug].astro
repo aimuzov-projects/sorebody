@@ -1,15 +1,15 @@
 ---
 // src/frontend/pages/injuries/[slug].astro
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, Sparkles, TextQuote } from 'lucide-static'
+import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, TextQuote } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
+import ArticleFigure from '#frontend/components/article-figure.astro'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
-import { splitCaption } from '#frontend/lib/caption.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
@@ -25,8 +25,11 @@ const { entry } = Astro.props
 const { data } = entry
 const { html, sections } = enhanceArticle(entry.rendered?.html ?? '', data.sources)
 const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(m.slug))
-const [image] = data.images
-const caption = image && splitCaption(image.caption)
+const [image, ...moreImages] = data.images
+// Остальные иллюстрации -- в конце раздела "Что это", перед разделом о частоте
+const frequencyAt = html.indexOf('<section class="article-section article-section--frequency"')
+const [bodyHead, bodyTail] =
+	moreImages.length > 0 && frequencyAt > 0 ? [html.slice(0, frequencyAt), html.slice(frequencyAt)] : [html, '']
 // Другое название из скобок в конце -- не текстом в заголовке, а значком со всплывашкой
 const { name, alias } = splitTitle(data.title)
 const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
@@ -78,11 +81,11 @@ const nameTail = name.slice(nameHead.length)
 								aria-label={`Другие названия: ${alias}`}
 								aria-expanded="false"
 								aria-controls="article-alias"
-								data-alias
+								data-tip-for="article-alias"
 								set:html={INFO_DOT}
 							/>
 						</span>
-						<span class="tip" id="article-alias" popover="auto" data-alias-tip>
+						<span class="tip" id="article-alias" popover="auto">
 							Также называют: {alias}
 						</span>
 					</>
@@ -98,39 +101,7 @@ const nameTail = name.slice(nameHead.length)
 				</p>
 				<p class="article__summary-text">{data.summary}</p>
 			</div>
-			{image && (
-				<figure class="article__figure">
-					<img
-						class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
-						src={image.src}
-						alt={image.alt}
-						width="1200"
-						height="669"
-					/>
-					{/* Подпись: заголовок рисунка, текст и пометка «от нейросети» тихим чипом с подсказкой */}
-					<figcaption class="article__caption">
-						{caption.title && <strong class="article__caption-title">{caption.title}:</strong>}{' '}
-						{caption.text}
-						{caption.generated && (
-							<>
-								<button
-									class="article__ai"
-									type="button"
-									aria-describedby="article-ai-tip"
-									aria-expanded="false"
-									data-ai
-								>
-									<span class="article__ai-icon" aria-hidden="true" set:html={Sparkles} />
-									Схема, ИИ
-								</button>
-								<span class="tip" id="article-ai-tip" popover="auto" data-ai-tip>
-									Схематичная иллюстрация, сгенерирована нейросетью; анатомия упрощена
-								</span>
-							</>
-						)}
-					</figcaption>
-				</figure>
-			)}
+			{image && <ArticleFigure {image} id="figure-0" />}
 		</header>
 
 		<div class="article__layout">
@@ -147,7 +118,13 @@ const nameTail = name.slice(nameHead.length)
 				</ol>
 			</nav>
 
-			<div class="article__body" set:html={html} />
+			<div class="article__body">
+				<Fragment set:html={bodyHead} />
+				{moreImages.map((more, i) => (
+					<ArticleFigure image={more} id={`figure-${i + 1}`} />
+				))}
+				<Fragment set:html={bodyTail} />
+			</div>
 		</div>
 
 		<footer class="article__end">

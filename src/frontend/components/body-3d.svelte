@@ -35,7 +35,7 @@
 
 	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
-	import type { Movement } from '#frontend/data/movements.ts'
+	import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
@@ -48,6 +48,7 @@
 	import SearchField from '#frontend/components/search-field.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
+	import type { SceneSport } from '#frontend/scene/scene-data.ts'
 	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
@@ -58,6 +59,8 @@
 		/** Движения, которые встречаются хотя бы в одной статье: варианты фильтра. */
 		movements: { slug: string; title: string }[]
 		modelUrl: string
+		/** Спорт сцены: адреса статей и главной, подписи и цвет подсветки модели. */
+		sport: SceneSport
 		/** Подвал сайта из Astro: встаёт под статьёй поверх модели, как на отдельной странице. */
 		footer?: Snippet
 		/**
@@ -68,7 +71,7 @@
 	}
 	type Injury = Zone['injuries'][number]
 
-	let { zones, whole, movements, modelUrl, footer, movementPage }: Props = $props()
+	let { zones, whole, movements, modelUrl, sport, footer, movementPage }: Props = $props()
 
 	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
 	const FREQUENCY_CHIPS = [
@@ -187,7 +190,7 @@
 		tintZone(zone && zone !== whole ? zone : null)
 	}
 
-	/** Зона под курсором -- голубым пятном на коже, к краю в серый, как свечение «Всего тела». */
+	/** Зона под курсором -- пятном цвета спорта на коже, к краю в серый, как свечение «Всего тела». */
 	function tintZone(zone: Zone | null) {
 		body?.tint(zone?.points.map((p) => p.position) ?? null, zone ? zone.radius * 1.5 : 0)
 	}
@@ -531,7 +534,7 @@
 
 		// Выше сцены движения -- главная: сюда приходит только «назад» Telegram
 		if (level === 0) {
-			if (movementPage) location.assign('/')
+			if (movementPage) location.assign(sport.home)
 
 			return
 		}
@@ -618,7 +621,7 @@
 		const automated = navigator.webdriver && !posterMode && !new URLSearchParams(location.search).has('scene')
 		const ready = (automated ? new Promise<never>(() => {}) : import('#frontend/scene/body-scene.ts')).then(
 			async ({ createBodyScene }) => {
-				const scene = await createBodyScene(canvas, modelUrl)
+				const scene = await createBodyScene(canvas, modelUrl, sport.glow)
 
 				if (disposed) return scene.dispose()
 
@@ -962,7 +965,7 @@
 		articleStatus = 'loading'
 
 		try {
-			const response = await fetch(`/injuries/${slug}/`)
+			const response = await fetch(`/${sport.slug}/${slug}/`)
 
 			if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
@@ -1164,7 +1167,7 @@
 		<a
 			class="zone__item"
 			class:zone__item--current={active}
-			href="/injuries/{injury.slug}/"
+			href="/{sport.slug}/{injury.slug}/"
 			data-slug={injury.slug}
 			onclick={(event) => onItemClick(event, injury)}
 			onpointerenter={(event) => event.pointerType !== 'touch' && onAccent(true, true)}
@@ -1306,7 +1309,8 @@
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Травмы движения">
 			<header class="index__head">
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
-				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
+				<a class="index__home" href={sport.home}
+					><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
 				>
 				<p class="index__title" aria-hidden="true">{movementPage.title}</p>
 				<p class="index__sub">
@@ -1332,7 +1336,7 @@
 					<p class="index__none-text">
 						Про травмы на этом движении ещё не написали. Остальные травмы — <a
 							class="index__none-link"
-							href="/">на главной</a
+							href={sport.home}>на главной</a
 						>.
 					</p>
 				</div>
@@ -1341,7 +1345,9 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__title index__title--home" aria-hidden="true">Травмы в кроссфите</p>
+				<p class="index__title index__title--home" aria-hidden="true">
+					Травмы {sport.phrase.replaceAll(' ', ' ')}
+				</p>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
 					Разбираемся, что болит после тренировки, когда пора к врачу и как тренироваться дальше. Всё <a
@@ -1412,7 +1418,12 @@
 								>
 							{/each}
 						</div>
-						<MovementSelect options={movements} bind:value={movement} label="Движение" empty="любое" />
+						<MovementSelect
+							options={movements}
+							bind:value={movement}
+							label={sport.elementLabel}
+							empty="любое"
+						/>
 					</div>
 					{#if query.trim()}
 						<ul class="index__results" aria-live="polite">
@@ -1421,7 +1432,7 @@
 								<li>
 									<a
 										class="index__result"
-										href="/injuries/{injury.slug}/"
+										href="/{sport.slug}/{injury.slug}/"
 										onclick={(event) => onItemClick(event, injury)}
 									>
 										<span class="index__result-title">{name}</span>
@@ -1561,7 +1572,7 @@
 			</div>
 		{:else if articleStatus === 'error'}
 			<p class="reader__status">
-				Не получилось загрузить статью. <a href="/injuries/{article.slug}/">Открыть отдельно</a>
+				Не получилось загрузить статью. <a href="/{sport.slug}/{article.slug}/">Открыть отдельно</a>
 			</p>
 		{/if}
 		<div class="reader__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>

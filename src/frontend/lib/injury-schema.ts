@@ -1,7 +1,6 @@
 import { z } from 'astro/zod'
 
 import { FREQUENCY_SLUGS } from '#frontend/data/frequency.ts'
-import { MOVEMENT_SLUGS } from '#frontend/data/movements.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
 import { ATLAS_FILE } from '#frontend/lib/atlas.ts'
 import { guidelineSite } from '#frontend/lib/sources.ts'
@@ -29,18 +28,34 @@ const chartSchema = z
 
 export type Chart = z.infer<typeof chartSchema>
 
+/** Пиктограммы "N из 10". В тексте ставятся маркером `<div data-chart="id"></div>`. */
+const chartsSchema = z.array(chartSchema).default([])
+
+/** Статья PubMed по PMID или рекомендация по ссылке с сайта из `GUIDELINE_SITES`. */
+const sourcesSchema = z
+	.array(
+		z.union([
+			z.strictObject({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) }),
+			z.strictObject({
+				url: z.string().refine((url) => guidelineSite(url) !== undefined, 'сайт рекомендаций не из списка'),
+				label: z.string().min(3),
+			}),
+		]),
+	)
+	.min(1)
+
+/** Черновик: врач текст не проверял. На сайте не показывается, это пометка для редактуры. */
+const draftSchema = z.boolean()
+
 /**
- * Frontmatter статьи. Общая для `content.config.ts` и тестов контента, чтобы правила не разъехались.
- * Строгая: glob-лоадер берёт id из поля `slug`, если оно есть, — slug статьи только имя файла.
+ * Frontmatter общей части травмы (`content/injuries`): что верно в любом спорте. Общая для
+ * `content.config.ts` и тестов контента, чтобы правила не разъехались. Строгая: glob-лоадер
+ * берёт id из поля `slug`, если оно есть, — slug травмы только имя файла.
  */
 export const injurySchema = z.strictObject({
 	title: z.string().min(3),
 	titleEn: z.string().min(3),
 	region: z.enum(REGION_SLUGS),
-	frequency: z.enum(FREQUENCY_SLUGS),
-	movements: z.array(z.enum(MOVEMENT_SLUGS)),
-	/** Одна фраза для карточки и `meta description`. */
-	summary: z.string().min(20).max(220),
 	images: z.array(
 		z.object({
 			// .webp -- иллюстрация с прозрачным фоном, без подложки
@@ -50,22 +65,26 @@ export const injurySchema = z.strictObject({
 			atlas: z.strictObject({ file: z.string().regex(ATLAS_FILE), caption: z.string().min(10) }).optional(),
 		}),
 	),
-	/** Пиктограммы "N из 10". В тексте ставятся маркером `<div data-chart="id"></div>`. */
-	charts: z.array(chartSchema).default([]),
-	/** Статья PubMed по PMID или рекомендация по ссылке с сайта из `GUIDELINE_SITES`. */
-	sources: z
-		.array(
-			z.union([
-				z.strictObject({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) }),
-				z.strictObject({
-					url: z.string().refine((url) => guidelineSite(url) !== undefined, 'сайт рекомендаций не из списка'),
-					label: z.string().min(3),
-				}),
-			]),
-		)
-		.min(1),
-	/** Черновик: врач статью не проверял. На сайте не показывается, это пометка для редактуры. */
-	draft: z.boolean(),
+	charts: chartsSchema,
+	sources: sourcesSchema,
+	draft: draftSchema,
 })
 
 export type InjuryData = z.infer<typeof injurySchema>
+
+/**
+ * Frontmatter линзы (`content/sports/<sport>/<slug>.md`): травма глазами одного спорта, slug --
+ * как у общей части. Элементы сверяет со списком спорта сборка (lib/catalog.ts) и тест контента:
+ * спорта из пути файла схема не видит.
+ */
+export const lensSchema = z.strictObject({
+	frequency: z.enum(FREQUENCY_SLUGS),
+	elements: z.array(z.string().regex(/^[a-z]+(-[a-z]+)*$/)),
+	/** Одна фраза для карточки и `meta description` в этом спорте. */
+	summary: z.string().min(20).max(220),
+	charts: chartsSchema,
+	sources: sourcesSchema,
+	draft: draftSchema,
+})
+
+export type LensData = z.infer<typeof lensSchema>

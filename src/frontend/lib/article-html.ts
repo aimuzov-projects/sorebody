@@ -18,33 +18,82 @@ import {
 import { ELEMENT_NODE, parse, renderSync, TEXT_NODE } from 'ultrahtml'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
+import type { Sport } from '#frontend/data/sports.ts'
 
 import { movementIn } from './movement-match.ts'
-import { citeKey } from './sources.ts'
+import { citeKey, sourceHref, type Source } from './sources.ts'
 
 type Node = { type: number; name?: string; value?: string; attributes?: Record<string, string>; children?: Node[] }
 type Element = Node & { name: string; attributes: Record<string, string>; children: Node[] }
 
 /**
- * Разделы статьи в порядке шаблона (его держит тест контента). По тексту заголовка раздел
- * получает id для оглавления и иконку Lucide.
+ * Разделы страницы травмы в порядке оглавления. Порядок задаёт код, а не файлы: страница спорта
+ * склеивает общую часть и линзу, «Сроки возврата» и «Профилактика» собираются из обеих.
  */
 export const SECTIONS = [
-	{ id: 'what', title: 'Что это', icon: Info },
-	{ id: 'frequency', title: 'Как часто в кроссфите', icon: ChartColumn },
-	{ id: 'mechanism', title: 'Механизм и движения', icon: Dumbbell },
-	{ id: 'symptoms', title: 'Симптомы', icon: Stethoscope },
-	{ id: 'urgent', title: 'Когда сразу к врачу', icon: TriangleAlert },
-	{ id: 'first-steps', title: 'Первые шаги', icon: Footprints },
-	{ id: 'specialist', title: 'К какому врачу', icon: UserRoundSearch },
-	{ id: 'diagnosis', title: 'Диагностика', icon: ScanSearch },
-	{ id: 'treatment', title: 'Лечение', icon: Bandage },
-	{ id: 'return', title: 'Сроки возврата', icon: CalendarClock },
-	{ id: 'adapt', title: 'Как адаптировать тренировки', icon: Repeat },
-	{ id: 'prevention', title: 'Профилактика', icon: ShieldCheck },
+	{ id: 'what', icon: Info },
+	{ id: 'frequency', icon: ChartColumn },
+	{ id: 'mechanism', icon: Dumbbell },
+	{ id: 'symptoms', icon: Stethoscope },
+	{ id: 'urgent', icon: TriangleAlert },
+	{ id: 'first-steps', icon: Footprints },
+	{ id: 'specialist', icon: UserRoundSearch },
+	{ id: 'diagnosis', icon: ScanSearch },
+	{ id: 'treatment', icon: Bandage },
+	{ id: 'return', icon: CalendarClock },
+	{ id: 'adapt', icon: Repeat },
+	{ id: 'prevention', icon: ShieldCheck },
 ] as const
 
-export type Section = (typeof SECTIONS)[number]
+export type SectionId = (typeof SECTIONS)[number]['id']
+
+export type Section = { id: SectionId; title: string; icon: string }
+
+/**
+ * Заголовки разделов в файлах: общей части и линзы, в порядке шаблона (его держит тест контента).
+ * `optional` -- раздел, который может целиком жить в другой части: на странице спорта он
+ * всё равно есть, если не пуст хотя бы в одной.
+ */
+export const INJURY_HEADINGS: { title: string; id: SectionId; optional?: true }[] = [
+	{ title: 'Что это', id: 'what' },
+	{ title: 'Симптомы', id: 'symptoms' },
+	{ title: 'Когда сразу к врачу', id: 'urgent' },
+	{ title: 'Первые шаги', id: 'first-steps' },
+	{ title: 'К какому врачу', id: 'specialist' },
+	{ title: 'Диагностика', id: 'diagnosis' },
+	{ title: 'Лечение', id: 'treatment' },
+	{ title: 'Сроки заживления', id: 'return', optional: true },
+	{ title: 'Профилактика', id: 'prevention', optional: true },
+]
+
+export const LENS_HEADINGS: typeof INJURY_HEADINGS = [
+	{ title: 'Как часто', id: 'frequency' },
+	{ title: 'Механизм', id: 'mechanism' },
+	{ title: 'Возврат в спорт', id: 'return', optional: true },
+	{ title: 'Как адаптировать тренировки', id: 'adapt' },
+	{ title: 'Профилактика', id: 'prevention', optional: true },
+]
+
+/** Заголовок раздела на странице: со спортом -- его фразы, без спорта -- как в общей части. */
+export function sectionTitle(id: SectionId, sport?: Sport) {
+	if (id === 'frequency') return `Как часто ${sport?.phrase ?? ''}`.trim()
+
+	if (id === 'mechanism') return sport?.mechanismTitle ?? 'Механизм'
+
+	if (id === 'return') return sport ? 'Сроки возврата' : 'Сроки заживления'
+
+	return [...INJURY_HEADINGS, ...LENS_HEADINGS].find((h) => h.id === id)!.title
+}
+
+/** Часть статьи: HTML файла и чья она. */
+export type ArticlePart = { html: string; kind: 'injury' | 'lens' }
+
+type Options = {
+	sources: Source[]
+	sport?: Sport
+	/** Адрес травмы для ссылок `/injuries/<slug>/` в тексте: на странице спорта -- его статья, если есть. */
+	injuryHref?: (slug: string) => string | undefined
+}
 
 const text = (value: string): Node => ({ type: TEXT_NODE, value })
 
@@ -70,58 +119,107 @@ const icon = (svg: string, className: string) =>
  * заголовка, сноски `([N])` -- надстрочными ссылками, строки со стрелкой после "Вместо" --
  * парами "было/стало", проценты в разделе о частоте -- крупнее. Заодно отдаёт список разделов
  * для оглавления. Работает при сборке, в браузер уходит готовый HTML.
+ *
+ * Частей две: общая часть травмы и линза спорта, у каждой свои сноски с номерами по своему
+ * `sources`. На странице номера сквозные, по первому упоминанию, и список источников один --
+ * его функция и отдаёт вместе с разделами.
  */
-export function enhanceArticle(html: string, sources: { label: string }[]) {
-	const doc = parse(html) as Element
-	const out: Node[] = []
-	const found: Section[] = []
-	let current: Element | null = null
+export function enhanceArticle(parts: ArticlePart[], { sources, sport, injuryHref }: Options) {
+	const bodies = new Map<SectionId, Node[]>()
 
-	for (const node of doc.children) {
-		if (isElement(node, 'h2')) {
-			const title = textOf(node).trim()
-			const section = SECTIONS.find((s) => s.title === title)
+	for (const { html, kind } of parts) {
+		const headings = kind === 'injury' ? INJURY_HEADINGS : LENS_HEADINGS
+		let current: Node[] | undefined
 
-			if (!section) throw new Error(`article-html: неизвестный раздел «${title}»`)
+		for (const node of (parse(html) as Element).children) {
+			if (isElement(node, 'h2')) {
+				const title = textOf(node).trim()
+				const heading = headings.find((h) => h.title === title)
 
-			found.push(section)
+				if (!heading) throw new Error(`article-html: неизвестный раздел «${title}»`)
 
-			current = el(
-				'section',
-				{
-					class: `article-section article-section--${section.id}`,
-					id: section.id,
-					'aria-labelledby': `${section.id}-title`,
-				},
-				[
-					el('h2', { class: 'article-section__title', id: `${section.id}-title` }, [
-						icon(section.icon, 'article-section__icon'),
-						text(title),
-					]),
-				],
-			)
-
-			out.push(current)
-		} else if (current) current.children.push(node)
-		else out.push(node)
+				current = bodies.get(heading.id) ?? []
+				bodies.set(heading.id, current)
+			} else if (current) current.push(node)
+			else if (isElement(node)) throw new Error('article-html: текст до первого раздела')
+		}
 	}
 
-	doc.children = out
+	const found: Section[] = []
+	const out = SECTIONS.flatMap(({ id, icon: svg }) => {
+		const children = bodies.get(id)
+
+		if (!children) return []
+
+		const title = sectionTitle(id, sport)
+
+		found.push({ id, title, icon: svg })
+
+		return [
+			el('section', { class: `article-section article-section--${id}`, id, 'aria-labelledby': `${id}-title` }, [
+				el('h2', { class: 'article-section__title', id: `${id}-title` }, [
+					icon(svg, 'article-section__icon'),
+					text(title),
+				]),
+				...children,
+			]),
+		]
+	})
+	const doc = el('root', {}, out)
+	const ordered = renumberCites(doc, sources)
+
+	if (injuryHref) walk(doc, (parent) => parent.children.forEach((a) => isElement(a, 'a') && relink(a, injuryHref)))
 
 	for (const section of out) {
-		if (!isElement(section, 'section')) continue
-
 		const id = section.attributes.id
 
-		walk(section, (parent) => groupCites(parent, sources))
+		walk(section, (parent) => groupCites(parent, ordered))
 
 		if (id === 'adapt')
-			walk(section, (parent) => parent.children.forEach((li) => isElement(li, 'li') && splitSwap(li)))
+			walk(section, (parent) => parent.children.forEach((li) => isElement(li, 'li') && splitSwap(li, sport)))
 
 		if (id === 'frequency') walk(section, highlightPercents)
 	}
 
-	return { html: renderSync(doc as never), sections: found }
+	return { html: out.map((section) => renderSync(section as never)).join(''), sections: found, sources: ordered }
+}
+
+/**
+ * Сквозные номера сносок: источник получает номер при первом упоминании на странице. Отдаёт
+ * источники в этом порядке. Сноска на источник, которого нет в списке, роняет сборку.
+ */
+function renumberCites(doc: Element, sources: Source[]) {
+	const byKey = new Map(sources.map((s) => [sourceHref(s), s]))
+	const order = new Map<string, number>()
+
+	walk(doc, (parent) => {
+		if (parent.name === 'sup') return
+
+		for (const link of parent.children) {
+			if (!isCite(link)) continue
+
+			const key = citeKey(link.attributes.href!)!
+
+			if (!byKey.has(key)) throw new Error(`article-html: сноска на ${key}, которого нет в sources`)
+
+			if (!order.has(key)) order.set(key, order.size + 1)
+
+			link.children = [text(String(order.get(key)))]
+		}
+	})
+
+	return [...order.keys()].map((key) => byKey.get(key)!)
+}
+
+/** Ссылка на травму из текста общей части -- на её статью в спорте страницы, если она там есть. */
+function relink(link: Element, injuryHref: (slug: string) => string | undefined) {
+	const slug = link.attributes.href?.match(/^\/injuries\/([a-z0-9-]+)\/?(#.*)?$/)
+
+	if (!slug) return
+
+	const href = injuryHref(slug[1]!)
+
+	if (href) link.attributes.href = href + (slug[2] ?? '')
 }
 
 function walk(node: Element, visit: (parent: Element) => void) {
@@ -200,15 +298,18 @@ function groupCites(parent: Element, sources: { label: string }[]) {
 	}
 }
 
-/** Значок у подписи половины пары: иконка движения из текста, если оно в списке, иначе запасной. */
-function markOf(nodes: Node[], fallback: string) {
-	const movement = movementIn(nodes.map(textOf).join(''))
+/**
+ * Значок у подписи половины пары: иконка движения из текста, если оно в списке, иначе запасной.
+ * Движения в тексте пока узнаются только кроссфитные.
+ */
+function markOf(nodes: Node[], fallback: string, sport?: Sport) {
+	const movement = sport?.slug === 'crossfit' ? movementIn(nodes.map(textOf).join('')) : undefined
 
 	return movement ? MOVEMENT_ICONS[movement] : fallback
 }
 
 /** "Вместо X → Y" (или через тире) -- пара "было → стало". Разделитель ищем только в тексте строки. */
-function splitSwap(li: Element) {
+function splitSwap(li: Element, sport?: Sport) {
 	const first = li.children[0]
 
 	if (first?.type !== TEXT_NODE || !first.value!.startsWith('Вместо ')) return
@@ -228,13 +329,13 @@ function splitSwap(li: Element) {
 
 	li.children = [
 		el('span', { class: 'swap__was' }, [
-			el('span', { class: 'swap__label' }, [icon(markOf(was, CircleX), 'swap__mark'), text('Вместо')]),
+			el('span', { class: 'swap__label' }, [icon(markOf(was, CircleX, sport), 'swap__mark'), text('Вместо')]),
 			text(' '),
 			...was,
 		]),
 		icon(ArrowRight, 'swap__arrow'),
 		el('span', { class: 'swap__now' }, [
-			el('span', { class: 'swap__hint' }, [icon(markOf(now, CircleCheck), 'swap__mark'), text('Лучше: ')]),
+			el('span', { class: 'swap__hint' }, [icon(markOf(now, CircleCheck, sport), 'swap__mark'), text('Лучше: ')]),
 			...now,
 		]),
 	]

@@ -38,9 +38,10 @@ export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
 /**
  * Сцена фигуры: ортокамера в три четверти, OrbitControls без панорамы и с зажатым наклоном,
  * фарфоровая оболочка с растворением и кости под ней. Наружу отдаёт проекцию точек на экран
- * и `dissolve()` -- плавно открыть сферу вокруг точки или закрыть её.
+ * и `dissolve()` -- плавно открыть сферу вокруг точки или закрыть её. `glow` -- цвет спорта
+ * для подсветки кожи (`accent.glow` в data/sports.ts).
  */
-export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: string) {
+export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: string, glow: string) {
 	const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
 
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -95,8 +96,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	// Сатиновая керамика снаружи, на срезе -- слои кожи (`SKIN_RIM`)
 	const skin = createDissolveMaterial('#f5f5f3', SKIN_RIM, 0.42)
 
-	// Подсветка всей фигуры (зона «Всё тело»): синее свечение кожи, по умолчанию погашено
-	skin.material.emissive.set('#3d8bfd')
+	// Подсветка всей фигуры (зона «Всё тело») и пятно под зоной -- свечение кожи цветом спорта,
+	// по умолчанию погашено
+	skin.material.emissive.set(glow)
+	skin.uniforms.uTintColor.value.set(glow)
 	skin.material.emissiveIntensity = 0
 	// Мышцы как в атласе: красные с волокнами, матовые; в тёмной теме глубже
 	const muscles = createDissolveMaterial(muscleColor(), MUSCLE_RIM, 0.78, true)

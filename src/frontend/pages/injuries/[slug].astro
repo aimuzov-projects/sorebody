@@ -1,194 +1,29 @@
 ---
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
 
-import { frequencyOf } from '#frontend/data/frequency.ts'
-import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
-import { MOVEMENTS } from '#frontend/data/movements.ts'
-import { regionLabel } from '#frontend/data/regions.ts'
-import ArticleFigure from '#frontend/components/article-figure.astro'
-import SiteHeader from '#frontend/components/site-header.svelte'
-import TocMenu from '#frontend/components/toc-menu.astro'
-import Base from '#frontend/layouts/base.astro'
-import { enhanceArticle } from '#frontend/lib/article-html.ts'
-import { INFO_DOT } from '#frontend/lib/icons.ts'
-import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
-import { splitTitle } from '#frontend/lib/title.ts'
-import '#frontend/styles/article.css'
+import InjuryArticle from '#frontend/components/injury-article.astro'
+import { sportArticle } from '#frontend/data/sports.ts'
+import Redirect from '#frontend/layouts/redirect.astro'
+import { sportsOf } from '#frontend/lib/catalog.ts'
 
+/**
+ * Общая страница травмы: общая часть и спорты, где у неё есть разбор. Пока спорт у травмы один,
+ * читателю нужен его разбор, а не выбор из одного пункта: адрес, по которому раньше жила статья
+ * кроссфита, ведёт туда же, где она теперь.
+ */
 export async function getStaticPaths() {
 	const injuries = await getCollection('injuries')
 
-	return injuries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+	return Promise.all(
+		injuries.map(async (injury) => ({
+			params: { slug: injury.id },
+			props: { injury, sports: await sportsOf(injury.id) },
+		})),
+	)
 }
 
-const { entry } = Astro.props
-const { data } = entry
-const { html, sections } = enhanceArticle(entry.rendered?.html ?? '', data.sources)
-const movements = MOVEMENTS.filter((m) => (data.movements as string[]).includes(m.slug))
-const [image, ...moreImages] = data.images
-// Остальные иллюстрации -- в конце раздела "Что это", перед разделом о частоте
-const frequencyAt = html.indexOf('<section class="article-section article-section--frequency"')
-const [bodyHead, bodyTail] =
-	moreImages.length > 0 && frequencyAt > 0 ? [html.slice(0, frequencyAt), html.slice(frequencyAt)] : [html, '']
-// Другое название из скобок в конце -- не текстом в заголовке, а значком со всплывашкой
-const { name, alias } = splitTitle(data.title)
-const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
-const nameTail = name.slice(nameHead.length)
+const { injury, sports } = Astro.props
+const [only] = sports
 ---
 
-<Base title={data.title} description={data.summary}>
-	<div class="reading-progress" aria-hidden="true">
-		<span class="reading-progress__bar"></span>
-	</div>
-	<SiteHeader>
-		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
-		<p class="article-bar__title" aria-hidden="true">
-			{name}
-		</p>
-	</SiteHeader>
-	<main class="article" data-article>
-		<header class="article__hero">
-			{/* Метки чипами, как фильтры раскрытой зоны: зона -- ссылка на её список, частота -- знаком в своём цвете */}
-			<p class="article__meta">
-				<a
-					class="article__pill article__pill--link"
-					href={`/?region=${data.region}`}
-					title={`Все травмы зоны «${regionLabel(data.region)}»`}
-				>
-					<span class="article__pill-label">Зона</span>
-					{regionLabel(data.region)}
-					<span class="article__pill-arrow" aria-hidden="true" set:html={ChevronRight} />
-				</a>
-				<span class:list={['article__pill', `article__pill--${data.frequency}`]}>
-					<span class="article__pill-icon" aria-hidden="true" set:html={frequencyOf(data.frequency).icon} />
-					{frequencyOf(data.frequency).pill}
-				</span>
-			</p>
-			<h1 class="article__title">
-				{alias ? (
-					<>
-						{nameHead}
-						{/* Значок склеен с последним словом: не уезжает один на новую строку */}
-						<span class="article__title-tail">
-							{nameTail}
-							<button
-								class="article__alias"
-								type="button"
-								aria-label={`Другие названия: ${alias}`}
-								aria-expanded="false"
-								aria-controls="article-alias"
-								data-tip-for="article-alias"
-								set:html={INFO_DOT}
-							/>
-						</span>
-						<span class="tip" id="article-alias" popover="auto">
-							Также называют: {alias}
-						</span>
-					</>
-				) : (
-					name
-				)}
-			</h1>
-			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
-			<div class="article__summary">
-				<p class="article__summary-label">
-					<span class="article__summary-icon" aria-hidden="true" set:html={TextQuote} />
-					Коротко
-				</p>
-				<p class="article__summary-text">{data.summary}</p>
-			</div>
-			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда. Значок -- тот же,
-			   что у раздела «Когда сразу к врачу», куда ведёт ссылка */}
-			<p class="article__disclaimer" role="note">
-				<span class="article__disclaimer-icon" aria-hidden="true" set:html={TriangleAlert} />
-				<span>
-					<strong class="article__disclaimer-lead">Это справка, а не диагноз.</strong> С травмой — к врачу,
-					тревожные признаки — в разделе{' '}
-					<a class="article__disclaimer-link" href="#urgent">
-						«Когда сразу к врачу»
-					</a>
-					.
-				</span>
-			</p>
-			{image && <ArticleFigure {image} id="figure-0" />}
-		</header>
-
-		<div class="article__layout">
-			<nav class="article__toc" aria-label="Разделы статьи" data-toc>
-				<ol class="article__toc-list">
-					{sections.map((section) => (
-						<li>
-							<a class="article__toc-link" href={`#${section.id}`}>
-								<span class="article__toc-icon" aria-hidden="true" set:html={section.icon} />
-								{section.title}
-							</a>
-						</li>
-					))}
-				</ol>
-			</nav>
-
-			<div class="article__body">
-				<Fragment set:html={bodyHead} />
-				{moreImages.map((more, i) => (
-					<ArticleFigure image={more} id={`figure-${i + 1}`} />
-				))}
-				<Fragment set:html={bodyTail} />
-			</div>
-		</div>
-
-		<footer class="article__end">
-			{movements.length > 0 && (
-				<section class="article__related" aria-labelledby="related-title">
-					<h2 class="article__end-title" id="related-title">
-						Связанные движения
-					</h2>
-					<ul class="article__chips">
-						{movements.map((m) => (
-							<li>
-								<a class="article__chip" href={`/movements/${m.slug}/`}>
-									<span
-										class="article__chip-icon"
-										aria-hidden="true"
-										set:html={MOVEMENT_ICONS[m.slug]}
-									/>
-									{m.title}
-								</a>
-							</li>
-						))}
-					</ul>
-				</section>
-			)}
-
-			<section class="article__sources" aria-labelledby="sources-title">
-				<h2 class="article__end-title" id="sources-title">
-					Источники
-				</h2>
-				<ol class="article__source-list">
-					{data.sources.map((s) => (
-						<li class="article__source">
-							{s.label} ·{' '}
-							<a class="article__source-link" href={sourceHref(s)}>
-								{sourceSite(s)}
-								<span class="article__source-icon" aria-hidden="true" set:html={ExternalLink} />
-							</a>
-						</li>
-					))}
-				</ol>
-			</section>
-		</footer>
-
-		<TocMenu {sections} />
-	</main>
-</Base>
-
-<script>
-	import { initBackLink } from '#frontend/lib/back-link.ts'
-	import { initReading } from '#frontend/lib/reading.ts'
-
-	const root = document.querySelector('[data-article]')
-
-	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
-
-	initBackLink()
-</script>
+{sports.length === 1 && only ? <Redirect to={sportArticle(only, injury.id)} /> : <InjuryArticle {injury} {sports} />}

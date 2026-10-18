@@ -48,7 +48,7 @@ test('тап по зоне раскрывает её список', async ({ pag
 })
 
 test('кнопка разделов открывает меню и ведёт к разделу', async ({ page }) => {
-	await page.goto('/injuries/acl-tear/')
+	await page.goto('/crossfit/acl-tear/')
 
 	const button = page.getByRole('button', { name: 'Разделы статьи' })
 	const menu = page.locator('#toc-menu')
@@ -103,7 +103,7 @@ test.describe('на широком экране', () => {
 	test.use({ viewport: { width: 1280, height: 800 }, hasTouch: false, isMobile: false })
 
 	test('кнопки разделов нет: оглавление сбоку', async ({ page }) => {
-		await page.goto('/injuries/acl-tear/')
+		await page.goto('/crossfit/acl-tear/')
 
 		await expect(page.getByRole('button', { name: 'Разделы статьи' })).toBeHidden()
 		await expect(page.locator('.article__toc')).toBeVisible()

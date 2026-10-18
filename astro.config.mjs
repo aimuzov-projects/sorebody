@@ -3,6 +3,7 @@ import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
 import { defineConfig } from 'astro/config'
 
+import { DEFAULT_SPORT } from './src/frontend/data/sports.ts'
 import { chartsPlugin } from './src/frontend/lib/markdown-charts.ts'
 
 export default defineConfig({
@@ -16,7 +17,15 @@ export default defineConfig({
 	build: { inlineStylesheets: 'always' },
 	// Svelte для интерактивных островов, остальное -- статический HTML
 	// с ванильными скриптами.
-	integrations: [svelte(), sitemap()],
+	// В sitemap нет переадресаций со старых адресов (`/movements/`, `/injuries/` с одним спортом)
+	// и копии главной на `/<спорт по умолчанию>/`: у неё canonical на `/`.
+	// Индексировать ли общие страницы `/injuries/` -- открытый вопрос docs/multisport-concept.md.
+	integrations: [
+		svelte(),
+		sitemap({
+			filter: (page) => !/\/(movements|injuries)\//.test(page) && !page.endsWith(`/${DEFAULT_SPORT}/`),
+		}),
+	],
 	// Подсветка Shiki несовместима с CSP.
 	// Маркеры `data-chart` в статьях превращаются в пиктограммы из frontmatter.
 	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [chartsPlugin] }) },

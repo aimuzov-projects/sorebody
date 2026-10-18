@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 const SLUG = 'rotator-cuff-tendinopathy'
 
 test('плашка «справка, а не диагноз» ведёт к разделу «Когда сразу к врачу»', async ({ page }) => {
-	await page.goto(`/injuries/${SLUG}/`)
+	await page.goto(`/crossfit/${SLUG}/`)
 
 	const note = page.getByRole('note').filter({ hasText: 'Это справка, а не диагноз' })
 

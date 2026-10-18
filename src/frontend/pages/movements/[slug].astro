@@ -1,64 +1,11 @@
 ---
-import Body3d from '#frontend/components/body-3d.svelte'
-import Footer from '#frontend/components/footer.astro'
-import { MOVEMENTS } from '#frontend/data/movements.ts'
-import Base from '#frontend/layouts/base.astro'
-import { sceneData } from '#frontend/scene/scene-data.ts'
-import '#frontend/styles/article.css'
-import '#frontend/styles/scene.css'
+import { sportElement, sportOf } from '#frontend/data/sports.ts'
+import Redirect from '#frontend/layouts/redirect.astro'
 
+// Движения были только у кроссфита: старый адрес ведёт на его страницу элемента
 export function getStaticPaths() {
-	return MOVEMENTS.map((movement) => ({ params: { slug: movement.slug }, props: { movement } }))
+	return sportOf('crossfit').elements.map((element) => ({ params: { slug: element.slug } }))
 }
-
-// Та же сцена, что на главной: модели нужен WebAssembly-декодер
-Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
-
-const { movement } = Astro.props
-const { slug, title, titleEn } = movement
-const { entries, zones, whole, movements } = await sceneData()
-const injuries = entries
-	.filter((entry) => (entry.data.movements as string[]).includes(slug))
-	.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
 ---
 
-<Base
-	{title}
-	index={injuries.length > 0}
-	description={`Какие травмы случаются на движении «${title}» и как их избежать.`}
-	bare
-	bodyClass="scene-page"
->
-	<!-- Подвал сайта внутри сцены -- ориентир страницы, поэтому и остальное содержимое в main -->
-	<main>
-		<h1 class="scene-page__title">{title}</h1>
-		<Body3d
-			client:only="svelte"
-			{zones}
-			{whole}
-			{movements}
-			movementPage={{ slug, title, titleEn }}
-			modelUrl="/model/body.glb"
-		>
-			<Footer slot="footer" />
-		</Body3d>
-	</main>
-	<noscript>
-		<div class="scene-page__fallback">
-			<p>
-				<a href="/">Все травмы</a>
-			</p>
-			{injuries.length > 0 ? (
-				<ul>
-					{injuries.map(({ id, data }) => (
-						<li>
-							<a href={`/injuries/${id}/`}>{data.title}</a>
-						</li>
-					))}
-				</ul>
-			) : (
-				<p>Статей про это движение пока нет.</p>
-			)}
-		</div>
-	</noscript>
-</Base>
+<Redirect to={sportElement('crossfit', Astro.params.slug)} />

@@ -8,6 +8,9 @@
  * кроме сцены главной, а нажатие уходит обратно событием `wodcare:back`: сцена поднимается на
  * шаг тем же путём, что и своя кнопка «Назад», которую в Mini App прячет атрибут `data-telegram`.
  * Со сцены движения шаг вверх -- главная.
+ *
+ * Акцент на странице спорта остаётся цветом спорта: он знак спорта на всём сайте, цвет ссылок
+ * Telegram его не заменяет.
  */
 import { BACK_EVENT, STEP_EVENT } from './telegram-events.ts'
 
@@ -32,7 +35,7 @@ function init(app: WebApp | undefined) {
 		'--bg': theme.bg_color,
 		'--fg': theme.text_color,
 		'--muted': theme.hint_color,
-		'--accent': theme.link_color,
+		'--accent': root.dataset.sport === undefined ? theme.link_color : undefined,
 		'--surface': theme.secondary_bg_color,
 	}
 
@@ -40,7 +43,7 @@ function init(app: WebApp | undefined) {
 
 	root.dataset.telegram = ''
 
-	if (location.pathname === '/' || location.pathname.startsWith('/movements/')) {
+	if (document.body.classList.contains('scene-page')) {
 		// Обработчик один: что делать по нажатию, решает сцена, она знает, откуда пришли
 		const sync = () =>
 			root.dataset.step && root.dataset.step !== 'scene' ? app.BackButton.show() : app.BackButton.hide()

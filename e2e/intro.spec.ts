@@ -45,7 +45,7 @@ test('подсказки нет, если адрес сразу открывае
 	await expect(page.locator('.zone')).toBeVisible()
 	await expect(hint(page)).toHaveCount(0)
 
-	await page.goto('/movements/burpee/')
+	await page.goto('/crossfit/elements/burpee/')
 	await expect(page.locator('.index__title')).toBeVisible()
 	await expect(hint(page)).toHaveCount(0)
 	await expect(page.locator('.index__lead')).toHaveCount(0)

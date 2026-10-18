@@ -136,6 +136,17 @@ test('numbers footnotes of both parts through the page by first mention', () => 
 	assert.match(html, /Лечат<sup class="cite"><a [^>]*\/3\/"[^>]*>2<\/a>/)
 })
 
+test('numbers a footnote inside inline markup before the one after it', () => {
+	const { sources: ordered } = enhance({
+		what: `<p>a <strong>x (${pubmed(1, 1)})</strong> b (${pubmed(2, 2)})</p>`,
+	})
+
+	assert.deepEqual(
+		ordered.map((s) => s.label),
+		['Knapik 2022', 'Ángel Rodríguez 2022'],
+	)
+})
+
 test('throws on a footnote to a source missing from sources', () => {
 	assert.throws(() => enhance({ what: `<p>Что (${pubmed(9, 1)}).</p>` }), /нет в sources/)
 })

@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto'
 /**
  * Страница-переадресация для старых адресов статического сайта: nginx про спорты не знает.
  * Скрипт уводит сразу и сохраняет `?region=` и хеш (раздел статьи, зону сцены), `<meta refresh>` --
- * запасной путь без JS. Canonical -- новый адрес, чтобы поисковик переклеил ссылку.
+ * запасной путь без JS. Поисковик считает refresh за 0 секунд постоянным редиректом, а canonical
+ * подсказывает новый адрес; noindex тут не нужен, с canonical он только спорит.
  */
 type Props = { to: string }
 
@@ -19,7 +20,9 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(GO).digest('ba
 	<head>
 		<meta charset="utf-8" />
 		<title>Переадресация</title>
-		<meta name="robots" content="noindex" />
+		<!-- Без referrer: иначе статья решит, что пришли с сайта, и «Назад» (lib/back-link.ts) вернёт
+		     сюда же, а отсюда -- снова в поисковик, а не на главную -->
+		<meta name="referrer" content="no-referrer" />
 		<link rel="canonical" href={new URL(to, Astro.site)} />
 		<script is:inline set:html={GO} />
 		<meta http-equiv="refresh" content={`0;url=${to}`} />

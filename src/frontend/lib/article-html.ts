@@ -192,21 +192,20 @@ function renumberCites(doc: Element, sources: Source[]) {
 	const byKey = new Map(sources.map((s) => [sourceHref(s), s]))
 	const order = new Map<string, number>()
 
-	walk(doc, (parent) => {
-		if (parent.name === 'sup') return
-
-		for (const link of parent.children) {
-			if (!isCite(link)) continue
-
-			const key = citeKey(link.attributes.href!)!
+	// Один проход в порядке документа: сноска внутри <strong> раньше сноски после него
+	const visit = (node: Node) => {
+		if (isCite(node)) {
+			const key = citeKey(node.attributes.href!)!
 
 			if (!byKey.has(key)) throw new Error(`article-html: сноска на ${key}, которого нет в sources`)
 
 			if (!order.has(key)) order.set(key, order.size + 1)
 
-			link.children = [text(String(order.get(key)))]
-		}
-	})
+			node.children = [text(String(order.get(key)))]
+		} else if (isElement(node) && node.name !== 'sup') node.children.forEach(visit)
+	}
+
+	visit(doc)
 
 	return [...order.keys()].map((key) => byKey.get(key)!)
 }

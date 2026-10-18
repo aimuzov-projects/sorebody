@@ -1,7 +1,8 @@
 ---
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, Stethoscope, TextQuote } from 'lucide-static'
+import { ChevronLeft, ChevronRight, ExternalLink, Stethoscope, TextQuote } from 'lucide-static'
 
+import { frequencyOf } from '#frontend/data/frequency.ts'
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
@@ -60,12 +61,8 @@ const nameTail = name.slice(nameHead.length)
 					<span class="article__pill-arrow" aria-hidden="true" set:html={ChevronRight} />
 				</a>
 				<span class:list={['article__pill', `article__pill--${data.frequency}`]}>
-					<span
-						class="article__pill-icon"
-						aria-hidden="true"
-						set:html={data.frequency === 'rare' ? Diamond : Circle}
-					/>
-					{data.frequency === 'rare' ? 'Редко, но опасно' : 'Частая травма'}
+					<span class="article__pill-icon" aria-hidden="true" set:html={frequencyOf(data.frequency).icon} />
+					{frequencyOf(data.frequency).pill}
 				</span>
 			</p>
 			<h1 class="article__title">

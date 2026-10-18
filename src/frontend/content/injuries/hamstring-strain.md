@@ -2,7 +2,7 @@
 title: Растяжение задней поверхности бедра
 titleEn: Hamstring strain
 region: hip-groin
-frequency: common
+frequency: uncommon
 movements: [deadlift, running, kettlebell-swing]
 summary: Мышцы задней поверхности бедра надрываются при быстром беге или резком растяжении с прямым коленом. Болит по задней поверхности бедра, а возвращаться к нагрузке стоит не спеша, иначе травма повторяется.
 images:

@@ -2,7 +2,7 @@
 title: Повреждение подлопаточной мышцы и pulley сухожилия бицепса
 titleEn: Subscapularis partial tear and biceps pulley lesion
 region: shoulder
-frequency: rare
+frequency: uncommon
 movements: [snatch, overhead-press, kipping-pull-up, muscle-up, handstand-push-up, ring-dip]
 summary: 'Повреждается сухожилие подлопаточной мышцы или связочная «петля», удерживающая сухожилие бицепса. Болит передняя часть плеча, а распознать повреждение трудно: его плохо видно и при осмотре, и даже при артроскопии.'
 images:

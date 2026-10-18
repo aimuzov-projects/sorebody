@@ -1,5 +1,6 @@
 import { z } from 'astro/zod'
 
+import { FREQUENCY_SLUGS } from '#frontend/data/frequency.ts'
 import { MOVEMENT_SLUGS } from '#frontend/data/movements.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
 import { ATLAS_FILE } from '#frontend/lib/atlas.ts'
@@ -36,7 +37,7 @@ export const injurySchema = z.strictObject({
 	title: z.string().min(3),
 	titleEn: z.string().min(3),
 	region: z.enum(REGION_SLUGS),
-	frequency: z.enum(['common', 'rare']),
+	frequency: z.enum(FREQUENCY_SLUGS),
 	movements: z.array(z.enum(MOVEMENT_SLUGS)),
 	/** Одна фраза для карточки и `meta description`. */
 	summary: z.string().min(20).max(220),

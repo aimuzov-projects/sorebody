@@ -102,6 +102,10 @@
 			--pill: var(--common);
 		}
 
+		&--uncommon {
+			--pill: var(--uncommon);
+		}
+
 		&--rare {
 			--pill: var(--rare);
 		}

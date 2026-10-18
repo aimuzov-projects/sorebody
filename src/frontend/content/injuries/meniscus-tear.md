@@ -2,7 +2,7 @@
 title: Разрыв мениска
 titleEn: Meniscus tear
 region: knee
-frequency: common
+frequency: uncommon
 movements: [squat, thruster, wall-ball, snatch, clean-and-jerk, box-jump, running]
 summary: Хрящевая прокладка внутри колена надрывается при скручивании согнутого колена под нагрузкой или постепенно, от износа. Болит по линии сустава, колено может щёлкать и «застревать».
 images:

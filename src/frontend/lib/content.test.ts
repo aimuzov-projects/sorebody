@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { parse } from 'yaml'
 
+import { FREQUENCY_ORDER, FREQUENCY_SLUGS } from '#frontend/data/frequency.ts'
 import { REGIONS } from '#frontend/data/regions.ts'
 
 import { atlasSrc } from './atlas.ts'
@@ -155,5 +156,19 @@ test('every region has at least one article once the reference is complete', { s
 	assert.deepEqual(
 		REGIONS.filter((r) => !used.has(r.slug)).map((r) => r.slug),
 		[],
+	)
+})
+
+test('FREQUENCY_ORDER lists every article once', () => {
+	assert.deepEqual([...FREQUENCY_ORDER].sort(), articles.map((a) => a.slug).sort())
+})
+
+test('FREQUENCY_ORDER goes from common to rare without mixing levels', () => {
+	const level = (slug: string) => FREQUENCY_SLUGS.indexOf(articles.find((a) => a.slug === slug)?.data.frequency)
+	const levels = FREQUENCY_ORDER.map(level)
+
+	assert.deepEqual(
+		levels,
+		[...levels].sort((a, b) => a - b),
 	)
 })

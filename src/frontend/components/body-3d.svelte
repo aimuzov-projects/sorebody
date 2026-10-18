@@ -21,18 +21,9 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import {
-		ChevronDown,
-		ChevronLeft,
-		Circle,
-		Diamond,
-		FunnelX,
-		PersonStanding,
-		Search,
-		TextQuote,
-		X,
-	} from 'lucide-static'
+	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, TextQuote, X } from 'lucide-static'
 
+	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
@@ -69,16 +60,12 @@
 
 	let { zones, whole, movements, modelUrl, footer, movementPage }: Props = $props()
 
-	/** Частота: у частых и редких свой знак и цвет (--common, --rare), как легенда к списку. */
-	const FREQUENCIES = [
-		['all', 'Все', ''],
-		['common', 'Частые', Circle],
-		['rare', 'Редкие', Diamond],
-	] as const
+	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
+	const FREQUENCY_CHIPS = [['all', 'Все', ''], ...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const)] as const
 
 	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
 	let query = $state('')
-	let frequency = $state<'all' | 'common' | 'rare'>('all')
+	let frequency = $state<'all' | Frequency>('all')
 	let movement = $state('')
 
 	function matches(injury: Injury) {
@@ -86,7 +73,7 @@
 		const only = movementPage?.slug ?? movement
 
 		return (
-			(frequency === 'all' || injury.rare === (frequency === 'rare')) &&
+			(frequency === 'all' || injury.frequency === frequency) &&
 			(!only || injury.movements.includes(only)) &&
 			(!q || normalize(`${injury.title} ${injury.titleEn} ${injury.summary}`).includes(q))
 		)
@@ -96,13 +83,17 @@
 	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
 	/**
 	 * Включённые фильтры для шапки раскрытой зоны: каждый своим чипом и со своим знаком --
-	 * частота кружком или ромбом в её цвете, движение его иконкой, поиск лупой.
+	 * частота своим знаком в её цвете, движение его иконкой, поиск лупой.
 	 */
 	const activeFilters = $derived(
 		[
 			query.trim() && { key: 'query', label: `«${query.trim()}»`, icon: Search, tone: '' },
-			frequency === 'common' && { key: 'frequency', label: 'Частые', icon: Circle, tone: 'common' },
-			frequency === 'rare' && { key: 'frequency', label: 'Редкие', icon: Diamond, tone: 'rare' },
+			frequency !== 'all' && {
+				key: 'frequency',
+				label: frequencyOf(frequency).label,
+				icon: frequencyOf(frequency).icon,
+				tone: frequency,
+			},
 			movement && {
 				key: 'movement',
 				label: movements.find((m) => m.slug === movement)?.title ?? movement,
@@ -1158,7 +1149,7 @@
 			<span class="zone__summary">
 				{#if zoneLabel}<span class="zone__where">{zoneLabel}</span> ·
 				{/if}
-				{#if injury.rare}<span class="zone__rare"
+				{#if injury.frequency === 'rare'}<span class="zone__rare"
 						><span class="zone__rare-icon" aria-hidden="true">{@html Diamond}</span>Редко</span
 					>
 					·
@@ -1376,7 +1367,7 @@
 					</div>
 					<div class="index__filters">
 						<div class="index__freq" role="group" aria-label="Частота">
-							{#each FREQUENCIES as [value, label, icon] (value)}
+							{#each FREQUENCY_CHIPS as [value, label, icon] (value)}
 								<button
 									class="index__chip index__chip--{value}"
 									type="button"
@@ -2347,9 +2338,13 @@
 				color 0.3s var(--a-ease),
 				background 0.3s var(--a-ease);
 
-			/* Частые и редкие -- каждая в своём цвете: знак в нём всегда, выбранная залита им */
+			/* Каждый уровень частоты в своём цвете: знак в нём всегда, выбранный залит им */
 			&--common {
 				--chip: var(--common);
+			}
+
+			&--uncommon {
+				--chip: var(--uncommon);
 			}
 
 			&--rare {
@@ -3130,6 +3125,7 @@
 
 			/* Частота -- залитым знаком в своём цвете, как в переключателе индекса */
 			&--common,
+			&--uncommon,
 			&--rare {
 				width: 10px;
 				height: 10px;
@@ -3142,6 +3138,10 @@
 
 			&--common {
 				color: var(--common);
+			}
+
+			&--uncommon {
+				color: var(--uncommon);
 			}
 
 			&--rare {

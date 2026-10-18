@@ -2,7 +2,7 @@
 title: Травмы лица и зубов
 titleEn: Orofacial and dental trauma
 region: other
-frequency: common
+frequency: uncommon
 movements:
     - box-jump
     - kipping-pull-up

@@ -2,7 +2,7 @@
 title: Повреждение суставной губы плеча (SLAP)
 titleEn: Labral tear, SLAP lesion
 region: shoulder
-frequency: rare
+frequency: uncommon
 movements: [snatch, overhead-press, handstand-push-up, kipping-pull-up, muscle-up, clean-and-jerk]
 summary: Хрящевое кольцо по краю суставной впадины лопатки надрывается там, где к нему крепится сухожилие бицепса. Плечо болит и «щёлкает» в положении руки над головой.
 images:

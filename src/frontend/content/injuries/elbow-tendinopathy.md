@@ -2,7 +2,7 @@
 title: Тендинопатия локтя
 titleEn: Elbow tendinopathy
 region: elbow
-frequency: common
+frequency: uncommon
 movements:
     - kipping-pull-up
     - muscle-up

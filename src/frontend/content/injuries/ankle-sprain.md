@@ -2,7 +2,7 @@
 title: Растяжение связок голеностопа
 titleEn: Ankle sprain
 region: ankle-foot
-frequency: common
+frequency: uncommon
 movements:
     - box-jump
     - running

@@ -2,7 +2,7 @@
 title: Синдром илиотибиального тракта
 titleEn: Iliotibial band syndrome
 region: knee
-frequency: rare
+frequency: uncommon
 movements:
     - running
     - squat

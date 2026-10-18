@@ -1,3 +1,4 @@
+import type { Frequency } from '#frontend/data/frequency.ts'
 import type { Movement } from '#frontend/data/movements.ts'
 import { regionLabel, type Region } from '#frontend/data/regions.ts'
 
@@ -8,13 +9,13 @@ export type InjuryListItem = {
 	titleEn: string
 	summary: string
 	region: Region
-	frequency: 'common' | 'rare'
+	frequency: Frequency
 	movements: Movement[]
 }
 
 export type Filters = {
 	region?: Region
-	frequency?: 'common' | 'rare'
+	frequency?: Frequency
 	movement?: Movement
 	query?: string
 }

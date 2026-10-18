@@ -51,6 +51,7 @@
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
 	import { probeWebGL } from '#frontend/scene/gpu.ts'
+	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
 	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
@@ -457,44 +458,14 @@
 	let sleepTimer: ReturnType<typeof setTimeout> | undefined
 
 	/**
-	 * Адрес -- источник правды, три уровня: сцена (без хеша), зона `#zone=knee:0`, статья
-	 * `#meniscus-tear`. "Назад" и системная кнопка браузера поднимаются на уровень вверх.
-	 * Записи выше `baseLevel` положили в историю мы сами, ниже -- пришли со ссылкой.
+	 * Три уровня адреса (scene/place.ts): сцена, зона, статья. "Назад" и системная кнопка браузера
+	 * поднимаются на уровень вверх. Записи выше `baseLevel` положили в историю мы сами, ниже --
+	 * пришли со ссылкой.
 	 */
-	type Place = { level: 0 } | { level: 1; zone: Zone; index: number } | { level: 2; zone: Zone; injury: Injury }
-
 	let baseLevel = 0
 
-	function zoneHash(zone: Zone, index: number) {
-		return `#zone=${zone.slug}:${index}`
-	}
-
-	function parseHash(): Place {
-		let hash: string
-
-		// Битый процент-эскейп (`/#%`) бросает URIError и валит onMount -- считаем, что хеша нет
-		try {
-			hash = decodeURIComponent(location.hash.slice(1))
-		} catch {
-			return { level: 0 }
-		}
-
-		const zoneMatch = hash.match(/^zone=([\w-]+):(\d)$/)
-
-		if (zoneMatch) {
-			const zone = [...zones, whole].find((z) => z.slug === zoneMatch[1])
-			const index = Number(zoneMatch[2])
-
-			if (zone && zone.points[index]) return { level: 1, zone, index }
-		}
-
-		for (const zone of [...zones, whole]) {
-			const injury = zone.injuries.find((i) => i.slug === hash)
-
-			if (injury) return { level: 2, zone, injury }
-		}
-
-		return { level: 0 }
+	function parseHash() {
+		return parsePlace(location.hash, [...zones, whole])
 	}
 
 	// Текущий шаг -- на <html> и событием: по нему Telegram показывает или прячет свою кнопку «назад»
@@ -753,17 +724,10 @@
 	 */
 	let shownHref = location.href
 
-	/** Спорт по адресу главной: `/` и `/crossfit/` -- кроссфит, `/padel/` -- падел. */
-	function sportAt(pathname: string) {
-		const path = pathname.replace(/\/?$/, '/')
-
-		return sport.sports.find((s) => s.href === path || `/${s.slug}/` === path)?.slug
-	}
-
 	/** «Назад» и «Вперёд»: адрес другого спорта -- сначала спорт, потом зона и статья из хеша. */
 	function onHistory() {
 		const from = shownHref
-		const slug = movementPage ? undefined : sportAt(location.pathname)
+		const slug = movementPage ? undefined : sportAt(location.pathname, sport.sports)
 
 		if (!slug || slug === sport.slug) {
 			sportToken++
@@ -811,14 +775,12 @@
 		})
 	}
 
-	/** Ссылка «/?region=knee» (или «knee:1» -- с точкой зоны) со страницы статьи открывает список зоны. */
+	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны: адрес -- сразу хеш зоны. */
 	function openRegion() {
-		const [region, point] = (new URLSearchParams(location.search).get('region') ?? '').split(':')
-		const regionZone = allZones.find((zone) => zone.slug === region)
-		const index = regionZone?.points[Number(point)] ? Number(point) : 0
+		const region = regionPlace(location.search, allZones)
 
-		if (regionZone && !location.hash)
-			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, index)}`)
+		if (region && !location.hash)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(region.zone, region.index)}`)
 	}
 
 	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала

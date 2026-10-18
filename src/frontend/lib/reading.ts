@@ -44,10 +44,10 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	// разделов нулевые координаты, и активным стал бы последний
 	onScroll()
 
-	// Переход по оглавлению -- плавной прокруткой и без смены хеша: на главной хеш ведёт
-	// навигацию между сценой, зоной и статьёй
+	// Переход по оглавлению и ссылкам data-scroll-to -- плавной прокруткой и без смены хеша: на
+	// главной хеш ведёт навигацию между сценой, зоной и статьёй, и "#urgent" закрывал бы статью
 	const onClick = (event: Event) => {
-		const link = (event.target as Element).closest<HTMLAnchorElement>('[data-toc] a')
+		const link = (event.target as Element).closest<HTMLAnchorElement>('[data-toc] a, a[data-scroll-to]')
 		const target = link && root.querySelector(`#${CSS.escape(link.hash.slice(1))}`)
 
 		if (!target) return

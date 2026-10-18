@@ -9,6 +9,7 @@ import { SPORTS } from '#frontend/data/sports.ts'
 
 import { INJURY_HEADINGS, LENS_HEADINGS } from './article-html.ts'
 import { atlasSrc } from './atlas.ts'
+import { injuryPage } from './injury-page.ts'
 import { injurySchema, lensSchema } from './injury-schema.ts'
 import { footnotes, sourceHref } from './sources.ts'
 import { sportWordsIn } from './sport-words.ts'
@@ -243,6 +244,41 @@ for (const { sport, docs } of lenses) {
 		)
 	})
 }
+
+// Ссылку на травму в тексте сборка ведёт на страницу разбора (lib/injury-page.ts), но только
+// в виде `/injuries/<slug>/`. Иначе ссылка осталась бы как есть и могла увести на переадресацию
+test('internal links in the content lead to a page, not to a redirect', () => {
+	const sportsOf = (slug: string) =>
+		lenses.filter(({ docs }) => docs.some((d) => d.slug === slug)).map(({ sport }) => sport.slug)
+	// Страницы, где выходит текст файла: общая часть -- в каждом спорте и на общей странице
+	const docs = [
+		...injuries.map((doc) => ({ doc, name: doc.slug, on: [...sportsOf(doc.slug), undefined] })),
+		...lenses.flatMap(({ sport, docs }) =>
+			docs.map((doc) => ({ doc, name: `${sport.slug}/${doc.slug}`, on: [sport.slug] })),
+		),
+	]
+
+	for (const { doc, name, on } of docs)
+		for (const [, href] of doc.body.matchAll(/\]\((\/[^)\s]*)\)/g)) {
+			const slug = href!.match(/^\/injuries\/([a-z0-9-]+)\/(#[a-z0-9-]+)?$/)?.[1]
+
+			assert.ok(slug, `${name}: ${href} -- ссылка на травму пишется как /injuries/<slug>/`)
+
+			assert.ok(
+				injuries.some((i) => i.slug === slug),
+				`${name}: ${href} -- нет такой травмы`,
+			)
+
+			for (const sport of on) {
+				const page = injuryPage(slug, sportsOf(slug), sport)
+
+				assert.ok(
+					page !== `/injuries/${slug}/` || sportsOf(slug).length !== 1,
+					`${name}: ${href} -- переадресация`,
+				)
+			}
+		}
+})
 
 test('every region has at least one injury once the reference is complete', { skip: injuries.length < 29 }, () => {
 	const used = new Set(injuries.map((a) => a.data.region))

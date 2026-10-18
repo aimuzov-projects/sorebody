@@ -51,7 +51,8 @@
 	import type { SceneSport } from '#frontend/scene/scene-data.ts'
 	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
-	import { injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
+	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
+	import { injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -463,16 +464,7 @@
 	let scrollTimer: ReturnType<typeof setTimeout> | undefined
 	const noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
 
-	/**
-	 * Маркеры травм раскрытой зоны, по одному на травму. `number` -- номер строки списка, по нему
-	 * маркер на модели сверяется со строкой. У каждой травмы своё место (`INJURY_FOCUS`); если
-	 * места всё же совпали, `shift` разводит маркеры по экрану в ряд, а не склеивает номера.
-	 */
-	type Mark = { key: string; focus: InjuryFocus; slug: string; number: number; shift: number }
-
-	/** Шаг между маркерами с одним местом, px: кружок 20px и зазор. */
-	const MARK_SHIFT = 24
-
+	/** Маркеры раскрытой зоны или единственный маркер травмы на странице движения. */
 	const marks: Mark[] = $derived.by(() => {
 		if (!open) {
 			if (!lead) return []
@@ -483,24 +475,11 @@
 			return [{ key: 'lead', focus, slug: lead.injury.slug, number, shift: 0 }]
 		}
 
-		const zone = open.zone
-		const index = open.index
-		const list = zone.injuries.filter(matches).map((injury, i) => ({
-			key: injury.slug,
-			focus: injuryFocus(zone, index, injury.slug),
-			slug: injury.slug,
-			number: i + 1,
-			shift: 0,
-		}))
-		const place = (mark: Mark) => mark.focus.position.map((v) => v.toFixed(3)).join()
-
-		for (const mark of list) {
-			const same = list.filter((other) => place(other) === place(mark))
-
-			mark.shift = same.indexOf(mark) - (same.length - 1) / 2
-		}
-
-		return list
+		return layoutMarks(
+			open.zone,
+			open.index,
+			open.zone.injuries.filter(matches).map((injury) => injury.slug),
+		)
 	})
 	let markEls = $state<HTMLSpanElement[]>([])
 
@@ -2215,7 +2194,9 @@
 			font-weight: 700;
 			font-variant-numeric: tabular-nums;
 			line-height: 1;
-			color: var(--a-blue);
+			/* Подложка белая в обеих темах, поэтому цифра -- акцентом светлой темы: яркий лайм
+			   тёмной темы на белом не читается */
+			color: var(--accent-light);
 			background: #ffffff;
 			box-shadow:
 				0 0 0 1.5px var(--a-blue),

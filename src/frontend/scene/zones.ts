@@ -164,7 +164,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'ankle-sprain': { offset: [0.03, -0.01, -0.005], normal: [1, 0, 0], view: { azimuth: 85, polar: 70 } },
 	'plantar-fasciitis': { offset: [0, -0.055, -0.035], normal: [0, -0.6, -1], view: { azimuth: 160, polar: 95 } },
 	'achilles-tendinopathy': { offset: [0, 0.035, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
-	'achilles-tendon-rupture': { offset: [0, 0.035, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
+	// Разрыв на том же сухожилии, но маркер ниже, к пятке: если у падела появится его линза,
+	// оба ахилла окажутся в одной зоне и не должны делить место
+	'achilles-tendon-rupture': { offset: [0, 0.01, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
 	// Голень: медиальная головка икроножной сзади и изнутри
 	'tennis-leg': { offset: [-0.02, 0.03, -0.075], normal: [-0.3, 0, -1], view: { azimuth: 175, polar: 78 } },
 	// Всё тело: шея

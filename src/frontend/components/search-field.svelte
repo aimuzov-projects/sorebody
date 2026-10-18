@@ -53,8 +53,9 @@
 	<button class="search__clear" type="button" aria-label="Очистить поиск" onclick={clear}
 		><span class="search__clear-icon" aria-hidden="true">{@html X}</span></button
 	>
+	<!-- ym-disable-keys: вебвизор Метрики пишет вместо запроса звёздочки, в нём бывают симптомы -->
 	<input
-		class="search__input"
+		class="search__input ym-disable-keys"
 		type="search"
 		enterkeyhint="search"
 		autocomplete="off"

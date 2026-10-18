@@ -7,6 +7,8 @@ import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
 import ThemeBoot from '@aimuzov-projects/infra-site-kit/theme-boot.astro'
 import '@aimuzov-projects/infra-site-kit/theme-peek.css'
+import Metrika from '@aimuzov-projects/infra-site-kit/metrika.astro'
+import MetrikaPixel from '@aimuzov-projects/infra-site-kit/metrika-pixel.astro'
 import { site } from '#frontend/data/site.ts'
 import type { SportSlug } from '#frontend/data/sports.ts'
 import { THEME_KEY } from '#frontend/lib/theme.ts'
@@ -43,6 +45,15 @@ const TELEGRAM_FLAG =
 
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 
+/**
+ * Метрика только в продовой сборке: dev и e2e (`METRIKA=off` в playwright.config.ts) не шлют
+ * визиты в статистику. Источники Яндекса в CSP приносит сам компонент из infra-site-kit,
+ * здесь -- только то, что сверх него нужно вебвизору: запасной домен mc.yandex.com и wss.
+ */
+const metrika = import.meta.env.PROD && process.env.METRIKA !== 'off'
+
+if (metrika) Astro.csp?.insertDirective('connect-src wss://mc.yandex.ru https://mc.yandex.com wss://mc.yandex.com')
+
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.site)
 ---
@@ -65,9 +76,11 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script is:inline set:html={TELEGRAM_FLAG} />
 		<ThemeBoot key={THEME_KEY} />
+		{metrika && <Metrika id={site.metrikaId} init={{ webvisor: true }} />}
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
+		{metrika && <MetrikaPixel id={site.metrikaId} />}
 		<ChangelogLink />
 		<ThemeToggle />
 		<slot />

@@ -61,6 +61,13 @@ export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points:
 }
 
 /**
+ * Зоны, у которых ещё нет детальных кусков в `public/model/detail`: их собирают из исходников
+ * BodyParts3D и Z-Anatomy (scripts/model/README.md). Пока кусков нет, раскрытая зона показывает
+ * мышцы и кости лёгкой фигуры, без связок, сосудов и подсветки мышц травмы.
+ */
+export const NO_DETAIL: ReadonlySet<Region> = new Set(['head', 'shin'])
+
+/**
  * Левая точка по данным и зеркальная правая; нормаль -- наружу вбок (`side`) и вперёд (`front`),
  * ракурс правой точки -- с зеркальным азимутом.
  */

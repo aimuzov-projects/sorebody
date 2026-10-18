@@ -161,6 +161,26 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Голова: глаз и рот спереди, от центра черепа
 	'eye-injury': { offset: [0.032, 0, 0.07], normal: [0.2, 0, 1], view: { azimuth: 15, polar: 84 }, zoom: 2.4 },
 	'orofacial-trauma': { offset: [0, -0.075, 0.085], normal: [0, 0, 1], view: { azimuth: 15, polar: 86 }, zoom: 2.2 },
+	// Локоть: тендинопатия -- наружный надмыщелок, бицепс крепится спереди в сгибе локтя
+	'elbow-tendinopathy': { offset: [0.03, 0, 0], normal: [1, 0, 0] },
+	'distal-biceps-rupture': { offset: [0, -0.025, 0.04], normal: [0, 0, 1], view: { azimuth: 25, polar: 76 } },
+	// Кисть: запястье в центре зоны, мозоли -- на ладони у пальцев
+	'wrist-sprain': { offset: [0, 0, 0] },
+	'hand-rips': { offset: [0, -0.07, 0.015], normal: [0, 0, 1], view: { azimuth: 20, polar: 80 } },
+	// Таз: импинджмент -- перед тазобедренного сустава, отрыв хамстрингов -- седалищный бугор сзади
+	'femoroacetabular-impingement': { offset: [0, 0, 0.06], normal: [0, 0, 1], view: { azimuth: 20, polar: 76 } },
+	'proximal-hamstring-avulsion': {
+		offset: [-0.03, -0.09, -0.07],
+		normal: [0, 0, -1],
+		view: { azimuth: 160, polar: 76 },
+	},
+	// Стопа: связки снаружи у лодыжки, фасция на подошве пятки, ахилл сзади над пяткой
+	'ankle-sprain': { offset: [0.03, -0.01, -0.005], normal: [1, 0, 0], view: { azimuth: 85, polar: 70 } },
+	'plantar-fasciitis': { offset: [0, -0.055, -0.035], normal: [0, -0.6, -1], view: { azimuth: 160, polar: 95 } },
+	'achilles-tendinopathy': { offset: [0, 0.035, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
+	// Разрыв на том же сухожилии, но маркер ниже, к пятке: если у падела появится его линза,
+	// оба ахилла окажутся в одной зоне и не должны делить место
+	'achilles-tendon-rupture': { offset: [0, 0.01, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
 	// Голень: медиальная головка икроножной сзади и изнутри
 	'tennis-leg': { offset: [-0.02, 0.03, -0.075], normal: [-0.3, 0, -1], view: { azimuth: 175, polar: 78 } },
 	// Всё тело: шея

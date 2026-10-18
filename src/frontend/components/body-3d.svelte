@@ -59,14 +59,8 @@
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
-	import {
-		ANKLES_BOX,
-		HEAD_BOX,
-		injuryFocus,
-		injuryLayer,
-		type InjuryFocus,
-		type Zone,
-	} from '#frontend/scene/zones.ts'
+	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
+	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -488,12 +482,7 @@
 	let scrollTimer: ReturnType<typeof setTimeout> | undefined
 	const noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
 
-	/**
-	 * Маркеры травм раскрытой зоны: травмы с одним местом делят маркер. `numbers` -- номера
-	 * строк списка, по ним маркер на модели сверяется со строкой.
-	 */
-	type Mark = { key: string; focus: InjuryFocus; slugs: string[]; numbers: number[] }
-
+	/** Маркеры раскрытой зоны или единственный маркер травмы на странице движения. */
 	const marks: Mark[] = $derived.by(() => {
 		if (!open) {
 			if (!lead) return []
@@ -501,23 +490,14 @@
 			const focus = injuryFocus(lead.zone, lead.index, lead.injury.slug)
 			const number = movementInjuries.findIndex((entry) => entry.injury === lead?.injury) + 1
 
-			return [{ key: 'lead', focus, slugs: [lead.injury.slug], numbers: [number] }]
+			return [{ key: 'lead', focus, slug: lead.injury.slug, number, shift: 0 }]
 		}
 
-		const byKey = new Map<string, Mark>()
-
-		for (const [i, injury] of open.zone.injuries.filter(matches).entries()) {
-			const focus = injuryFocus(open.zone, open.index, injury.slug)
-			const key = focus.position.map((v) => v.toFixed(3)).join()
-			const mark = byKey.get(key)
-
-			if (mark) {
-				mark.slugs.push(injury.slug)
-				mark.numbers.push(i + 1)
-			} else byKey.set(key, { key, focus, slugs: [injury.slug], numbers: [i + 1] })
-		}
-
-		return [...byKey.values()]
+		return layoutMarks(
+			open.zone,
+			open.index,
+			open.zone.injuries.filter(matches).map((injury) => injury.slug),
+		)
 	})
 	let markEls = $state<HTMLSpanElement[]>([])
 
@@ -1049,7 +1029,7 @@
 
 			const p = body.project(mark.focus.position)
 
-			el.style.transform = `translate(${p.x}px, ${p.y}px)`
+			el.style.transform = `translate(${p.x + mark.shift * MARK_SHIFT}px, ${p.y}px)`
 			el.dataset.hidden = String(body.facing(mark.focus.normal) < -0.05)
 		}
 	}
@@ -1397,7 +1377,7 @@
 
 			const mark = nearestMark(event.clientX, event.clientY, event.pointerType === 'mouse' ? 24 : 36)
 
-			if (mark) pickInjury(mark.slugs[0])
+			if (mark) pickInjury(mark.slug)
 			else if (event.pointerType === 'mouse') up()
 
 			return
@@ -1594,13 +1574,13 @@
 	{#each marks as mark, i (mark.key)}
 		<span
 			class="body3d__mark"
-			class:body3d__mark--accent={mark.key === 'lead' || (accent && mark.slugs.includes(accent.slug))}
-			class:body3d__mark--dim={accent && !mark.slugs.includes(accent.slug)}
+			class:body3d__mark--accent={mark.key === 'lead' || accent?.slug === mark.slug}
+			class:body3d__mark--dim={accent && accent.slug !== mark.slug}
 			bind:this={markEls[i]}
 			hidden={!live}
 			aria-hidden="true"
 		>
-			<span class="body3d__mark-dot">{mark.numbers.join(',')}</span>
+			<span class="body3d__mark-dot">{mark.number}</span>
 		</span>
 	{/each}
 
@@ -2248,7 +2228,7 @@
 			}
 		}
 
-		/* Маркер травмы -- кружок с номером строки списка, у общего места -- через запятую */
+		/* Маркер травмы -- кружок с номером строки списка */
 		&__mark-dot {
 			position: relative;
 			display: grid;
@@ -2261,7 +2241,9 @@
 			font-weight: 700;
 			font-variant-numeric: tabular-nums;
 			line-height: 1;
-			color: var(--a-blue);
+			/* Подложка белая в обеих темах, поэтому цифра -- акцентом светлой темы: яркий лайм
+			   тёмной темы на белом не читается */
+			color: var(--accent-light);
 			background: #ffffff;
 			box-shadow:
 				0 0 0 1.5px var(--a-blue),

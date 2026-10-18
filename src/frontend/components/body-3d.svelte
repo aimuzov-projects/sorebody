@@ -1022,7 +1022,11 @@
 		// на уровень вверх. На таче тап мимо ничего не делает: модель крутят пальцем, а случайный тап
 		// не должен закрывать зону, назад ведёт стрелка
 		if (open) {
-			if ((event.target as Element).closest('.zone')) return
+			// Только простой клик по самой сцене: правая кнопка, клик с модификатором или по шапке
+			// с подсказками зону не закрывают
+			if (event.target !== canvas || event.button !== 0) return
+
+			if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
 
 			const mark = nearestMark(event.clientX, event.clientY, event.pointerType === 'mouse' ? 24 : 36)
 

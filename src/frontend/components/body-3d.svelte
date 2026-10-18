@@ -37,6 +37,7 @@
 	import type { Movement } from '#frontend/data/movements.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
+	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
@@ -344,6 +345,22 @@
 	function placePoster() {
 		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
 	}
+
+	/**
+	 * Подсказка первого визита "как пользоваться моделью": у фигуры, пока посетитель не закроет
+	 * её или не откроет зону. Только на главной и только с общего плана (место берём у постера)
+	 */
+	let hintShown = $state(false)
+
+	function dismissHint() {
+		hintShown = false
+		markIntroHintSeen()
+	}
+
+	$effect(() => {
+		if (hintShown && (open || article)) dismissHint()
+	})
+
 	let fps = $state(0)
 	const showFps = typeof location !== 'undefined' && new URLSearchParams(location.search).has('fps')
 	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -568,6 +585,7 @@
 		if (!location.hash) {
 			placePoster()
 			window.addEventListener('resize', placePoster)
+			hintShown = !movementPage && !introHintSeen()
 		}
 
 		sync()
@@ -1183,6 +1201,22 @@
 		</picture>
 	{/if}
 
+	<!-- На десктопе -- в строке шапки над головой фигуры, на телефоне -- под ногами, над шторкой.
+	     Низ постера -- с запасом под его прозрачные поля: ноги кончаются раньше картинки -->
+	{#if hintShown && posterRect}
+		<p
+			class="body3d__hint"
+			style:--hint-x="{posterRect.left + posterRect.width / 2}px"
+			style:--hint-y="{posterRect.top + posterRect.height * 0.95}px"
+			transition:fadeUp
+		>
+			Нажмите на точку — откроются травмы зоны
+			<button class="body3d__hint-close" type="button" aria-label="Закрыть подсказку" onclick={dismissHint}
+				>{@html X}</button
+			>
+		</p>
+	{/if}
+
 	{#if status === 'error' && !open}
 		<p class="body3d__status">Не получилось показать 3D: ваш браузер не поддерживает WebGL.</p>
 	{/if}
@@ -1287,6 +1321,11 @@
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
+				<!-- Кто попал на главную впервые: что за сайт и где о нём подробнее -->
+				<p class="index__lead">
+					Справочник: что это за травма, когда к врачу и как тренироваться дальше.
+					<a class="index__lead-link" href="/about/">О справочнике</a>
+				</p>
 			</header>
 			<!-- Поиск и фильтры. На десктопе обёртки прозрачны для раскладки, на телефоне это остров
 			     внизу экрана: свёрнутым он показывает включённые фильтры, по нажатию раскрывается -->
@@ -1596,6 +1635,76 @@
 		&--open &__spot {
 			pointer-events: none;
 			opacity: 0;
+		}
+
+		/* Подсказка первого визита: таблетка как у подсказок значков (.tip в global.css).
+		   Центр -- по оси фигуры, высота -- строка шапки, на телефоне -- низ фигуры */
+		&__hint {
+			position: absolute;
+			z-index: 4;
+			top: calc(var(--theme-toggle-top) + var(--header-row) / 2);
+			left: var(--hint-x);
+			translate: -50% -50%;
+			display: flex;
+			gap: 4px;
+			align-items: center;
+			width: max-content;
+			max-width: calc(100vw - 32px);
+			margin: 0;
+			padding: 6px 6px 6px 14px;
+			border-radius: 999px;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 1.3;
+			color: var(--a-fg);
+			background: color-mix(in srgb, var(--a-fg) 6%, var(--a-bg));
+			box-shadow: 0 10px 36px rgb(0 0 0 / 18%);
+
+			@media (width < 700px) {
+				top: var(--hint-y);
+				translate: -50% 0;
+			}
+		}
+
+		&__hint-close {
+			cursor: pointer;
+			position: relative;
+			display: grid;
+			flex: none;
+			place-items: center;
+			width: 26px;
+			height: 26px;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			color: var(--a-fg2);
+			background: none;
+			transition:
+				color 0.3s var(--a-ease),
+				background 0.3s var(--a-ease);
+
+			/* Зона нажатия 44 на 44 */
+			&::before {
+				content: '';
+				position: absolute;
+				inset: -9px;
+			}
+
+			&:hover {
+				color: var(--a-fg);
+				background: var(--a-fill);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
+
+			/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
+			& :global(svg) {
+				width: 16px;
+				height: 16px;
+			}
 		}
 
 		/* Загрузка или ошибка WebGL -- там, где стоит фигура: справа от индекса, на телефоне над ним */
@@ -2070,6 +2179,35 @@
 			@media (width < 700px) {
 				margin-top: 2px;
 				font-size: 16px;
+			}
+		}
+
+		/* Что за сайт -- под заголовком главной, тише его и не шире колонки */
+		&__lead {
+			max-width: 34ch;
+			margin: 10px 0 0;
+			font-size: 16px;
+			line-height: 1.4;
+			color: var(--a-fg2);
+
+			@media (width < 700px) {
+				margin-top: 4px;
+				font-size: 14px;
+			}
+		}
+
+		&__lead-link {
+			color: var(--a-blue);
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+
+			&:focus-visible {
+				border-radius: 4px;
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
 			}
 		}
 

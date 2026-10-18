@@ -1,4 +1,6 @@
-import { ChartColumn, PersonStanding, Rocket, Smartphone, Stethoscope, Volleyball } from 'lucide-static'
+import { ChartColumn, PersonStanding, Rocket, Smartphone, Stethoscope } from 'lucide-static'
+
+import { PADEL_RACKET } from '#frontend/lib/icons.ts'
 
 /**
  * Что нового на сайте, для читателя, а не для разработчика: страница /changelog. Технический
@@ -21,7 +23,7 @@ export const RELEASES: Release[] = [
 		version: '1.8.0',
 		date: '2026-10-18',
 		title: 'Второй вид спорта: падел',
-		icon: Volleyball,
+		icon: PADEL_RACKET,
 		items: [
 			'В справочнике появился второй вид спорта — падел. Выбрать спорт можно прямо в заголовке главной: нажмите на «в кроссфите» и выберите другой. У каждого спорта свой цвет на всём сайте.',
 			'Для падела разобраны 12 травм, которые встречаются в нём чаще всего. Четыре статьи новые: [«теннисная нога»](/injuries/tennis-leg), [тупая травма глаза](/injuries/eye-injury), [плантарный фасциит](/injuries/plantar-fasciitis) и [тендинопатия ахилла](/injuries/achilles-tendinopathy).',

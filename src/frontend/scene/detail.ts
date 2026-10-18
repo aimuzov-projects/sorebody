@@ -114,7 +114,7 @@ export function createDetail(options: {
 		return index
 	}
 
-	function dispose(group: Group) {
+	function free(group: Group) {
 		group.traverse((obj) => {
 			if (obj instanceof Mesh) obj.geometry.dispose()
 		})
@@ -122,7 +122,7 @@ export function createDetail(options: {
 
 	/** Освободить кусок, если он уже не в кэше и не на сцене. */
 	function release(group: Group) {
-		if (!cached.has(group) && !shown.includes(group)) dispose(group)
+		if (!cached.has(group) && !shown.includes(group)) free(group)
 	}
 
 	function load(file: string) {
@@ -278,6 +278,18 @@ export function createDetail(options: {
 		/** Цвет мышц при смене темы. */
 		recolor(color: string) {
 			materials.muscles.material.color.set(color)
+		},
+		/** Сцена уходит: снять куски и освободить их вместе с материалами. Недогруженные освободятся по приходу. */
+		dispose() {
+			wanted = null
+			replace([])
+
+			for (const promise of cache.values()) void promise.then((group) => group && free(group))
+
+			cache.clear()
+			cached.clear()
+
+			for (const m of all) m.material.dispose()
 		},
 	}
 }

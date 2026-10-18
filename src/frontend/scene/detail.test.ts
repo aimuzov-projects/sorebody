@@ -140,3 +140,15 @@ test('a chunk evicted while shown is disposed once it leaves the scene', async (
 	await detail.show(null)
 	assert.deepEqual([...disposed], ['a'])
 })
+
+test('dispose() frees shown and cached chunks and takes them off the scene', async (t) => {
+	const { detail, scene, disposed } = setup(t, () => Response.json({ a: {}, b: {} }))
+
+	await detail.show('a', [0, 0, 0], 1)
+	await detail.prefetch('b')
+	detail.dispose()
+	await Promise.resolve()
+
+	assert.equal(scene.children.length, 0)
+	assert.deepEqual([...disposed].sort(), ['a', 'b'])
+})

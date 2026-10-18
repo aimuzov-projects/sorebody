@@ -14,6 +14,7 @@ import {
 	SRGBColorSpace,
 	Vector3,
 	WebGLRenderer,
+	type Object3D,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
@@ -39,11 +40,7 @@ export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
  * фарфоровая оболочка с растворением и кости под ней. Наружу отдаёт проекцию точек на экран
  * и `dissolve()` -- плавно открыть сферу вокруг точки или закрыть её.
  */
-export async function createBodyScene(
-	canvas: HTMLCanvasElement,
-	modelUrl: string,
-	onProgress?: (share: number) => void,
-) {
+export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: string) {
 	const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
 
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -108,10 +105,18 @@ export async function createBodyScene(
 	const DEEP_SHARE = 0.45
 
 	const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
-	// Доля загруженного body.glb -- для полосы под силуэтом; без размера ответа её нет
-	const gltf = await loader.loadAsync(modelUrl, (event) => {
-		if (event.lengthComputable && event.total) onProgress?.(event.loaded / event.total)
-	})
+	let gltf: Awaited<ReturnType<GLTFLoader['loadAsync']>>
+
+	try {
+		gltf = await loader.loadAsync(modelUrl)
+	} catch (error) {
+		// Без dispose() OrbitControls оставили бы на холсте touch-action: none и свои слушатели
+		controls.dispose()
+		renderer.dispose()
+		disposeTree(scene)
+
+		throw error
+	}
 
 	gltf.scene.traverse((obj) => {
 		if (!(obj instanceof Mesh)) return
@@ -599,9 +604,22 @@ export async function createBodyScene(
 			darkScheme.removeEventListener('change', applyTheme)
 			renderer.setAnimationLoop(null)
 			controls.dispose()
+			detail.dispose()
+			disposeTree(scene)
 			renderer.dispose()
 		},
 	}
+}
+
+/** Освободить геометрию и материалы всех мешей под `root`: renderer.dispose() их не трогает. */
+function disposeTree(root: Object3D) {
+	root.traverse((obj) => {
+		if (!(obj instanceof Mesh)) return
+
+		obj.geometry.dispose()
+
+		for (const material of [obj.material].flat()) material.dispose()
+	})
 }
 
 /**

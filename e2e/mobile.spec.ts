@@ -129,7 +129,8 @@ test.describe('на ноутбуке 1280×720', () => {
 			),
 		).toBe(true)
 
-		expect(await zones.evaluate((list) => list.scrollHeight <= list.clientHeight)).toBe(true)
+		// Сколько пикселей списку не хватает: в сообщении падения видно, на сколько промахнулись
+		expect(await zones.evaluate((list) => Math.max(0, list.scrollHeight - list.clientHeight))).toBe(0)
 	})
 })
 

@@ -59,3 +59,41 @@ test('главная спорта по умолчанию живёт и на /cr
 	await expect(page.locator('link[rel="canonical"]')).not.toHaveAttribute('href', /crossfit/)
 	await expect(page.locator('.index__title--home')).toBeVisible()
 })
+
+// Этап 2: второй спорт. Селект в заголовке главной -- поверх фразы спорта, смена ведёт на главную
+// другого спорта и везёт с собой открытую зону
+test('падел красит акцент лаймом, а селект в заголовке переключает спорт с зоной', async ({ page }) => {
+	await page.goto('/padel/?scene#zone=knee:0')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page.locator('.index__sport')).toHaveCSS('color', 'rgb(70, 117, 9)')
+
+	const select = page.getByRole('combobox', { name: 'Вид спорта' })
+
+	await expect(select).toHaveValue('padel')
+	await select.selectOption('crossfit')
+	await expect(page).toHaveURL(/\/#zone=knee:0$/)
+})
+
+// Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет
+test('на странице спорта видны только зоны с его травмами', async ({ page }) => {
+	await page.goto('/padel/?scene')
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toBeVisible()
+	await page.goto('/crossfit/?scene')
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
+})
+
+test('селект «Разбор в …» ведёт на статью другого спорта к тому же разделу', async ({ page }) => {
+	await page.goto('/crossfit/ankle-sprain/')
+	await page.locator('#treatment').scrollIntoViewIfNeeded()
+	await page.evaluate(() => document.querySelector('#treatment')?.scrollIntoView())
+	await page.getByRole('combobox', { name: 'Разбор по виду спорта' }).selectOption({ label: 'Падел' })
+	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/#treatment$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+})
+
+test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {
+	await page.goto('/crossfit/acl-tear/')
+	await expect(page.locator('.article__sport')).toHaveText('Разбор в кроссфите')
+	await expect(page.locator('[data-sport-select]')).toHaveCount(0)
+})

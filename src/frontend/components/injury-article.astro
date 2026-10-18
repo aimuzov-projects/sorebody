@@ -1,18 +1,18 @@
 ---
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
+import {
+	ArrowRight,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ExternalLink,
+	TextQuote,
+	TriangleAlert,
+} from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
-import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
+import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
-import {
-	type CrossfitElement,
-	sportArticle,
-	sportElement,
-	sportHome,
-	sportOf,
-	type Sport,
-	type SportSlug,
-} from '#frontend/data/sports.ts'
+import { sportArticle, sportElement, sportHome, sportOf, type Sport, type SportSlug } from '#frontend/data/sports.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
@@ -27,6 +27,7 @@ import '#frontend/styles/article.css'
 /**
  * Лонгрид травмы. Со спортом и линзой -- статья спорта (`/<sport>/<slug>/`): общая часть и линза
  * в одном оглавлении. Без них -- общая страница (`/injuries/<slug>/`) со списком спортов `sports`.
+ * `sports` -- спорты, где у травмы есть линза: на странице спорта из них селект «Разбор в …».
  */
 type Props = {
 	injury: Injury
@@ -120,6 +121,30 @@ const nameTail = name.slice(nameHead.length)
 					name
 				)}
 			</h1>
+			{/* «Разбор ‹в кроссфите ▾›»: фраза спорта акцентом, поверх неё прозрачный нативный select. Спорт
+			   один -- простой текст. Смена ведёт к тому же разделу (lib/sport-switch.ts) */}
+			{sport && (
+				<p class="article__sport">
+					<span aria-hidden={sports.length > 1 ? 'true' : undefined}>Разбор </span>
+					{sports.length > 1 ? (
+						<span class="article__sport-pick">
+							<span class="article__sport-phrase" aria-hidden="true">
+								{sport.phrase}
+								<span class="article__sport-chevron" set:html={ChevronDown} />
+							</span>
+							<select class="article__sport-select" aria-label="Разбор по виду спорта" data-sport-select>
+								{sports.map((slug) => (
+									<option value={sportArticle(slug, injury.id)} selected={slug === sport.slug}>
+										{sportOf(slug).title}
+									</option>
+								))}
+							</select>
+						</span>
+					) : (
+						<span class="article__sport-phrase">{sport.phrase}</span>
+					)}
+				</p>
+			)}
 			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
 			{summary && (
 				<div class="article__summary">
@@ -173,7 +198,7 @@ const nameTail = name.slice(nameHead.length)
 			{sport && elements.length > 0 && (
 				<section class="article__related" aria-labelledby="related-title">
 					<h2 class="article__end-title" id="related-title">
-						Связанные движения
+						{sport.elementsTitle}
 					</h2>
 					<ul class="article__chips">
 						{elements.map((m) => (
@@ -182,7 +207,7 @@ const nameTail = name.slice(nameHead.length)
 									<span
 										class="article__chip-icon"
 										aria-hidden="true"
-										set:html={MOVEMENT_ICONS[m.slug as CrossfitElement] ?? ''}
+										set:html={MOVEMENT_ICONS[m.slug as ElementIcon] ?? ''}
 									/>
 									{m.title}
 								</a>
@@ -236,10 +261,12 @@ const nameTail = name.slice(nameHead.length)
 <script>
 	import { initBackLink } from '#frontend/lib/back-link.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { initSportSwitch } from '#frontend/lib/sport-switch.ts'
 
 	const root = document.querySelector('[data-article]')
 
 	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
 
 	initBackLink()
+	initSportSwitch(document)
 </script>

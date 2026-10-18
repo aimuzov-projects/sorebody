@@ -159,6 +159,56 @@
 		white-space: nowrap;
 	}
 
+	/* «Разбор ‹в кроссфите ▾›» под названием: фраза -- цветом спорта, select лежит поверх
+	   прозрачным, 16px -- иначе iOS приближает страницу при открытии */
+	&__sport {
+		margin: 12px 0 0;
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	&__sport-phrase {
+		color: var(--accent);
+	}
+
+	&__sport-pick {
+		position: relative;
+		display: inline-block;
+		border-radius: 6px;
+
+		&:has(:focus-visible) {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__sport-chevron {
+		display: inline-flex;
+		width: 0.8em;
+		height: 0.8em;
+		margin-left: 0.15em;
+		vertical-align: -0.05em;
+
+		/* SVG иконки приходит строкой из lucide-static, своего класса у него нет */
+		/* stylelint-disable-next-line selector-max-type */
+		& svg {
+			width: 100%;
+			height: 100%;
+			stroke-width: 2.75;
+		}
+	}
+
+	&__sport-select {
+		cursor: pointer;
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		font-size: 16px;
+		appearance: none;
+		opacity: 0;
+	}
+
 	/* Другое название травмы -- тихий значок после заголовка, не текст в нём: серый, без
 	   кольца, как показатель степени -- верх чуть выше прописных. em считается от шрифта
 	   заголовка, поэтому font: inherit */

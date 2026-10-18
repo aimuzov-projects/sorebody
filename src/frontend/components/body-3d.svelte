@@ -34,12 +34,12 @@
 	} from 'lucide-static'
 
 	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
-	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
-	import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
+	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { initSportSwitch } from '#frontend/lib/sport-switch.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -95,7 +95,8 @@
 		)
 	}
 
-	const allZones = $derived([...zones, whole])
+	// «Всё тело» без травм спорта в индексе не показываем, как и пустые зоны (scene/zones.ts)
+	const allZones = $derived(whole.injuries.length > 0 ? [...zones, whole] : zones)
 	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
 	/**
 	 * Включённые фильтры для шапки раскрытой зоны: каждый своим чипом и со своим знаком --
@@ -113,7 +114,7 @@
 			movement && {
 				key: 'movement',
 				label: movements.find((m) => m.slug === movement)?.title ?? movement,
-				icon: MOVEMENT_ICONS[movement as Movement] ?? '',
+				icon: MOVEMENT_ICONS[movement as ElementIcon] ?? '',
 				tone: '',
 			},
 		].filter((f) => f !== false && f !== ''),
@@ -351,7 +352,11 @@
 
 	function placePoster() {
 		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
+		sheetTop = wrap?.querySelector<HTMLElement>('.index')?.offsetTop ?? Infinity
 	}
+
+	/** Верх шторки на телефоне: подсказка под ногами фигуры не заходит на заголовок с селектом спорта. */
+	let sheetTop = $state(Infinity)
 
 	/**
 	 * Подсказка первого визита "как пользоваться моделью": у фигуры, пока посетитель не закроет
@@ -564,6 +569,18 @@
 		if (aboutLink && aboutTip)
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
+
+	/**
+	 * Смена спорта в заголовке -- переход на его главную. Открытая зона едет в адресе: смотрел плечо
+	 * в кроссфите -- видишь плечо в паделе. Нет у спорта такой зоны -- откроется сцена целиком.
+	 */
+	function switchSport(event: Event) {
+		const target = sport.sports.find((s) => s.slug === (event.currentTarget as HTMLSelectElement).value)
+		const place = parseHash()
+		const zone = open?.zone ?? (place.level > 0 ? place.zone : null)
+
+		if (target) location.assign(zone ? `${target.home}?region=${zone.slug}` : target.home)
+	}
 
 	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны. */
 	function openRegion() {
@@ -995,6 +1012,7 @@
 			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
 			stopReading?.()
 			articleBody.replaceChildren(root)
+			initSportSwitch(root)
 			readerElement.scrollTo(0, 0)
 			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
@@ -1231,7 +1249,7 @@
 		<p
 			class="body3d__hint"
 			style:--hint-x="{posterRect.left + posterRect.width / 2}px"
-			style:--hint-y="{posterRect.top + posterRect.height * 0.95}px"
+			style:--hint-y="{Math.min(posterRect.top + posterRect.height * 0.95, sheetTop - 46)}px"
 			transition:fadeUp
 		>
 			Нажмите на точку — откроются травмы зоны
@@ -1345,15 +1363,26 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__title index__title--home" aria-hidden="true">
-					Травмы {sport.phrase.replaceAll(' ', ' ')}
+				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- акцентом, поверх неё прозрачный нативный select.
+				     На телефоне открывается системный пикер, скринридер читает «Вид спорта, Падел» -->
+				<p class="index__title index__title--home">
+					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<span class="index__sport"
+							><span class="index__sport-phrase" aria-hidden="true"
+								>{sport.phrase.replaceAll(' ', ' ')}<span class="index__sport-chevron"
+									>{@html ChevronDown}</span
+								></span
+							><select class="index__sport-select" aria-label="Вид спорта" onchange={switchSport}
+								>{#each sport.sports as s (s.slug)}<option
+										value={s.slug}
+										selected={s.slug === sport.slug}>{s.title}</option
+									>{/each}</select
+							></span
+						>{:else}<span aria-hidden="true">{sport.phrase.replaceAll(' ', ' ')}</span>{/if}
 				</p>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
-					Разбираемся, что болит после тренировки, когда пора к врачу и как тренироваться дальше. Всё <a
-						class="index__lead-link"
-						href="/about/">по исследованиям</a
-					>, а не по слухам из зала.
+					Разбираемся, что болит после тренировки или игры, когда пора к врачу и как тренироваться дальше.
+					Всё <a class="index__lead-link" href="/about/">по исследованиям</a>, а не по слухам.
 				</p>
 			</header>
 			<!-- Поиск и фильтры. На десктопе обёртки прозрачны для раскладки, на телефоне это остров
@@ -2319,6 +2348,51 @@
 			}
 		}
 
+		/* Фраза спорта в заголовке: цвет спорта и треугольник, нажимается весь кусок. Select лежит
+		   поверх прозрачным, 16px -- иначе iOS приближает страницу при открытии */
+		&__sport {
+			position: relative;
+			display: inline-block;
+			border-radius: 8px;
+			color: var(--a-blue);
+
+			&:has(:focus-visible) {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
+		}
+
+		&__sport-chevron {
+			display: inline-flex;
+			width: 0.6em;
+			height: 0.6em;
+			margin-left: 0.1em;
+			vertical-align: 0.1em;
+			transition: translate 0.2s var(--a-ease);
+
+			/* SVG иконки приходит строкой из lucide-static, своего класса у него нет */
+			/* stylelint-disable-next-line selector-max-type */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 3;
+			}
+		}
+
+		&__sport:hover &__sport-chevron {
+			translate: 0 0.08em;
+		}
+
+		&__sport-select {
+			cursor: pointer;
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			font-size: 16px;
+			appearance: none;
+			opacity: 0;
+		}
+
 		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
 		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
 		   кегль тянется за колонкой, 39px на широком экране */
@@ -2566,13 +2640,14 @@
 				color 0.3s var(--a-ease),
 				opacity 0.3s var(--a-ease);
 
-			/* Строки плотнее, только когда восемь зон иначе не влезают в список без прокрутки:
-			   сперва меньше поля, потом и интерлиньяж. Пороги -- высота восьми строк каждой ступени */
-			@container zones (height < 394px) {
+			/* Строки плотнее, только когда десять строк (все зоны и «Всё тело») иначе не влезают
+			   в список без прокрутки: сперва меньше поля, потом и интерлиньяж. Пороги -- высота
+			   десяти строк каждой ступени */
+			@container zones (height < 493px) {
 				padding: 4px 0;
 			}
 
-			@container zones (height < 313px) {
+			@container zones (height < 392px) {
 				padding: 2px 0;
 				line-height: 1.25;
 			}

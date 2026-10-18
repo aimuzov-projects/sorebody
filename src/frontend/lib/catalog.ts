@@ -6,7 +6,7 @@ export type Injury = CollectionEntry<'injuries'>
 export type Lens = CollectionEntry<'lenses'>
 
 /** Травма в спорте: общая часть и линза. */
-export type SportInjury = { slug: string; injury: Injury; lens: Lens }
+type SportInjury = { slug: string; injury: Injury; lens: Lens }
 
 /**
  * Травмы спорта: линзы из `content/sports/<sport>` вместе с общими частями. Линза без общей
@@ -33,7 +33,18 @@ export async function sportInjuries(sport: Sport): Promise<SportInjury[]> {
 
 /** Спорты, у которых есть линза к травме, в порядке `SPORTS`. */
 export async function sportsOf(slug: string): Promise<SportSlug[]> {
-	const lenses = new Set((await getCollection('lenses')).map((entry) => entry.id))
+	return (await lensSports()).get(slug) ?? []
+}
 
-	return SPORTS.filter((sport) => lenses.has(`${sport.slug}/${slug}`)).map((sport) => sport.slug)
+/** Спорты с линзой для каждой травмы, у которой она есть хоть в одном, в порядке `SPORTS`. */
+export async function lensSports(): Promise<Map<string, SportSlug[]>> {
+	const lenses = new Set((await getCollection('lenses')).map((entry) => entry.id))
+	const injuries = await getCollection('injuries')
+
+	return new Map(
+		injuries.map((injury) => [
+			injury.id,
+			SPORTS.filter((sport) => lenses.has(`${sport.slug}/${injury.id}`)).map((sport) => sport.slug),
+		]),
+	)
 }

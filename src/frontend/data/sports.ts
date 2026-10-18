@@ -161,7 +161,7 @@ const FOOTBALL_FREQUENCY_ORDER = [
 	'orofacial-trauma',
 ]
 
-export type SportElement = { slug: string; title: string; titleEn: string }
+type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
 export type SportSlug = 'crossfit' | 'padel' | 'football'
@@ -244,7 +244,7 @@ export const SPORTS = [
 	},
 ] as const satisfies readonly Sport[]
 
-/** Спорт, который открывает `/`. Пока спорт один, его страницы и ссылки живут от корня. */
+/** Спорт, который открывает `/`: ссылки на его сцену ведут сюда, а не на `/<sport>/`. */
 export const DEFAULT_SPORT: SportSlug = 'crossfit'
 
 export const sportOf = (slug: SportSlug): Sport => SPORTS.find((s) => s.slug === slug)!

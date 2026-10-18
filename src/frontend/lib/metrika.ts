@@ -1,6 +1,7 @@
 import { site } from '#frontend/data/site.ts'
 
-type Ym = (id: number, method: 'hit', url: string, options: { title: string; referer: string }) => void
+/** Счётчик: `ym(id, метод, ...аргументы метода)`. */
+type Ym = (id: number, method: 'hit' | 'reachGoal', ...args: unknown[]) => void
 
 /**
  * Просмотр страницы, на которую сайт перешёл без перезагрузки (`history.pushState`): сам счётчик
@@ -9,4 +10,12 @@ type Ym = (id: number, method: 'hit', url: string, options: { title: string; ref
  */
 export function metrikaHit(referer: string, win: { ym?: Ym; location: Location; document: Document } = window) {
 	win.ym?.(site.metrikaId, 'hit', win.location.href, { title: win.document.title, referer })
+}
+
+/**
+ * Цель Метрики: событие, долю которого хотим видеть в отчётах. Счётчик грузится лениво, до него
+ * вызовы ждут в очереди `ym`. Без счётчика -- ничего не делает.
+ */
+export function metrikaGoal(goal: string, win: { ym?: Ym; document?: Document } = window) {
+	win.ym?.(site.metrikaId, 'reachGoal', goal)
 }

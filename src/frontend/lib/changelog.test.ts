@@ -3,8 +3,10 @@ import { existsSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
 import { RELEASES } from '#frontend/data/changelog.ts'
+import { SPORTS } from '#frontend/data/sports.ts'
 
 import { itemHtml, itemLinks, releaseDate } from './changelog.ts'
+import { injuryPage } from './injury-page.ts'
 
 test('links become anchors and the rest of the item is escaped', () => {
 	assert.equal(
@@ -46,13 +48,21 @@ test('the current package version has a changelog entry', () => {
 	)
 })
 
-test('every link in the changelog leads to an existing page', () => {
+// Ссылка на травму -- сразу на страницу разбора: `/injuries/<slug>` без слэша -- это 301 от сервера
+// и ещё страница-переадресация, если у травмы один спорт
+test('every link in the changelog leads straight to an existing page', () => {
+	const sportsOf = (slug: string) =>
+		SPORTS.filter((s) => existsSync(`src/frontend/content/sports/${s.slug}/${slug}.md`)).map((s) => s.slug)
+
 	for (const r of RELEASES) {
 		for (const href of r.items.flatMap(itemLinks)) {
-			const injury = href.match(/^\/injuries\/([a-z-]+)$/)?.[1]
+			assert.match(href, /\/$/, `${href}: без слэша на конце`)
 
-			if (injury) assert.ok(existsSync(`src/frontend/content/injuries/${injury}.md`), href)
-			else assert.ok(existsSync(`src/frontend/pages${href}.astro`), href)
+			const [, scope, slug] = href.match(/^\/([a-z-]+)\/([a-z0-9-]+)\/$/) ?? []
+			const sport = SPORTS.find((s) => s.slug === scope)?.slug
+
+			if (slug && (scope === 'injuries' || sport)) assert.equal(href, injuryPage(slug, sportsOf(slug), sport))
+			else assert.ok(existsSync(`src/frontend/pages${href.slice(0, -1)}.astro`), href)
 		}
 	}
 })

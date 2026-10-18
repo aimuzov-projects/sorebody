@@ -179,9 +179,16 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 	darkScheme.addEventListener('change', applyTheme)
 
+	// Размер канваса для project(): между её вызовами точки пишут стили, и чтение
+	// clientWidth каждый кадр заставляло браузер пересчитывать страницу
+	let width = canvas.clientWidth
+	let height = canvas.clientHeight
+
 	function resize() {
 		const { clientWidth: w, clientHeight: h } = canvas
 
+		width = w
+		height = h
 		renderer.setSize(w, h, false)
 		const aspect = w / h
 
@@ -189,6 +196,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		half = aspect < NARROW ? (FRAME * NARROW) / aspect / 2 : FRAME / 2
 		halfWidth = half * aspect
 		applyFrame()
+		// Кадр сразу: до следующего requestAnimationFrame канвас уже нового размера, а точки
+		// ещё на старых местах, и на ресайзе они на кадр отставали от фигуры
+		renderer.render(scene, camera)
+		onFrame?.()
 	}
 
 	// Сдвиг кадра в долях экрана: на главной фигура стоит правее индекса (на телефоне -- выше).
@@ -224,8 +235,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		projected.set(...p).project(camera)
 
 		return {
-			x: ((projected.x + 1) / 2) * canvas.clientWidth,
-			y: ((1 - projected.y) / 2) * canvas.clientHeight,
+			x: ((projected.x + 1) / 2) * width,
+			y: ((1 - projected.y) / 2) * height,
 			depth: projected.z,
 		}
 	}

@@ -19,9 +19,9 @@
 </script>
 
 <script lang="ts">
-	import { flushSync, mount, onMount, tick, unmount, untrack, type Snippet } from 'svelte'
+	import { flushSync, onMount, tick, untrack, type Snippet } from 'svelte'
 
-	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, TextQuote, X } from 'lucide-static'
+	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
 
 	import { frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -29,11 +29,12 @@
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
-	import { initReading } from '#frontend/lib/reading.ts'
+	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import FrequencySwitch from '#frontend/components/frequency-switch.svelte'
+	import ArticleReader from '#frontend/components/article-reader.svelte'
 	import Logo from '#frontend/components/logo.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
@@ -447,15 +448,9 @@
 
 	/** Раскрытая зона. `side` -- где стоит список: в свободной от зоны половине экрана. */
 	let open = $state.raw<{ zone: Zone; index: number; side: 'left' | 'right' | 'bottom' } | null>(null)
+	/** Статья поверх модели (components/article-reader.svelte). */
 	let article = $state.raw<Injury | null>(null)
-	let articleStatus = $state<'loading' | 'ready' | 'error'>('loading')
-	let articleBody = $state<HTMLDivElement>()
-	let readerElement = $state<HTMLElement>()
-	let progressBar = $state<HTMLElement>()
-	let stopReading: (() => void) | undefined
 	let sceneHidden = $state(false)
-	/** Номер последней загрузки статьи: ответ, пришедший после перехода к другой, отбрасываем. */
-	let loadToken = 0
 	let sleepTimer: ReturnType<typeof setTimeout> | undefined
 
 	/**
@@ -713,27 +708,6 @@
 		)
 	}
 
-	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
-	let articleSwitches: ReturnType<typeof mount>[] = []
-
-	function unmountSportSwitches() {
-		for (const app of articleSwitches) void unmount(app)
-
-		articleSwitches = []
-	}
-
-	function mountSportSwitches(root: HTMLElement) {
-		unmountSportSwitches()
-
-		articleSwitches = [...root.querySelectorAll<HTMLElement>('[data-sport-switch]')].map((target) => {
-			const props = JSON.parse(target.dataset.sportSwitch ?? '{}')
-
-			target.replaceChildren()
-
-			return mount(SportSwitch, { target, props })
-		})
-	}
-
 	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны: адрес -- сразу хеш зоны. */
 	function openRegion() {
 		const region = regionPlace(location.search, allZones)
@@ -748,7 +722,7 @@
 	sync()
 
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
-	let mounted = false
+	let mounted = $state(false)
 
 	onMount(() => {
 		mounted = true
@@ -1156,92 +1130,15 @@
 		sceneHidden = true
 		clearTimeout(sleepTimer)
 		sleepTimer = setTimeout(() => sceneHidden && body?.pause(true), reduceMotion ? 0 : SCENE_FADE_MS)
-		void loadArticle(injury.slug)
 	}
 
 	function hideArticle() {
 		if (!article) return
 
 		article = null
-		loadToken++
-		stopReading?.()
-		stopReading = undefined
 		sceneHidden = false
 		clearTimeout(sleepTimer)
 		body?.pause(false)
-	}
-
-	async function loadArticle(slug: string) {
-		const token = ++loadToken
-
-		articleStatus = 'loading'
-
-		try {
-			const response = await fetch(`/${sport.slug}/${slug}/`)
-
-			if (!response.ok) throw new Error(`HTTP ${response.status}`)
-
-			// Разбираем только main: стили из head страницы статьи Chrome сверяет с CSP этой
-			// страницы даже в инертном документе DOMParser и сыплет ошибками в консоль
-			const html = await response.text()
-			const from = html.indexOf('<main')
-			const to = html.lastIndexOf('</main>')
-
-			if (from < 0 || to < from) throw new Error('no <main> in article page')
-
-			const doc = new DOMParser().parseFromString(html.slice(from, to + '</main>'.length), 'text/html')
-			const main = doc.querySelector('main')
-
-			if (!main) throw new Error('no <main> in article page')
-
-			// Чипы зоны и частоты в полноэкранной статье лишние
-			main.querySelector('.article__meta')?.remove()
-			await tick()
-
-			if (token !== loadToken || !articleBody || !readerElement) return
-
-			// Второй main на странице не нужен: те же классы и содержимое, но в div
-			const root = document.createElement('div')
-
-			root.className = main.className
-			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
-			stopReading?.()
-			articleBody.replaceChildren(root)
-			mountSportSwitches(root)
-			readerElement.scrollTo(0, 0)
-			stopReading = initReading(root, readerElement, progressBar ?? null)
-			articleStatus = 'ready'
-			await tick()
-			// Фокус -- на статью, а не на стрелку: скринридер начинает с неё, а у кнопки нет
-			// рамки фокуса, которую браузер рисовал при программном переводе
-			readerElement.focus({ preventScroll: true })
-		} catch (error) {
-			if (token !== loadToken) return
-
-			console.error(error)
-			articleStatus = 'error'
-		}
-	}
-
-	/**
-	 * Статья проявляется со сдвигом снизу, при reduced motion -- только прозрачностью.
-	 * `rise` -- насколько снизу: подсказке на телефоне сдвиг не нужен, снизу у неё заголовок шторки.
-	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
-	 */
-	function fadeUp(node: HTMLElement, { rise = 24 } = {}) {
-		// Статья из адреса стоит на месте с первого кадра: mount у Astro проигрывает и вход
-		if (!mounted) return { duration: 0 }
-
-		return {
-			duration: reduceMotion ? 250 : 550,
-			delay: reduceMotion ? 0 : 120,
-			// Близко к cubic-bezier(0.25, 1, 0.5, 1) из CSS: быстрый старт, мягкая посадка
-			easing: (t: number) => 1 - (1 - t) ** 4,
-			tick: (t: number) => {
-				node.style.opacity = String(t)
-				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * rise}px)`
-			},
-		}
 	}
 
 	function clamp(v: number, min: number, max: number) {
@@ -1447,7 +1344,7 @@
 			style:--hint-x="{hintPlace.x}px"
 			style:--hint-y="{hintPlace.y}px"
 			style:--hint-room="{hintPlace.room}px"
-			transition:fadeUp={{ rise: innerWidth < 700 ? 0 : 24 }}
+			transition:fadeUp={{ rise: innerWidth < 700 ? 0 : 24, instant: !mounted, reduceMotion }}
 		>
 			Нажмите на точку — откроются травмы зоны
 			<button class="body3d__hint-close" type="button" aria-label="Закрыть подсказку" onclick={dismissHint}
@@ -1760,56 +1657,7 @@
 </div>
 
 {#if article}
-	<article
-		class="reader"
-		tabindex="-1"
-		bind:this={readerElement}
-		transition:fadeUp
-		onoutroend={unmountSportSwitches}
-		aria-label={article.title}
-		aria-busy={articleStatus === 'loading'}
-	>
-		<div class="reader__progress" aria-hidden="true">
-			<span class="reader__progress-bar" bind:this={progressBar}></span>
-		</div>
-		<SiteHeader>
-			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
-				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
-			>
-			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
-			     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
-			<p
-				class="article-bar__title"
-				aria-hidden="true"
-				style:visibility={articleStatus === 'ready' ? null : 'hidden'}
-			>
-				{splitTitle(article.title).name}
-			</p>
-		</SiteHeader>
-		{#if articleStatus === 'loading'}
-			<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
-			     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
-			<div class="reader__body" aria-hidden="true">
-				<div class="article">
-					<header class="article__hero">
-						<h1 class="article__title">{splitTitle(article.title).name}</h1>
-						<div class="article__summary">
-							<p class="article__summary-label">
-								<span class="article__summary-icon">{@html TextQuote}</span>Коротко
-							</p>
-							<p class="article__summary-text">{article.summary}</p>
-						</div>
-					</header>
-				</div>
-			</div>
-		{:else if articleStatus === 'error'}
-			<p class="reader__status">
-				Не получилось загрузить статью. <a href="/{sport.slug}/{article.slug}/">Открыть отдельно</a>
-			</p>
-		{/if}
-		<div class="reader__body" bind:this={articleBody} hidden={articleStatus !== 'ready'}></div>
-		{#if footer && articleStatus === 'ready'}{@render footer()}{/if}
-	</article>
+	<ArticleReader injury={article} sport={sport.slug} instant={!mounted} {reduceMotion} onback={up} {footer} />
 {/if}
 
 <style>
@@ -3621,133 +3469,6 @@
 			line-height: 1.45;
 			color: var(--a-fg2);
 			letter-spacing: -0.01em;
-		}
-	}
-
-	/* Статья на весь экран на чистом фоне; верхний край растворяется под кнопкой "Назад" */
-	.reader {
-		/* Фон шапки статьи -- цвет её страницы */
-		--site-header-bg: var(--a-page);
-		position: fixed;
-		z-index: 2;
-		inset: 0;
-		overflow-y: auto;
-
-		overscroll-behavior: contain;
-		background: var(--a-page);
-
-		&:focus {
-			outline: none;
-		}
-
-		&__back {
-			cursor: pointer;
-			/* Подложка 32px на стрелке и 8px до маленького заголовка: он стоит по тексту пунктов
-			   оглавления, а подложка под него не заходит. Зона нажатия добрана ::before влево и
-			   по высоте, к заголовку она не тянется */
-			position: relative;
-			display: inline-grid;
-			place-items: center;
-			width: 32px;
-			height: 32px;
-			margin: 0 8px 0 -12px;
-			padding: 0;
-			border: 0;
-			border-radius: 50%;
-			color: var(--a-blue);
-			background: none;
-			transition: background 0.3s var(--a-ease);
-
-			&::before {
-				content: '';
-				position: absolute;
-				inset: -6px 0 -6px -6px;
-			}
-
-			:global([data-telegram]) & {
-				display: none;
-			}
-
-			&:hover {
-				background: var(--a-fill);
-			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				/* Внутрь круга: снаружи рамка подходила бы к заголовку ближе 8px */
-				outline-offset: -2px;
-			}
-		}
-
-		&__back-icon {
-			display: inline-flex;
-			width: 28px;
-			height: 28px;
-
-			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-			& :global(svg) {
-				/* Оптическая поправка влево, как у .article-bar__back */
-				translate: -6% 0;
-				width: 100%;
-				height: 100%;
-				stroke-width: 2.2;
-			}
-		}
-
-		&__status {
-			max-width: 680px;
-			margin: 0 auto;
-			padding: 24px;
-			color: var(--a-fg2);
-		}
-
-		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */
-		&__body {
-			padding-bottom: 40px;
-
-			/* Под липкой шапкой статье меньше верхнего отступа. Оглавление и якоря разделов
-			   отступают от шапки сами: --header-clear в styles/global.css */
-			& :global(.article) {
-				padding-top: 8px;
-			}
-
-			/* Название и "Коротко" стоят с начала загрузки, пришедшее следом проявляется: иначе
-			   текст выскакивал разом, будто страница рендерится кусками. backwards, а не both:
-			   после конца анимация не держит opacity и не мешает липкому оглавлению */
-			& :global(.article__hero > :not(.article__title, .article__summary)),
-			& :global(.article > :not(.article__hero)) {
-				animation: fade-in 0.5s var(--a-ease) backwards;
-			}
-		}
-
-		/* Подвал приходит вместе со статьёй и проявляется с ней */
-		& :global(.footer) {
-			animation: fade-in 0.5s var(--a-ease) backwards;
-		}
-
-		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой
-		   (у неё z-index 10): под ней полосу размывал backdrop-filter */
-		&__progress {
-			pointer-events: none;
-			position: fixed;
-			z-index: 11;
-			top: var(--tg-top);
-			right: 0;
-			left: 0;
-			height: 3px;
-		}
-
-		&__progress-bar {
-			transform-origin: left;
-			transform: scaleX(0);
-			display: block;
-			height: 100%;
-			background: linear-gradient(to right, transparent, var(--a-blue) 30%);
-			transition: transform 0.15s linear;
-
-			@media (--reduced-motion) {
-				transition: none;
-			}
 		}
 	}
 

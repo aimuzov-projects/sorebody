@@ -1242,7 +1242,7 @@
 	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
 	{#if movementPage}
 		{@const total = movementInjuries.length}
-		<aside class="index" class:index--away={open} aria-label="Травмы движения">
+		<aside class="index" class:index--away={open} inert={!!open} aria-label="Травмы движения">
 			<header class="index__head">
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
@@ -1278,7 +1278,7 @@
 			{/if}
 		</aside>
 	{:else}
-		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
+		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>

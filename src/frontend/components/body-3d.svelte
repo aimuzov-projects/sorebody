@@ -424,7 +424,15 @@
 	}
 
 	function parseHash(): Place {
-		const hash = decodeURIComponent(location.hash.slice(1))
+		let hash: string
+
+		// Битый процент-эскейп (`/#%`) бросает URIError и валит onMount -- считаем, что хеша нет
+		try {
+			hash = decodeURIComponent(location.hash.slice(1))
+		} catch {
+			return { level: 0 }
+		}
+
 		const zoneMatch = hash.match(/^zone=([\w-]+):(\d)$/)
 
 		if (zoneMatch) {
@@ -1014,7 +1022,11 @@
 		// на уровень вверх. На таче тап мимо ничего не делает: модель крутят пальцем, а случайный тап
 		// не должен закрывать зону, назад ведёт стрелка
 		if (open) {
-			if ((event.target as Element).closest('.zone')) return
+			// Только простой клик по самой сцене: правая кнопка, клик с модификатором или по шапке
+			// с подсказками зону не закрывают
+			if (event.target !== canvas || event.button !== 0) return
+
+			if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
 
 			const mark = nearestMark(event.clientX, event.clientY, event.pointerType === 'mouse' ? 24 : 36)
 
@@ -1074,7 +1086,12 @@
 	}
 
 	function onKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && (article || open)) up()
+		if (event.key !== 'Escape' || !(article || open)) return
+
+		// Открытую подсказку браузер закроет сам, на уровень вверх -- следующим нажатием
+		if (document.querySelector('[popover="auto"]:popover-open')) return
+
+		up()
 	}
 
 	/** Ссылка в списке открывает статью на месте; с модификаторами -- как обычная ссылка. */
@@ -1225,7 +1242,7 @@
 	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
 	{#if movementPage}
 		{@const total = movementInjuries.length}
-		<aside class="index" class:index--away={open} aria-label="Травмы движения">
+		<aside class="index" class:index--away={open} inert={!!open} aria-label="Травмы движения">
 			<header class="index__head">
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href="/"><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
@@ -1261,7 +1278,7 @@
 			{/if}
 		</aside>
 	{:else}
-		<aside class="index" class:index--away={open} aria-label="Поиск и зоны тела">
+		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
 			</header>

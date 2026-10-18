@@ -78,6 +78,8 @@ export function createDetail(options: {
 	let index: Promise<Record<string, { nerves: boolean }>> | undefined
 	// Куски по имени файла; порядок в Map -- от давнего к свежему, для вытеснения
 	const cache = new Map<string, Promise<Group | null>>()
+	// Загруженные куски, которые ещё в кэше
+	const cached = new Set<Group>()
 	let shown: Group[] = []
 	let wanted: string | null = null
 	let highlighted: string[] | null = null
@@ -96,10 +98,31 @@ export function createDetail(options: {
 
 	function readIndex() {
 		index ??= fetch(`${baseUrl}index.json`)
-			.then((r) => (r.ok ? r.json() : {}))
-			.catch(() => ({}))
+			.then((r) => {
+				if (!r.ok) throw new Error(`${r.url}: ${r.status}`)
+
+				return r.json()
+			})
+			.catch((error) => {
+				// Неудачу не запоминаем: следующая зона спросит индекс заново, а не останется без кусков
+				console.error(error)
+				index = undefined
+
+				return {}
+			})
 
 		return index
+	}
+
+	function dispose(group: Group) {
+		group.traverse((obj) => {
+			if (obj instanceof Mesh) obj.geometry.dispose()
+		})
+	}
+
+	/** Освободить кусок, если он уже не в кэше и не на сцене. */
+	function release(group: Group) {
+		if (!cached.has(group) && !shown.includes(group)) dispose(group)
 	}
 
 	function load(file: string) {
@@ -126,9 +149,19 @@ export function createDetail(options: {
 					obj.material = (materials[layer] ?? materials.muscles).material
 				})
 
+				// Вытеснен, пока грузился, -- в кэш не кладём, освободит его evict()
+				if (cache.get(file) === promise) cached.add(gltf.scene)
+
 				return gltf.scene
 			})
-			.catch(() => null)
+			.catch((error) => {
+				// Неудачу не запоминаем: при следующем открытии зоны кусок попробуем снова
+				console.error(error)
+
+				if (cache.get(file) === promise) cache.delete(file)
+
+				return null
+			})
 
 		cache.set(file, promise)
 		evict()
@@ -142,13 +175,27 @@ export function createDetail(options: {
 
 			cache.delete(file)
 
+			// Кусок на сцене освободит show(), когда его уберёт
 			void promise.then((group) => {
-				if (!group || shown.includes(group)) return
+				if (!group) return
 
-				group.traverse((obj) => {
-					if (obj instanceof Mesh) obj.geometry.dispose()
-				})
+				cached.delete(group)
+				release(group)
 			})
+		}
+	}
+
+	/** Убрать со сцены прежние куски; вытесненные из кэша, пока были на сцене, -- освободить. */
+	function replace(groups: Group[]) {
+		const old = shown
+
+		shown = groups
+
+		for (const group of old) {
+			if (groups.includes(group)) continue
+
+			scene.remove(group)
+			release(group)
 		}
 	}
 
@@ -183,9 +230,7 @@ export function createDetail(options: {
 			wanted = key
 
 			if (!key || !point) {
-				for (const group of shown) scene.remove(group)
-
-				shown = []
+				replace([])
 				cut(null, 0)
 
 				return
@@ -195,9 +240,7 @@ export function createDetail(options: {
 
 			if (wanted !== key) return
 
-			for (const group of shown) scene.remove(group)
-
-			shown = groups
+			replace(groups)
 
 			// У зоны нет куска («Всё тело») или он не загрузился -- остаётся лёгкая фигура
 			if (!groups.length) return cut(null, 0)

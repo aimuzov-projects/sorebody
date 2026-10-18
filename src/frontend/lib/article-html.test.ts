@@ -84,3 +84,14 @@ test('highlights percents only in the frequency section', () => {
 	assert.match(html, /<strong class="stat">14%<\/strong> травм и <strong class="stat">18,5 %<\/strong>/)
 	assert.match(html, /Около 30% случаев/)
 })
+
+test('highlights a percent range as a whole', () => {
+	const { html } = enhanceArticle(
+		body({ frequency: '<p>22,2–43,8% женщин, у мужчин 5 – 7 %; ещё 75%–93%.</p>' }),
+		sources,
+	)
+
+	assert.match(html, /<p><strong class="stat">22,2–43,8%<\/strong> женщин/)
+	assert.match(html, /мужчин <strong class="stat">5 – 7 %<\/strong>;/)
+	assert.match(html, /ещё <strong class="stat">75%–93%<\/strong>\./)
+})

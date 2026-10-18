@@ -45,7 +45,9 @@
 
 <svelte:window onkeydown={onWindowKey} />
 
-<label class="search search--{variant}" class:search--filled={value}>
+<!-- Обёртка не label: тот отдавал клик по своим полям первой кнопке внутри, и запрос стирался.
+     Имя полю даёт aria-label -->
+<div class="search search--{variant}" class:search--filled={value}>
 	<span class="search__icon" aria-hidden="true">{@html Search}</span>
 	<!-- С текстом на месте лупы -- крестик очистки: под большим пальцем слева, а не у края поля -->
 	<button class="search__clear" type="button" aria-label="Очистить поиск" onclick={clear}
@@ -65,7 +67,7 @@
 	/>
 	<!-- Подсказка клавиши: только там, где есть клавиатура и курсор, и пока поле пустое -->
 	<kbd class="search__key" aria-hidden="true">/</kbd>
-</label>
+</div>
 
 <style>
 	/* Поле поиска индекса главной. Нативный крестик type=search спрятан: он жирный, синий и в

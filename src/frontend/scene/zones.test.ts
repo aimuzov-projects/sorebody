@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
 import type { Region } from '#frontend/data/regions.ts'
-import { sportOf } from '#frontend/data/sports.ts'
+import { sportOf, SPORTS } from '#frontend/data/sports.ts'
 
-import { buildZones } from './zones.ts'
+import { buildZones, injuryFocus } from './zones.ts'
 
 const injury = (slug: string, region: Region) => ({
 	slug,
@@ -41,6 +42,29 @@ test('injuries inside a zone go from common to rare in the sport order', () => {
 		zones[0]!.injuries.map((i) => i.slug),
 		['eye-injury', 'orofacial-trauma'],
 	)
+})
+
+test('inside a zone every injury of a sport has its own place on the model', () => {
+	const content = new URL('../content/injuries/', import.meta.url)
+
+	for (const sport of SPORTS) {
+		const injuries = sport.frequencyOrder.map((slug) => {
+			const front = readFileSync(new URL(`${slug}.md`, content), 'utf8')
+			const region = front.match(/^region: ([a-z-]+)$/m)?.[1] as Region
+
+			return injury(slug, region)
+		})
+
+		for (const zone of buildZones(sport, injuries).zones) {
+			const places = zone.injuries.map((i) =>
+				injuryFocus(zone, 0, i.slug)
+					.position.map((v) => v.toFixed(3))
+					.join(),
+			)
+
+			assert.equal(new Set(places).size, places.length, `${sport.slug}, ${zone.slug}: травмы делят одно место`)
+		}
+	}
 })
 
 test('the whole body stays even without injuries: the scene hides it itself', () => {

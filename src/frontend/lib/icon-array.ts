@@ -40,7 +40,7 @@ export function iconArrayHtml(chart: Chart) {
 				`<div class="icon-array__line">` +
 				`<span class="icon-array__group">${escape(group)}</span>` +
 				iconsSvg(filledIcons(percent)) +
-				`<span class="icon-array__value">${filledIcons(percent)} из ${ICONS} · ${percent}%</span>` +
+				`<span class="icon-array__value">${filledIcons(percent)} из ${ICONS} · ${String(percent).replace('.', ',')}%</span>` +
 				`</div>`
 			)
 		})

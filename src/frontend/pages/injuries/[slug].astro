@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, ExternalLink, TextQuote } from 'lucide-static'
+import { ChevronLeft, ChevronRight, ExternalLink, Stethoscope, TextQuote } from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -12,7 +12,7 @@ import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
-import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
@@ -98,6 +98,17 @@ const nameTail = name.slice(nameHead.length)
 				</p>
 				<p class="article__summary-text">{data.summary}</p>
 			</div>
+			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда */}
+			<p class="article__disclaimer">
+				<span class="article__disclaimer-icon" aria-hidden="true" set:html={Stethoscope} />
+				<span>
+					Это справка, а не диагноз. С травмой — к врачу, тревожные признаки — в разделе{' '}
+					<a class="article__disclaimer-link" href="#urgent">
+						«Когда сразу к врачу»
+					</a>
+					.
+				</span>
+			</p>
 			{image && <ArticleFigure {image} id="figure-0" />}
 		</header>
 
@@ -155,8 +166,8 @@ const nameTail = name.slice(nameHead.length)
 					{data.sources.map((s) => (
 						<li class="article__source">
 							{s.label} ·{' '}
-							<a class="article__source-link" href={pubmedUrl(s.pmid)}>
-								PMID {s.pmid}
+							<a class="article__source-link" href={sourceHref(s)}>
+								{sourceSite(s)}
 								<span class="article__source-icon" aria-hidden="true" set:html={ExternalLink} />
 							</a>
 						</li>

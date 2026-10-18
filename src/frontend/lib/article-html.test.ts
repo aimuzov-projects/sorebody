@@ -54,6 +54,15 @@ test('turns (N) and (N, M) footnotes into superscript links without brackets', (
 	assert.doesNotMatch(html, /\(\s*<sup/)
 })
 
+test('treats a guideline link as a footnote, an arbitrary link as plain text', () => {
+	const guideline = '<a href="https://cr.minzdrav.gov.ru/preview-cr/667_1">2</a>'
+	const other = '<a href="https://example.com/">1</a>'
+	const { html } = enhanceArticle(body({ what: `<p>Шина (${guideline}). Сайт (${other}).</p>` }), sources)
+
+	assert.match(html, /Шина<sup class="cite"><a class="cite__link" href="https:\/\/cr\.minzdrav\.gov\.ru\/[^"]+"/)
+	assert.match(html, /Сайт \(<a href="https:\/\/example\.com\/">1<\/a>\)/)
+})
+
 test('splits "Вместо X → Y" and "Вместо X — Y" into was/now pairs', () => {
 	const { html } = enhanceArticle(
 		body({

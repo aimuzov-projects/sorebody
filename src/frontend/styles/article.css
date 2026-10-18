@@ -266,6 +266,32 @@
 		letter-spacing: -0.015em;
 	}
 
+	/* Пометка "справка, а не диагноз": мелко и вторичным цветом, а значок
+	   в цвет раздела "Когда сразу к врачу", куда ведёт ссылка */
+	&__disclaimer {
+		display: flex;
+		gap: 8px;
+		align-items: flex-start;
+		margin: 4px 0 0;
+		font-size: 14px;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	&__disclaimer-link {
+		color: inherit;
+		white-space: nowrap;
+	}
+
+	&__disclaimer-icon {
+		display: inline-flex;
+		flex: none;
+		width: 16px;
+		height: 16px;
+		margin-top: 2px;
+		color: var(--danger);
+	}
+
 	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
 	&__figure {
 		margin: 16px 0 0;
@@ -280,10 +306,12 @@
 		mask-image: var(--article-image-mask);
 		mask-composite: intersect;
 
-		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только верх и низ -- кости
-		   уходят за кадр и иначе обрывались бы линией */
+		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только края кадра -- кости уходят
+		   за него и иначе обрывались бы линией. По бокам переход короче, чтобы не съедать рисунок */
 		&--cutout {
-			mask-image: linear-gradient(to bottom, transparent, #000000 10%, #000000 85%, transparent);
+			mask-image:
+				linear-gradient(to bottom, transparent, #000000 10%, #000000 85%, transparent),
+				linear-gradient(to right, transparent, #000000 8%, #000000 92%, transparent);
 		}
 	}
 

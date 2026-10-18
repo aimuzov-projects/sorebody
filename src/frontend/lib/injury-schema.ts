@@ -4,6 +4,7 @@ import { FREQUENCY_SLUGS } from '#frontend/data/frequency.ts'
 import { MOVEMENT_SLUGS } from '#frontend/data/movements.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
 import { ATLAS_FILE } from '#frontend/lib/atlas.ts'
+import { guidelineSite } from '#frontend/lib/sources.ts'
 
 const chartSchema = z
 	.strictObject({
@@ -51,7 +52,18 @@ export const injurySchema = z.strictObject({
 	),
 	/** Пиктограммы "N из 10". В тексте ставятся маркером `<div data-chart="id"></div>`. */
 	charts: z.array(chartSchema).default([]),
-	sources: z.array(z.object({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) })).min(1),
+	/** Статья PubMed по PMID или рекомендация по ссылке с сайта из `GUIDELINE_SITES`. */
+	sources: z
+		.array(
+			z.union([
+				z.strictObject({ pmid: z.string().regex(/^\d{6,9}$/), label: z.string().min(3) }),
+				z.strictObject({
+					url: z.string().refine((url) => guidelineSite(url) !== undefined, 'сайт рекомендаций не из списка'),
+					label: z.string().min(3),
+				}),
+			]),
+		)
+		.min(1),
 	/** Черновик: врач статью не проверял. На сайте не показывается, это пометка для редактуры. */
 	draft: z.boolean(),
 })

@@ -1,6 +1,7 @@
 ---
 import { createHash } from 'node:crypto'
 
+import ChangelogLink from '#frontend/components/changelog-link.astro'
 import Footer from '#frontend/components/footer.astro'
 import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
@@ -62,6 +63,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>
+		<ChangelogLink />
 		<ThemeToggle />
 		<slot />
 		{!bare && <Footer />}

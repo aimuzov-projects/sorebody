@@ -1,6 +1,7 @@
 ---
 import { BookOpen, ExternalLink, Sparkles } from 'lucide-static'
 
+import { IMAGE_HEIGHT, IMAGE_SIZES, IMAGE_WIDTH, imageSrcset } from '#frontend/lib/article-image.ts'
 import { atlasSrc, atlasUrl, type Atlas } from '#frontend/lib/atlas.ts'
 import { splitCaption } from '#frontend/lib/caption.ts'
 
@@ -15,15 +16,18 @@ const caption = splitCaption(image.caption)
 ---
 
 <figure class="article__figure">
-	{/* Все иллюстрации 1200 на 669: размеры заранее держат место под картинку,
-	    и текст не прыгает при загрузке. Первая стоит в шапке статьи, её грузим сразу */}
+	{/* Размеры заранее держат место под картинку, и текст не прыгает при загрузке. Телефон
+	    берёт копию по своей ширине из srcset. Первая стоит в шапке статьи, её грузим сразу */}
 	<img
 		class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
 		src={image.src}
+		srcset={imageSrcset(image.src)}
+		sizes={IMAGE_SIZES}
 		alt={image.alt}
-		width="1200"
-		height="669"
+		width={IMAGE_WIDTH}
+		height={IMAGE_HEIGHT}
 		loading={id === 'figure-0' ? 'eager' : 'lazy'}
+		decoding="async"
 	/>
 	{/* Подпись: заголовок рисунка и текст, под ними строкой чипы "атлас" и "от нейросети" */}
 	<figcaption class="article__caption">

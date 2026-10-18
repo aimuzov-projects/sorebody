@@ -97,7 +97,8 @@ export function projectBox(box: Box, width: number, height: number, shift = home
 }
 
 /** Уже стольких пикселей справа от головы подсказка рассыпалась бы на четыре-шесть строк. */
-export const HINT_SIDE_MIN = 160
+const HINT_SIDE_MIN = 160
+
 /** Ещё уже -- рассыпается совсем, и крестик лезет за край: туда не ставим вовсе. */
 export const HINT_SIDE_LAST = 110
 /** Высота подсказки в одну строку. */

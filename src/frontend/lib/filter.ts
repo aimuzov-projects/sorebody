@@ -13,7 +13,7 @@ export type InjuryListItem = {
 	movements: Movement[]
 }
 
-export type Filters = {
+type Filters = {
 	region?: Region
 	frequency?: Frequency
 	movement?: Movement

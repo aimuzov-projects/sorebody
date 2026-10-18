@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: aimuzov-projects/infra-site-kit/check@v1
+      # knip: неиспользуемые файлы, экспорты и зависимости. Исключения в knip.json.
+      - run: npm run knip
       # e2e из infra-site-kit: сборка в Chromium. Браузер кэшируется по версии Playwright,
       # его системные библиотеки ставятся из apt каждый прогон.
       - id: playwright

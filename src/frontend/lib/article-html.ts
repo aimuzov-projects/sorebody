@@ -47,7 +47,7 @@ export const SECTIONS = [
 
 export type SectionId = (typeof SECTIONS)[number]['id']
 
-export type Section = { id: SectionId; title: string; icon: string }
+type Section = { id: SectionId; title: string; icon: string }
 
 /**
  * Заголовки разделов в файлах: общей части и линзы, в порядке шаблона (его держит тест контента).
@@ -75,7 +75,7 @@ export const LENS_HEADINGS: typeof INJURY_HEADINGS = [
 ]
 
 /** Заголовок раздела на странице: со спортом -- его фразы, без спорта -- как в общей части. */
-export function sectionTitle(id: SectionId, sport?: Sport) {
+function sectionTitle(id: SectionId, sport?: Sport) {
 	if (id === 'frequency') return `Как часто ${sport?.phrase ?? ''}`.trim()
 
 	if (id === 'mechanism') return sport?.mechanismTitle ?? 'Механизм'
@@ -91,7 +91,7 @@ export type ArticlePart = { html: string; kind: 'injury' | 'lens' }
 type Options = {
 	sources: Source[]
 	sport?: Sport
-	/** Адрес травмы для ссылок `/injuries/<slug>/` в тексте: на странице спорта -- его статья, если есть. */
+	/** Адрес травмы для ссылок `/injuries/<slug>/` в тексте: страница разбора без переадресаций (lib/injury-page.ts). */
 	injuryHref?: (slug: string) => string | undefined
 }
 
@@ -210,7 +210,7 @@ function renumberCites(doc: Element, sources: Source[]) {
 	return [...order.keys()].map((key) => byKey.get(key)!)
 }
 
-/** Ссылка на травму из текста общей части -- на её статью в спорте страницы, если она там есть. */
+/** Ссылка на травму из текста -- на страницу, которую назовёт `injuryHref`. */
 function relink(link: Element, injuryHref: (slug: string) => string | undefined) {
 	const slug = link.attributes.href?.match(/^\/injuries\/([a-z0-9-]+)\/?(#.*)?$/)
 

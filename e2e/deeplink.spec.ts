@@ -5,6 +5,8 @@ import { expect, test, type Page } from '@playwright/test'
 // Кадры пишем на каждом requestAnimationFrame с монтирования сцены; копии страницы в подсмотре
 // темы (`.theme-peek`) не считаем
 const SLUG = 'rotator-cuff-tendinopathy'
+/** Сколько кадров ещё смотрим после появления статьи. */
+const SETTLE = 20
 
 type Frame = { index: boolean; zone: boolean; reader: number | null }
 
@@ -44,7 +46,30 @@ test('прямой заход по ссылке на статью: статья 
 	await recordFrames(page)
 	await page.goto(`/#${SLUG}`)
 	await expect(page.locator('.reader .article__title')).toBeVisible()
-	await page.waitForTimeout(800)
+
+	// Вместо паузы наугад -- до тишины: анимации по времени на странице доиграли, и после
+	// появления статьи записано ещё SETTLE кадров. Проявление или угасание главной, начнись оно,
+	// попало бы в кадры. Не ждём бесконечных (подпись автора) и привязанных к прокрутке:
+	// они «идут» всегда
+	const seen = (await framesOf(page)).length
+
+	await expect
+		.poll(() =>
+			page.evaluate(
+				(min) =>
+					(window as unknown as { frames: Frame[] }).frames.length >= min &&
+					document
+						.getAnimations()
+						.every(
+							(a) =>
+								a.playState !== 'running' ||
+								a.timeline !== document.timeline ||
+								a.effect?.getTiming().iterations === Infinity,
+						),
+				seen + SETTLE,
+			),
+		)
+		.toBe(true)
 
 	const frames = await framesOf(page)
 
@@ -70,4 +95,22 @@ test('статья, открытая кликом, проявляется, а «
 	await expect(page).toHaveURL(/#zone=shoulder:0$/)
 	await expect(page.locator('.zone')).toBeVisible()
 	await expect(page.locator('.reader')).toHaveCount(0)
+})
+
+// Статья в ридере гаснет полсекунды: строка «Разбор в ...» с переключателем спорта
+// гаснет вместе с ней, а не пропадает в первом кадре, пока статья ещё видна
+test('переключатель спорта в статье уходит вместе со статьёй, а не раньше', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__zones').waitFor()
+	await page.evaluate(() => (location.hash = '#ankle-sprain'))
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+	const switcher = reader.locator('[data-sport-switch] button')
+
+	await expect(switcher).toBeVisible()
+	await page.goBack()
+	await page.waitForTimeout(150)
+	await expect(reader).toHaveCount(1)
+	await expect(switcher).toHaveCount(1)
+	await expect(reader).toHaveCount(0)
 })

@@ -3,7 +3,7 @@ import { test } from 'node:test'
 
 import { site } from '#frontend/data/site.ts'
 
-import { metrikaHit } from './metrika.ts'
+import { metrikaGoal, metrikaHit } from './metrika.ts'
 
 const page = (href: string, title: string) => ({
 	location: { href } as Location,
@@ -28,6 +28,15 @@ test('a page change without reload is sent as a hit with the new address and tit
 	])
 })
 
+test('a goal is sent as reachGoal with the counter id', () => {
+	const calls: unknown[][] = []
+
+	metrikaGoal('scene-lite', { ym: (...args: unknown[]) => calls.push(args) })
+
+	assert.deepEqual(calls, [[site.metrikaId, 'reachGoal', 'scene-lite']])
+})
+
 test('without the counter nothing happens', () => {
 	assert.doesNotThrow(() => metrikaHit('/', page('/padel/', 'Падел')))
+	assert.doesNotThrow(() => metrikaGoal('scene-lite', {}))
 })

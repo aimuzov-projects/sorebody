@@ -1,0 +1,7 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"entry": ["scripts/brand/render.mjs", "scripts/images/resize.mjs", "scripts/poster/render.mjs"],
+	"ignore": ["scripts/model/**"],
+	"ignoreBinaries": ["magick"],
+	"postcss": { "config": ["postcss.config.mjs"] }
+}

@@ -21,28 +21,19 @@
 <script lang="ts">
 	import { flushSync, mount, onMount, tick, unmount, untrack, type Snippet } from 'svelte'
 
-	import {
-		ChevronDown,
-		ChevronLeft,
-		Diamond,
-		FunnelX,
-		PersonStanding,
-		Search,
-		Shapes,
-		TextQuote,
-		X,
-	} from 'lucide-static'
+	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, TextQuote, X } from 'lucide-static'
 
-	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
+	import { frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
-	import { metrikaHit } from '#frontend/lib/metrika.ts'
+	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
+	import FrequencySwitch from '#frontend/components/frequency-switch.svelte'
 	import Logo from '#frontend/components/logo.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
@@ -59,6 +50,7 @@
 		type Box,
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
+	import { probeWebGL } from '#frontend/scene/gpu.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
 	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
@@ -91,12 +83,6 @@
 	const whole = $derived(data.whole)
 	const movements = $derived(data.movements)
 	const sport = $derived(data.sport)
-
-	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
-	const FREQUENCY_CHIPS = [
-		['all', 'Все', Shapes],
-		...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const),
-	] as const
 
 	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
 	let query = $state('')
@@ -144,64 +130,6 @@
 		frequency = 'all'
 		movement = ''
 	}
-
-	/**
-	 * Подложка выбранной частоты одна на весь переключатель и переезжает под выбранный чип.
-	 * Края берём у самого чипа: подписи разной длины, а кегль идёт за шириной колонки.
-	 * Едет она только при смене выбора; пересчёт от размеров (первая отрисовка, ресайз, остров
-	 * на телефоне раскрылся из `display: none`) ставит её на место без движения.
-	 *
-	 * Переезд мультяшный: передний край убегает первым, задний догоняет с перелётом внутрь,
-	 * и таблетка тянется, а потом пружинит. По высоте её на растяжении чуть сплющивает.
-	 */
-	let freqGroup = $state<HTMLDivElement>()
-	let freqThumb = $state<HTMLSpanElement>()
-	let freqChips = $state<HTMLButtonElement[]>([])
-	let thumb = $state({ left: 0, right: 0, width: 0 })
-	let thumbMoves = $state<'forward' | 'backward' | null>(null)
-
-	const THUMB_SQUASH: Keyframe[] = [
-		{ scale: '1 1' },
-		{ scale: '1 0.84', offset: 0.35 },
-		{ scale: '1 1.06', offset: 0.7 },
-		{ scale: '1 1' },
-	]
-
-	function placeThumb(moves: boolean) {
-		const chip = freqChips[FREQUENCY_CHIPS.findIndex(([value]) => value === frequency)]
-
-		if (!chip?.offsetWidth || !freqGroup) return
-
-		const left = chip.offsetLeft
-		const width = chip.offsetWidth
-		const right = freqGroup.clientWidth - left - width
-
-		if (left === thumb.left && width === thumb.width) return
-
-		thumbMoves = moves && thumb.width > 0 ? (left > thumb.left ? 'forward' : 'backward') : null
-		thumb = { left, right, width }
-
-		if (thumbMoves && !matchMedia('(prefers-reduced-motion: reduce)').matches)
-			freqThumb?.animate(THUMB_SQUASH, { duration: 520, easing: 'ease-out' })
-	}
-
-	$effect(() => {
-		void frequency
-		// Сама подложка в зависимостях не нужна: эффект пишет её и иначе перезапускал бы себя
-		untrack(() => placeThumb(true))
-	})
-
-	$effect(() => {
-		if (!freqGroup) return
-
-		const resizer = new ResizeObserver(() => placeThumb(false))
-
-		resizer.observe(freqGroup)
-
-		for (const chip of freqChips) resizer.observe(chip)
-
-		return () => resizer.disconnect()
-	})
 
 	/** Остров поиска и фильтров на телефоне: раскрыт или свёрнут в таблетку. */
 	let toolsOpen = $state(false)
@@ -394,6 +322,14 @@
 	let canvas: HTMLCanvasElement
 	let body: BodyScene | undefined
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+	/** WebGL без видеокарты: сцену не грузим, пока её не включат кнопкой (`startScene`, из onMount). */
+	let lite = $state(false)
+	let loadScene = () => {}
+
+	function startScene() {
+		lite = false
+		loadScene()
+	}
 
 	// --- Загрузка модели: силуэт-скелетон, затем фигура и точки ---
 	/**
@@ -411,7 +347,9 @@
 	let posterShown = $state(true)
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
-	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
+	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
+	const flags = new URLSearchParams(location.search)
+	const posterMode = flags.has('poster')
 
 	/**
 	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
@@ -575,6 +513,8 @@
 
 	/** Привести экран к адресу: открыть или закрыть зону и статью. */
 	function sync() {
+		shownHref = location.href
+
 		const place = parseHash()
 
 		if (place.level === 0) {
@@ -600,11 +540,13 @@
 
 	function openZone(zone: Zone, index: number) {
 		history.pushState(null, '', zoneHash(zone, index))
+		shownHref = location.href
 		showZone(zone, index)
 	}
 
 	function openArticle(injury: Injury) {
 		history.pushState(null, '', `#${injury.slug}`)
+		shownHref = location.href
 		showArticle(injury)
 	}
 
@@ -796,20 +738,20 @@
 		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
 		const index = recent && zone?.points[recent.index] ? recent.index : 0
 
+		const from = location.href
+
 		// Как после перехода по ссылке: зона из адреса, «Назад» в ней закрывает её заменой адреса
 		history.pushState(null, '', zone ? `${target.href}${zoneHash(zone, index)}` : target.href)
 		baseLevel = parseHash().level
 		sync()
-		sportHit()
+		metrikaHit(from)
 	}
 
-	// Адрес последнего просмотра для Метрики: referer хита при смене спорта без перезагрузки
-	let hitFrom = location.href
-
-	function sportHit() {
-		metrikaHit(hitFrom)
-		hitFrom = location.href
-	}
+	/**
+	 * Адрес в строке, который видел посетитель: referer хита Метрики, когда «Назад» или
+	 * «Вперёд» уводят в другой спорт. В popstate адрес уже новый, поэтому помним прошлый
+	 */
+	let shownHref = location.href
 
 	/** Спорт по адресу главной: `/` и `/crossfit/` -- кроссфит, `/padel/` -- падел. */
 	function sportAt(pathname: string) {
@@ -820,6 +762,7 @@
 
 	/** «Назад» и «Вперёд»: адрес другого спорта -- сначала спорт, потом зона и статья из хеша. */
 	function onHistory() {
+		const from = shownHref
 		const slug = movementPage ? undefined : sportAt(location.pathname)
 
 		if (!slug || slug === sport.slug) {
@@ -837,7 +780,7 @@
 				applySport(next)
 				baseLevel = parseHash().level
 				sync()
-				sportHit()
+				metrikaHit(from)
 			},
 			(error) => {
 				console.error(error)
@@ -850,8 +793,14 @@
 	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
 	let articleSwitches: ReturnType<typeof mount>[] = []
 
-	function mountSportSwitches(root: HTMLElement) {
+	function unmountSportSwitches() {
 		for (const app of articleSwitches) void unmount(app)
+
+		articleSwitches = []
+	}
+
+	function mountSportSwitches(root: HTMLElement) {
+		unmountSportSwitches()
 
 		articleSwitches = [...root.querySelectorAll<HTMLElement>('[data-sport-switch]')].map((target) => {
 			const props = JSON.parse(target.dataset.sportSwitch ?? '{}')
@@ -898,13 +847,33 @@
 
 		baseLevel = parseHash().level
 
-		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
-		if (!location.hash) {
+		// `?scene` включает сцену и под автотестом, и на медленном WebGL. Рендер постера (`?poster`)
+		// её требует
+		const forced = posterMode || flags.has('scene')
+		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный
+		// WebGL, и страница с ней занимает у axe десятки секунд. Остаются постер и разметка
+		const automated = navigator.webdriver && !forced
+		const webgl = automated || forced || flags.has('lite') ? 'gpu' : probeWebGL()
+
+		// Без видеокарты сцена на секунды занимает процессор и тормозит всю страницу: остаются
+		// постер и индекс, 3D включается кнопкой. `?lite` -- этот режим на любом устройстве.
+		// Цель в Метрике -- чтобы видеть, у какой доли посетителей он включается
+		lite = flags.has('lite') || webgl === 'software'
+
+		if (lite) metrikaGoal('scene-lite')
+
+		// Без WebGL вовсе -- сразу сообщение, код сцены не грузим
+		if (webgl === 'none') status = 'error'
+
+		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра.
+		// Без сцены кадр всегда общий: постер и плашка нужны и после «Назад» из зоны по ссылке
+		if (!location.hash || lite) {
 			placePoster()
 			void document.fonts?.ready.then(placePoster)
 			window.addEventListener('resize', placePoster)
-			hintShown = !movementPage && !introHintSeen()
 		}
+
+		if (!location.hash && !lite) hintShown = !movementPage && !introHintSeen()
 
 		sync()
 		window.addEventListener('popstate', onHistory)
@@ -914,12 +883,14 @@
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
-		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный WebGL,
-		// и страница с ней занимает у axe десятки секунд. Остаётся постер и вся разметка.
-		// `?scene` включает сцену и под автотестом, рендер постера (`?poster`) её требует
-		const automated = navigator.webdriver && !posterMode && !new URLSearchParams(location.search).has('scene')
-		const ready = (automated ? new Promise<never>(() => {}) : import('#frontend/scene/body-scene.ts')).then(
-			async ({ createBodyScene }) => {
+
+		loadScene = load
+
+		// Код сцены -- сотни килобайт: сначала кадр с постером и индексом, потом он
+		if (!automated && !lite && webgl !== 'none') requestAnimationFrame(() => setTimeout(load))
+
+		function load() {
+			const ready = import('#frontend/scene/body-scene.ts').then(async ({ createBodyScene }) => {
 				const scene = await createBodyScene(canvas, modelUrl, sport.glow)
 
 				if (disposed) return scene.dispose()
@@ -972,13 +943,13 @@
 				homeFrame(true)
 
 				if (sceneHidden) scene.pause(true)
-			},
-		)
+			})
 
-		ready.catch((error) => {
-			console.error(error)
-			status = 'error'
-		})
+			ready.catch((error) => {
+				console.error(error)
+				status = 'error'
+			})
+		}
 
 		const resizer = new ResizeObserver(() => {
 			body?.resize()
@@ -1022,7 +993,7 @@
 			if (!el) continue
 
 			el.style.transform = `translate(${p.x}px, ${p.y}px)`
-			el.dataset.hidden = String(!spot.visible)
+			setData(el, 'hidden', String(!spot.visible))
 		}
 
 		// У парной зоны подпись левой точки -- слева от неё, наружу от тела: справа она ложилась
@@ -1030,7 +1001,10 @@
 		for (const [i, spot] of spots.entries()) {
 			const twin = spots.find((other) => other.zone === spot.zone && other !== spot)
 
-			spotEls[i]?.toggleAttribute('data-left', twin !== undefined && spot.x < twin.x)
+			const left = twin !== undefined && spot.x < twin.x
+
+			if (spotEls[i] && spotEls[i].hasAttribute('data-left') !== left)
+				spotEls[i].toggleAttribute('data-left', left)
 		}
 
 		for (const [i, mark] of marks.entries()) {
@@ -1041,8 +1015,16 @@
 			const p = body.project(mark.focus.position)
 
 			el.style.transform = `translate(${p.x + mark.shift * MARK_SHIFT}px, ${p.y}px)`
-			el.dataset.hidden = String(body.facing(mark.focus.normal) < -0.05)
+			setData(el, 'hidden', String(body.facing(mark.focus.normal) < -0.05))
 		}
+	}
+
+	/**
+	 * Пишем data-атрибут, только если значение другое: он в селекторах, и даже та же
+	 * запись каждый кадр заставляла браузер заново считать стили точек
+	 */
+	function setData(el: HTMLElement, key: string, value: string) {
+		if (el.dataset[key] !== value) el.dataset[key] = value
 	}
 
 	function nearest(x: number, y: number, radius: number) {
@@ -1553,6 +1535,21 @@
 		</p>
 	{/if}
 
+	<!-- Медленный WebGL: на месте подсказки -- кнопка, включающая 3D. Зоны открываются из индекса -->
+	{#if lite && !open}
+		<p
+			class="body3d__hint body3d__lite"
+			class:body3d__hint--below={posterRect && !hintPlace.side}
+			class:body3d__lite--corner={!posterRect}
+			style:--hint-x="{hintPlace.x}px"
+			style:--hint-y="{hintPlace.y}px"
+			style:--hint-room="{hintPlace.room}px"
+		>
+			Устройство рисует 3D медленно, поэтому модель на паузе
+			<button class="body3d__lite-start" type="button" onclick={startScene}>Включить 3D</button>
+		</p>
+	{/if}
+
 	{#if status === 'error' && !open}
 		<p class="body3d__status">Не получилось показать 3D: ваш браузер не поддерживает WebGL.</p>
 	{/if}
@@ -1729,36 +1726,7 @@
 						>
 					</div>
 					<div class="index__filters">
-						<div
-							class="index__freq index__freq--{frequency}"
-							class:index__freq--forward={thumbMoves === 'forward'}
-							class:index__freq--backward={thumbMoves === 'backward'}
-							role="group"
-							aria-label="Частота"
-							bind:this={freqGroup}
-							style:--thumb-left="{thumb.left}px"
-							style:--thumb-right="{thumb.right}px"
-						>
-							<span
-								bind:this={freqThumb}
-								class="index__freq-thumb"
-								class:index__freq-thumb--placed={thumb.width > 0}
-								aria-hidden="true"
-							></span>
-							{#each FREQUENCY_CHIPS as [value, label, icon], i (value)}
-								<button
-									bind:this={freqChips[i]}
-									class="index__chip index__chip--{value}"
-									type="button"
-									aria-pressed={frequency === value}
-									title={label}
-									onclick={() => (frequency = value)}
-									><span class="index__chip-icon" aria-hidden="true">{@html icon}</span><span
-										class="index__chip-label">{label}</span
-									></button
-								>
-							{/each}
-						</div>
+						<FrequencySwitch bind:value={frequency} />
 						<MovementSelect
 							options={movements}
 							bind:value={movement}
@@ -1876,6 +1844,7 @@
 		tabindex="-1"
 		bind:this={readerElement}
 		transition:fadeUp
+		onoutroend={unmountSportSwitches}
 		aria-label={article.title}
 		aria-busy={articleStatus === 'loading'}
 	>
@@ -2116,6 +2085,41 @@
 			& :global(svg) {
 				width: 16px;
 				height: 16px;
+			}
+		}
+
+		/* Плашка медленного WebGL: та же, что у подсказки, кнопка -- под текстом */
+		&__lite {
+			flex-direction: column;
+			gap: 8px;
+			align-items: flex-start;
+			padding: 12px 14px;
+		}
+
+		/* Места фигуры ещё не знаем: плашка в правом верхнем углу под шапкой */
+		&__lite--corner {
+			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
+			right: var(--theme-toggle-right);
+			left: auto;
+		}
+
+		&__lite-start {
+			cursor: pointer;
+			padding: 6px 14px;
+			border: 0;
+			border-radius: 999px;
+			font: inherit;
+			color: var(--a-on-blue);
+			background: var(--a-blue);
+			transition: filter 0.3s var(--a-ease);
+
+			&:hover {
+				filter: brightness(1.1);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
 			}
 		}
 
@@ -2781,171 +2785,6 @@
 			}
 		}
 
-		/* Частота -- переключатель из четырёх положений во всю ширину колонки: общая подложка без
-		   рамки, невыбранные положения -- подпись в цвете уровня, выбранное -- залитая таблетка
-		   со знаком. Кегль идёт за шириной колонки (cqi от &__filters): влезает и в остров на 320px */
-		&__freq {
-			--thumb: var(--a-fg);
-
-			position: relative;
-			display: flex;
-			gap: 2px;
-			width: 100%;
-			padding: 3px;
-			border-radius: 999px;
-			font-size: clamp(11px, 5.2cqi, 15px);
-			background: var(--a-fill);
-
-			&--common {
-				--thumb: var(--common);
-			}
-
-			&--uncommon {
-				--thumb: var(--uncommon);
-			}
-
-			&--rare {
-				--thumb: var(--rare);
-			}
-		}
-
-		/* Залитая таблетка выбранного положения -- одна на весь переключатель, лежит под чипами.
-		   Края ставит скрипт по выбранному чипу. Едет и перекрашивается только при смене выбора,
-		   подпись и знак чипа меняются с ней в такт. Края едут порознь: передний быстро и без
-		   перелёта (у крайнего чипа таблетка не вылезет за переключатель), задний с задержкой
-		   и перелётом внутрь -- таблетка тянется и пружинит */
-		&__freq-thumb {
-			--lead: 0.26s cubic-bezier(0.3, 0.7, 0.4, 1);
-			--trail: 0.46s cubic-bezier(0.34, 1.5, 0.64, 1) 0.07s;
-
-			position: absolute;
-			top: 3px;
-			right: var(--thumb-right);
-			bottom: 3px;
-			left: var(--thumb-left);
-			border-radius: 999px;
-			opacity: 0;
-			background: var(--thumb);
-
-			&--placed {
-				opacity: 1;
-			}
-		}
-
-		&__freq--forward &__freq-thumb {
-			transition:
-				right var(--lead),
-				left var(--trail),
-				background-color 0.35s var(--a-ease);
-		}
-
-		&__freq--backward &__freq-thumb {
-			transition:
-				left var(--lead),
-				right var(--trail),
-				background-color 0.35s var(--a-ease);
-		}
-
-		&__freq--forward &__freq-thumb,
-		&__freq--backward &__freq-thumb {
-			@media (--reduced-motion) {
-				transition: none;
-			}
-		}
-
-		/* Знак и подпись лежат в одной ячейке, ширину чипа держит подпись: у выбранного она
-		   прозрачна, а знак встаёт на её место. Ширина чипа от выбора не зависит -- соседи не
-		   прыгают. Подпись остаётся именем кнопки и всплывает в title */
-		&__chip {
-			--chip: var(--a-fg);
-
-			cursor: pointer;
-			position: relative;
-			display: inline-grid;
-			flex: 1 1 auto;
-			place-items: center;
-			padding: 0.34em 0.6em;
-			border: 0;
-			border-radius: 999px;
-			font: inherit;
-			color: var(--chip);
-			background: transparent;
-			transition:
-				color 0.35s var(--a-ease),
-				background 0.3s var(--a-ease);
-
-			@media (--reduced-motion) {
-				transition: none;
-			}
-
-			/* Каждый уровень частоты в своём цвете: подпись в нём, выбранный залит им */
-			&--common {
-				--chip: var(--common);
-			}
-
-			&--uncommon {
-				--chip: var(--uncommon);
-			}
-
-			&--rare {
-				--chip: var(--rare);
-			}
-
-			/* Фон выбранного рисует общая подложка под чипами */
-			&[aria-pressed='true'] {
-				color: var(--a-bg);
-			}
-
-			&:hover:not([aria-pressed='true']) {
-				background: color-mix(in srgb, var(--chip) 12%, transparent);
-			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
-			}
-		}
-
-		&__chip-icon,
-		&__chip-label {
-			grid-area: 1 / 1;
-			transition:
-				opacity 0.35s var(--a-ease),
-				scale 0.35s var(--a-ease);
-
-			@media (--reduced-motion) {
-				transition: none;
-			}
-		}
-
-		&__chip-label {
-			white-space: nowrap;
-		}
-
-		&__chip-icon {
-			scale: 0.6;
-			display: inline-flex;
-			width: 1em;
-			height: 1em;
-			opacity: 0;
-
-			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-			& :global(svg) {
-				width: 100%;
-				height: 100%;
-				fill: currentcolor;
-			}
-		}
-
-		&__chip[aria-pressed='true'] &__chip-icon {
-			scale: 1;
-			opacity: 1;
-		}
-
-		&__chip[aria-pressed='true'] &__chip-label {
-			opacity: 0;
-		}
-
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */
 		&__zones,
 		&__results {
@@ -3310,7 +3149,7 @@
 			}
 
 			/* Чипы частоты под палец: не меньше 40 на 40 */
-			& .index__chip {
+			& :global(.index__chip) {
 				min-width: 40px;
 				min-height: 40px;
 			}

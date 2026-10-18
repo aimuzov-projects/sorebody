@@ -112,6 +112,7 @@ const PADEL_FREQUENCY_ORDER = [
 	'low-back-strain',
 	// Нечастые
 	'plantar-fasciitis',
+	'achilles-tendinopathy',
 	'fall-contusions',
 	'eye-injury',
 	'wrist-sprain',

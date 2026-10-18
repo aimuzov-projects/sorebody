@@ -6,7 +6,7 @@ import type { Box } from '#frontend/scene/frame.ts'
 type Vec3 = [number, number, number]
 
 /** Ракурс камеры, градусы: азимут от лица (+Z) к левому боку (+X), полярный угол от вертикали. */
-export type View = { azimuth: number; polar: number }
+type View = { azimuth: number; polar: number }
 
 type Point = { position: Vec3; normal: Vec3; view: View }
 
@@ -24,7 +24,7 @@ export type Zone = {
 }
 
 /** Травма в списке зоны: хватает для поиска, фильтров и строки списка. */
-export type ZoneInjury = {
+type ZoneInjury = {
 	slug: string
 	title: string
 	titleEn: string

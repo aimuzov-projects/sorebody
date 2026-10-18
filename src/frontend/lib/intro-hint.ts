@@ -3,7 +3,7 @@
  * зону -- больше не всплывает. Отметка в localStorage; где он недоступен (приватный режим,
  * запрет cookie, WebView Telegram) и бросает, подсказку просто не прячем навсегда.
  */
-export const INTRO_HINT_KEY = 'wodcare:intro-hint'
+const INTRO_HINT_KEY = 'wodcare:intro-hint'
 
 type Store = Pick<Storage, 'getItem' | 'setItem'>
 

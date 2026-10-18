@@ -22,7 +22,7 @@ const LABEL: Record<Theme, string> = { auto: 'как в системе', light: 
 const ENABLE: Record<Scheme, string> = { light: 'Включить светлую', dark: 'Включить тёмную' }
 
 /** Действие следующего клика. Без `system` (на сервере) считаем систему светлой. */
-export function themeAction(theme: Theme, system: Scheme = 'light') {
+function themeAction(theme: Theme, system: Scheme = 'light') {
 	const next = nextTheme(theme, system)
 
 	return next === 'auto' ? 'Вернуть как в системе' : ENABLE[next]

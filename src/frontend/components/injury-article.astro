@@ -21,7 +21,8 @@ import SportSwitch from '#frontend/components/sport-switch.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from '#frontend/lib/article-html.ts'
-import type { Injury, Lens } from '#frontend/lib/catalog.ts'
+import { lensSports, type Injury, type Lens } from '#frontend/lib/catalog.ts'
+import { injuryPage } from '#frontend/lib/injury-page.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
@@ -34,7 +35,7 @@ import '#frontend/styles/article.css'
  */
 type Props = {
 	injury: Injury
-	lens?: { sport: Sport; entry: Lens; injuries: Set<string> }
+	lens?: { sport: Sport; entry: Lens }
 	sports?: SportSlug[]
 }
 
@@ -42,6 +43,8 @@ const { injury, lens, sports = [] } = Astro.props
 const { data } = injury
 const sport = lens?.sport
 const home = sport ? sportHome(sport.slug) : '/'
+// Ссылки на травмы из текста -- сразу на страницу разбора, мимо переадресаций
+const sportsByInjury = await lensSports()
 const parts: ArticlePart[] = [{ kind: 'injury', html: injury.rendered?.html ?? '' }]
 
 if (lens) parts.push({ kind: 'lens', html: lens.entry.rendered?.html ?? '' })
@@ -49,7 +52,7 @@ if (lens) parts.push({ kind: 'lens', html: lens.entry.rendered?.html ?? '' })
 const { html, sections, sources } = enhanceArticle(parts, {
 	sources: [...data.sources, ...(lens?.entry.data.sources ?? [])],
 	sport,
-	injuryHref: lens && ((slug) => (lens.injuries.has(slug) ? sportArticle(lens.sport.slug, slug) : undefined)),
+	injuryHref: (slug) => injuryPage(slug, sportsByInjury.get(slug) ?? [], sport?.slug),
 })
 const frequency = lens && frequencyOf(lens.entry.data.frequency)
 const summary = lens?.entry.data.summary

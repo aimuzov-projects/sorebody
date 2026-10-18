@@ -5,7 +5,7 @@ import { citedPmids, pubmedUrl } from './pubmed.ts'
  * значение -- подпись вместо "PMID" в списке источников. Обзоры Cochrane и консенсусы BJSM
  * есть в PubMed, их цитируем по PMID.
  */
-export const GUIDELINE_SITES: Record<string, string> = {
+const GUIDELINE_SITES: Record<string, string> = {
 	'cr.minzdrav.gov.ru': 'Минздрав России',
 	'bestpractice.bmj.com': 'BMJ Best Practice',
 	'cks.nice.org.uk': 'NICE CKS',

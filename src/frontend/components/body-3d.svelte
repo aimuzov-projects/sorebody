@@ -424,7 +424,15 @@
 	}
 
 	function parseHash(): Place {
-		const hash = decodeURIComponent(location.hash.slice(1))
+		let hash: string
+
+		// Битый процент-эскейп (`/#%`) бросает URIError и валит onMount -- считаем, что хеша нет
+		try {
+			hash = decodeURIComponent(location.hash.slice(1))
+		} catch {
+			return { level: 0 }
+		}
+
 		const zoneMatch = hash.match(/^zone=([\w-]+):(\d)$/)
 
 		if (zoneMatch) {

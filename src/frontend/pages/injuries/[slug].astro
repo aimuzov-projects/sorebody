@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, TextQuote } from 'lucide-static'
+import { ChevronLeft, ChevronRight, Circle, Diamond, ExternalLink, Stethoscope, TextQuote } from 'lucide-static'
 
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { MOVEMENTS } from '#frontend/data/movements.ts'
@@ -101,6 +101,17 @@ const nameTail = name.slice(nameHead.length)
 				</p>
 				<p class="article__summary-text">{data.summary}</p>
 			</div>
+			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда */}
+			<p class="article__disclaimer">
+				<span class="article__disclaimer-icon" aria-hidden="true" set:html={Stethoscope} />
+				<span>
+					Это справка, а не диагноз. С травмой — к врачу, тревожные признаки — в разделе{' '}
+					<a class="article__disclaimer-link" href="#urgent">
+						«Когда сразу к врачу»
+					</a>
+					.
+				</span>
+			</p>
 			{image && <ArticleFigure {image} id="figure-0" />}
 		</header>
 

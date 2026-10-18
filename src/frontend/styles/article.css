@@ -262,6 +262,32 @@
 		letter-spacing: -0.015em;
 	}
 
+	/* Пометка "справка, а не диагноз": мелко и вторичным цветом, а значок
+	   в цвет раздела "Когда сразу к врачу", куда ведёт ссылка */
+	&__disclaimer {
+		display: flex;
+		gap: 8px;
+		align-items: flex-start;
+		margin: 4px 0 0;
+		font-size: 14px;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	&__disclaimer-link {
+		color: inherit;
+		white-space: nowrap;
+	}
+
+	&__disclaimer-icon {
+		display: inline-flex;
+		flex: none;
+		width: 16px;
+		height: 16px;
+		margin-top: 2px;
+		color: var(--danger);
+	}
+
 	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
 	&__figure {
 		margin: 16px 0 0;

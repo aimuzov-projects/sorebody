@@ -11,6 +11,7 @@ import { INJURY_HEADINGS, LENS_HEADINGS } from './article-html.ts'
 import { atlasSrc } from './atlas.ts'
 import { injurySchema, lensSchema } from './injury-schema.ts'
 import { footnotes, sourceHref } from './sources.ts'
+import { sportWordsIn } from './sport-words.ts'
 
 const CONTENT = new URL('../content/', import.meta.url)
 const PUBLIC = new URL('../../../public', import.meta.url)
@@ -170,6 +171,17 @@ for (const doc of injuries) {
 
 	test(`${slug}: has a lens in at least one sport`, () => {
 		assert.ok(lenses.some(({ docs }) => docs.some((l) => l.slug === slug)))
+	})
+
+	test(`${slug}: the common part speaks of no particular sport`, () => {
+		// Сноски и подписи источников не в счёт: «опрос кроссфитеров» в подписи -- не текст статьи
+		const prose = doc.body.replace(/\[\d+\]\([^)]*\)/g, '')
+		const captions = [
+			...data.images.flatMap((i: { alt: string; caption: string }) => [i.alt, i.caption]),
+			...(data.charts ?? []).flatMap((c: { title: string; caption: string }) => [c.title, c.caption]),
+		]
+
+		assert.deepEqual(sportWordsIn([prose, ...captions].join('\n')), [])
 	})
 }
 

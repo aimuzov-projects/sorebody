@@ -21,7 +21,17 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, TextQuote, X } from 'lucide-static'
+	import {
+		ChevronDown,
+		ChevronLeft,
+		Diamond,
+		FunnelX,
+		PersonStanding,
+		Search,
+		Shapes,
+		TextQuote,
+		X,
+	} from 'lucide-static'
 
 	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -61,7 +71,10 @@
 	let { zones, whole, movements, modelUrl, footer, movementPage }: Props = $props()
 
 	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
-	const FREQUENCY_CHIPS = [['all', 'Все', ''], ...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const)] as const
+	const FREQUENCY_CHIPS = [
+		['all', 'Все', Shapes],
+		...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const),
+	] as const
 
 	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
 	let query = $state('')
@@ -1376,8 +1389,9 @@
 									aria-pressed={frequency === value}
 									title={label}
 									onclick={() => (frequency = value)}
-									>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
-										>{/if}<span class="index__chip-label" data-label={label}>{label}</span></button
+									><span class="index__chip-icon" aria-hidden="true">{@html icon}</span><span
+										class="index__chip-label">{label}</span
+									></button
 								>
 							{/each}
 						</div>
@@ -2333,35 +2347,22 @@
 			}
 		}
 
-		/* Частота -- переключатель из трёх положений: общая подложка без рамки, выбранное
-		   положение -- залитая таблетка, его видно сразу, а не по жирности шрифта */
+		/* Частота -- переключатель из четырёх положений во всю ширину колонки: общая подложка без
+		   рамки, выбранное положение -- залитая таблетка с одним знаком, у остальных знак и подпись.
+		   Кегль идёт за шириной колонки (cqi от &__filters): три подписи влезают и в остров на 320px */
 		&__freq {
-			display: inline-flex;
+			display: flex;
 			gap: 2px;
+			width: 100%;
 			padding: 3px;
 			border-radius: 999px;
+			font-size: clamp(11px, 4.5cqi, 15px);
 			background: var(--a-fill);
 
-			/* Четыре подписи в строку -- около 375px: в колонке уже этого (шторка на ноутбуке,
-			   остров на телефоне) подпись остаётся только у выбранного положения, у остальных --
-			   знак уровня. Подпись при этом не пропадает для скринридера и всплывает в title */
-			@container (width < 380px) {
-				& .index__chip {
-					justify-content: center;
-					padding-inline: 10px;
-				}
-
-				& .index__chip:has(.index__chip-icon):not([aria-pressed='true']) {
-					padding-inline: 8px;
-
-					& .index__chip-label {
-						position: absolute;
-						overflow: hidden;
-						width: 1px;
-						height: 1px;
-						white-space: nowrap;
-						clip-path: inset(50%);
-					}
+			/* Шторка на ноутбуке у самого порога 700px: подписи остаются, знаки -- только у выбранного */
+			@container (width < 260px) {
+				& .index__chip:not([aria-pressed='true']) .index__chip-icon {
+					display: none;
 				}
 			}
 		}
@@ -2372,13 +2373,14 @@
 			cursor: pointer;
 			position: relative;
 			display: inline-flex;
-			gap: 6px;
+			flex: 1 1 auto;
+			gap: 0.4em;
 			align-items: center;
-			padding: 5px 14px;
+			justify-content: center;
+			padding: 0.34em 0.6em;
 			border: 0;
 			border-radius: 999px;
 			font: inherit;
-			font-size: 15px;
 			color: var(--a-fg2);
 			background: transparent;
 			transition:
@@ -2398,10 +2400,20 @@
 				--chip: var(--rare);
 			}
 
+			/* Выбранное -- одним знаком: подпись остаётся именем кнопки и всплывает в title */
 			&[aria-pressed='true'] {
-				font-weight: 600;
+				flex: none;
 				color: var(--a-bg);
 				background: var(--chip);
+
+				& .index__chip-label {
+					position: absolute;
+					overflow: hidden;
+					width: 1px;
+					height: 1px;
+					white-space: nowrap;
+					clip-path: inset(50%);
+				}
 			}
 
 			&:hover:not([aria-pressed='true']) {
@@ -2416,8 +2428,9 @@
 
 		&__chip-icon {
 			display: inline-flex;
-			width: 11px;
-			height: 11px;
+			flex: none;
+			width: 0.8em;
+			height: 0.8em;
 			color: var(--chip);
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
@@ -2428,24 +2441,11 @@
 			}
 		}
 
+		/* Знак выбранного положения -- вся его подпись: крупнее */
 		&__chip[aria-pressed='true'] &__chip-icon {
+			width: 1em;
+			height: 1em;
 			color: inherit;
-		}
-
-		/* Выбранная подпись жирнее; невидимая жирная копия заранее держит ширину, чтобы фильтр не прыгал */
-		&__chip-label {
-			display: inline-flex;
-			flex-direction: column;
-
-			&::after {
-				pointer-events: none;
-				content: attr(data-label);
-				user-select: none;
-				overflow: hidden;
-				height: 0;
-				font-weight: 600;
-				visibility: hidden;
-			}
 		}
 
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */

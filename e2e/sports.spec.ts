@@ -26,13 +26,14 @@ test('старый адрес движения ведёт на страницу 
 })
 
 // Цвет спорта задаёт правило :root[data-sport='crossfit'] в global.css. Без спорта цвет пока тот же,
-// поэтому подкладываем свой цвет в :root: правило спорта сильнее и должно его перебить
+// поэтому подкладываем свой цвет в :root: правило спорта сильнее и должно его перебить. Без
+// перехода: смена цвета акцента плавная (global.css), а проверка -- сразу
 test('страницы спорта красят акцент цветом спорта, страницы без спорта -- нет', async ({ page }) => {
 	const accent = () =>
 		page.evaluate(() => {
 			const sheet = new CSSStyleSheet()
 
-			sheet.replaceSync(':root { --accent-light: #123456; --accent-dark: #123456 }')
+			sheet.replaceSync(':root { --accent-light: #123456; --accent-dark: #123456; transition: none }')
 			document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet]
 
 			const probe = document.body.appendChild(document.createElement('i'))
@@ -109,6 +110,189 @@ test('после «Назад» список закрыт и показывае�
 	await expect(page).toHaveURL(/\/padel\/$/)
 	await expect(sportButton(page, 'Падел')).toHaveAttribute('aria-expanded', 'false')
 	await expect(page.getByRole('listbox')).toHaveCount(0)
+})
+
+// Смена спорта на главной -- на месте: страница и сцена с моделью остаются, меняются данные спорта,
+// адрес, заголовки и цвет. Метки на window и на холсте переживут только такую смену
+async function markPage(page: Page) {
+	// Остров сцены монтируется на клиенте: до него холста ещё нет
+	await page.locator('.body3d__canvas').waitFor({ state: 'attached' })
+
+	await page.evaluate(() => {
+		Object.assign(window, { samePage: true })
+		document.querySelector('.body3d__canvas')?.setAttribute('data-same', '')
+	})
+}
+
+const samePage = (page: Page) =>
+	page.evaluate(() => 'samePage' in window && document.querySelector('.body3d__canvas[data-same]') !== null)
+
+async function chooseSport(page: Page, from: string, to: string) {
+	await sportButton(page, from).click()
+	await page.getByRole('option', { name: to }).click()
+}
+
+// Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит
+const HOME = /\/\/[^/]+\/$/
+
+test('смена спорта на главной не перезагружает страницу, «Назад» и «Вперёд» тоже', async ({ page }) => {
+	await page.goto('/')
+	await markPage(page)
+	await chooseSport(page, 'Кроссфит', 'Падел')
+
+	await expect(page).toHaveURL(/\/padel\/$/)
+	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page).toHaveTitle(/^Травмы в паделе/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/padel\/$/)
+	// Цвет перетекает, ждём, пока он дойдёт до лайма
+	await expect(sportButton(page, 'Падел')).toHaveCSS('color', 'rgb(70, 117, 9)')
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(1)
+	expect(await samePage(page)).toBe(true)
+
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(sportButton(page, 'Кроссфит')).toHaveCSS('color', 'rgb(0, 102, 204)')
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
+	expect(await samePage(page)).toBe(true)
+
+	await page.goForward()
+	await expect(page).toHaveURL(/\/padel\/$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	expect(await samePage(page)).toBe(true)
+
+	// Обновление -- обычная статическая страница падела
+	await page.reload()
+	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	expect(await samePage(page)).toBe(false)
+})
+
+test('смена спорта на месте переносит зону со стороной тела', async ({ page }) => {
+	await page.goto('/#zone=shoulder:1')
+	await markPage(page)
+
+	// Сторона тела -- в классе раскрытой зоны: список встаёт снаружи от неё
+	const side = await page.locator('section.zone').getAttribute('class')
+
+	await page.locator('.zone__back').click()
+	await chooseSport(page, 'Кроссфит', 'Падел')
+
+	await expect(page).toHaveURL(/\/padel\/#zone=shoulder:1$/)
+	await expect(page.locator('.zone__title')).toHaveText('Плечо')
+	await expect(page.locator('section.zone')).toHaveAttribute('class', side!)
+	expect(await samePage(page)).toBe(true)
+
+	// «Назад» в зоне закрывает её и остаётся в паделе, браузерный «Назад» -- к кроссфиту
+	await page.locator('.zone__back').click()
+	await expect(page).toHaveURL(/\/padel\/$/)
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	expect(await samePage(page)).toBe(true)
+})
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const)
+	test(`цвет спорта при смене ${reducedMotion === 'reduce' ? 'меняется сразу' : 'перетекает'} (${reducedMotion})`, async ({
+		page,
+	}) => {
+		await page.emulateMedia({ reducedMotion })
+		await page.goto('/')
+
+		await page.evaluate(() => {
+			const started: string[] = []
+
+			document.documentElement.addEventListener('transitionstart', (event) => started.push(event.propertyName))
+			Object.assign(window, { started })
+		})
+
+		await chooseSport(page, 'Кроссфит', 'Падел')
+		await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+		await expect(sportButton(page, 'Падел')).toHaveCSS('color', 'rgb(70, 117, 9)')
+
+		const started = await page.evaluate(() => (window as unknown as { started: string[] }).started)
+
+		expect(started.includes('--accent-light')).toBe(reducedMotion === 'no-preference')
+	})
+
+test('смена спорта сбрасывает поиск, частоту и движение', async ({ page }) => {
+	await page.goto('/')
+	await page.getByRole('searchbox').fill('растяжение')
+	await page.getByRole('button', { name: 'Частые', exact: true }).click()
+	await page.getByRole('button', { name: /^Движение/ }).click()
+	await page.getByRole('option').nth(1).click()
+	await chooseSport(page, 'Кроссфит', 'Падел')
+
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	await expect(page.getByRole('searchbox')).toHaveValue('')
+	await expect(page.getByRole('button', { name: 'Все', exact: true })).toHaveAttribute('aria-pressed', 'true')
+	await expect(page.getByRole('button', { name: /^Удар или действие/ })).toHaveText(/любое/)
+	await expect(page.locator('.index__announce')).toHaveText('Травмы в паделе')
+})
+
+test('данные спорта не пришли -- обычный переход на его страницу', async ({ page }) => {
+	await page.route('**/padel/scene.json', (route) => route.abort())
+	await page.goto('/')
+	await markPage(page)
+	await chooseSport(page, 'Кроссфит', 'Падел')
+
+	await expect(page).toHaveURL(/\/padel\/$/)
+	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect.poll(() => page.evaluate(() => 'samePage' in window)).toBe(false)
+})
+
+// Пока данные спорта грузятся, кнопка показывает загрузку. Открыл за это время зону -- данные
+// пришли не к месту: спорт не меняется, запись истории с зоной остаётся
+test('зона, открытая во время загрузки спорта, отменяет смену', async ({ page }) => {
+	let release!: () => void
+	const held = new Promise<void>((resolve) => (release = resolve))
+
+	await page.route('**/padel/scene.json', async (route) => {
+		await held
+		await route.continue()
+	})
+
+	await page.goto('/')
+	await chooseSport(page, 'Кроссфит', 'Падел')
+	await expect(page.locator('.index__title--home')).toHaveAttribute('aria-busy', 'true')
+	await page.locator('.index__zone', { hasText: 'Колено' }).click()
+	await expect(page).toHaveURL(/\/#zone=knee:\d$/)
+	release()
+
+	await expect(page.locator('.index__title--home')).toHaveAttribute('aria-busy', 'false')
+	await expect(page).toHaveURL(/\/#zone=knee:\d$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+})
+
+// Подсветку модели видно только со сценой: под автотестом её включает `?scene`. Модель держим,
+// пока спорт не сменят: сцена создаётся уже после смены и должна взять цвет нового спорта.
+// Без анимаций цвет встаёт сразу: программный WebGL под нагрузкой рисует кадр раз в секунды,
+// и перетекание не успевало бы
+test('подсветка модели -- цвет спорта, даже если его сменили до загрузки модели', async ({ page }) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' })
+
+	let release!: () => void
+	const held = new Promise<void>((resolve) => (release = resolve))
+	const glow = () =>
+		page.evaluate(() => (window as unknown as { bodyScene: { glowHex(): string } }).bodyScene.glowHex())
+
+	await page.route('**/model/body.glb*', async (route) => {
+		await held
+		await route.continue()
+	})
+
+	await page.goto('/?scene')
+	await chooseSport(page, 'Кроссфит', 'Падел')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	release()
+	await page.waitForFunction(() => 'bodyScene' in window, null, { timeout: 60_000 })
+	expect(await glow()).toBe('#84cc16')
+
+	await page.goBack()
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	expect(await glow()).toBe('#3d8bfd')
 })
 
 // Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет

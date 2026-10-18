@@ -85,6 +85,20 @@ test('меню разделов работает и в статье поверх
 	await expect(reader.locator('#prevention')).toBeInViewport()
 })
 
+test('ссылка «Когда сразу к врачу» в статье поверх модели ведёт к разделу, а не на главную', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__zone', { hasText: 'Колено' }).tap()
+	await page.locator('.zone__item', { hasText: 'передней крестообразной' }).tap()
+
+	const reader = page.locator('.reader')
+
+	await expect(page).toHaveURL(/#acl-tear$/)
+	await reader.locator('.article__disclaimer-link').tap()
+	await expect(reader.locator('#urgent')).toBeInViewport()
+	await expect(page).toHaveURL(/#acl-tear$/)
+	await expect(reader).toBeVisible()
+})
+
 test.describe('на широком экране', () => {
 	test.use({ viewport: { width: 1280, height: 800 }, hasTouch: false, isMobile: false })
 

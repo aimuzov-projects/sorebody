@@ -6,13 +6,13 @@ import { expect, test, type Page } from '@playwright/test'
 // страницы, её подсказку не считаем
 const hint = (page: Page) => page.locator('.body3d__hint:not(.theme-peek *)')
 
-test('на главной под заголовком лид со ссылкой на «О справочнике»', async ({ page }) => {
+test('на главной под заголовком лид со ссылкой на about', async ({ page }) => {
 	await page.goto('/')
 
 	const lead = page.locator('.index__lead')
 
-	await expect(lead).toContainText('Справочник')
-	await expect(lead.getByRole('link', { name: 'О справочнике' })).toHaveAttribute('href', '/about/')
+	await expect(lead).toContainText('что болит после тренировки')
+	await expect(lead.getByRole('link', { name: 'по исследованиям' })).toHaveAttribute('href', '/about/')
 })
 
 test('подсказка первого визита закрывается крестиком и больше не всплывает', async ({ page }) => {

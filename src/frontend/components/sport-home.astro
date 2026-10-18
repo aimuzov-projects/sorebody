@@ -3,6 +3,7 @@ import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
 import { sportArticle, sportHome, type Sport } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
+import { modelUrl } from '#frontend/scene/model-url.ts'
 import { sceneData } from '#frontend/scene/scene-data.ts'
 import '#frontend/styles/article.css'
 import '#frontend/styles/scene.css'
@@ -21,7 +22,7 @@ const { entries, zones, whole, movements, scene } = await sceneData(sport)
 ---
 
 <Base
-	title={`Травмы ${sport.phrase}`}
+	title={scene.heading}
 	description={sport.description}
 	bare
 	bodyClass="scene-page"
@@ -30,8 +31,8 @@ const { entries, zones, whole, movements, scene } = await sceneData(sport)
 >
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
-		<h1 class="scene-page__title">Травмы {sport.phrase}</h1>
-		<Body3d client:only="svelte" {zones} {whole} {movements} sport={scene} modelUrl="/model/body.glb">
+		<h1 class="scene-page__title">{scene.heading}</h1>
+		<Body3d client:only="svelte" {zones} {whole} {movements} sport={scene} modelUrl={modelUrl()}>
 			<Footer slot="footer" />
 		</Body3d>
 	</main>

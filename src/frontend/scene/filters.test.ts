@@ -35,6 +35,15 @@ test('запрос: без регистра, ё как е, лишние проб
 	assert.equal(matchesFilters(acl, { ...none, query: 'плечо' }), false)
 })
 
+test('ё в тексте находится запросом с е, неразрывный пробел -- обычным', () => {
+	assert.equal(matchesFilters(injury('bruise', 'common', [], 'Тёмный ушиб'), { ...none, query: 'темный' }), true)
+
+	assert.equal(
+		matchesFilters({ ...acl, summary: 'К врачу в\u00a0тот же\u00a0день' }, { ...none, query: 'в тот же день' }),
+		true,
+	)
+})
+
 test('чипы включённых фильтров: запрос, частота, движение -- в этом порядке', () => {
 	const chips = activeFilterChips({ query: ' колено ', frequency: 'rare', movement: 'box-jump' }, [
 		{ slug: 'box-jump', title: 'Прыжки на тумбу' },

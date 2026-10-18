@@ -2,11 +2,13 @@ import { Search } from 'lucide-static'
 
 import { frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 import { MOVEMENT_ICONS, type ElementIcon } from '#frontend/data/movement-icons.ts'
-import { normalize } from '#frontend/lib/filter.ts'
 
 import type { Zone } from './zones.ts'
 
 type Injury = Zone['injuries'][number]
+
+/** Текст для поиска: тексты набраны с неразрывными пробелами, а в запросе пробелы обычные. */
+const normalize = (s: string) => s.toLowerCase().replaceAll('ё', 'е').replace(/\s+/g, ' ').trim()
 
 /** Фильтры индекса главной. Они же решают, какие травмы видны в зоне и какие точки горят. */
 export type SceneFilters = { query: string; frequency: 'all' | Frequency; movement: string }

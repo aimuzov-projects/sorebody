@@ -12,18 +12,13 @@ const ICONS: [Theme, string][] = [
 ---
 
 <div class="theme-toggle">
-	<button
-		class="theme-toggle__button"
-		type="button"
-		aria-label={themeLabel('auto')}
-		aria-describedby="theme-tip"
-		data-theme-toggle
-	>
+	<button class="theme-toggle__button" type="button" aria-label={themeLabel('auto')} data-theme-toggle>
 		{ICONS.map(([theme, icon]) => (
 			<span class={`theme-toggle__icon theme-toggle__icon--${theme}`} aria-hidden="true" set:html={icon} />
 		))}
 	</button>
-	<span class="theme-toggle__tip" id="theme-tip" role="tooltip" popover="manual" data-theme-tip></span>
+	<!-- Действие уже есть в aria-label кнопки: подсказка только для глаз -->
+	<span class="theme-toggle__tip" aria-hidden="true" popover="manual" data-theme-tip></span>
 </div>
 
 <style>

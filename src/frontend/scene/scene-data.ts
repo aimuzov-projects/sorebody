@@ -1,4 +1,4 @@
-import { sportHome, type Sport } from '#frontend/data/sports.ts'
+import { sportHome, SPORTS, type Sport } from '#frontend/data/sports.ts'
 import { sportInjuries } from '#frontend/lib/catalog.ts'
 import { buildZones } from '#frontend/scene/zones.ts'
 
@@ -24,13 +24,17 @@ export async function sceneData(sport: Sport) {
 		zones,
 		whole,
 		movements,
-		// Что острову сцены нужно от спорта: адреса, подписи и цвет подсветки модели
+		// Что острову сцены нужно от спорта: адреса, подписи, цвет подсветки модели и спорты для
+		// селекта в заголовке -- только те, где уже есть травмы
 		scene: {
 			slug: sport.slug,
 			home: sportHome(sport.slug),
 			phrase: sport.phrase,
 			elementLabel: sport.elementLabel,
 			glow: sport.accent.glow,
+			sports: (await Promise.all(SPORTS.map(async (s) => ((await sportInjuries(s)).length ? [s] : []))))
+				.flat()
+				.map((s) => ({ slug: s.slug, title: s.title, phrase: s.phrase, href: sportHome(s.slug) })),
 		},
 	}
 }

@@ -502,6 +502,8 @@
 
 	/** Привести экран к адресу: открыть или закрыть зону и статью. */
 	function sync() {
+		shownHref = location.href
+
 		const place = parseHash()
 
 		if (place.level === 0) {
@@ -527,11 +529,13 @@
 
 	function openZone(zone: Zone, index: number) {
 		history.pushState(null, '', zoneHash(zone, index))
+		shownHref = location.href
 		showZone(zone, index)
 	}
 
 	function openArticle(injury: Injury) {
 		history.pushState(null, '', `#${injury.slug}`)
+		shownHref = location.href
 		showArticle(injury)
 	}
 
@@ -723,20 +727,20 @@
 		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
 		const index = recent && zone?.points[recent.index] ? recent.index : 0
 
+		const from = location.href
+
 		// Как после перехода по ссылке: зона из адреса, «Назад» в ней закрывает её заменой адреса
 		history.pushState(null, '', zone ? `${target.href}${zoneHash(zone, index)}` : target.href)
 		baseLevel = parseHash().level
 		sync()
-		sportHit()
+		metrikaHit(from)
 	}
 
-	// Адрес последнего просмотра для Метрики: referer хита при смене спорта без перезагрузки
-	let hitFrom = location.href
-
-	function sportHit() {
-		metrikaHit(hitFrom)
-		hitFrom = location.href
-	}
+	/**
+	 * Адрес в строке, который видел посетитель: referer хита Метрики, когда «Назад» или
+	 * «Вперёд» уводят в другой спорт. В popstate адрес уже новый, поэтому помним прошлый
+	 */
+	let shownHref = location.href
 
 	/** Спорт по адресу главной: `/` и `/crossfit/` -- кроссфит, `/padel/` -- падел. */
 	function sportAt(pathname: string) {
@@ -747,6 +751,7 @@
 
 	/** «Назад» и «Вперёд»: адрес другого спорта -- сначала спорт, потом зона и статья из хеша. */
 	function onHistory() {
+		const from = shownHref
 		const slug = movementPage ? undefined : sportAt(location.pathname)
 
 		if (!slug || slug === sport.slug) {
@@ -764,7 +769,7 @@
 				applySport(next)
 				baseLevel = parseHash().level
 				sync()
-				sportHit()
+				metrikaHit(from)
 			},
 			(error) => {
 				console.error(error)
@@ -777,8 +782,14 @@
 	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
 	let articleSwitches: ReturnType<typeof mount>[] = []
 
-	function mountSportSwitches(root: HTMLElement) {
+	function unmountSportSwitches() {
 		for (const app of articleSwitches) void unmount(app)
+
+		articleSwitches = []
+	}
+
+	function mountSportSwitches(root: HTMLElement) {
+		unmountSportSwitches()
 
 		articleSwitches = [...root.querySelectorAll<HTMLElement>('[data-sport-switch]')].map((target) => {
 			const props = JSON.parse(target.dataset.sportSwitch ?? '{}')
@@ -1785,6 +1796,7 @@
 		tabindex="-1"
 		bind:this={readerElement}
 		transition:fadeUp
+		onoutroend={unmountSportSwitches}
 		aria-label={article.title}
 		aria-busy={articleStatus === 'loading'}
 	>

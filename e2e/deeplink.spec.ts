@@ -71,3 +71,21 @@ test('статья, открытая кликом, проявляется, а «
 	await expect(page.locator('.zone')).toBeVisible()
 	await expect(page.locator('.reader')).toHaveCount(0)
 })
+
+// Статья в ридере гаснет полсекунды: строка «Разбор в ...» с переключателем спорта
+// гаснет вместе с ней, а не пропадает в первом кадре, пока статья ещё видна
+test('переключатель спорта в статье уходит вместе со статьёй, а не раньше', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__zones').waitFor()
+	await page.evaluate(() => (location.hash = '#ankle-sprain'))
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+	const switcher = reader.locator('[data-sport-switch] button')
+
+	await expect(switcher).toBeVisible()
+	await page.goBack()
+	await page.waitForTimeout(150)
+	await expect(reader).toHaveCount(1)
+	await expect(switcher).toHaveCount(1)
+	await expect(reader).toHaveCount(0)
+})

@@ -577,7 +577,7 @@
 	function switchSport(event: Event) {
 		const target = sport.sports.find((s) => s.slug === (event.currentTarget as HTMLSelectElement).value)
 		const place = parseHash()
-		const zone = open?.zone ?? (place.level > 0 ? place.zone : null)
+		const zone = open?.zone ?? ('zone' in place ? place.zone : null)
 
 		if (target) location.assign(zone ? `${target.home}?region=${zone.slug}` : target.home)
 	}

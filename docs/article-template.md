@@ -1,7 +1,7 @@
 # Шаблон статьи Wodcare
 
-Файл: `src/frontend/content/injuries/<slug>.md`. Slug, название, зона и частота — из таблицы
-в плане `docs/superpowers/plans/2026-10-15-wodcare.md`.
+Файл: `src/frontend/content/injuries/<slug>.md`. Схема frontmatter — `src/frontend/lib/injury-schema.ts`,
+структуру тела проверяет `src/frontend/lib/content.test.ts`.
 
 Slug — это только имя файла. Поля `slug` во frontmatter нет: glob-лоадер Astro взял бы id статьи
 из него, поэтому схема отклоняет любые поля, которых нет в шаблоне.
@@ -13,19 +13,44 @@ Slug — это только имя файла. Поля `slug` во frontmatter
 title: Разрыв передней крестообразной связки
 titleEn: Anterior cruciate ligament tear
 region: knee # shoulder | elbow | wrist-hand | lumbar | hip-groin | knee | ankle-foot | other
-frequency: common # common | uncommon | rare, и место в FREQUENCY_ORDER (src/frontend/data/frequency.ts)
+frequency: common # common | uncommon | rare, см. «Частота» ниже
 movements: [box-jump, squat] # только slug из src/frontend/data/movements.ts
 summary: Одна фраза до 220 знаков для карточки и описания страницы.
 images:
-    - src: /injuries/<slug>-01.jpg
+    - src: /injuries/<slug>-01.webp
       alt: Что изображено, для незрячих — конкретно
       caption: 'Подпись под картинкой: схематичная иллюстрация, сгенерирована нейросетью.'
+      atlas: # необязательно: таблица Gray's Anatomy, с которой сверяли рисунок
+          file: Gray347.png
+          caption: 'Правое колено спереди, внутренние связки'
 sources:
     - pmid: '35278328'
       label: Knapik 2022, метаанализ 28 исследований
+    - url: https://cks.nice.org.uk/topics/sprains-strains/
+      label: NICE CKS, растяжения и ушибы
 draft: true
 ---
 ```
+
+## Частота
+
+Три уровня из `FREQUENCIES` в `src/frontend/data/frequency.ts`. Уровень берётся из таблицы
+диагнозов в `docs/research/crossfit-injuries-pubmed.md`:
+
+- `common` — «Частая травма»: там «очень часто» и «часто»;
+- `uncommon` — «Встречается нечасто»: «нередко» и «нечасто»;
+- `rare` — «Редко, но опасно»: только описания случаев.
+
+Новую статью добавь и в `FREQUENCY_ORDER` того же файла, в блок своего уровня: порядок внутри
+блока задаёт порядок на сайте. Тест проверяет, что в списке есть каждая статья ровно один раз.
+
+## Источники
+
+- Статья PubMed — `pmid` и `label`.
+- Клиническая рекомендация или справочник для врачей — `url` и `label`. Ссылка только `https` и
+  только с сайта из `GUIDELINE_SITES` в `src/frontend/lib/sources.ts` (Минздрав России, BMJ Best
+  Practice, NICE, NICE CKS), иначе схема её отклонит. Обзоры Cochrane и консенсусы BJSM есть
+  в PubMed — их цитируем по PMID.
 
 Кавычки в YAML:
 
@@ -78,9 +103,10 @@ draft: true
 
 ## Правила
 
-- Сноска — `[N](https://pubmed.ncbi.nlm.nih.gov/<PMID>/)`, где `N` — позиция источника в `sources`,
-  считая с 1. Тест сверяет номер с позицией.
-- Каждый PMID в тексте есть в `sources`, и каждый из `sources` процитирован в тексте.
+- Сноска — `[N](https://pubmed.ncbi.nlm.nih.gov/<PMID>/)` или `[N](<url рекомендации>)` — ровно
+  та ссылка, что в `sources`. `N` — позиция источника в `sources`, считая с 1. Тест сверяет номер
+  с позицией.
+- Каждый источник из текста есть в `sources`, и каждый из `sources` процитирован в тексте.
 - PMID только реально полученные через E-utilities (`esearch`/`efetch`), не по памяти. Каждая
   цифра со сноской должна быть в абстракте этого PMID.
 - Цифр без источника нет: ни сроков, ни минут, ни процентов. Нет источника — формулировка без чисел.
@@ -95,8 +121,13 @@ draft: true
 `model: gemini-3-pro-image`, `aspectRatio: 16:9`, `size: 2K`, `outputDir` — scratchpad.
 Промпт: «Anatomically accurate medical 3D illustration … Clean white background, soft studio
 lighting, textbook medical visualization style, no text, no labels.» Для единого стиля — `edit_image`
-с эталоном `public/injuries/knee-01-anatomy.jpg` (суставы конечностей) или
-`public/injuries/disc-01-normal.jpg` (позвоночник) как второй картинкой-референсом.
-Проверить анатомию глазами (`Read`). Ошибка, которую видно без специальных знаний, —
-перегенерировать (до 3 попыток), не вышло — статья без картинки. Сжать:
-`sips -Z 1200 -s format jpeg -s formatOptions 80 <in> --out public/injuries/<slug>-01.jpg`.
+с эталоном `public/injuries/knee-01-anatomy.webp` (суставы конечностей) или
+`public/injuries/disc-01-normal.webp` (позвоночник) как второй картинкой-референсом.
+
+Анатомию сверить с таблицей Gray's Anatomy и глазами (`Read`); таблицу, с которой сверяли,
+указать в `atlas`. Ошибка, которую видно без специальных знаний, — перегенерировать (до 3 попыток),
+не вышло — статья без картинки.
+
+Готовая картинка — WebP с прозрачным фоном шириной 1200 px: без подложки она одинаково ложится
+на страницу в светлой и тёмной теме. Белый фон убрать до прозрачного, затем сжать, например:
+`magick <in>.png -resize 1200x -quality 85 public/injuries/<slug>-01.webp`.

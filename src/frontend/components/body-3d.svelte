@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-	import { flushSync, onMount, tick, type Snippet } from 'svelte'
+	import { flushSync, onMount, tick, untrack, type Snippet } from 'svelte'
 
 	import {
 		ChevronDown,
@@ -124,6 +124,49 @@
 		frequency = 'all'
 		movement = ''
 	}
+
+	/**
+	 * Подложка выбранной частоты одна на весь переключатель и переезжает под выбранный чип.
+	 * Место и ширину берём у самого чипа: подписи разной длины, а кегль идёт за шириной колонки.
+	 * Едет она только при смене выбора; пересчёт от размеров (первая отрисовка, ресайз, остров
+	 * на телефоне раскрылся из `display: none`) ставит её на место без движения.
+	 */
+	let freqGroup = $state<HTMLDivElement>()
+	let freqChips = $state<HTMLButtonElement[]>([])
+	let thumb = $state({ x: 0, width: 0 })
+	let thumbMoves = $state(false)
+
+	function placeThumb(moves: boolean) {
+		const chip = freqChips[FREQUENCY_CHIPS.findIndex(([value]) => value === frequency)]
+
+		if (!chip?.offsetWidth) return
+
+		const x = chip.offsetLeft
+		const width = chip.offsetWidth
+
+		if (x === thumb.x && width === thumb.width) return
+
+		thumbMoves = moves && thumb.width > 0
+		thumb = { x, width }
+	}
+
+	$effect(() => {
+		void frequency
+		// Сама подложка в зависимостях не нужна: эффект пишет её и иначе перезапускал бы себя
+		untrack(() => placeThumb(true))
+	})
+
+	$effect(() => {
+		if (!freqGroup) return
+
+		const resizer = new ResizeObserver(() => placeThumb(false))
+
+		resizer.observe(freqGroup)
+
+		for (const chip of freqChips) resizer.observe(chip)
+
+		return () => resizer.disconnect()
+	})
 
 	/** Остров поиска и фильтров на телефоне: раскрыт или свёрнут в таблетку. */
 	let toolsOpen = $state(false)
@@ -1404,9 +1447,23 @@
 						>
 					</div>
 					<div class="index__filters">
-						<div class="index__freq" role="group" aria-label="Частота">
-							{#each FREQUENCY_CHIPS as [value, label, icon] (value)}
+						<div
+							class="index__freq index__freq--{frequency}"
+							class:index__freq--moves={thumbMoves}
+							role="group"
+							aria-label="Частота"
+							bind:this={freqGroup}
+							style:--thumb-x="{thumb.x}px"
+							style:--thumb-width="{thumb.width}px"
+						>
+							<span
+								class="index__freq-thumb"
+								class:index__freq-thumb--placed={thumb.width > 0}
+								aria-hidden="true"
+							></span>
+							{#each FREQUENCY_CHIPS as [value, label, icon], i (value)}
 								<button
+									bind:this={freqChips[i]}
 									class="index__chip index__chip--{value}"
 									type="button"
 									aria-pressed={frequency === value}
@@ -2381,6 +2438,9 @@
 		   рамки, невыбранные положения -- подпись в цвете уровня, выбранное -- залитая таблетка
 		   со знаком. Кегль идёт за шириной колонки (cqi от &__filters): влезает и в остров на 320px */
 		&__freq {
+			--thumb: var(--a-fg);
+
+			position: relative;
 			display: flex;
 			gap: 2px;
 			width: 100%;
@@ -2388,6 +2448,48 @@
 			border-radius: 999px;
 			font-size: clamp(11px, 5.2cqi, 15px);
 			background: var(--a-fill);
+
+			&--common {
+				--thumb: var(--common);
+			}
+
+			&--uncommon {
+				--thumb: var(--uncommon);
+			}
+
+			&--rare {
+				--thumb: var(--rare);
+			}
+		}
+
+		/* Залитая таблетка выбранного положения -- одна на весь переключатель, лежит под чипами.
+		   Место и ширину ставит скрипт по выбранному чипу. Едет и перекрашивается только при
+		   смене выбора (&__freq--moves), подпись и знак чипа меняются с ней в такт */
+		&__freq-thumb {
+			position: absolute;
+			top: 3px;
+			bottom: 3px;
+			left: 0;
+			translate: var(--thumb-x) 0;
+			width: var(--thumb-width);
+			border-radius: 999px;
+			opacity: 0;
+			background: var(--thumb);
+
+			&--placed {
+				opacity: 1;
+			}
+		}
+
+		&__freq--moves &__freq-thumb {
+			transition:
+				translate 0.35s var(--a-ease),
+				width 0.35s var(--a-ease),
+				background-color 0.35s var(--a-ease);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
 		}
 
 		/* Знак и подпись лежат в одной ячейке, ширину чипа держит подпись: у выбранного она
@@ -2397,6 +2499,7 @@
 			--chip: var(--a-fg);
 
 			cursor: pointer;
+			position: relative;
 			display: inline-grid;
 			flex: 1 1 auto;
 			place-items: center;
@@ -2406,7 +2509,9 @@
 			font: inherit;
 			color: var(--chip);
 			background: transparent;
-			transition: background 0.3s var(--a-ease);
+			transition:
+				color 0.35s var(--a-ease),
+				background 0.3s var(--a-ease);
 
 			@media (--reduced-motion) {
 				transition: none;
@@ -2425,9 +2530,9 @@
 				--chip: var(--rare);
 			}
 
+			/* Фон выбранного рисует общая подложка под чипами */
 			&[aria-pressed='true'] {
 				color: var(--a-bg);
-				background: var(--chip);
 			}
 
 			&:hover:not([aria-pressed='true']) {
@@ -2444,8 +2549,8 @@
 		&__chip-label {
 			grid-area: 1 / 1;
 			transition:
-				opacity 0.25s var(--a-ease),
-				scale 0.25s var(--a-ease);
+				opacity 0.35s var(--a-ease),
+				scale 0.35s var(--a-ease);
 
 			@media (--reduced-motion) {
 				transition: none;

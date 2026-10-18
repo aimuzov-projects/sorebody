@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
-import { ChevronLeft, ChevronRight, ExternalLink, Stethoscope, TextQuote } from 'lucide-static'
+import { ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -98,11 +98,13 @@ const nameTail = name.slice(nameHead.length)
 				</p>
 				<p class="article__summary-text">{data.summary}</p>
 			</div>
-			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда */}
-			<p class="article__disclaimer">
-				<span class="article__disclaimer-icon" aria-hidden="true" set:html={Stethoscope} />
+			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда. Значок -- тот же,
+			   что у раздела «Когда сразу к врачу», куда ведёт ссылка */}
+			<p class="article__disclaimer" role="note">
+				<span class="article__disclaimer-icon" aria-hidden="true" set:html={TriangleAlert} />
 				<span>
-					Это справка, а не диагноз. С травмой — к врачу, тревожные признаки — в разделе{' '}
+					<strong class="article__disclaimer-lead">Это справка, а не диагноз.</strong> С травмой — к врачу,
+					тревожные признаки — в разделе{' '}
 					<a class="article__disclaimer-link" href="#urgent">
 						«Когда сразу к врачу»
 					</a>

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/aimuzov-projects/wodcare/compare/v1.5.0...v1.6.0) (2026-10-18)
+
+
+### Features
+
+* **content:** add charts to hip, rhabdomyolysis and hamstring articles ([b55e0f2](https://github.com/aimuzov-projects/wodcare/commit/b55e0f2290281188df51cede908aec36befffc57))
+
+
+### Bug Fixes
+
+* address code review findings ([#26](https://github.com/aimuzov-projects/wodcare/issues/26)) ([60c1718](https://github.com/aimuzov-projects/wodcare/commit/60c1718b48a4767bdd172792a3094e892be4bec9))
+
 ## [1.5.0](https://github.com/aimuzov-projects/wodcare/compare/v1.4.0...v1.5.0) (2026-10-17)
 
 

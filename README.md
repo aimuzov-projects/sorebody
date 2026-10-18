@@ -96,7 +96,7 @@ To roll back fast, run Deploy by hand with the previous tag: `gh workflow run de
 
 ### What's new page
 
-`CHANGELOG.md` is for developers and release-please writes it. The [/changelog](src/frontend/pages/changelog.astro) page tells readers the same story in plain Russian, and its entries live in [`src/frontend/data/changelog.ts`](src/frontend/data/changelog.ts). Before merging a release PR, add an entry at the top: the version and date from its `CHANGELOG.md`, a short title and what a reader will notice. Leave out CI, refactoring and dependencies. A link inside an item is written `[text](/path)`, and a test checks that every link leads to an existing page.
+`CHANGELOG.md` is for developers and release-please writes it. The [/changelog](src/frontend/pages/changelog.astro) page tells readers the same story in plain Russian, and its entries live in [`src/frontend/data/changelog.ts`](src/frontend/data/changelog.ts). Before merging a release PR, add an entry at the top: the version and date from its `CHANGELOG.md`, a short title and what a reader will notice. Leave out CI, refactoring and dependencies. A link inside an item is written `[text](/path)`, and a test checks that every link leads to an existing page. Another test fails the release PR until its version has an entry.
 
 ## License
 

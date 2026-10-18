@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
 import { RELEASES } from '#frontend/data/changelog.ts'
@@ -34,6 +34,16 @@ test('releases go newest first with unique versions and dates in order', () => {
 
 		if (next) assert.ok(r.date >= next.date, `${r.version} is older than ${next.version}`)
 	}
+})
+
+// release-please поднимает версию в package.json своим PR: без записи о ней CI там упадёт
+test('the current package version has a changelog entry', () => {
+	const { version } = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string }
+
+	assert.ok(
+		RELEASES.some((r) => r.version === version),
+		`add a ${version} entry to src/frontend/data/changelog.ts`,
+	)
 })
 
 test('every link in the changelog leads to an existing page', () => {

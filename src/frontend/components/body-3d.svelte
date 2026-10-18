@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-	import { flushSync, onMount, tick, type Snippet } from 'svelte'
+	import { flushSync, mount, onMount, tick, unmount, type Snippet } from 'svelte'
 
 	import {
 		ChevronDown,
@@ -39,7 +39,6 @@
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
-	import { initSportSwitch } from '#frontend/lib/sport-switch.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -47,6 +46,7 @@
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
+	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { SceneSport } from '#frontend/scene/scene-data.ts'
 	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
@@ -573,29 +573,33 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
-	/** Последняя закрытая зона и сторона тела: селект спорта виден только на общем плане. */
+	/** Последняя закрытая зона и сторона тела: выбор спорта виден только на общем плане. */
 	let lastZone: { zone: Zone; index: number } | null = null
-	let sportSelect = $state<HTMLSelectElement>()
-
-	/** Страница из bfcache после «Назад»: селект -- снова на своём спорте. */
-	function resetSport(event: PageTransitionEvent) {
-		if (event.persisted && sportSelect) sportSelect.value = sport.slug
-	}
 
 	/**
-	 * Смена спорта в заголовке -- переход на его главную. Последняя зона едет в адресе вместе со
-	 * стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у спорта такой
-	 * зоны -- откроется сцена целиком. Сам селект возвращаем к своему спорту: после «Назад» из
-	 * bfcache он иначе показывал бы чужой, и повторный выбор не срабатывал бы.
+	 * Выбран другой спорт в заголовке -- переход на его главную. Последняя зона едет в адресе вместе
+	 * со стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у спорта
+	 * такой зоны -- откроется сцена целиком.
 	 */
-	function switchSport(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement
-		const target = sport.sports.find((s) => s.slug === select.value)
+	function switchSport(target: { href: string }) {
 		const recent = open ?? lastZone
 
-		select.value = sport.slug
+		location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
+	}
 
-		if (target) location.assign(recent ? `${target.home}?region=${recent.zone.slug}:${recent.index}` : target.home)
+	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
+	let articleSwitches: ReturnType<typeof mount>[] = []
+
+	function mountSportSwitches(root: HTMLElement) {
+		for (const app of articleSwitches) void unmount(app)
+
+		articleSwitches = [...root.querySelectorAll<HTMLElement>('[data-sport-switch]')].map((target) => {
+			const props = JSON.parse(target.dataset.sportSwitch ?? '{}')
+
+			target.replaceChildren()
+
+			return mount(SportSwitch, { target, props })
+		})
 	}
 
 	/** Ссылка «/?region=knee» (или «knee:1» -- с точкой зоны) со страницы статьи открывает список зоны. */
@@ -644,7 +648,6 @@
 
 		sync()
 		window.addEventListener('popstate', sync)
-		window.addEventListener('pageshow', resetSport)
 		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
 		window.addEventListener(BACK_EVENT, up)
 
@@ -725,7 +728,6 @@
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
 			window.removeEventListener('popstate', sync)
-			window.removeEventListener('pageshow', resetSport)
 			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
 			disposed = true
@@ -1033,7 +1035,7 @@
 			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
 			stopReading?.()
 			articleBody.replaceChildren(root)
-			initSportSwitch(root)
+			mountSportSwitches(root)
 			readerElement.scrollTo(0, 0)
 			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
@@ -1388,26 +1390,16 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- акцентом, поверх неё прозрачный нативный select.
-				     На телефоне открывается системный пикер, скринридер читает «Вид спорта, Падел» -->
-				<p class="index__title index__title--home">
-					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<span class="index__sport"
-							><span class="index__sport-phrase" aria-hidden="true"
-								>{sport.phrase.replaceAll(' ', ' ')}<span class="index__sport-chevron"
-									>{@html ChevronDown}</span
-								></span
-							><select
-								class="index__sport-select"
-								aria-label="Вид спорта"
-								bind:this={sportSelect}
-								onchange={switchSport}
-								>{#each sport.sports as s (s.slug)}<option
-										value={s.slug}
-										selected={s.slug === sport.slug}>{s.title}</option
-									>{/each}</select
-							></span
-						>{:else}<span aria-hidden="true">{sport.phrase.replaceAll(' ', ' ')}</span>{/if}
-				</p>
+				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- кнопка списка спортов, как у фильтра движения -->
+				<div class="index__title index__title--home">
+					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<SportSwitch
+							sports={sport.sports}
+							value={sport.slug}
+							size="title"
+							onchoose={switchSport}
+						/>{:else}<span class="index__sport" aria-hidden="true">{sport.phrase.replaceAll(' ', ' ')}</span
+						>{/if}
+				</div>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
 					Разбираемся, что болит после тренировки или игры, когда пора к врачу и как тренироваться дальше.
@@ -2379,55 +2371,18 @@
 			}
 		}
 
-		/* Фраза спорта в заголовке: цвет спорта и треугольник, нажимается весь кусок. Select лежит
-		   поверх прозрачным, 16px -- иначе iOS приближает страницу при открытии */
+		/* Фраза спорта в заголовке, когда спорт один и выбирать не из чего */
 		&__sport {
-			position: relative;
-			display: inline-block;
-			border-radius: 8px;
 			color: var(--a-blue);
-
-			&:has(:focus-visible) {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
-			}
-		}
-
-		&__sport-chevron {
-			display: inline-flex;
-			width: 0.6em;
-			height: 0.6em;
-			margin-left: 0.1em;
-			vertical-align: 0.1em;
-			transition: translate 0.2s var(--a-ease);
-
-			/* SVG иконки приходит строкой из lucide-static, своего класса у него нет */
-			/* stylelint-disable-next-line selector-max-type */
-			& :global(svg) {
-				width: 100%;
-				height: 100%;
-				stroke-width: 3;
-			}
-		}
-
-		&__sport:hover &__sport-chevron {
-			translate: 0 0.08em;
-		}
-
-		&__sport-select {
-			cursor: pointer;
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			font-size: 16px;
-			appearance: none;
-			opacity: 0;
 		}
 
 		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
 		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
 		   кегль тянется за колонкой, 39px на широком экране */
 		&__title--home {
+			/* Список спортов раскрывается поверх подводки и фильтров под заголовком */
+			position: relative;
+			z-index: 6;
 			font-size: clamp(22px, 3.1vw, 39px);
 			white-space: nowrap;
 
@@ -2954,7 +2909,7 @@
 				min-height: 40px;
 			}
 
-			& .index__filters :global(.mselect__button) {
+			& .index__filters :global(.pselect__button) {
 				min-height: 40px;
 			}
 		}

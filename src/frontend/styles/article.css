@@ -159,8 +159,7 @@
 		white-space: nowrap;
 	}
 
-	/* «Разбор ‹в кроссфите ▾›» под названием: фраза -- цветом спорта, select лежит поверх
-	   прозрачным, 16px -- иначе iOS приближает страницу при открытии */
+	/* «Разбор ‹в кроссфите ▾›» под названием: фраза -- цветом спорта, кнопкой или текстом */
 	&__sport {
 		margin: 12px 0 0;
 		font-size: 1.125rem;
@@ -169,6 +168,15 @@
 	}
 
 	&__sport-phrase {
+		color: var(--accent);
+	}
+
+	&__sport-links {
+		margin: 8px 0 0;
+		color: var(--muted);
+	}
+
+	&__sport-link {
 		color: var(--accent);
 	}
 

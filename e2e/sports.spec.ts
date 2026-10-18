@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
 // Этап 0 многоспортивного справочника (docs/multisport-concept.md): кроссфит переехал под
 // `/crossfit/`, старые адреса ведут туда же, раздел статьи и зона сцены в хеше не теряются
@@ -60,31 +60,55 @@ test('главная спорта по умолчанию живёт и на /cr
 	await expect(page.locator('.index__title--home')).toBeVisible()
 })
 
-// Этап 2: второй спорт. Селект в заголовке главной -- поверх фразы спорта, виден на общем плане.
-// Смена ведёт на главную другого спорта и везёт с собой последнюю зону вместе со стороной тела
-test('падел красит акцент лаймом, а селект в заголовке переключает спорт с зоной', async ({ page }) => {
+// Этап 2: второй спорт. Выбор спорта в заголовке главной -- кнопка-фраза со списком, как у фильтра
+// движения, видна на общем плане. Выбор ведёт на главную другого спорта и везёт последнюю зону
+// вместе со стороной тела
+const sportButton = (page: Page, title: string) => page.getByRole('button', { name: `Вид спорта ${title}` })
+
+test('падел красит акцент лаймом, а выбор спорта в заголовке переносит зону', async ({ page }) => {
 	await page.goto('/padel/#zone=shoulder:1')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
-	await expect(page.locator('.index__sport')).toHaveCSS('color', 'rgb(70, 117, 9)')
 	await page.locator('.zone__back').click()
 
-	const select = page.getByRole('combobox', { name: 'Вид спорта' })
+	const button = sportButton(page, 'Падел')
 
-	await expect(select).toHaveValue('padel')
-	// click() проверяет, что селект можно нажать: не под inert-панелью и не прозрачным
-	await select.click()
-	await select.selectOption('crossfit')
+	await expect(button).toHaveCSS('color', 'rgb(70, 117, 9)')
+	// click() упадёт, если кнопку нельзя нажать: под inert-панелью, скрыта или прозрачна
+	await button.click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
 	await expect(page).toHaveURL(/\/#zone=shoulder:1$/)
 })
 
-test('после «Назад» селект снова на своём спорте', async ({ page }) => {
+test('выбор спорта с клавиатуры: стрелка двигает подсветку, Enter переходит, Escape закрывает', async ({ page }) => {
+	await page.goto('/')
+
+	const button = sportButton(page, 'Кроссфит')
+
+	await button.focus()
+	await page.keyboard.press('ArrowDown')
+	await expect(page.getByRole('listbox')).toBeVisible()
+	await page.keyboard.press('ArrowDown')
+	await expect(page).toHaveURL(/\/$/)
+	await page.keyboard.press('Escape')
+	await expect(page.getByRole('listbox')).toHaveCount(0)
+	await expect(page).toHaveURL(/\/$/)
+
+	await page.keyboard.press('ArrowDown')
+	await page.keyboard.press('ArrowDown')
+	await page.keyboard.press('Enter')
+	await expect(page).toHaveURL(/\/padel\/$/)
+})
+
+test('после «Назад» список закрыт и показывает свой спорт', async ({ page }) => {
 	await page.goto('/padel/')
-	await page.getByRole('combobox', { name: 'Вид спорта' }).selectOption('crossfit')
+	await sportButton(page, 'Падел').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
 	await expect(page).toHaveURL(/\/$/)
 	await page.goBack()
 	await expect(page).toHaveURL(/\/padel\/$/)
-	await expect(page.getByRole('combobox', { name: 'Вид спорта' })).toHaveValue('padel')
+	await expect(sportButton(page, 'Падел')).toHaveAttribute('aria-expanded', 'false')
+	await expect(page.getByRole('listbox')).toHaveCount(0)
 })
 
 // Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет
@@ -95,11 +119,15 @@ test('на странице спорта видны только зоны с е�
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 })
 
-test('селект «Разбор в …» ведёт на статью другого спорта к тому же разделу', async ({ page }) => {
+test('«Разбор в …» ведёт на статью другого спорта к тому же разделу', async ({ page }) => {
 	await page.goto('/crossfit/ankle-sprain/')
-	await page.locator('#treatment').scrollIntoViewIfNeeded()
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
 	await page.evaluate(() => document.querySelector('#treatment')?.scrollIntoView())
-	await page.getByRole('combobox', { name: 'Разбор по виду спорта' }).selectOption({ label: 'Падел' })
+	// Фокус без прокрутки: читатель остаётся в разделе «Лечение»
+	await sportButton(page, 'Кроссфит').evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
+	await page.keyboard.press('Enter')
+	await page.keyboard.press('ArrowDown')
+	await page.keyboard.press('Enter')
 	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/#treatment$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 })
@@ -107,7 +135,7 @@ test('селект «Разбор в …» ведёт на статью друг
 test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {
 	await page.goto('/crossfit/acl-tear/')
 	await expect(page.locator('.article__sport')).toHaveText('Разбор в кроссфите')
-	await expect(page.locator('[data-sport-select]')).toHaveCount(0)
+	await expect(page.locator('[data-sport-switch]')).toHaveCount(0)
 })
 
 // У травм двух спортов /injuries/<slug>/ -- общая страница. Старые ссылки кроссфита на разделы

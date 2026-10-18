@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.0](https://github.com/aimuzov-projects/wodcare/compare/v1.7.0...v1.8.0) (2026-10-18)
+
+
+### Features
+
+* add padel as the second sport (multisport stage 2) ([#55](https://github.com/aimuzov-projects/wodcare/issues/55)) ([96481d7](https://github.com/aimuzov-projects/wodcare/commit/96481d73de8e6ddedad80170b076b28a566892b3))
+* **content:** add Achilles tendinopathy with a padel lens ([#56](https://github.com/aimuzov-projects/wodcare/issues/56)) ([971b963](https://github.com/aimuzov-projects/wodcare/commit/971b963fc565e7e4685e54ee8d8b9b5ed7615bfc))
+* **home:** slide the frequency switch highlight to the chosen level ([#58](https://github.com/aimuzov-projects/wodcare/issues/58)) ([2902425](https://github.com/aimuzov-projects/wodcare/commit/290242540c2aa0986a1493ffb93619c201af263a))
+* **home:** stretch and bounce the frequency highlight as it slides ([#60](https://github.com/aimuzov-projects/wodcare/issues/60)) ([6d50676](https://github.com/aimuzov-projects/wodcare/commit/6d5067661d5f8bbc137f32800d6aee2ff69aee20))
+* **model:** add detail chunks for the head and shin zones ([#57](https://github.com/aimuzov-projects/wodcare/issues/57)) ([85fb7a6](https://github.com/aimuzov-projects/wodcare/commit/85fb7a6bbd37cfd6b0adf77bf2027f184d64acb7))
+
 ## [1.7.0](https://github.com/aimuzov-projects/wodcare/compare/v1.6.0...v1.7.0) (2026-10-18)
 
 

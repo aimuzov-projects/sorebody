@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://wodcare.aimuzov.online/sitemap-index.xml
+Sitemap: https://sorebody.aimuzov.online/sitemap-index.xml

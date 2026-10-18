@@ -1,15 +1,19 @@
-/* Цвет спорта -- пара для светлой и тёмной темы. <html data-sport> ставит base.astro, цвета --
-   `accent` спорта в data/sports.ts, совпадение сверяет тест. Страницы без спорта пока синие,
-   как кроссфит */
+/* Цвет спорта -- пара для светлой и тёмной темы и цвет цифр на заливке им (--on-accent).
+   <html data-sport> ставит base.astro, цвета -- `accent` спорта в data/sports.ts, совпадение
+   и контраст сверяет тест. Страницы без спорта пока синие, как кроссфит */
 :root,
 :root[data-sport='crossfit'] {
 	--accent-light: #0066cc;
 	--accent-dark: #2997ff;
+	--on-accent-light: #ffffff;
+	--on-accent-dark: #ffffff;
 }
 
 :root[data-sport='padel'] {
 	--accent-light: #467509;
 	--accent-dark: #a3e635;
+	--on-accent-light: #ffffff;
+	--on-accent-dark: #161617;
 }
 
 :root,

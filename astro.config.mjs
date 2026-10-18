@@ -1,3 +1,4 @@
+import { readdirSync } from 'node:fs'
 import { satteri } from '@astrojs/markdown-satteri'
 import sitemap from '@astrojs/sitemap'
 import svelte from '@astrojs/svelte'
@@ -5,6 +6,17 @@ import { defineConfig } from 'astro/config'
 
 import { DEFAULT_SPORT } from './src/frontend/data/sports.ts'
 import { chartsPlugin } from './src/frontend/lib/markdown-charts.ts'
+
+// Травмы с линзами в нескольких спортах: их `/injuries/<slug>/` -- настоящая общая страница,
+// у остальных там переадресация на единственный разбор (pages/injuries/[slug].astro)
+const SPORTS_DIR = new URL('./src/frontend/content/sports/', import.meta.url)
+const lensCount = new Map()
+
+for (const sport of readdirSync(SPORTS_DIR))
+	for (const file of readdirSync(new URL(`${sport}/`, SPORTS_DIR)))
+		lensCount.set(file, (lensCount.get(file) ?? 0) + 1)
+
+const shared = new Set([...lensCount].filter(([, count]) => count > 1).map(([file]) => file.replace(/\.md$/, '')))
 
 export default defineConfig({
 	// Сайт живёт в `src/frontend` для того чтобы рядом поместились `src/backend`
@@ -18,12 +30,18 @@ export default defineConfig({
 	// Svelte для интерактивных островов, остальное -- статический HTML
 	// с ванильными скриптами.
 	// В sitemap нет переадресаций со старых адресов (`/movements/`, `/injuries/` с одним спортом)
-	// и копии главной на `/<спорт по умолчанию>/`: у неё canonical на `/`.
-	// Индексировать ли общие страницы `/injuries/` -- открытый вопрос docs/multisport-concept.md.
+	// и копии главной на `/<спорт по умолчанию>/`: у неё canonical на `/`. Общие страницы
+	// `/injuries/` травм нескольких спортов -- настоящие, с canonical на себя, они в sitemap.
 	integrations: [
 		svelte(),
 		sitemap({
-			filter: (page) => !/\/(movements|injuries)\//.test(page) && !page.endsWith(`/${DEFAULT_SPORT}/`),
+			filter: (page) => {
+				const injury = page.match(/\/injuries\/([^/]+)\/$/)?.[1]
+
+				if (injury) return shared.has(injury)
+
+				return !page.includes('/movements/') && !page.endsWith(`/${DEFAULT_SPORT}/`)
+			},
 		}),
 	],
 	// Подсветка Shiki несовместима с CSP.

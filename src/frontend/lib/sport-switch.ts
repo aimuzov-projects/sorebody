@@ -7,10 +7,21 @@
 export function initSportSwitch(root: ParentNode) {
 	const select = root.querySelector<HTMLSelectElement>('[data-sport-select]')
 
-	select?.addEventListener('change', () => {
-		const section = currentSection(root)
+	if (!select) return
 
-		location.assign(section ? `${select.value}#${section}` : select.value)
+	// Селект держим на своём спорте: после «Назад» из bfcache иначе стоял бы чужой, и повторный
+	// выбор того же пункта не срабатывал бы
+	const own = () => [...select.options].find((o) => o.defaultSelected)?.value ?? select.value
+
+	select.addEventListener('change', () => {
+		const section = currentSection(root)
+		const href = select.value
+
+		select.value = own()
+		location.assign(section ? `${href}#${section}` : href)
+	})
+	addEventListener('pageshow', (event) => {
+		if (event.persisted) select.value = own()
 	})
 }
 

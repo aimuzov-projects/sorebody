@@ -252,3 +252,16 @@ test('every region has at least one injury once the reference is complete', { sk
 		[],
 	)
 })
+
+// Зоны общие: голову добавил падел, но травма лица из кроссфита тоже в ней
+test('crossfit has injuries in the head zone, and padel in the shin zone', () => {
+	const regionsOf = (slug: string) =>
+		new Set(
+			lenses
+				.find(({ sport }) => sport.slug === slug)!
+				.docs.map((d) => injuries.find((i) => i.slug === d.slug)?.data.region),
+		)
+
+	assert.ok(regionsOf('crossfit').has('head'))
+	assert.ok(regionsOf('padel').has('shin'))
+})

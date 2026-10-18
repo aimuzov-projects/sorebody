@@ -60,19 +60,31 @@ test('главная спорта по умолчанию живёт и на /cr
 	await expect(page.locator('.index__title--home')).toBeVisible()
 })
 
-// Этап 2: второй спорт. Селект в заголовке главной -- поверх фразы спорта, смена ведёт на главную
-// другого спорта и везёт с собой открытую зону
+// Этап 2: второй спорт. Селект в заголовке главной -- поверх фразы спорта, виден на общем плане.
+// Смена ведёт на главную другого спорта и везёт с собой последнюю зону вместе со стороной тела
 test('падел красит акцент лаймом, а селект в заголовке переключает спорт с зоной', async ({ page }) => {
-	await page.goto('/padel/?scene#zone=knee:0')
+	await page.goto('/padel/#zone=shoulder:1')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
 	await expect(page.locator('.index__sport')).toHaveCSS('color', 'rgb(70, 117, 9)')
+	await page.locator('.zone__back').click()
 
 	const select = page.getByRole('combobox', { name: 'Вид спорта' })
 
 	await expect(select).toHaveValue('padel')
+	// click() проверяет, что селект можно нажать: не под inert-панелью и не прозрачным
+	await select.click()
 	await select.selectOption('crossfit')
-	await expect(page).toHaveURL(/\/#zone=knee:0$/)
+	await expect(page).toHaveURL(/\/#zone=shoulder:1$/)
+})
+
+test('после «Назад» селект снова на своём спорте', async ({ page }) => {
+	await page.goto('/padel/')
+	await page.getByRole('combobox', { name: 'Вид спорта' }).selectOption('crossfit')
+	await expect(page).toHaveURL(/\/$/)
+	await page.goBack()
+	await expect(page).toHaveURL(/\/padel\/$/)
+	await expect(page.getByRole('combobox', { name: 'Вид спорта' })).toHaveValue('padel')
 })
 
 // Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет
@@ -96,4 +108,14 @@ test('у травмы одного спорта вместо селекта -- �
 	await page.goto('/crossfit/acl-tear/')
 	await expect(page.locator('.article__sport')).toHaveText('Разбор в кроссфите')
 	await expect(page.locator('[data-sport-select]')).toHaveCount(0)
+})
+
+// У травм двух спортов /injuries/<slug>/ -- общая страница. Старые ссылки кроссфита на разделы
+// линзы она уводит туда, где эти разделы есть
+test('старая ссылка на раздел линзы с общей страницы ведёт в статью кроссфита', async ({ page }) => {
+	await page.goto('/injuries/ankle-sprain/#adapt')
+	await expect(page).toHaveURL(/\/crossfit\/ankle-sprain\/#adapt$/)
+
+	await page.goto('/injuries/ankle-sprain/#treatment')
+	await expect(page).toHaveURL(/\/injuries\/ankle-sprain\/#treatment$/)
 })

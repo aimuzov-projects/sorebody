@@ -573,25 +573,39 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
-	/**
-	 * Смена спорта в заголовке -- переход на его главную. Открытая зона едет в адресе: смотрел плечо
-	 * в кроссфите -- видишь плечо в паделе. Нет у спорта такой зоны -- откроется сцена целиком.
-	 */
-	function switchSport(event: Event) {
-		const target = sport.sports.find((s) => s.slug === (event.currentTarget as HTMLSelectElement).value)
-		const place = parseHash()
-		const zone = open?.zone ?? ('zone' in place ? place.zone : null)
+	/** Последняя закрытая зона и сторона тела: селект спорта виден только на общем плане. */
+	let lastZone: { zone: Zone; index: number } | null = null
+	let sportSelect = $state<HTMLSelectElement>()
 
-		if (target) location.assign(zone ? `${target.home}?region=${zone.slug}` : target.home)
+	/** Страница из bfcache после «Назад»: селект -- снова на своём спорте. */
+	function resetSport(event: PageTransitionEvent) {
+		if (event.persisted && sportSelect) sportSelect.value = sport.slug
 	}
 
-	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны. */
+	/**
+	 * Смена спорта в заголовке -- переход на его главную. Последняя зона едет в адресе вместе со
+	 * стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у спорта такой
+	 * зоны -- откроется сцена целиком. Сам селект возвращаем к своему спорту: после «Назад» из
+	 * bfcache он иначе показывал бы чужой, и повторный выбор не срабатывал бы.
+	 */
+	function switchSport(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement
+		const target = sport.sports.find((s) => s.slug === select.value)
+		const recent = open ?? lastZone
+
+		select.value = sport.slug
+
+		if (target) location.assign(recent ? `${target.home}?region=${recent.zone.slug}:${recent.index}` : target.home)
+	}
+
+	/** Ссылка «/?region=knee» (или «knee:1» -- с точкой зоны) со страницы статьи открывает список зоны. */
 	function openRegion() {
-		const region = new URLSearchParams(location.search).get('region')
+		const [region, point] = (new URLSearchParams(location.search).get('region') ?? '').split(':')
 		const regionZone = allZones.find((zone) => zone.slug === region)
+		const index = regionZone?.points[Number(point)] ? Number(point) : 0
 
 		if (regionZone && !location.hash)
-			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, index)}`)
 	}
 
 	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
@@ -630,6 +644,7 @@
 
 		sync()
 		window.addEventListener('popstate', sync)
+		window.addEventListener('pageshow', resetSport)
 		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
 		window.addEventListener(BACK_EVENT, up)
 
@@ -710,6 +725,7 @@
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
 			window.removeEventListener('popstate', sync)
+			window.removeEventListener('pageshow', resetSport)
 			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
 			disposed = true
@@ -926,6 +942,7 @@
 	function closeZone() {
 		if (!open) return
 
+		lastZone = { zone: open.zone, index: open.index }
 		open = null
 		hovered = null
 		clearAccent()
@@ -1379,7 +1396,11 @@
 								>{sport.phrase.replaceAll(' ', ' ')}<span class="index__sport-chevron"
 									>{@html ChevronDown}</span
 								></span
-							><select class="index__sport-select" aria-label="Вид спорта" onchange={switchSport}
+							><select
+								class="index__sport-select"
+								aria-label="Вид спорта"
+								bind:this={sportSelect}
+								onchange={switchSport}
 								>{#each sport.sports as s (s.slug)}<option
 										value={s.slug}
 										selected={s.slug === sport.slug}>{s.title}</option
@@ -1942,7 +1963,7 @@
 
 		&__mark--accent &__mark-dot {
 			transform: scale(1.2);
-			color: #ffffff;
+			color: var(--a-on-blue);
 			background: var(--a-blue);
 			box-shadow:
 				0 0 0 2px var(--a-blue),
@@ -3416,7 +3437,7 @@
 		}
 
 		&__item--current &__num {
-			color: #ffffff;
+			color: var(--a-on-blue);
 			background: var(--a-blue);
 		}
 

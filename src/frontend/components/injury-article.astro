@@ -1,4 +1,6 @@
 ---
+import { createHash } from 'node:crypto'
+
 import {
 	ArrowRight,
 	ChevronDown,
@@ -12,12 +14,20 @@ import {
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
-import { sportArticle, sportElement, sportHome, sportOf, type Sport, type SportSlug } from '#frontend/data/sports.ts'
+import {
+	DEFAULT_SPORT,
+	sportArticle,
+	sportElement,
+	sportHome,
+	sportOf,
+	type Sport,
+	type SportSlug,
+} from '#frontend/data/sports.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
-import { enhanceArticle, type ArticlePart } from '#frontend/lib/article-html.ts'
+import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from '#frontend/lib/article-html.ts'
 import type { Injury, Lens } from '#frontend/lib/catalog.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
@@ -60,13 +70,27 @@ const [bodyHead, bodyTail] =
 const { name, alias } = splitTitle(data.title)
 const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
 const nameTail = name.slice(nameHead.length)
+
+/**
+ * Общая страница травмы нескольких спортов: до неё здесь жила статья кроссфита, и старые ссылки
+ * ведут к разделам, которых в общей части нет (`#adapt`, `#frequency`, `#mechanism`). Такой хеш
+ * уводим к тому же разделу статьи кроссфита. Inline-скрипты Astro в CSP не хеширует, хеш считаем сами.
+ */
+const lensOnly = LENS_HEADINGS.filter((h) => !INJURY_HEADINGS.some((i) => i.id === h.id)).map((h) => h.id)
+const toLens =
+	!sport && sports.includes(DEFAULT_SPORT)
+		? `if(${JSON.stringify(lensOnly)}.includes(location.hash.slice(1)))location.replace(${JSON.stringify(sportArticle(DEFAULT_SPORT, injury.id))}+location.hash)`
+		: undefined
+
+if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(toLens).digest('base64')}`)
 ---
 
 <Base
-	title={data.title}
+	title={sport ? `${data.title} ${sport.phrase}` : data.title}
 	description={summary ?? `${data.title}: что это, симптомы, когда к врачу, диагностика и лечение.`}
 	sport={sport?.slug}
 >
+	{toLens && <script is:inline slot="head" set:html={toLens} />}
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -144,6 +168,24 @@ const nameTail = name.slice(nameHead.length)
 						<span class="article__sport-phrase">{sport.phrase}</span>
 					)}
 				</p>
+			)}
+			{/* Без JS селект не уводит: разборы других спортов -- обычными ссылками */}
+			{sport && sports.length > 1 && (
+				<noscript>
+					<p class="article__sport-links">
+						Разбор и в других видах спорта:{' '}
+						{sports
+							.filter((slug) => slug !== sport.slug)
+							.map((slug, i) => (
+								<>
+									{i > 0 && ', '}
+									<a class="article__sport-link" href={sportArticle(slug, injury.id)}>
+										{sportOf(slug).phrase}
+									</a>
+								</>
+							))}
+					</p>
+				</noscript>
 			)}
 			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
 			{summary && (

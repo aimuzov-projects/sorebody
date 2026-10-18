@@ -172,6 +172,15 @@
 		color: var(--accent);
 	}
 
+	&__sport-links {
+		margin: 8px 0 0;
+		color: var(--muted);
+	}
+
+	&__sport-link {
+		color: var(--accent);
+	}
+
 	&__sport-pick {
 		position: relative;
 		display: inline-block;

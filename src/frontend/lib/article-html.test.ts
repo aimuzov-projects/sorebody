@@ -64,15 +64,25 @@ test('splits "Вместо X → Y" and "Вместо X — Y" into was/now pair
 
 	assert.match(
 		html,
-		/<li class="swap"><span class="swap__was"><span class="swap__label">Вместо<\/span> прыжков на тумбу<\/span><span class="swap__arrow"[^>]*><svg[\s\S]*?<\/span><span class="swap__now"><span class="swap__hint">Лучше: <\/span>зашагивания<\/span><\/li>/,
+		/<li class="swap"><span class="swap__was"><span class="swap__label"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Вместо<\/span> прыжков на тумбу<\/span><span class="swap__arrow"[^>]*><svg[\s\S]*?<\/span><span class="swap__now"><span class="swap__hint"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Лучше: <\/span>зашагивания<\/span><\/li>/,
 	)
 
 	assert.match(
 		html,
-		/<span class="swap__label">Вместо<\/span> бега<\/span>[\s\S]*?<span class="swap__hint">Лучше: <\/span>гребля<\/span>/,
+		/<span class="swap__label"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Вместо<\/span> бега<\/span>[\s\S]*?<span class="swap__hint"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Лучше: <\/span>гребля<\/span>/,
 	)
 
 	assert.match(html, /<li>Просто совет<\/li>/)
+})
+
+test('marks swap labels with the movement icon, falling back to a cross and a check', () => {
+	const { html } = enhanceArticle(
+		body({ adapt: '<ul><li>Вместо бега → гребля</li><li>Вместо серий без пауз → короткие подходы</li></ul>' }),
+		sources,
+	)
+	const marks = [...html.matchAll(/class="swap__mark"[^>]*><svg\s+class="lucide (lucide-[\w-]+)"/g)].map((m) => m[1])
+
+	assert.deepEqual(marks, ['lucide-footprints', 'lucide-waves-horizontal', 'lucide-circle-x', 'lucide-circle-check'])
 })
 
 test('highlights percents only in the frequency section', () => {

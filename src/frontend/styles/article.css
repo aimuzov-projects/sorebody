@@ -686,7 +686,9 @@
 	}
 
 	&__label {
-		display: block;
+		display: flex;
+		gap: 4px;
+		align-items: center;
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--muted);
@@ -711,11 +713,21 @@
 	}
 
 	&__hint {
-		display: block;
+		display: flex;
+		gap: 4px;
+		align-items: center;
 		font-size: 13px;
 		font-weight: 600;
 		color: var(--accent);
 		letter-spacing: 0;
+	}
+
+	/* Значок у подписи: крестик у "Вместо", галочка у "Лучше", цвет от подписи */
+	&__mark {
+		display: inline-flex;
+		flex: none;
+		width: 14px;
+		height: 14px;
 	}
 }
 
@@ -725,6 +737,12 @@
 	width: 100%;
 	height: 100%;
 	stroke-width: 1.6;
+}
+
+/* На 14px тонкий штрих бледнеет: значкам у подписей пары -- дефолтная толщина */
+/* stylelint-disable-next-line selector-max-type -- SVG приходит из lucide-static без класса */
+.swap__mark svg {
+	stroke-width: 2;
 }
 
 /* Стрелка назад и маленький заголовок в шапке статьи (components/site-header.svelte) -- на

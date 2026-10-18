@@ -2364,6 +2364,10 @@
 				& .index__chip:not([aria-pressed='true']) .index__chip-icon {
 					display: none;
 				}
+
+				& .index__chip:not([aria-pressed='true']) .index__chip-label {
+					margin-left: 0;
+				}
 			}
 		}
 
@@ -2374,7 +2378,6 @@
 			position: relative;
 			display: inline-flex;
 			flex: 1 1 auto;
-			gap: 0.4em;
 			align-items: center;
 			justify-content: center;
 			padding: 0.34em 0.6em;
@@ -2384,8 +2387,13 @@
 			color: var(--a-fg2);
 			background: transparent;
 			transition:
+				flex-grow 0.3s var(--a-ease),
 				color 0.3s var(--a-ease),
 				background 0.3s var(--a-ease);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
 
 			/* Каждый уровень частоты в своём цвете: знак в нём всегда, выбранный залит им */
 			&--common {
@@ -2405,15 +2413,6 @@
 				flex: none;
 				color: var(--a-bg);
 				background: var(--chip);
-
-				& .index__chip-label {
-					position: absolute;
-					overflow: hidden;
-					width: 1px;
-					height: 1px;
-					white-space: nowrap;
-					clip-path: inset(50%);
-				}
 			}
 
 			&:hover:not([aria-pressed='true']) {
@@ -2446,6 +2445,30 @@
 			width: 1em;
 			height: 1em;
 			color: inherit;
+		}
+
+		/* Подпись выбранного не пропадает скачком, а сворачивается: соседи растут плавно, текст не
+		   прыгает. Ширина -- через max-width с запасом, auto не анимируется */
+		&__chip-label {
+			overflow: hidden;
+			flex: none;
+			max-width: 8em;
+			margin-left: 0.4em;
+			white-space: nowrap;
+			transition:
+				max-width 0.3s var(--a-ease),
+				margin 0.3s var(--a-ease),
+				opacity 0.3s var(--a-ease);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
+		}
+
+		&__chip[aria-pressed='true'] &__chip-label {
+			max-width: 0;
+			margin-left: 0;
+			opacity: 0;
 		}
 
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */
@@ -2494,8 +2517,13 @@
 
 		/* На телефоне зоны переносятся в несколько рядов: в прокручиваемой строке половина зон
 		   пряталась за правым краем, и ничто не намекало, что строку можно листать. После общего
-		   правила, иначе его прокрутка и маска перебивают перенос */
+		   правила, иначе его прокрутка и маска перебивают перенос. На десктопе список -- контейнер
+		   по высоте: строки уплотняются, только когда не влезают (&__zone) */
 		&__zones {
+			@media (width >= 700px) {
+				container: zones / size;
+			}
+
 			@media (width < 700px) {
 				overflow: visible;
 				display: flex;
@@ -2529,11 +2557,15 @@
 				color 0.3s var(--a-ease),
 				opacity 0.3s var(--a-ease);
 
-			/* Ноутбук с невысоким экраном (1280×720, 1366×768): строки плотнее, чтобы все зоны
-			   влезли без прокрутки */
-			@media (width >= 700px) and (height < 820px) {
+			/* Строки плотнее, только когда восемь зон иначе не влезают в список без прокрутки:
+			   сперва меньше поля, потом и интерлиньяж. Пороги -- высота восьми строк каждой ступени */
+			@container zones (height < 394px) {
+				padding: 4px 0;
+			}
+
+			@container zones (height < 313px) {
 				padding: 2px 0;
-				line-height: 1.2;
+				line-height: 1.25;
 			}
 
 			@media (width < 700px) {

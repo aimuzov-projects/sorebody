@@ -28,7 +28,7 @@
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
-	import { metrikaHit } from '#frontend/lib/metrika.ts'
+	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
@@ -50,6 +50,7 @@
 		type Box,
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
+	import { probeWebGL } from '#frontend/scene/gpu.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
 	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
@@ -321,6 +322,14 @@
 	let canvas: HTMLCanvasElement
 	let body: BodyScene | undefined
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+	/** WebGL без видеокарты: сцену не грузим, пока её не включат кнопкой (`startScene`, из onMount). */
+	let lite = $state(false)
+	let loadScene = () => {}
+
+	function startScene() {
+		lite = false
+		loadScene()
+	}
 
 	// --- Загрузка модели: силуэт-скелетон, затем фигура и точки ---
 	/**
@@ -338,7 +347,9 @@
 	let posterShown = $state(true)
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
-	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
+	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
+	const flags = new URLSearchParams(location.search)
+	const posterMode = flags.has('poster')
 
 	/**
 	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
@@ -836,13 +847,33 @@
 
 		baseLevel = parseHash().level
 
-		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
-		if (!location.hash) {
+		// `?scene` включает сцену и под автотестом, и на медленном WebGL. Рендер постера (`?poster`)
+		// её требует
+		const forced = posterMode || flags.has('scene')
+		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный
+		// WebGL, и страница с ней занимает у axe десятки секунд. Остаются постер и разметка
+		const automated = navigator.webdriver && !forced
+		const webgl = automated || forced || flags.has('lite') ? 'gpu' : probeWebGL()
+
+		// Без видеокарты сцена на секунды занимает процессор и тормозит всю страницу: остаются
+		// постер и индекс, 3D включается кнопкой. `?lite` -- этот режим на любом устройстве.
+		// Цель в Метрике -- чтобы видеть, у какой доли посетителей он включается
+		lite = flags.has('lite') || webgl === 'software'
+
+		if (lite) metrikaGoal('scene-lite')
+
+		// Без WebGL вовсе -- сразу сообщение, код сцены не грузим
+		if (webgl === 'none') status = 'error'
+
+		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра.
+		// Без сцены кадр всегда общий: постер и плашка нужны и после «Назад» из зоны по ссылке
+		if (!location.hash || lite) {
 			placePoster()
 			void document.fonts?.ready.then(placePoster)
 			window.addEventListener('resize', placePoster)
-			hintShown = !movementPage && !introHintSeen()
 		}
+
+		if (!location.hash && !lite) hintShown = !movementPage && !introHintSeen()
 
 		sync()
 		window.addEventListener('popstate', onHistory)
@@ -852,12 +883,14 @@
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
-		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный WebGL,
-		// и страница с ней занимает у axe десятки секунд. Остаётся постер и вся разметка.
-		// `?scene` включает сцену и под автотестом, рендер постера (`?poster`) её требует
-		const automated = navigator.webdriver && !posterMode && !new URLSearchParams(location.search).has('scene')
-		const ready = (automated ? new Promise<never>(() => {}) : import('#frontend/scene/body-scene.ts')).then(
-			async ({ createBodyScene }) => {
+
+		loadScene = load
+
+		// Код сцены -- сотни килобайт: сначала кадр с постером и индексом, потом он
+		if (!automated && !lite && webgl !== 'none') requestAnimationFrame(() => setTimeout(load))
+
+		function load() {
+			const ready = import('#frontend/scene/body-scene.ts').then(async ({ createBodyScene }) => {
 				const scene = await createBodyScene(canvas, modelUrl, sport.glow)
 
 				if (disposed) return scene.dispose()
@@ -910,13 +943,13 @@
 				homeFrame(true)
 
 				if (sceneHidden) scene.pause(true)
-			},
-		)
+			})
 
-		ready.catch((error) => {
-			console.error(error)
-			status = 'error'
-		})
+			ready.catch((error) => {
+				console.error(error)
+				status = 'error'
+			})
+		}
 
 		const resizer = new ResizeObserver(() => {
 			body?.resize()
@@ -1502,6 +1535,21 @@
 		</p>
 	{/if}
 
+	<!-- Медленный WebGL: на месте подсказки -- кнопка, включающая 3D. Зоны открываются из индекса -->
+	{#if lite && !open}
+		<p
+			class="body3d__hint body3d__lite"
+			class:body3d__hint--below={posterRect && !hintPlace.side}
+			class:body3d__lite--corner={!posterRect}
+			style:--hint-x="{hintPlace.x}px"
+			style:--hint-y="{hintPlace.y}px"
+			style:--hint-room="{hintPlace.room}px"
+		>
+			Устройство рисует 3D медленно, поэтому модель на паузе
+			<button class="body3d__lite-start" type="button" onclick={startScene}>Включить 3D</button>
+		</p>
+	{/if}
+
 	{#if status === 'error' && !open}
 		<p class="body3d__status">Не получилось показать 3D: ваш браузер не поддерживает WebGL.</p>
 	{/if}
@@ -2037,6 +2085,41 @@
 			& :global(svg) {
 				width: 16px;
 				height: 16px;
+			}
+		}
+
+		/* Плашка медленного WebGL: та же, что у подсказки, кнопка -- под текстом */
+		&__lite {
+			flex-direction: column;
+			gap: 8px;
+			align-items: flex-start;
+			padding: 12px 14px;
+		}
+
+		/* Места фигуры ещё не знаем: плашка в правом верхнем углу под шапкой */
+		&__lite--corner {
+			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
+			right: var(--theme-toggle-right);
+			left: auto;
+		}
+
+		&__lite-start {
+			cursor: pointer;
+			padding: 6px 14px;
+			border: 0;
+			border-radius: 999px;
+			font: inherit;
+			color: var(--a-on-blue);
+			background: var(--a-blue);
+			transition: filter 0.3s var(--a-ease);
+
+			&:hover {
+				filter: brightness(1.1);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
 			}
 		}
 

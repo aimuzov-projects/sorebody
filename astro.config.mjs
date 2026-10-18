@@ -23,7 +23,7 @@ export default defineConfig({
 	// и `src/shared`, когда проекту понадобится своё API.
 	srcDir: './src/frontend',
 	// Абсолютные URL в canonical, og:url и sitemap.
-	site: 'https://wodcare.aimuzov.online',
+	site: 'https://sorebody.aimuzov.online',
 	// CSS немного, и встроенный в HTML он не блокирует первую отрисовку
 	// отдельным запросом.
 	build: { inlineStylesheets: 'always' },

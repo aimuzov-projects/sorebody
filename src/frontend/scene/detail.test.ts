@@ -90,6 +90,7 @@ function setup(t: TestContext, index: () => Response, failFirst = new Set<string
 		loader: loader as never,
 		base: [],
 		baseUrl: '/d/',
+		version: '',
 		lowPower: () => false,
 		muscleColor: '#c65a4b',
 	})

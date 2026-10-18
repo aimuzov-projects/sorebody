@@ -25,10 +25,13 @@ export async function sceneData(sport: Sport) {
 		whole,
 		movements,
 		// Что острову сцены нужно от спорта: адреса, подписи, цвет подсветки модели и спорты для
-		// селекта в заголовке -- только те, где уже есть травмы
+		// селекта в заголовке -- только те, где уже есть травмы. Заголовок и описание страницы
+		// нужны, когда спорт меняют без перезагрузки
 		scene: {
 			slug: sport.slug,
 			home: sportHome(sport.slug),
+			heading: `Травмы ${sport.phrase}`,
+			description: sport.description,
 			phrase: sport.phrase,
 			elementLabel: sport.elementLabel,
 			glow: sport.accent.glow,

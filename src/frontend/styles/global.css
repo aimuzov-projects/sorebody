@@ -16,6 +16,42 @@
 	--on-accent-dark: #161617;
 }
 
+/* Главная меняет спорт без перезагрузки (body-3d.svelte): зарегистрированные цвета плавно
+   перетекают в новые, а с ними и всё, что красится через них. Начальные значения -- кроссфит */
+@property --accent-light {
+	syntax: '<color>';
+	inherits: true;
+	initial-value: #0066cc;
+}
+
+@property --accent-dark {
+	syntax: '<color>';
+	inherits: true;
+	initial-value: #2997ff;
+}
+
+@property --on-accent-light {
+	syntax: '<color>';
+	inherits: true;
+	initial-value: #ffffff;
+}
+
+@property --on-accent-dark {
+	syntax: '<color>';
+	inherits: true;
+	initial-value: #ffffff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	:root {
+		transition:
+			--accent-light 0.6s ease,
+			--accent-dark 0.6s ease,
+			--on-accent-light 0.6s ease,
+			--on-accent-dark 0.6s ease;
+	}
+}
+
 :root,
 .light {
 	--font-sans: system-ui, sans-serif;

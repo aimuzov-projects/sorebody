@@ -5,13 +5,13 @@
 
 <!-- Раскомментировать, когда в .github/assets появится banner.jpg.
 <p align="center">
-	<a href="https://wodcare.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Wodcare: Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования." width="100%"></a>
+	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Wodcare: Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования." width="100%"></a>
 </p>
 -->
 
 <p align="center">
 	<a href="https://github.com/aimuzov-projects/wodcare/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/wodcare/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
-	<a href="https://wodcare.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fwodcare.aimuzov.online&label=site" alt="Site status"></a>
+	<a href="https://sorebody.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fsorebody.aimuzov.online&label=site" alt="Site status"></a>
 	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fwodcare%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
 	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
 	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
@@ -29,7 +29,7 @@
 </table>
 -->
 
-<p>Живёт на <a href="https://wodcare.aimuzov.online">wodcare.aimuzov.online</a>. Статичный сайт на <a href="https://astro.build">Astro</a>, интерактивные островки на <a href="https://svelte.dev">Svelte</a>.</p>
+<p>Живёт на <a href="https://sorebody.aimuzov.online">sorebody.aimuzov.online</a>. Статичный сайт на <a href="https://astro.build">Astro</a>, интерактивные островки на <a href="https://svelte.dev">Svelte</a>.</p>
 
 ## Что внутри
 

@@ -455,10 +455,14 @@
 	const noHover = typeof matchMedia !== 'undefined' && matchMedia('(hover: none)').matches
 
 	/**
-	 * Маркеры травм раскрытой зоны: травмы с одним местом делят маркер. `numbers` -- номера
-	 * строк списка, по ним маркер на модели сверяется со строкой.
+	 * Маркеры травм раскрытой зоны, по одному на травму. `number` -- номер строки списка, по нему
+	 * маркер на модели сверяется со строкой. У каждой травмы своё место (`INJURY_FOCUS`); если
+	 * места всё же совпали, `shift` разводит маркеры по экрану в ряд, а не склеивает номера.
 	 */
-	type Mark = { key: string; focus: InjuryFocus; slugs: string[]; numbers: number[] }
+	type Mark = { key: string; focus: InjuryFocus; slug: string; number: number; shift: number }
+
+	/** Шаг между маркерами с одним местом, px: кружок 20px и зазор. */
+	const MARK_SHIFT = 24
 
 	const marks: Mark[] = $derived.by(() => {
 		if (!open) {
@@ -467,23 +471,27 @@
 			const focus = injuryFocus(lead.zone, lead.index, lead.injury.slug)
 			const number = movementInjuries.findIndex((entry) => entry.injury === lead?.injury) + 1
 
-			return [{ key: 'lead', focus, slugs: [lead.injury.slug], numbers: [number] }]
+			return [{ key: 'lead', focus, slug: lead.injury.slug, number, shift: 0 }]
 		}
 
-		const byKey = new Map<string, Mark>()
+		const zone = open.zone
+		const index = open.index
+		const list = zone.injuries.filter(matches).map((injury, i) => ({
+			key: injury.slug,
+			focus: injuryFocus(zone, index, injury.slug),
+			slug: injury.slug,
+			number: i + 1,
+			shift: 0,
+		}))
+		const place = (mark: Mark) => mark.focus.position.map((v) => v.toFixed(3)).join()
 
-		for (const [i, injury] of open.zone.injuries.filter(matches).entries()) {
-			const focus = injuryFocus(open.zone, open.index, injury.slug)
-			const key = focus.position.map((v) => v.toFixed(3)).join()
-			const mark = byKey.get(key)
+		for (const mark of list) {
+			const same = list.filter((other) => place(other) === place(mark))
 
-			if (mark) {
-				mark.slugs.push(injury.slug)
-				mark.numbers.push(i + 1)
-			} else byKey.set(key, { key, focus, slugs: [injury.slug], numbers: [i + 1] })
+			mark.shift = same.indexOf(mark) - (same.length - 1) / 2
 		}
 
-		return [...byKey.values()]
+		return list
 	})
 	let markEls = $state<HTMLSpanElement[]>([])
 
@@ -829,7 +837,7 @@
 
 			const p = body.project(mark.focus.position)
 
-			el.style.transform = `translate(${p.x}px, ${p.y}px)`
+			el.style.transform = `translate(${p.x + mark.shift * MARK_SHIFT}px, ${p.y}px)`
 			el.dataset.hidden = String(body.facing(mark.focus.normal) < -0.05)
 		}
 	}
@@ -1177,7 +1185,7 @@
 
 			const mark = nearestMark(event.clientX, event.clientY, event.pointerType === 'mouse' ? 24 : 36)
 
-			if (mark) pickInjury(mark.slugs[0])
+			if (mark) pickInjury(mark.slug)
 			else if (event.pointerType === 'mouse') up()
 
 			return
@@ -1376,13 +1384,13 @@
 	{#each marks as mark, i (mark.key)}
 		<span
 			class="body3d__mark"
-			class:body3d__mark--accent={mark.key === 'lead' || (accent && mark.slugs.includes(accent.slug))}
-			class:body3d__mark--dim={accent && !mark.slugs.includes(accent.slug)}
+			class:body3d__mark--accent={mark.key === 'lead' || accent?.slug === mark.slug}
+			class:body3d__mark--dim={accent && accent.slug !== mark.slug}
 			bind:this={markEls[i]}
 			hidden={!live}
 			aria-hidden="true"
 		>
-			<span class="body3d__mark-dot">{mark.numbers.join(',')}</span>
+			<span class="body3d__mark-dot">{mark.number}</span>
 		</span>
 	{/each}
 
@@ -1993,7 +2001,7 @@
 			}
 		}
 
-		/* Маркер травмы -- кружок с номером строки списка, у общего места -- через запятую */
+		/* Маркер травмы -- кружок с номером строки списка */
 		&__mark-dot {
 			position: relative;
 			display: grid;

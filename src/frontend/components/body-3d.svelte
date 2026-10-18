@@ -562,7 +562,26 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
+	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны. */
+	function openRegion() {
+		const region = new URLSearchParams(location.search).get('region')
+		const regionZone = allZones.find((zone) => zone.slug === region)
+
+		if (regionZone && !location.hash)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
+	}
+
+	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
+	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал
+	openRegion()
+	sync()
+
+	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
+	let mounted = false
+
 	onMount(() => {
+		mounted = true
+
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
 		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
 		const stopPageZoom = (event: Event) => {
@@ -575,13 +594,6 @@
 
 		for (const type of ['wheel', 'gesturestart', 'gesturechange'])
 			wrap.addEventListener(type, stopPageZoom, { passive: false })
-
-		// Ссылка «/?region=knee» со страницы статьи открывает список зоны
-		const region = new URLSearchParams(location.search).get('region')
-		const regionZone = allZones.find((zone) => zone.slug === region)
-
-		if (regionZone && !location.hash)
-			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
 
 		baseLevel = parseHash().level
 
@@ -765,7 +777,9 @@
 	function showZone(zone: Zone, index: number) {
 		if (open?.zone === zone && open.index === index) return
 
-		const side = wrap.clientWidth < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
+		// До монтирования (зона из адреса) сцены ещё нет, а она во всё окно
+		const width = wrap ? wrap.clientWidth : innerWidth
+		const side = width < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
 
 		toolsOpen = false
 		hovered = null
@@ -998,6 +1012,9 @@
 	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
 	 */
 	function fadeUp(node: HTMLElement) {
+		// Статья из адреса стоит на месте с первого кадра: mount у Astro проигрывает и вход
+		if (!mounted) return { duration: 0 }
+
 		return {
 			duration: reduceMotion ? 250 : 550,
 			delay: reduceMotion ? 0 : 120,

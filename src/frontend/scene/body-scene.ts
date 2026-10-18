@@ -1,6 +1,7 @@
 import {
 	AmbientLight,
 	Box3,
+	Color,
 	DirectionalLight,
 	HemisphereLight,
 	MathUtils,
@@ -100,6 +101,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	// по умолчанию погашено
 	skin.material.emissive.set(glow)
 	skin.uniforms.uTintColor.value.set(glow)
+	// Спорт сменили без перезагрузки -- подсветка перетекает в его цвет
+	const glowTarget = new Color(glow)
+
 	skin.material.emissiveIntensity = 0
 	// Мышцы как в атласе: красные с волокнами, матовые; в тёмной теме глубже
 	const muscles = createDissolveMaterial(muscleColor(), MUSCLE_RIM, 0.78, true)
@@ -147,11 +151,13 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	// Слабый GPU (см. adaptPixelRatio) не получает нервов в детальных кусках зон
 	let slow = false
+	const { pathname, search } = new URL(modelUrl, location.href)
 	const detail = createDetail({
 		scene,
 		loader,
 		base: [muscles, bones],
-		baseUrl: modelUrl.replace(/[^/]*$/, 'detail/'),
+		baseUrl: pathname.replace(/[^/]*$/, 'detail/'),
+		version: search,
 		lowPower: () => slow,
 		muscleColor: muscleColor(),
 	})
@@ -330,6 +336,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		}
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
+		skin.material.emissive.lerp(glowTarget, ease)
+		skin.uniforms.uTintColor.value.copy(skin.material.emissive)
 		// Подсветка медленнее камеры: резкое появление пятна на коже бросалось в глаза
 		const tintEase = 1 - Math.exp(-dt * 3.5)
 
@@ -506,6 +514,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		/** Синее свечение всей фигуры -- зона "Всё тело". */
 		glow(on: boolean) {
 			glowTo = on ? 0.16 : 0
+		},
+		/** Цвет подсветки -- цвет спорта; `instant` -- без перехода от прежнего. */
+		glowColor(color: string, instant = false) {
+			glowTarget.set(color)
+
+			if (instant) {
+				skin.material.emissive.copy(glowTarget)
+				skin.uniforms.uTintColor.value.copy(glowTarget)
+			}
 		},
 		/** Подсветить места на коже голубым с переходом в серый; `null` гасит. */
 		tint(points: Vec3[] | null, radius = 0.1) {

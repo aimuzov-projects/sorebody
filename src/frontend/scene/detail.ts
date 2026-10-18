@@ -53,16 +53,18 @@ export function detailKey(slug: string, position: Vec3) {
  * Детальные куски зон: при открытии зоны догружается её геометрия во всех слоях (связки,
  * мениски, сосуды, нервы) и подменяет внутри своей сферы базовые мышцы и кости. Общий план
  * обходится лёгкой фигурой. `lowPower` -- слабое устройство: кусок нервов не грузим.
+ * `version` -- `?v=<хеш>` из адреса фигуры: с ним куски тоже лежат в вечном кэше.
  */
 export function createDetail(options: {
 	scene: Scene
 	loader: GLTFLoader
 	base: Dissolve[]
 	baseUrl: string
+	version: string
 	lowPower: () => boolean
 	muscleColor: string
 }) {
-	const { scene, loader, base, baseUrl, lowPower } = options
+	const { scene, loader, base, baseUrl, version, lowPower } = options
 	const materials = Object.fromEntries(
 		Object.entries(LAYERS).map(([layer, color]) => [
 			layer,
@@ -98,7 +100,7 @@ export function createDetail(options: {
 	}
 
 	function readIndex() {
-		index ??= fetch(`${baseUrl}index.json`)
+		index ??= fetch(`${baseUrl}index.json${version}`)
 			.then((r) => {
 				if (!r.ok) throw new Error(`${r.url}: ${r.status}`)
 
@@ -137,7 +139,7 @@ export function createDetail(options: {
 		}
 
 		const promise = loader
-			.loadAsync(`${baseUrl}${file}.glb`)
+			.loadAsync(`${baseUrl}${file}.glb${version}`)
 			.then((gltf) => {
 				gltf.scene.traverse((obj) => {
 					if (!(obj instanceof Mesh)) return

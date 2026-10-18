@@ -40,7 +40,7 @@
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
-	import { splitTitle } from '#frontend/lib/title.ts'
+	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import Logo from '#frontend/components/logo.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
@@ -70,8 +70,17 @@
 		movementPage?: { slug: string; title: string; titleEn: string }
 	}
 	type Injury = Zone['injuries'][number]
+	/** Всё, что у сцены от спорта. На главной меняется при выборе другого спорта, модель остаётся. */
+	type SportData = Pick<Props, 'zones' | 'whole' | 'movements' | 'sport'>
 
-	let { zones, whole, movements, modelUrl, sport, footer, movementPage }: Props = $props()
+	let { modelUrl, footer, movementPage, ...initial }: Props = $props()
+
+	let data = $state.raw<SportData>(untrack(() => ({ ...initial })))
+
+	const zones = $derived(data.zones)
+	const whole = $derived(data.whole)
+	const movements = $derived(data.movements)
+	const sport = $derived(data.sport)
 
 	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
 	const FREQUENCY_CHIPS = [
@@ -635,14 +644,151 @@
 	let lastZone: { zone: Zone; index: number } | null = null
 
 	/**
-	 * Выбран другой спорт в заголовке -- переход на его главную. Последняя зона едет в адресе вместе
-	 * со стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у спорта
-	 * такой зоны -- откроется сцена целиком.
+	 * Данные спортов по slug. Свой спорт уже в странице, другие -- статикой `/<sport>/scene.json`
+	 * (pages/[sport]/scene.json.ts): тянуть их в каждую главную дороже, чем догрузить по запросу.
 	 */
-	function switchSport(target: { href: string }) {
+	const sportData = new Map<string, Promise<SportData>>(untrack(() => [[data.sport.slug, Promise.resolve(data)]]))
+
+	function loadSport(slug: string) {
+		let hit = sportData.get(slug)
+
+		if (!hit) {
+			hit = fetch(`/${slug}/scene.json`).then((r) => {
+				if (!r.ok) throw new Error(`${r.url}: ${r.status}`)
+
+				return r.json()
+			})
+
+			// Неудачу не запоминаем: следующий выбор спросит снова
+			hit.catch(() => sportData.delete(slug))
+			sportData.set(slug, hit)
+		}
+
+		return hit
+	}
+
+	/** Курсор или фокус у выбора спорта: данные других спортов начинаем грузить заранее. */
+	function prefetchSports(node: HTMLElement) {
+		const prefetch = () => {
+			for (const other of sport.sports) if (other.slug !== sport.slug) loadSport(other.slug).catch(() => {})
+		}
+
+		node.addEventListener('pointerenter', prefetch)
+		node.addEventListener('focusin', prefetch)
+
+		return () => {
+			node.removeEventListener('pointerenter', prefetch)
+			node.removeEventListener('focusin', prefetch)
+		}
+	}
+
+	/** Номер последней смены спорта: данные, пришедшие после следующей смены, отбрасываем. */
+	let sportToken = 0
+
+	/**
+	 * Спорт другой -- меняем его на месте: данные, заголовки страницы, `data-sport` и цвет.
+	 * Сцена и модель остаются, фильтры сбрасываются. `false` -- пока данные шли, спорт сменили
+	 * ещё раз; данные не пришли -- ошибка.
+	 */
+	async function changeSport(slug: string) {
+		const token = ++sportToken
+		const next = await loadSport(slug)
+
+		if (token !== sportToken) return false
+
+		hideArticle()
+		closeZone()
+		hovered = null
+		lead = null
+		setHighlight(null)
+		resetFilters()
+		data = next
+
+		const root = document.documentElement
+		const head = document.head
+		const title = pageTitle(next.sport.heading)
+		const canonical = head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+
+		root.dataset.sport = next.sport.slug
+		document.title = title
+		head.querySelector('meta[name="description"]')?.setAttribute('content', next.sport.description)
+		head.querySelector('meta[property="og:description"]')?.setAttribute('content', next.sport.description)
+		head.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
+
+		if (canonical) {
+			canonical.href = new URL(next.sport.home, canonical.href).href
+			head.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical.href)
+		}
+
+		// Видимый заголовок -- в острове, скрытый h1 для скринридера -- в разметке Astro
+		const heading = document.querySelector('.scene-page__title')
+
+		if (heading) heading.textContent = next.sport.heading
+
+		// Цвет акцента перетекает сам (global.css), подсветка модели -- тут
+		body?.glowColor(next.sport.glow, reduceMotion)
+
+		return true
+	}
+
+	/**
+	 * Выбран другой спорт в заголовке -- смена на месте, адрес -- его главная. Последняя зона едет
+	 * вместе со стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у
+	 * спорта такой зоны -- открывается сцена целиком. Данные не пришли -- обычный переход.
+	 */
+	async function switchSport(target: { slug: string; href: string }) {
 		const recent = open ?? lastZone
 
-		location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
+		try {
+			if (!(await changeSport(target.slug))) return
+		} catch (error) {
+			console.error(error)
+			location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
+
+			return
+		}
+
+		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
+		const index = recent && zone?.points[recent.index] ? recent.index : 0
+
+		// Как после перехода по ссылке: зона из адреса, «Назад» в ней закрывает её заменой адреса
+		history.pushState(null, '', zone ? `${target.href}${zoneHash(zone, index)}` : target.href)
+		baseLevel = parseHash().level
+		sync()
+	}
+
+	/** Спорт по адресу главной: `/` и `/crossfit/` -- кроссфит, `/padel/` -- падел. */
+	function sportAt(pathname: string) {
+		const path = pathname.replace(/\/?$/, '/')
+
+		return sport.sports.find((s) => s.href === path || `/${s.slug}/` === path)?.slug
+	}
+
+	/** «Назад» и «Вперёд»: адрес другого спорта -- сначала спорт, потом зона и статья из хеша. */
+	function onHistory() {
+		const slug = movementPage ? undefined : sportAt(location.pathname)
+
+		if (!slug || slug === sport.slug) {
+			sportToken++
+			sync()
+
+			return
+		}
+
+		changeSport(slug).then(
+			(changed) => {
+				if (!changed) return
+
+				baseLevel = parseHash().level
+				sync()
+			},
+			(error) => {
+				console.error(error)
+
+				// Без данных спорта страницу по этому адресу отдаст сервер
+				if (sportAt(location.pathname) === slug) location.reload()
+			},
+		)
 	}
 
 	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
@@ -705,7 +851,7 @@
 		}
 
 		sync()
-		window.addEventListener('popstate', sync)
+		window.addEventListener('popstate', onHistory)
 		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
 		window.addEventListener(BACK_EVENT, up)
 
@@ -785,7 +931,7 @@
 
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
-			window.removeEventListener('popstate', sync)
+			window.removeEventListener('popstate', onHistory)
 			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
 			disposed = true
@@ -1449,7 +1595,7 @@
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- кнопка списка спортов, как у фильтра движения -->
-				<div class="index__title index__title--home">
+				<div class="index__title index__title--home" {@attach prefetchSports}>
 					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<SportSwitch
 							sports={sport.sports}
 							value={sport.slug}

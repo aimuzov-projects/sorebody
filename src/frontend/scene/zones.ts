@@ -133,8 +133,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'acl-tear': { offset: [0, 0, 0], zoom: 2 },
 	'meniscus-tear': { offset: [-0.035, -0.015, 0.015], normal: [-0.3, 0, 1], view: { azimuth: 0, polar: 78 } },
 	'iliotibial-band-syndrome': { offset: [0.045, 0.02, 0], normal: [1, 0, 0], view: { azimuth: 80, polar: 78 } },
-	// Медиальная коллатеральная связка -- спереди изнутри: видна и с обзора зоны, и мимо другого колена
-	'mcl-sprain': { offset: [-0.04, 0, 0.03], normal: [-0.7, 0, 0.7], view: { azimuth: -30, polar: 78 } },
+	// Медиальная коллатеральная связка -- изнутри и выше суставной щели, у медиального надмыщелка: так её
+	// кружок не ложится на мениск, а ракурс смотрит мимо другого колена
+	'mcl-sprain': { offset: [-0.055, 0.015, 0.02], normal: [-0.6, 0, 0.8], view: { azimuth: -30, polar: 78 } },
 	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
 	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
 	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },

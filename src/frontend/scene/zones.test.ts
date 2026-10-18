@@ -44,7 +44,10 @@ test('injuries inside a zone go from common to rare in the sport order', () => {
 	)
 })
 
-test('inside a zone every injury of a sport has its own place on the model', () => {
+// Кружки травм на модели около 2 см: ближе они закрывают друг друга, и номер нижнего не прочитать
+const MIN_FOCUS_DISTANCE = 0.025
+
+test('inside a zone the injuries of a sport stand apart on the model', () => {
 	const content = new URL('../content/injuries/', import.meta.url)
 
 	for (const sport of SPORTS) {
@@ -56,13 +59,17 @@ test('inside a zone every injury of a sport has its own place on the model', () 
 		})
 
 		for (const zone of buildZones(sport, injuries).zones) {
-			const places = zone.injuries.map((i) =>
-				injuryFocus(zone, 0, i.slug)
-					.position.map((v) => v.toFixed(3))
-					.join(),
-			)
+			const places = zone.injuries.map((i) => ({ slug: i.slug, position: injuryFocus(zone, 0, i.slug).position }))
 
-			assert.equal(new Set(places).size, places.length, `${sport.slug}, ${zone.slug}: травмы делят одно место`)
+			for (const [i, a] of places.entries())
+				for (const b of places.slice(i + 1)) {
+					const d = Math.hypot(...a.position.map((v, k) => v - b.position[k]!))
+
+					assert.ok(
+						d >= MIN_FOCUS_DISTANCE,
+						`${sport.slug}, ${zone.slug}: ${a.slug} и ${b.slug} в ${d.toFixed(3)} м`,
+					)
+				}
 		}
 	}
 })

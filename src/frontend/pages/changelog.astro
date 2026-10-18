@@ -1,0 +1,90 @@
+---
+import { ChevronLeft } from 'lucide-static'
+
+import SiteHeader from '#frontend/components/site-header.svelte'
+import TocMenu from '#frontend/components/toc-menu.astro'
+import { RELEASES } from '#frontend/data/changelog.ts'
+import Base from '#frontend/layouts/base.astro'
+import { itemHtml, releaseDate } from '#frontend/lib/changelog.ts'
+import '#frontend/styles/article.css'
+
+const title = 'Что нового'
+
+/** Раздел на релиз: id из версии, чтобы на него можно было сослаться. */
+const sections = RELEASES.map((r) => ({ ...r, id: `v${r.version.replaceAll('.', '-')}` }))
+---
+
+<Base {title} description="Что изменилось в Wodcare: новые статьи, графики и удобства, простыми словами.">
+	<div class="reading-progress" aria-hidden="true">
+		<span class="reading-progress__bar"></span>
+	</div>
+	<SiteHeader>
+		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
+		<p class="article-bar__title" aria-hidden="true">
+			{title}
+		</p>
+	</SiteHeader>
+	<main class="article" data-article>
+		<header class="article__hero">
+			<h1 class="article__title">{title}</h1>
+			<p class="article__lead">
+				Как менялся справочник: новые статьи, графики и удобства, без технических подробностей.
+			</p>
+		</header>
+
+		<div class="article__layout">
+			<nav class="article__toc" aria-label="Релизы" data-toc>
+				<ol class="article__toc-list">
+					{sections.map((s) => (
+						<li>
+							<a class="article__toc-link" href={`#${s.id}`}>
+								<span class="article__toc-icon" aria-hidden="true" set:html={s.icon} />
+								{s.title}
+							</a>
+						</li>
+					))}
+				</ol>
+			</nav>
+
+			<div class="article__body">
+				{sections.map((s) => (
+					<section class="article-section" id={s.id} aria-labelledby={`${s.id}-title`}>
+						<h2 class="article-section__title" id={`${s.id}-title`}>
+							<span class="article-section__icon" aria-hidden="true" set:html={s.icon} />
+							{s.title}
+						</h2>
+						<p class="release__meta">
+							<time datetime={s.date}>{releaseDate(s.date)}</time> · версия {s.version}
+						</p>
+						<ul>
+							{s.items.map((item) => (
+								<li set:html={itemHtml(item)} />
+							))}
+						</ul>
+					</section>
+				))}
+			</div>
+		</div>
+
+		<TocMenu {sections} label="Релизы" />
+	</main>
+</Base>
+
+<style>
+	.release__meta {
+		margin-top: -0.5em;
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+</style>
+
+<script>
+	import { initBackLink } from '#frontend/lib/back-link.ts'
+	import { initReading } from '#frontend/lib/reading.ts'
+
+	const root = document.querySelector('[data-article]')
+
+	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
+
+	initBackLink()
+</script>

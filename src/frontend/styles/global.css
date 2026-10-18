@@ -19,10 +19,12 @@
 	/* Переключатель темы на всех страницах в одной точке: по вертикали на строке шапки (её
 	   верхнее поле 12px, строка 40px), по горизонтали правый край значка -- на правом крае
 	   колонки текста (--frame-right). Значок 22px в кнопке 40px, отсюда 9px. На узком экране
-	   не ближе 16px к краю. Шапка оставляет справа место под него: --theme-toggle-room */
+	   не ближе 16px к краю. Слева от него через --header-gap -- ссылка "Что нового"
+	   (changelog-link.astro). Шапка оставляет справа место под обе кнопки: --theme-toggle-room */
 	--theme-toggle-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px), var(--frame-right) - 9px);
-	--theme-toggle-room: calc(var(--theme-toggle-right) + 40px + 8px);
+	--header-gap: 4px;
+	--theme-toggle-room: calc(var(--theme-toggle-right) + 80px + var(--header-gap) + 8px);
 
 	/* Каркас страниц. Левый край колонки -- одна вертикаль везде: индекс сцены, оглавление
 	   статьи, поле about и начало шапки. Это край колонки статьи: 1052px по центру и поля

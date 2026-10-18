@@ -1,0 +1,76 @@
+---
+import { History } from 'lucide-static'
+
+const current = Astro.url.pathname.replace(/\/$/, '') === '/changelog'
+---
+
+<a
+	class="changelog-link"
+	href="/changelog"
+	aria-label="Что нового"
+	title="Что нового"
+	aria-current={current ? 'page' : undefined}
+>
+	<span class="changelog-link__icon" aria-hidden="true" set:html={History} />
+</a>
+
+<style>
+	/* Слева от переключателя темы, в той же строке и в том же языке: без подложки, в покое
+	   приглушена. В Mini App переключателя нет, и ссылка встаёт в угол на его место */
+	.changelog-link {
+		position: fixed;
+		z-index: 30;
+		top: var(--theme-toggle-top);
+		right: calc(var(--theme-toggle-right) + 40px + var(--header-gap));
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		color: var(--fg);
+		opacity: 0.55;
+		transition: opacity 0.3s ease;
+		-webkit-tap-highlight-color: transparent;
+
+		:global([data-telegram]) & {
+			right: var(--theme-toggle-right);
+		}
+
+		/* Мягкое свечение вместо обводки фокуса, как у переключателя темы */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -4px;
+			border-radius: 50%;
+			opacity: 0;
+			background: radial-gradient(closest-side, color-mix(in srgb, var(--fg) 20%, transparent), transparent);
+			transition: opacity 0.3s ease;
+		}
+
+		&:hover,
+		&:focus-visible,
+		&[aria-current='page'] {
+			opacity: 1;
+		}
+
+		&:focus-visible {
+			outline: none;
+
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
+	.changelog-link__icon {
+		display: inline-flex;
+		width: 22px;
+		height: 22px;
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& :global(svg) {
+			width: 100%;
+			height: 100%;
+			stroke-width: 1.8;
+		}
+	}
+</style>

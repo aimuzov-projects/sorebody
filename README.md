@@ -94,6 +94,10 @@ The deploy job runs only when the repository variable `DEPLOY_ENABLED` is `true`
 
 To roll back fast, run Deploy by hand with the previous tag: `gh workflow run deploy.yml -f tag=v1.2.3`. A fix of the bad commit goes out through the release PR like any change.
 
+### What's new page
+
+`CHANGELOG.md` is for developers and release-please writes it. The [/changelog](src/frontend/pages/changelog.astro) page tells readers the same story in plain Russian, and its entries live in [`src/frontend/data/changelog.ts`](src/frontend/data/changelog.ts). Before merging a release PR, add an entry at the top: the version and date from its `CHANGELOG.md`, a short title and what a reader will notice. Leave out CI, refactoring and dependencies. A link inside an item is written `[text](/path)`, and a test checks that every link leads to an existing page.
+
 ## License
 
 The code is licensed under [MIT](LICENSE). Site content (texts, images, names and contacts) is not covered by it: all rights reserved.

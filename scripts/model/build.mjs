@@ -99,7 +99,6 @@ const buffer = doc.createBuffer()
 const scene = doc.createScene('body')
 let missing = 0
 
-// Мышцы помечаются по вершинам: номер мышцы в `parts` меша (с 1) и направление волокон
 const positions = []
 
 for (const group of cfg.groups) {
@@ -122,6 +121,7 @@ for (const group of cfg.groups) {
 
 		for (const x of v) pos.push(x)
 
+		// Мышцы помечаются по вершинам: номер мышцы в `parts` меша (с 1) и направление волокон
 		if (group.parts) {
 			const key = partName(name)
 			let id = parts.indexOf(key) + 1
@@ -168,7 +168,8 @@ for (const group of cfg.groups) {
 
 console.log('missing files', missing)
 
-// Центрируем по X/Z, ставим стопы на y = 0
+// Центрируем по X/Z, ставим стопы на y = 0. У кусков сдвиг из конфига -- тот же,
+// что у фигуры, иначе кусок отцентровался бы по своим габаритам и не лёг бы на неё
 {
 	let min = [Infinity, Infinity, Infinity]
 	let max = [-Infinity, -Infinity, -Infinity]
@@ -193,6 +194,7 @@ console.log('missing files', missing)
 		for (let i = 0; i < a.length; i += 3) for (let k = 0; k < 3; k++) a[i + k] += off[k]
 	}
 
+	// Якорь -- центр габаритов кости, а в режимах top/bottom -- центр полосы высотой `band` у её края
 	const anchors = []
 
 	for (const an of cfg.anchors ?? []) {

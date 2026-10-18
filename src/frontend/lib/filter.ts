@@ -22,6 +22,10 @@ export type Filters = {
 /** Текст для поиска: тексты набраны с неразрывными пробелами, а в запросе пробелы обычные. */
 export const normalize = (s: string) => s.toLowerCase().replaceAll('ё', 'е').replace(/\s+/g, ' ').trim()
 
+/**
+ * Список травм под фильтры главной. Незаданный фильтр пропускает всё.
+ * Запрос ищется подстрокой в обоих названиях, описании и подписи зоны, через `normalize`.
+ */
 export function filterInjuries(list: InjuryListItem[], { region, frequency, movement, query }: Filters) {
 	const q = query ? normalize(query) : ''
 

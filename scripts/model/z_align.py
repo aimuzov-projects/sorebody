@@ -33,7 +33,8 @@ for p in glob.glob(f'{bp_dir}/*.obj'):
             if line.startswith('v '):
                 break
 
-# Точки зон как в zones.ts (левая сторона, +X) и кости, по которым их совмещать
+# Точки зон как в zones.ts (левая сторона, +X), охват подгонки и кости, по которым её считать.
+# Охват у локтя и бедра шире радиусов zones.ts
 ZONES = {
     'shoulder': ((0.165, 1.39, -0.024), 0.13, ['Humerus', 'Scapula', 'Clavicle']),
     'elbow': ((0.21, 1.127, -0.033), 0.09, ['Humerus', 'Radius', 'Ulna']),
@@ -80,7 +81,8 @@ def refs(names, side):
     return np.vstack(za) * 1000 + glob_shift, np.vstack(bp)
 
 
-# Общий сдвиг начала координат: метры -> мм и совпадение центров всех опорных костей
+# Общий сдвиг начала координат: метры -> мм и совпадение центров всех опорных костей.
+# `refs` уже прибавляет `glob_shift`, поэтому на время подсчёта он 0
 glob_shift = 0
 all_bones = sorted({b for _, _, bones in ZONES.values() for b in bones})
 za_all, bp_all = zip(*(refs(all_bones, s) for s in ('l', 'r')))
@@ -104,6 +106,7 @@ for zone, (c, r, bones) in ZONES.items():
         near = za[np.linalg.norm(za - center, axis=1) < reach * 1.3]
         scale, rot, shift = 1.0, np.eye(3), bp.mean(0) - near.mean(0)
         for it in range(40):
+            # В подгонку идут 80% ближайших пар, пары ближе 1 мм -- всегда
             moved = scale * near @ rot.T + shift
             hits = [tree.find(p) for p in moved]
             dist = np.array([h[2] for h in hits])
@@ -127,7 +130,7 @@ for m in manifest:
     zr = ZONES[fit['zone']][1] * 1000 * 1.6
     if np.min(np.linalg.norm(v - fit['center'], axis=1)) > zr:
         continue
-    # Вес подгонки падает с расстоянием до центра её зоны, σ = 12 см
+    # Вес подгонки падает с расстоянием до центра её зоны: на 12 см -- в e раз
     near = [f for f in fits if f['side'] in (side, 'c')]
     w = np.stack([np.exp(-((np.linalg.norm(v - f['center'], axis=1) / 120) ** 2)) for f in near], 1) + 1e-12
     w /= w.sum(1, keepdims=True)

@@ -840,8 +840,7 @@
 	}
 
 	.article-bar__title {
-		/* Только отдельные свойства: краткую запись animation минификатор склеивает
-		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
+		/* Тоже только отдельные свойства, причина выше у .article__title */
 		animation-name: article-title-in;
 		animation-timing-function: linear;
 		animation-fill-mode: both;

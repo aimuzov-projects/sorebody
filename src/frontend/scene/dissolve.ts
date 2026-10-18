@@ -4,6 +4,7 @@ import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three
 export type Rim = {
 	front: string
 	back: string
+	/** Нижний слой у самого края снаружи, под `front`; без него -- тот же `front`. */
 	inner?: string
 	/** Цвет изнанки за кромкой; без него изнанка -- цвет слоя на тон темнее. */
 	hollow?: string
@@ -24,8 +25,9 @@ export const SKIN_RIM: Rim = {
 	frontWidth: 0.004,
 	backWidth: 0.006,
 }
-/** Кости: срез в тон слоя. Мышцам цвет кромки не нужен: их срез -- та же мышца на тон темнее. */
+/** Мышцам цвет кромки не нужен: шейдер красит их срез той же мышцей на тон темнее. */
 export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#6b1d1d' }
+/** Кости: срез в тон слоя. */
 export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
 
 /**
@@ -45,7 +47,8 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 		// Сдвиг внутрь по нормали в единицах меша: после упрощения мышцы местами пробивают кожу
 		uInset: { value: 0 },
 		// Срез у края проёма: снаружи -- узкая полоса `front`, на изнанке -- более широкая `back`.
-		// У кожи изнанка у края -- светлая дерма и желтоватая подкожка: срез читается толстым
+		// У кожи снаружи у края -- желтоватая подкожка (`inner`) и светлая дерма,
+		// поэтому срез читается толстым
 		uRim: { value: new Color(edge.front) },
 		uRimWidth: { value: edge.frontWidth ?? 0.003 },
 		uRimInner: { value: new Color(edge.inner ?? edge.front) },

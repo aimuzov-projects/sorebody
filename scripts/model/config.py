@@ -40,7 +40,8 @@ def ids(pattern):
     return sorted(f for f, n in names.items() if n == pattern)
 
 
-# Якоря: (зона, сторона, файлы, режим) — режим top/bottom берёт полосу вершин у края кости по высоте
+# Якоря -- центры суставов для zones.ts. Режим top/bottom берёт полосу вершин высотой `band` (м)
+# у верхнего или нижнего края кости, center -- кость целиком
 anchors = []
 for side, sx in (('right', -1), ('left', 1)):
     anchors += [

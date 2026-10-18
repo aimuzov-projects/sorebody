@@ -70,6 +70,10 @@ const WHOLE = {
 	points: [{ position: [0, 1.25, 0.05] as Vec3, normal: [0, 0, 1] as Vec3, view: { azimuth: 25, polar: 76 } }],
 }
 
+/**
+ * Зоны фигуры с травмами, внутри зоны -- по алфавиту. Регион `other` своего сустава не имеет:
+ * он становится `whole`, растворением всей фигуры от груди.
+ */
 export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
 	const byRegion = (slug: Region) =>
 		injuries

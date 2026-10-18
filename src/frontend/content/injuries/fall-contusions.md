@@ -2,7 +2,7 @@
 title: Ушибы и травмы при падениях
 titleEn: Contusions and fall-related trauma
 region: other
-frequency: common
+frequency: uncommon
 movements:
     - kipping-pull-up
     - toes-to-bar

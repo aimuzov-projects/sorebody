@@ -2,7 +2,7 @@
 title: Протрузия и грыжа поясничного диска
 titleEn: Lumbar disc protrusion and herniation
 region: lumbar
-frequency: common
+frequency: uncommon
 movements: [deadlift, squat, clean-and-jerk, snatch, kettlebell-swing]
 summary: 'Часть межпозвоночного диска выходит за его границы: протрузия — грыжа с широким основанием, при экструзии ядро прорывается через фиброзное кольцо. Если это давит на нервный корешок, боль отдаёт в ягодицу и ногу.'
 images:

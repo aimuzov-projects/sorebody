@@ -2,7 +2,7 @@
 title: Фемороацетабулярный импинджмент
 titleEn: Femoroacetabular impingement syndrome
 region: hip-groin
-frequency: common
+frequency: uncommon
 movements:
     - squat
     - thruster

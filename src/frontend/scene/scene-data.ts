@@ -11,7 +11,7 @@ export async function sceneData() {
 		title: data.title,
 		titleEn: data.titleEn,
 		summary: data.summary,
-		rare: data.frequency === 'rare',
+		frequency: data.frequency,
 		movements: data.movements as string[],
 		region: data.region,
 	}))

@@ -2,7 +2,7 @@
 title: Паховая грыжа
 titleEn: Inguinal hernia
 region: hip-groin
-frequency: rare
+frequency: uncommon
 movements: [deadlift, squat, snatch, clean-and-jerk]
 summary: Через слабое место брюшной стенки в паху выпячивается кишка или жировая ткань. Видна как припухлость, которая заметнее при напряжении и тянет или ноет в паху.
 images:

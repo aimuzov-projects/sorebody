@@ -13,7 +13,7 @@ Slug — это только имя файла. Поля `slug` во frontmatter
 title: Разрыв передней крестообразной связки
 titleEn: Anterior cruciate ligament tear
 region: knee # shoulder | elbow | wrist-hand | lumbar | hip-groin | knee | ankle-foot | other
-frequency: common # common | rare
+frequency: common # common | uncommon | rare, и место в FREQUENCY_ORDER (src/frontend/data/frequency.ts)
 movements: [box-jump, squat] # только slug из src/frontend/data/movements.ts
 summary: Одна фраза до 220 знаков для карточки и описания страницы.
 images:

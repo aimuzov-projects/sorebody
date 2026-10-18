@@ -3,6 +3,7 @@ import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
 import { SPORTS, sportArticle, sportHome } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
+import { modelUrl } from '#frontend/scene/model-url.ts'
 import { sceneData } from '#frontend/scene/scene-data.ts'
 import '#frontend/styles/article.css'
 import '#frontend/styles/scene.css'
@@ -45,7 +46,7 @@ const injuries = entries
 			{movements}
 			sport={scene}
 			movementPage={{ slug, title, titleEn }}
-			modelUrl="/model/body.glb"
+			modelUrl={modelUrl()}
 		>
 			<Footer slot="footer" />
 		</Body3d>

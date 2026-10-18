@@ -98,7 +98,8 @@ for (const sport of SPORTS) {
 	test(`${sport.slug}: accent text passes AA on the page and chip backgrounds`, () => {
 		for (const bg of ['#ffffff', '#f5f5f7']) assert.ok(contrast(sport.accent.light, bg) >= 4.5, `light на ${bg}`)
 
-		assert.ok(contrast(sport.accent.dark, '#161617') >= 4.5, 'dark')
+		// Тёмная заливка чипа -- 10% белого поверх фона, #2d2d2e
+		for (const bg of ['#161617', '#2d2d2e']) assert.ok(contrast(sport.accent.dark, bg) >= 4.5, `dark на ${bg}`)
 	})
 
 	// Номер текущей строки и метка травмы на модели -- крупные цифры: для них хватает 3:1

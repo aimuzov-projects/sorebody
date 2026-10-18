@@ -1082,7 +1082,12 @@
 	}
 
 	function onKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && (article || open)) up()
+		if (event.key !== 'Escape' || !(article || open)) return
+
+		// Открытую подсказку браузер закроет сам, на уровень вверх -- следующим нажатием
+		if (document.querySelector('[popover="auto"]:popover-open')) return
+
+		up()
 	}
 
 	/** Ссылка в списке открывает статью на месте; с модификаторами -- как обычная ссылка. */

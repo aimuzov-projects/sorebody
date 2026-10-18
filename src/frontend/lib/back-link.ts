@@ -35,7 +35,8 @@ export function initBackLink() {
 	addEventListener('keydown', (event) => {
 		if (event.key !== 'Escape' || event.defaultPrevented || !link) return
 
-		if (document.querySelector(':popover-open')) return
+		// Её закроет сам браузер. Подсказка темы ручная, Esc её не закрывает -- она не в счёт
+		if (document.querySelector('[popover="auto"]:popover-open')) return
 
 		if ((event.target as Element).closest?.('input, textarea, select, [contenteditable]')) return
 

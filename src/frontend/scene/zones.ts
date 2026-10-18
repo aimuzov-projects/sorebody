@@ -61,13 +61,6 @@ export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points:
 }
 
 /**
- * Зоны, у которых ещё нет детальных кусков в `public/model/detail`: их собирают из исходников
- * BodyParts3D и Z-Anatomy (scripts/model/README.md). Пока кусков нет, раскрытая зона показывает
- * мышцы и кости лёгкой фигуры, без связок, сосудов и подсветки мышц травмы.
- */
-export const NO_DETAIL: ReadonlySet<Region> = new Set(['head', 'shin'])
-
-/**
  * Левая точка по данным и зеркальная правая; нормаль -- наружу вбок (`side`) и вперёд (`front`),
  * ракурс правой точки -- с зеркальным азимутом.
  */
@@ -216,6 +209,12 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	},
 	'wrist-sprain': { depth: 'deep' },
 	'ankle-sprain': { depth: 'deep' },
+	// Глазного яблока в BodyParts3D нет: глазницу показывают прямые мышцы глаза вокруг него
+	'eye-injury': {
+		depth: 'muscle',
+		muscles: ['superior rectus', 'inferior rectus', 'medial rectus', 'lateral rectus'],
+	},
+	'tennis-leg': { depth: 'muscle', muscles: ['medial head of gastrocnemius'] },
 }
 
 /** Слой травмы: глубина и подсвечиваемые мышцы. */

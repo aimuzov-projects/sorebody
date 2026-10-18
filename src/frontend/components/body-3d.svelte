@@ -31,7 +31,7 @@
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
-	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
+	import { splitTitle } from '#frontend/lib/title.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import FrequencySwitch from '#frontend/components/frequency-switch.svelte'
 	import Logo from '#frontend/components/logo.svelte'
@@ -52,6 +52,7 @@
 	} from '#frontend/scene/frame.ts'
 	import { probeWebGL } from '#frontend/scene/gpu.ts'
 	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
+	import { applySportHead, createRequestGuard, createSportLoader } from '#frontend/scene/sport-loader.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
 	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
@@ -562,29 +563,9 @@
 	/** Последняя закрытая зона и сторона тела: выбор спорта виден только на общем плане. */
 	let lastZone: { zone: Zone; index: number } | null = null
 
-	/**
-	 * Данные спортов по slug. Свой спорт уже в странице, другие -- статикой `/<sport>/scene.json`
-	 * (pages/[sport]/scene.json.ts): тянуть их в каждую главную дороже, чем догрузить по запросу.
-	 */
-	const sportData = new Map<string, Promise<SportData>>(untrack(() => [[data.sport.slug, Promise.resolve(data)]]))
-
-	function loadSport(slug: string) {
-		let hit = sportData.get(slug)
-
-		if (!hit) {
-			hit = fetch(`/${slug}/scene.json`).then((r) => {
-				if (!r.ok) throw new Error(`${r.url}: ${r.status}`)
-
-				return r.json()
-			})
-
-			// Неудачу не запоминаем: следующий выбор спросит снова
-			hit.catch(() => sportData.delete(slug))
-			sportData.set(slug, hit)
-		}
-
-		return hit
-	}
+	// Данные других спортов догружаем по запросу (scene/sport-loader.ts): тянуть их в каждую
+	// главную дороже
+	const loadSport = createSportLoader<SportData>(untrack(() => ({ slug: data.sport.slug, data })))
 
 	/** Курсор или фокус у выбора спорта: данные других спортов начинаем грузить заранее. */
 	function prefetchSports(node: HTMLElement) {
@@ -601,8 +582,8 @@
 		}
 	}
 
-	/** Номер последней смены спорта: данные, пришедшие после следующей смены, отбрасываем. */
-	let sportToken = 0
+	/** Данные, пришедшие после следующей смены спорта или смены адреса, отбрасываем. */
+	const sportRequests = createRequestGuard(() => location.href)
 	/** Спорт, данные которого ждём: кнопка выбора спорта показывает загрузку. */
 	let sportLoading = $state(false)
 	/** Объявление скринридеру после смены спорта на месте: «Травмы в паделе». */
@@ -615,22 +596,20 @@
 	 * Ошибка загрузки -- исключением, но тоже только для актуального запроса.
 	 */
 	async function fetchSport(slug: string) {
-		const token = ++sportToken
-		const href = location.href
-		const current = () => token === sportToken && location.href === href
+		const request = sportRequests.start()
 
 		sportLoading = true
 
 		try {
 			const next = await loadSport(slug)
 
-			return current() ? next : null
+			return request.current() ? next : null
 		} catch (error) {
-			if (current()) throw error
+			if (request.current()) throw error
 
 			return null
 		} finally {
-			if (token === sportToken) sportLoading = false
+			if (request.latest()) sportLoading = false
 		}
 	}
 
@@ -646,27 +625,7 @@
 		setHighlight(null)
 		resetFilters()
 		data = next
-
-		const root = document.documentElement
-		const head = document.head
-		const title = pageTitle(next.sport.heading)
-		const canonical = head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-
-		root.dataset.sport = next.sport.slug
-		document.title = title
-		head.querySelector('meta[name="description"]')?.setAttribute('content', next.sport.description)
-		head.querySelector('meta[property="og:description"]')?.setAttribute('content', next.sport.description)
-		head.querySelector('meta[property="og:title"]')?.setAttribute('content', title)
-
-		if (canonical) {
-			canonical.href = new URL(next.sport.home, canonical.href).href
-			head.querySelector('meta[property="og:url"]')?.setAttribute('content', canonical.href)
-		}
-
-		// Видимый заголовок -- в острове, скрытый h1 для скринридера -- в разметке Astro
-		const heading = document.querySelector('.scene-page__title')
-
-		if (heading) heading.textContent = next.sport.heading
+		applySportHead(document, next.sport)
 
 		// Цвет акцента перетекает сам (global.css), подсветка модели -- тут. Модели ещё нет --
 		// её подсветку поставит onMount по текущему спорту
@@ -730,7 +689,7 @@
 		const slug = movementPage ? undefined : sportAt(location.pathname, sport.sports)
 
 		if (!slug || slug === sport.slug) {
-			sportToken++
+			sportRequests.cancel()
 			sportLoading = false
 			sync()
 

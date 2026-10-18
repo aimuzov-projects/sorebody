@@ -133,6 +133,10 @@ export type Sport = {
 	elementLabel: string
 	/** Заголовок списка элементов в конце статьи: «Связанные движения». */
 	elementsTitle: string
+	/** Элемент в предложном падеже для описания его страницы: «травмы на движении «Бёрпи»». */
+	elementOn: string
+	/** `meta description` главной спорта. */
+	description: string
 	/** Заголовок раздела о механизме в статье спорта. */
 	mechanismTitle: string
 	/** Техники или ситуации спорта: варианты фильтра и страницы `/<sport>/elements/<slug>`. */
@@ -141,9 +145,10 @@ export type Sport = {
 	frequencyOrder: readonly string[]
 	/**
 	 * Цвет спорта: `light` и `dark` -- `--accent` в светлой и тёмной теме (styles/global.css
-	 * повторяет их в блоке `[data-sport]`, сверяет тест), `glow` -- подсветка кожи на модели.
+	 * повторяет их в блоке `[data-sport]`, сверяет тест), `onLight` и `onDark` -- цифры на заливке
+	 * этим цветом, `glow` -- подсветка кожи на модели.
 	 */
-	accent: { light: string; dark: string; glow: string }
+	accent: { light: string; dark: string; onLight: string; onDark: string; glow: string }
 }
 
 export const SPORTS = [
@@ -153,10 +158,13 @@ export const SPORTS = [
 		phrase: 'в кроссфите',
 		elementLabel: 'Движение',
 		elementsTitle: 'Связанные движения',
+		elementOn: 'на движении',
+		description:
+			'Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования.',
 		mechanismTitle: 'Механизм и движения',
 		elements: CROSSFIT_ELEMENTS,
 		frequencyOrder: CROSSFIT_FREQUENCY_ORDER,
-		accent: { light: '#0066cc', dark: '#2997ff', glow: '#3d8bfd' },
+		accent: { light: '#0066cc', dark: '#2997ff', onLight: '#ffffff', onDark: '#ffffff', glow: '#3d8bfd' },
 	},
 	{
 		slug: 'padel',
@@ -164,12 +172,16 @@ export const SPORTS = [
 		phrase: 'в паделе',
 		elementLabel: 'Удар или действие',
 		elementsTitle: 'Удары и действия',
+		elementOn: 'на элементе',
+		description:
+			'Справочник травм в паделе: как часто случаются, симптомы, когда к врачу и как изменить игру и тренировки — со ссылками на исследования.',
 		mechanismTitle: 'Механизм и удары',
 		elements: PADEL_ELEMENTS,
 		frequencyOrder: PADEL_FREQUENCY_ORDER,
 		// Лайм: светлый -- 5.5:1 на белом и 4.5:1 на серой заливке чипов, тёмный -- 12:1 на фоне
-		// тёмной темы. По тону далеко и от бирюзы частых травм, и от красного «опасно»
-		accent: { light: '#467509', dark: '#a3e635', glow: '#84cc16' },
+		// тёмной темы, цифры на нём тоже тёмные. По тону далеко и от бирюзы частых травм, и от
+		// красного «опасно»
+		accent: { light: '#467509', dark: '#a3e635', onLight: '#ffffff', onDark: '#161617', glow: '#84cc16' },
 	},
 ] as const satisfies readonly Sport[]
 

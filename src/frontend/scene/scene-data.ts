@@ -34,7 +34,7 @@ export async function sceneData(sport: Sport) {
 			glow: sport.accent.glow,
 			sports: (await Promise.all(SPORTS.map(async (s) => ((await sportInjuries(s)).length ? [s] : []))))
 				.flat()
-				.map((s) => ({ slug: s.slug, title: s.title, home: sportHome(s.slug) })),
+				.map((s) => ({ slug: s.slug, title: s.title, phrase: s.phrase, href: sportHome(s.slug) })),
 		},
 	}
 }

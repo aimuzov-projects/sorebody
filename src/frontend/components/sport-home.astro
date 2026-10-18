@@ -20,7 +20,14 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
 const { entries, zones, whole, movements, scene } = await sceneData(sport)
 ---
 
-<Base bare bodyClass="scene-page" sport={sport.slug} canonical={sportHome(sport.slug)}>
+<Base
+	title={`Травмы ${sport.phrase}`}
+	description={sport.description}
+	bare
+	bodyClass="scene-page"
+	sport={sport.slug}
+	canonical={sportHome(sport.slug)}
+>
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
 		<h1 class="scene-page__title">Травмы {sport.phrase}</h1>

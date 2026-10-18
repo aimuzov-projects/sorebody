@@ -1,23 +1,26 @@
 ---
-import {
-	ArrowRight,
-	ChevronDown,
-	ChevronLeft,
-	ChevronRight,
-	ExternalLink,
-	TextQuote,
-	TriangleAlert,
-} from 'lucide-static'
+import { createHash } from 'node:crypto'
+
+import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
-import { sportArticle, sportElement, sportHome, sportOf, type Sport, type SportSlug } from '#frontend/data/sports.ts'
+import {
+	DEFAULT_SPORT,
+	sportArticle,
+	sportElement,
+	sportHome,
+	sportOf,
+	type Sport,
+	type SportSlug,
+} from '#frontend/data/sports.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
 import SiteHeader from '#frontend/components/site-header.svelte'
+import SportSwitch from '#frontend/components/sport-switch.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
-import { enhanceArticle, type ArticlePart } from '#frontend/lib/article-html.ts'
+import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from '#frontend/lib/article-html.ts'
 import type { Injury, Lens } from '#frontend/lib/catalog.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
@@ -60,13 +63,41 @@ const [bodyHead, bodyTail] =
 const { name, alias } = splitTitle(data.title)
 const nameHead = name.slice(0, name.lastIndexOf(' ') + 1)
 const nameTail = name.slice(nameHead.length)
+
+/**
+ * Общая страница травмы нескольких спортов: до неё здесь жила статья кроссфита, и старые ссылки
+ * ведут к разделам, которых в общей части нет (`#adapt`, `#frequency`, `#mechanism`). Такой хеш
+ * уводим к тому же разделу статьи кроссфита. Inline-скрипты Astro в CSP не хеширует, хеш считаем сами.
+ */
+const switchProps =
+	sport && sports.length > 1
+		? {
+				sports: sports.map((slug) => ({
+					slug,
+					title: sportOf(slug).title,
+					phrase: sportOf(slug).phrase,
+					href: sportArticle(slug, injury.id),
+				})),
+				value: sport.slug,
+				size: 'lead' as const,
+			}
+		: undefined
+
+const lensOnly = LENS_HEADINGS.filter((h) => !INJURY_HEADINGS.some((i) => i.id === h.id)).map((h) => h.id)
+const toLens =
+	!sport && sports.includes(DEFAULT_SPORT)
+		? `if(${JSON.stringify(lensOnly)}.includes(location.hash.slice(1)))location.replace(${JSON.stringify(sportArticle(DEFAULT_SPORT, injury.id))}+location.hash)`
+		: undefined
+
+if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(toLens).digest('base64')}`)
 ---
 
 <Base
-	title={data.title}
+	title={sport ? `${data.title} ${sport.phrase}` : data.title}
 	description={summary ?? `${data.title}: что это, симптомы, когда к врачу, диагностика и лечение.`}
 	sport={sport?.slug}
 >
+	{toLens && <script is:inline slot="head" set:html={toLens} />}
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -121,29 +152,38 @@ const nameTail = name.slice(nameHead.length)
 					name
 				)}
 			</h1>
-			{/* «Разбор ‹в кроссфите ▾›»: фраза спорта акцентом, поверх неё прозрачный нативный select. Спорт
-			   один -- простой текст. Смена ведёт к тому же разделу (lib/sport-switch.ts) */}
+			{/* «Разбор ‹в кроссфите ▾›»: фраза спорта -- кнопка списка, как у фильтра движения на главной.
+			   Спорт один -- простой текст. В статье поверх модели остров монтирует сама сцена по
+			   data-sport-switch: острова во вставленном HTML не оживают */}
 			{sport && (
-				<p class="article__sport">
-					<span aria-hidden={sports.length > 1 ? 'true' : undefined}>Разбор </span>
-					{sports.length > 1 ? (
-						<span class="article__sport-pick">
-							<span class="article__sport-phrase" aria-hidden="true">
-								{sport.phrase}
-								<span class="article__sport-chevron" set:html={ChevronDown} />
-							</span>
-							<select class="article__sport-select" aria-label="Разбор по виду спорта" data-sport-select>
-								{sports.map((slug) => (
-									<option value={sportArticle(slug, injury.id)} selected={slug === sport.slug}>
-										{sportOf(slug).title}
-									</option>
-								))}
-							</select>
+				<div class="article__sport">
+					<span aria-hidden={switchProps ? 'true' : undefined}>Разбор </span>
+					{switchProps ? (
+						<span data-sport-switch={JSON.stringify(switchProps)}>
+							<SportSwitch client:load {...switchProps} />
 						</span>
 					) : (
 						<span class="article__sport-phrase">{sport.phrase}</span>
 					)}
-				</p>
+				</div>
+			)}
+			{/* Без JS селект не уводит: разборы других спортов -- обычными ссылками */}
+			{sport && sports.length > 1 && (
+				<noscript>
+					<p class="article__sport-links">
+						Разбор и в других видах спорта:{' '}
+						{sports
+							.filter((slug) => slug !== sport.slug)
+							.map((slug, i) => (
+								<>
+									{i > 0 && ', '}
+									<a class="article__sport-link" href={sportArticle(slug, injury.id)}>
+										{sportOf(slug).phrase}
+									</a>
+								</>
+							))}
+					</p>
+				</noscript>
 			)}
 			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
 			{summary && (
@@ -261,12 +301,10 @@ const nameTail = name.slice(nameHead.length)
 <script>
 	import { initBackLink } from '#frontend/lib/back-link.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
-	import { initSportSwitch } from '#frontend/lib/sport-switch.ts'
 
 	const root = document.querySelector('[data-article]')
 
 	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
 
 	initBackLink()
-	initSportSwitch(document)
 </script>

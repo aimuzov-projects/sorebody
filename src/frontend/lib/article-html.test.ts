@@ -75,6 +75,16 @@ test('splits "Вместо X → Y" and "Вместо X — Y" into was/now pair
 	assert.match(html, /<li>Просто совет<\/li>/)
 })
 
+test('marks swap labels with the movement icon, falling back to a cross and a check', () => {
+	const { html } = enhanceArticle(
+		body({ adapt: '<ul><li>Вместо бега → гребля</li><li>Вместо серий без пауз → короткие подходы</li></ul>' }),
+		sources,
+	)
+	const marks = [...html.matchAll(/class="swap__mark"[^>]*><svg\s+class="lucide (lucide-[\w-]+)"/g)].map((m) => m[1])
+
+	assert.deepEqual(marks, ['lucide-footprints', 'lucide-waves-horizontal', 'lucide-circle-x', 'lucide-circle-check'])
+})
+
 test('highlights percents only in the frequency section', () => {
 	const { html } = enhanceArticle(
 		body({ frequency: '<p>Колено -- 14% травм и 18,5 % по обзору.</p>', what: '<p>Около 30% случаев.</p>' }),

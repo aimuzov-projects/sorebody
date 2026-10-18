@@ -13,6 +13,10 @@ import {
 } from 'lucide-static'
 import { ELEMENT_NODE, parse, renderSync, TEXT_NODE } from 'ultrahtml'
 
+import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
+
+import { movementIn } from './movement-match.ts'
+
 type Node = { type: number; name?: string; value?: string; attributes?: Record<string, string>; children?: Node[] }
 type Element = Node & { name: string; attributes: Record<string, string>; children: Node[] }
 
@@ -189,6 +193,13 @@ function groupCites(parent: Element, sources: { label: string }[]) {
 	}
 }
 
+/** Значок у подписи половины пары: иконка движения из текста, если оно в списке, иначе запасной. */
+function markOf(nodes: Node[], fallback: string) {
+	const movement = movementIn(nodes.map(textOf).join(''))
+
+	return movement ? MOVEMENT_ICONS[movement] : fallback
+}
+
 /** "Вместо X → Y" (или через тире) -- пара "было → стало". Разделитель ищем только в тексте строки. */
 function splitSwap(li: Element) {
 	const first = li.children[0]
@@ -210,13 +221,13 @@ function splitSwap(li: Element) {
 
 	li.children = [
 		el('span', { class: 'swap__was' }, [
-			el('span', { class: 'swap__label' }, [icon(CircleX, 'swap__mark'), text('Вместо')]),
+			el('span', { class: 'swap__label' }, [icon(markOf(was, CircleX), 'swap__mark'), text('Вместо')]),
 			text(' '),
 			...was,
 		]),
 		icon(ArrowRight, 'swap__arrow'),
 		el('span', { class: 'swap__now' }, [
-			el('span', { class: 'swap__hint' }, [icon(CircleCheck, 'swap__mark'), text('Лучше: ')]),
+			el('span', { class: 'swap__hint' }, [icon(markOf(now, CircleCheck), 'swap__mark'), text('Лучше: ')]),
 			...now,
 		]),
 	]

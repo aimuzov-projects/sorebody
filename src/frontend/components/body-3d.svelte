@@ -684,18 +684,42 @@
 
 	/** Номер последней смены спорта: данные, пришедшие после следующей смены, отбрасываем. */
 	let sportToken = 0
+	/** Спорт, данные которого ждём: кнопка выбора спорта показывает загрузку. */
+	let sportLoading = $state(false)
+	/** Объявление скринридеру после смены спорта на месте: «Травмы в паделе». */
+	let sportAnnounce = $state('')
+	let zonesList = $state<HTMLUListElement>()
 
 	/**
-	 * Спорт другой -- меняем его на месте: данные, заголовки страницы, `data-sport` и цвет.
-	 * Сцена и модель остаются, фильтры сбрасываются. `false` -- пока данные шли, спорт сменили
-	 * ещё раз; данные не пришли -- ошибка.
+	 * Данные спорта, если за время загрузки ничего не случилось: ни нового выбора спорта, ни
+	 * смены адреса (посетитель успел открыть зону). Иначе `null`: такой результат уже не к месту.
+	 * Ошибка загрузки -- исключением, но тоже только для актуального запроса.
 	 */
-	async function changeSport(slug: string) {
+	async function fetchSport(slug: string) {
 		const token = ++sportToken
-		const next = await loadSport(slug)
+		const href = location.href
+		const current = () => token === sportToken && location.href === href
 
-		if (token !== sportToken) return false
+		sportLoading = true
 
+		try {
+			const next = await loadSport(slug)
+
+			return current() ? next : null
+		} catch (error) {
+			if (current()) throw error
+
+			return null
+		} finally {
+			if (token === sportToken) sportLoading = false
+		}
+	}
+
+	/**
+	 * Сменить спорт на месте: данные, заголовки страницы, `data-sport` и цвет. Сцена и модель
+	 * остаются, фильтры и прокрутка списка зон сбрасываются, как при загрузке страницы.
+	 */
+	function applySport(next: SportData) {
 		hideArticle()
 		closeZone()
 		hovered = null
@@ -725,10 +749,12 @@
 
 		if (heading) heading.textContent = next.sport.heading
 
-		// Цвет акцента перетекает сам (global.css), подсветка модели -- тут
+		// Цвет акцента перетекает сам (global.css), подсветка модели -- тут. Модели ещё нет --
+		// её подсветку поставит onMount по текущему спорту
 		body?.glowColor(next.sport.glow, reduceMotion)
+		sportAnnounce = next.sport.heading
 
-		return true
+		if (zonesList) zonesList.scrollTop = 0
 	}
 
 	/**
@@ -737,16 +763,26 @@
 	 * спорта такой зоны -- открывается сцена целиком. Данные не пришли -- обычный переход.
 	 */
 	async function switchSport(target: { slug: string; href: string }) {
-		const recent = open ?? lastZone
+		let next: SportData | null
 
 		try {
-			if (!(await changeSport(target.slug))) return
+			next = await fetchSport(target.slug)
 		} catch (error) {
 			console.error(error)
+
+			const recent = open ?? lastZone
+
 			location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
 
 			return
 		}
+
+		if (!next) return
+
+		// Зону берём после загрузки: она могла смениться, пока данные шли
+		const recent = open ?? lastZone
+
+		applySport(next)
 
 		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
 		const index = recent && zone?.points[recent.index] ? recent.index : 0
@@ -770,23 +806,24 @@
 
 		if (!slug || slug === sport.slug) {
 			sportToken++
+			sportLoading = false
 			sync()
 
 			return
 		}
 
-		changeSport(slug).then(
-			(changed) => {
-				if (!changed) return
+		fetchSport(slug).then(
+			(next) => {
+				if (!next) return
 
+				applySport(next)
 				baseLevel = parseHash().level
 				sync()
 			},
 			(error) => {
 				console.error(error)
-
 				// Без данных спорта страницу по этому адресу отдаст сервер
-				if (sportAt(location.pathname) === slug) location.reload()
+				location.reload()
 			},
 		)
 	}
@@ -869,7 +906,12 @@
 				if (disposed) return scene.dispose()
 
 				body = scene
+				// Спорт могли сменить, пока модель грузилась: подсветка -- цветом текущего
+				scene.glowColor(sport.glow, true)
 				scene.resize()
+
+				// Автотесты проверяют подсветку модели (e2e/sports.spec.ts)
+				if (navigator.webdriver) Object.assign(window, { bodyScene: scene })
 
 				scene.onFrame = () => {
 					placeSpots()
@@ -1595,7 +1637,12 @@
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
 				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- кнопка списка спортов, как у фильтра движения -->
-				<div class="index__title index__title--home" {@attach prefetchSports}>
+				<div
+					class="index__title index__title--home"
+					class:index__title--loading={sportLoading}
+					aria-busy={sportLoading}
+					{@attach prefetchSports}
+				>
 					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<SportSwitch
 							sports={sport.sports}
 							value={sport.slug}
@@ -1604,6 +1651,8 @@
 						/>{:else}<span class="index__sport" aria-hidden="true">{sport.phrase.replaceAll(' ', ' ')}</span
 						>{/if}
 				</div>
+				<!-- Спорт сменили на месте: фокус остаётся на кнопке, о новом спорте скажет скринридер -->
+				<p class="index__announce" aria-live="polite">{sportAnnounce}</p>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
 					Разбираемся, что болит после тренировки или игры, когда пора к врачу и как тренироваться дальше.
@@ -1719,7 +1768,7 @@
 				</div>
 			</div>
 			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->
-			<ul class="index__zones" class:index__zones--searching={query.trim()}>
+			<ul class="index__zones" class:index__zones--searching={query.trim()} bind:this={zonesList}>
 				{#each allZones as zone (zone.slug)}
 					{@const count = counts.get(zone) ?? 0}
 					<li class="index__zone-row">
@@ -1857,6 +1906,12 @@
 		syntax: '<length>';
 		inherits: false;
 		initial-value: 0px;
+	}
+
+	@keyframes sport-loading {
+		to {
+			opacity: 0.45;
+		}
 	}
 
 	@keyframes zones-fade {
@@ -2599,6 +2654,26 @@
 		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
 		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
 		   кегль тянется за колонкой, 39px на широком экране */
+		&__announce {
+			position: absolute;
+			overflow: hidden;
+			width: 1px;
+			height: 1px;
+			white-space: nowrap;
+			clip-path: inset(50%);
+		}
+
+		/* Данные спорта ещё грузятся: фраза спорта мерцает. С задержкой, чтобы быстрая загрузка
+		   не мигала */
+		&__title--loading :global(button) {
+			animation: sport-loading 1s ease-in-out 150ms infinite alternate;
+
+			@media (prefers-reduced-motion: reduce) {
+				animation: none;
+				opacity: 0.6;
+			}
+		}
+
 		&__title--home {
 			/* Список спортов раскрывается поверх подводки и фильтров под заголовком */
 			position: relative;

@@ -337,6 +337,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
 		skin.material.emissive.lerp(glowTarget, ease)
+
+		// Экспонента до цели не доходит: вблизи встаём точно в цвет
+		if (skin.material.emissive.getHex() === glowTarget.getHex()) skin.material.emissive.copy(glowTarget)
+
 		skin.uniforms.uTintColor.value.copy(skin.material.emissive)
 		// Подсветка медленнее камеры: резкое появление пятна на коже бросалось в глаза
 		const tintEase = 1 - Math.exp(-dt * 3.5)
@@ -523,6 +527,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				skin.material.emissive.copy(glowTarget)
 				skin.uniforms.uTintColor.value.copy(glowTarget)
 			}
+		},
+		/** Текущий цвет подсветки, `#rrggbb`. */
+		glowHex() {
+			return `#${skin.material.emissive.getHexString()}`
 		},
 		/** Подсветить места на коже голубым с переходом в серый; `null` гасит. */
 		tint(points: Vec3[] | null, radius = 0.1) {

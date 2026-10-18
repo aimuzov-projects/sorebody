@@ -2348,54 +2348,41 @@
 		}
 
 		/* Частота -- переключатель из четырёх положений во всю ширину колонки: общая подложка без
-		   рамки, выбранное положение -- залитая таблетка с одним знаком, у остальных знак и подпись.
-		   Кегль идёт за шириной колонки (cqi от &__filters): три подписи влезают и в остров на 320px */
+		   рамки, невыбранные положения -- подпись в цвете уровня, выбранное -- залитая таблетка
+		   со знаком. Кегль идёт за шириной колонки (cqi от &__filters): влезает и в остров на 320px */
 		&__freq {
 			display: flex;
 			gap: 2px;
 			width: 100%;
 			padding: 3px;
 			border-radius: 999px;
-			font-size: clamp(11px, 4.5cqi, 15px);
+			font-size: clamp(11px, 5.2cqi, 15px);
 			background: var(--a-fill);
-
-			/* Шторка на ноутбуке у самого порога 700px: подписи остаются, знаки -- только у выбранного */
-			@container (width < 260px) {
-				& .index__chip:not([aria-pressed='true']) .index__chip-icon {
-					display: none;
-				}
-
-				& .index__chip:not([aria-pressed='true']) .index__chip-label {
-					margin-left: 0;
-				}
-			}
 		}
 
+		/* Знак и подпись лежат в одной ячейке, ширину чипа держит подпись: у выбранного она
+		   прозрачна, а знак встаёт на её место. Ширина чипа от выбора не зависит -- соседи не
+		   прыгают. Подпись остаётся именем кнопки и всплывает в title */
 		&__chip {
 			--chip: var(--a-fg);
 
 			cursor: pointer;
-			position: relative;
-			display: inline-flex;
+			display: inline-grid;
 			flex: 1 1 auto;
-			align-items: center;
-			justify-content: center;
+			place-items: center;
 			padding: 0.34em 0.6em;
 			border: 0;
 			border-radius: 999px;
 			font: inherit;
-			color: var(--a-fg2);
+			color: var(--chip);
 			background: transparent;
-			transition:
-				flex-grow 0.3s var(--a-ease),
-				color 0.3s var(--a-ease),
-				background 0.3s var(--a-ease);
+			transition: background 0.3s var(--a-ease);
 
 			@media (--reduced-motion) {
 				transition: none;
 			}
 
-			/* Каждый уровень частоты в своём цвете: знак в нём всегда, выбранный залит им */
+			/* Каждый уровень частоты в своём цвете: подпись в нём, выбранный залит им */
 			&--common {
 				--chip: var(--common);
 			}
@@ -2408,15 +2395,13 @@
 				--chip: var(--rare);
 			}
 
-			/* Выбранное -- одним знаком: подпись остаётся именем кнопки и всплывает в title */
 			&[aria-pressed='true'] {
-				flex: none;
 				color: var(--a-bg);
 				background: var(--chip);
 			}
 
 			&:hover:not([aria-pressed='true']) {
-				color: var(--a-fg);
+				background: color-mix(in srgb, var(--chip) 12%, transparent);
 			}
 
 			&:focus-visible {
@@ -2425,12 +2410,28 @@
 			}
 		}
 
+		&__chip-icon,
+		&__chip-label {
+			grid-area: 1 / 1;
+			transition:
+				opacity 0.25s var(--a-ease),
+				scale 0.25s var(--a-ease);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
+		}
+
+		&__chip-label {
+			white-space: nowrap;
+		}
+
 		&__chip-icon {
+			scale: 0.6;
 			display: inline-flex;
-			flex: none;
-			width: 0.8em;
-			height: 0.8em;
-			color: var(--chip);
+			width: 1em;
+			height: 1em;
+			opacity: 0;
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
@@ -2440,34 +2441,12 @@
 			}
 		}
 
-		/* Знак выбранного положения -- вся его подпись: крупнее */
 		&__chip[aria-pressed='true'] &__chip-icon {
-			width: 1em;
-			height: 1em;
-			color: inherit;
-		}
-
-		/* Подпись выбранного не пропадает скачком, а сворачивается: соседи растут плавно, текст не
-		   прыгает. Ширина -- через max-width с запасом, auto не анимируется */
-		&__chip-label {
-			overflow: hidden;
-			flex: none;
-			max-width: 8em;
-			margin-left: 0.4em;
-			white-space: nowrap;
-			transition:
-				max-width 0.3s var(--a-ease),
-				margin 0.3s var(--a-ease),
-				opacity 0.3s var(--a-ease);
-
-			@media (--reduced-motion) {
-				transition: none;
-			}
+			scale: 1;
+			opacity: 1;
 		}
 
 		&__chip[aria-pressed='true'] &__chip-label {
-			max-width: 0;
-			margin-left: 0;
 			opacity: 0;
 		}
 

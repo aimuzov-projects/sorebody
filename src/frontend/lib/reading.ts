@@ -44,10 +44,11 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	// разделов нулевые координаты, и активным стал бы последний
 	onScroll()
 
-	// Переход по оглавлению -- плавной прокруткой и без смены хеша: на главной хеш ведёт
-	// навигацию между сценой, зоной и статьёй
+	// Переход к разделу -- из оглавления или ссылкой в тексте, как в пометке "Когда сразу к
+	// врачу", -- плавной прокруткой и без смены хеша: на главной хеш ведёт навигацию между
+	// сценой, зоной и статьёй, и `#urgent` открывал бы сцену вместо раздела
 	const onClick = (event: Event) => {
-		const link = (event.target as Element).closest<HTMLAnchorElement>('[data-toc] a')
+		const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]')
 		const target = link && root.querySelector(`#${CSS.escape(link.hash.slice(1))}`)
 
 		if (!target) return

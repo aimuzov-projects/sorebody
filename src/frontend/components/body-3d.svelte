@@ -50,10 +50,18 @@
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { SceneSport } from '#frontend/scene/scene-data.ts'
-	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
+	import {
+		fitShift,
+		homeShift,
+		placeHint,
+		POSTER_SHIFT,
+		projectBox,
+		type Box,
+		type HintPlace,
+	} from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
-	import { injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
+	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -420,15 +428,25 @@
 	}
 
 	function placePoster() {
-		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
-		sheetTop = wrap?.querySelector('.index__title--home')?.getBoundingClientRect().top ?? Infinity
+		const shift = startShift(innerWidth, innerHeight)
+
+		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, shift)
+
+		// Пол подсказки: на телефоне -- заголовок шторки (не лечь на селект спорта), шире --
+		// подвал сцены (не лечь на ссылки подписи)
+		const floor = wrap?.querySelector(innerWidth < 700 ? '.index__title--home' : '.scene-footer .footer')
+
+		hintPlace = placeHint(
+			{ figure: poster.box as Box, head: HEAD_BOX, ankles: ANKLES_BOX },
+			innerWidth,
+			innerHeight,
+			shift,
+			(floor?.getBoundingClientRect().top ?? innerHeight) - 8,
+		)
 	}
 
-	/**
-	 * Верх заголовка в шторке: на телефоне подсказка под ногами фигуры поднимается над ним на свою
-	 * высоту, чтобы не лечь на селект спорта. Шрифт может догрузиться позже -- тогда меряем снова.
-	 */
-	let sheetTop = $state(Infinity)
+	/** Место подсказки первого визита (scene/frame.ts). Шрифт догрузился позже -- меряем снова. */
+	let hintPlace = $state<HintPlace>({ x: 0, y: 0, room: Infinity, side: false })
 
 	/**
 	 * Подсказка первого визита "как пользоваться моделью": у фигуры, пока посетитель не закроет
@@ -743,6 +761,9 @@
 		sportAnnounce = next.sport.heading
 
 		if (zonesList) zonesList.scrollTop = 0
+
+		// Шторка на телефоне с другим спортом другой высоты: место подсказки и фигуры -- заново
+		void tick().then(placePoster)
 	}
 
 	/**
@@ -904,6 +925,10 @@
 				if (disposed) return scene.dispose()
 
 				body = scene
+				// Подсказка стоит по стартовому кадру: повернули или приблизили фигуру -- точки
+				// уходят под неё. Прячем до конца визита, но увиденной не отмечаем: покрутить
+				// модель не значит узнать про точки, в следующий раз подсказка всплывёт снова
+				scene.controls.addEventListener('start', () => (hintShown = false))
 				// Спорт могли сменить, пока модель грузилась: подсветка -- цветом текущего
 				scene.glowColor(sport.glow, true)
 				scene.resize()
@@ -1511,16 +1536,14 @@
 		</picture>
 	{/if}
 
-	<!-- На десктопе -- в строке шапки над головой фигуры, на телефоне -- под ногами, над шторкой.
-	     Низ постера -- с запасом под его прозрачные поля: ноги кончаются раньше картинки -->
+	<!-- Место -- placeHint (scene/frame.ts): справа от головы или под ногами -->
 	{#if hintShown && posterRect}
 		<p
 			class="body3d__hint"
-			style:--hint-x="{posterRect.left + posterRect.width / 2}px"
-			style:--hint-y="{posterRect.top + posterRect.height * 0.95}px"
-			style:--hint-room={Number.isFinite(sheetTop)
-				? `${sheetTop - 8 - (posterRect.top + posterRect.height * 0.95)}px`
-				: null}
+			class:body3d__hint--below={!hintPlace.side}
+			style:--hint-x="{hintPlace.x}px"
+			style:--hint-y="{hintPlace.y}px"
+			style:--hint-room="{hintPlace.room}px"
 			transition:fadeUp={{ rise: innerWidth < 700 ? 0 : 24 }}
 		>
 			Нажмите на точку — откроются травмы зоны
@@ -2000,34 +2023,56 @@
 			opacity: 0;
 		}
 
-		/* Подсказка первого визита: таблетка как у подсказок значков (.tip в global.css).
-		   Центр -- по оси фигуры, сверху -- под строкой шапки: в самой строке на ноутбуке она
-		   ложилась на «Что нового» и тему. На телефоне -- низ фигуры */
+		/* Подсказка первого визита: стеклянная плашка как у острова поиска на телефоне
+		   (.index__island). Место -- из hintPlace. На широком экране левый край справа от головы,
+		   верх вровень с макушкой, но не выше строки шапки: там "Что нового" и тема. Не влезает
+		   в строку -- переносится, радиус держит форму и у двух-трёх строк */
 		&__hint {
 			position: absolute;
 			z-index: 4;
-			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
+			top: max(var(--hint-y), calc(var(--theme-toggle-top) + var(--header-row) + 8px));
 			left: var(--hint-x);
-			translate: -50% 0;
 			display: flex;
 			gap: 4px;
-			align-items: center;
+			/* Крестик у первой строки, а не посередине нескольких */
+			align-items: flex-start;
 			width: max-content;
-			max-width: calc(100vw - 32px);
+			max-width: var(--hint-room);
 			margin: 0;
-			padding: 6px 6px 6px 14px;
-			border-radius: 999px;
-			font-size: 14px;
+			padding: 10px 6px 10px 14px;
+			border-radius: 19px;
+			/* На узком планшете места справа от головы 120-180px: кегль чуть меньше, строк меньше */
+			font-size: clamp(12.5px, var(--hint-room) * 0.075, 14px);
 			font-weight: 500;
 			line-height: 1.3;
 			color: var(--a-fg);
-			background: color-mix(in srgb, var(--a-fg) 6%, var(--a-bg));
-			box-shadow: 0 10px 36px rgb(0 0 0 / 18%);
+			/* В две строки поровну: одно "зоны" на второй строке смотрелось обрывком */
+			text-wrap: balance;
+			background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
+			box-shadow:
+				0 8px 24px rgb(0 0 0 / 18%),
+				inset 0 0 0 1px var(--a-fill);
 
-			@media (width < 700px) {
+			/* Без размытия полупрозрачный фон пропускал бы фигуру сквозь текст: подложка плотнее */
+			@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+				background: color-mix(in srgb, var(--a-bg) 94%, transparent);
+			}
+
+			@media (prefers-reduced-transparency: reduce) {
+				background: color-mix(in srgb, var(--a-fg) 6%, var(--a-bg));
+				-webkit-backdrop-filter: none;
+				backdrop-filter: none;
+			}
+
+			/* Под ногами по оси фигуры: на телефоне и на узком планшете. Низ не ниже пола
+			   (заголовок шторки или подвал): --hint-room -- место до него, 100% -- своя высота */
+			&--below {
 				top: var(--hint-y);
-				/* Низ подсказки не ниже заголовка шторки: --hint-room -- место до него, 100% -- своя высота */
-				translate: -50% min(0px, calc(var(--hint-room, 100%) - 100%));
+				translate: -50% min(0px, calc(var(--hint-room) - 100%));
+				max-width: calc(100vw - 32px);
+				font-size: 14px;
 			}
 		}
 
@@ -2039,6 +2084,8 @@
 			place-items: center;
 			width: 26px;
 			height: 26px;
+			/* Центр крестика -- на середине первой строки (1.3em), выше плашки он не раздувает */
+			margin-block: calc((1.3em - 26px) / 2);
 			padding: 0;
 			border: 0;
 			border-radius: 50%;

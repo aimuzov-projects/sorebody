@@ -50,7 +50,7 @@ const FIT_FILL = 0.9
  */
 export const POSTER_SHIFT = { x: 0, y: 0, s: 1.15 }
 
-type Box = { min: [number, number, number]; max: [number, number, number] }
+export type Box = { min: [number, number, number]; max: [number, number, number] }
 
 /**
  * Прямоугольник на экране, куда ортокамера стартового кадра проецирует коробку `box`
@@ -94,4 +94,67 @@ export function projectBox(box: Box, width: number, height: number, shift = home
 			}
 
 	return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 }
+}
+
+/** Уже стольких пикселей справа от головы подсказка рассыпалась бы на четыре-шесть строк. */
+export const HINT_SIDE_MIN = 160
+/** Ещё уже -- рассыпается совсем, и крестик лезет за край: туда не ставим вовсе. */
+export const HINT_SIDE_LAST = 110
+/** Высота подсказки в одну строку. */
+export const HINT_HEIGHT = 38
+/** Зазор от центра точки стопы до подсказки: сама точка и её кольцо при наведении. */
+const SPOT_GAP = 14
+
+export type HintPlace = {
+	/** Сбоку от головы -- левый край, под ногами -- ось фигуры. */
+	x: number
+	/** Верх подсказки. */
+	y: number
+	/** Сбоку -- ширина до края окна, под ногами -- место до `floor`. */
+	room: number
+	side: boolean
+}
+
+/**
+ * Место подсказки первого визита на общем плане, по тем же числам камеры, что и постер.
+ * Над головой нет места под строкой шапки, а зону "Голова" и её точку закрывать нельзя.
+ * Поэтому на широком экране -- справа от головы, вровень с макушкой. Узко там -- под ногами,
+ * если между точкой стопы и `floor` (верх подвала сцены) влезает строка. Не влезает и там --
+ * снова сбоку, пока там хоть что-то есть. На телефоне -- всегда под ногами, `floor` там --
+ * верх заголовка шторки.
+ */
+export function placeHint(
+	{ figure, head, ankles }: { figure: Box; head: Box; ankles: Box },
+	width: number,
+	height: number,
+	shift: { x: number; y: number; s: number },
+	floor: number,
+): HintPlace {
+	const body = projectBox(figure, width, height, shift)
+	const feet = body.top + body.height * 0.95
+	const axis = body.left + body.width / 2
+
+	if (width < 700) return { x: axis, y: feet, room: floor - feet, side: false }
+
+	const top = projectBox(head, width, height, shift)
+	const left = top.left + top.width + 16
+	const room = width - 16 - left
+	// В строку подсказка занимает около 330px. Уже -- сразу в две ровные строки по 210px: иначе
+	// плашка тянулась на всё место, а перенос оставлял справа пустоту
+	const side = { x: left, y: top.top, room: room < 340 ? Math.min(room, 210) : room, side: true }
+
+	if (room >= HINT_SIDE_MIN) return side
+
+	const ankle = projectBox(ankles, width, height, shift)
+	const below = ankle.top + ankle.height + SPOT_GAP
+
+	if (floor - HINT_HEIGHT >= below) {
+		const y = Math.max(below, Math.min(feet, floor - HINT_HEIGHT))
+
+		return { x: axis, y, room: floor - y, side: false }
+	}
+
+	if (room >= HINT_SIDE_LAST) return side
+
+	return { x: axis, y: feet, room: floor - feet, side: false }
 }

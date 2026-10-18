@@ -1,6 +1,7 @@
 import type { Frequency } from '#frontend/data/frequency.ts'
 import { REGIONS, type Region } from '#frontend/data/regions.ts'
 import { frequencyRank, type Sport } from '#frontend/data/sports.ts'
+import type { Box } from '#frontend/scene/frame.ts'
 
 type Vec3 = [number, number, number]
 
@@ -73,6 +74,19 @@ function pair([x, y, z]: Vec3, side: number, front: number, view: View) {
 		view: { azimuth: s * view.azimuth, polar: view.polar },
 	}))
 }
+
+/** Коробка вокруг точек зоны, с полями `pad` метров. */
+function anchorBox(region: Exclude<Region, 'other'>, pad: number): Box {
+	const { points } = ANCHORS[region]
+	const axis = (i: number, f: (...n: number[]) => number) => f(...points.map((p) => p.position[i]))
+	const corner = (f: (...n: number[]) => number, d: number): Vec3 => [0, 1, 2].map((i) => axis(i, f) + d) as Vec3
+
+	return { min: corner(Math.min, -pad), max: corner(Math.max, pad) }
+}
+
+/** Голова целиком (сфера растворения зоны) и обе точки стопы: по ним встаёт подсказка первого визита. */
+export const HEAD_BOX = anchorBox('head', ANCHORS.head.radius)
+export const ANKLES_BOX = anchorBox('ankle-foot', 0)
 
 /** "Всё тело": растворение от груди на всю фигуру, вид спереди в три четверти. */
 const WHOLE = {

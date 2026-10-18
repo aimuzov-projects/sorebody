@@ -13,6 +13,31 @@ import { injurySchema, lensSchema } from './injury-schema.ts'
 import { footnotes, sourceHref } from './sources.ts'
 
 const CONTENT = new URL('../content/', import.meta.url)
+
+/**
+ * Слова кроссфита и зала, которым не место в общей части травмы: её читает и бегун, и паделист,
+ * спорт со своими движениями живёт в линзе. `(?<!\p{L})` -- начало слова, `\b` кириллицу не видит.
+ * «Толчок» не в списке: толчок стопой -- это и про ходьбу.
+ */
+const SPORT_WORDS = [
+	/кроссфит/iu,
+	/crossfit/iu,
+	/(?<!\p{L})WOD/u,
+	/(?<!\p{L})HIFT(?!\p{L})/u,
+	/функциональн\p{L}* фитнес/iu,
+	// Кроме анатомии: треугольный фиброзно-хрящевой комплекс запястья
+	/(?<!\p{L})(?<!хрящев\p{L}* )комплекс/iu,
+	/(?<!\p{L})штанг/iu,
+	/(?<!\p{L})турник/iu,
+	/(?<!\p{L})перекладин/iu,
+	/(?<!\p{L})на кольц/iu,
+	/(?<!\p{L})тумб/iu,
+	/(?<!\p{L})на бокс/iu,
+	/(?<!\p{L})рыв(?:ок|к)/iu,
+	/(?<!\p{L})б[её]рпи/iu,
+	/(?<!\p{L})трастер/iu,
+	/(?<!\p{L})зал(?:е|а|у|ом)?(?!\p{L})/iu,
+]
 const PUBLIC = new URL('../../../public', import.meta.url)
 
 type Doc = { slug: string; data: Record<string, any>; body: string; headings: string[] }
@@ -170,6 +195,16 @@ for (const doc of injuries) {
 
 	test(`${slug}: has a lens in at least one sport`, () => {
 		assert.ok(lenses.some(({ docs }) => docs.some((l) => l.slug === slug)))
+	})
+
+	test(`${slug}: the common part speaks of no particular sport`, () => {
+		// Сноски не в счёт: подпись источника про кроссфит -- не текст статьи
+		const prose = doc.body.replace(/\[\d+\]\([^)]*\)/g, '')
+
+		assert.deepEqual(
+			SPORT_WORDS.flatMap((word) => prose.match(word)?.[0] ?? []),
+			[],
+		)
 	})
 }
 

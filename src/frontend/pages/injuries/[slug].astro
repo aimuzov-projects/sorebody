@@ -7,6 +7,7 @@ import { MOVEMENTS } from '#frontend/data/movements.ts'
 import { regionLabel } from '#frontend/data/regions.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
 import SiteHeader from '#frontend/components/site-header.svelte'
+import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
@@ -166,6 +167,8 @@ const nameTail = name.slice(nameHead.length)
 				</ol>
 			</section>
 		</footer>
+
+		<TocMenu {sections} />
 	</main>
 </Base>
 

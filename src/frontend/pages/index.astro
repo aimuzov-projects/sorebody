@@ -6,6 +6,8 @@ import Base from '#frontend/layouts/base.astro'
 import { sceneData } from '#frontend/scene/scene-data.ts'
 import '#frontend/styles/article.css'
 import '#frontend/styles/scene.css'
+// Меню разделов статьи поверх модели: разметка приходит со страницы статьи, стили -- отсюда
+import '#frontend/styles/toc-menu.css'
 
 // meshopt-декодер модели -- WebAssembly; разрешаем его только на страницах с моделью
 Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")

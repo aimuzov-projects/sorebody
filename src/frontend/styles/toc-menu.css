@@ -1,0 +1,141 @@
+/* Меню разделов статьи на узком экране (components/toc-menu.astro). Отдельным файлом: им же
+   пользуется статья поверх модели на главной, куда стили компонента сами не попадают.
+   Порог тот же, что у бокового оглавления в article.css: где оно есть, кнопки нет */
+.toc-menu {
+	/* Отступ снизу: вырез экрана и системные кнопки Mini App Telegram (переменные ставит SDK) */
+	--toc-menu-bottom: calc(
+		max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
+			var(--tg-content-safe-area-inset-bottom, 0px)
+	);
+	--toc-menu-size: 52px;
+
+	display: none;
+
+	@media (width < 1100px) {
+		display: block;
+	}
+
+	&__button {
+		cursor: pointer;
+		position: fixed;
+		z-index: 20;
+		right: 16px;
+		bottom: var(--toc-menu-bottom);
+		display: grid;
+		place-items: center;
+		width: var(--toc-menu-size);
+		height: var(--toc-menu-size);
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		color: var(--fg);
+		background: color-mix(in srgb, var(--fg) 6%, color-mix(in srgb, var(--bg) 80%, transparent));
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+		box-shadow: 0 6px 24px rgb(0 0 0 / 16%);
+		transition:
+			color 0.3s ease,
+			scale 0.2s ease;
+
+		&[aria-expanded='true'] {
+			color: var(--accent);
+		}
+
+		&:active {
+			scale: 0.94;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	/* Обёртка задаёт размер: SVG в статье тянется под контейнер (article.css) */
+	&__button-icon {
+		display: inline-flex;
+		width: 22px;
+		height: 22px;
+	}
+
+	/* Над кнопкой, прижато к правому краю. Фон и тень -- как у подсказок (.tip в global.css) */
+	&__panel {
+		position: fixed;
+		inset: auto 16px calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
+		translate: 0 12px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		max-width: calc(100vw - 32px);
+		max-height: calc(100dvh - var(--toc-menu-bottom) - var(--toc-menu-size) - 12px - var(--header-clear));
+		margin: 0;
+		padding: 8px 18px 8px 14px;
+		border: 0;
+		border-radius: 20px;
+		font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
+		color: var(--fg);
+		opacity: 0;
+		background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+		box-shadow: 0 10px 36px rgb(0 0 0 / 18%);
+		transition:
+			opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+			translate 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+			overlay 0.25s allow-discrete,
+			display 0.25s allow-discrete;
+
+		/* Без сдвига: сдвиг не анимируется и проскакивает сразу, остаётся только прозрачность */
+		@media (prefers-reduced-motion: reduce) {
+			translate: 0;
+			transition-property: opacity, overlay, display;
+		}
+
+		&:popover-open {
+			translate: 0;
+			opacity: 1;
+
+			@starting-style {
+				translate: 0 12px;
+				opacity: 0;
+			}
+		}
+	}
+
+	&__list {
+		display: grid;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* Как пункт бокового оглавления, но выше ростом -- под палец */
+	&__link {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		min-height: 44px;
+		font-size: 16px;
+		color: var(--muted);
+		text-decoration: none;
+		transition: color 0.35s ease;
+
+		&:hover,
+		&[aria-current] {
+			color: var(--fg);
+		}
+
+		&[aria-current] {
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	&__icon {
+		display: inline-flex;
+		flex: none;
+		width: 18px;
+		height: 18px;
+	}
+}

@@ -1,4 +1,5 @@
 import { initArticleTips } from './tip.ts'
+import { initTocMenu } from './toc-menu.ts'
 
 /**
  * Чтение лонгрида: полоса прогресса сверху и активный раздел в оглавлении. Одно и то же
@@ -39,7 +40,9 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	}
 
 	scroller.addEventListener('scroll', onScroll, { passive: true })
-	update()
+	// Первый расчёт -- в следующем кадре: на главной статья в этот момент ещё скрыта, у всех
+	// разделов нулевые координаты, и активным стал бы последний
+	onScroll()
 
 	// Переход по оглавлению -- плавной прокруткой и без смены хеша: на главной хеш ведёт
 	// навигацию между сценой, зоной и статьёй
@@ -56,9 +59,11 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	root.addEventListener('click', onClick)
 
 	const stopTips = initArticleTips(root, scroller)
+	const stopTocMenu = initTocMenu(root)
 
 	return () => {
 		stopTips()
+		stopTocMenu()
 		scroller.removeEventListener('scroll', onScroll)
 		root.removeEventListener('click', onClick)
 		cancelAnimationFrame(frame)

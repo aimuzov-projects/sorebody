@@ -1,0 +1,38 @@
+---
+import { TableOfContents } from 'lucide-static'
+
+import type { Section } from '#frontend/lib/article-html.ts'
+import '#frontend/styles/toc-menu.css'
+
+type Props = { sections: Section[] }
+
+const { sections } = Astro.props
+---
+
+{/* Оглавление для узкого экрана, где боковое скрыто: круглая кнопка справа снизу и меню над
+    ней. Esc, тап мимо и возврат фокуса на кнопку -- от popover="auto", подсветку раздела и
+    плавный переход берёт на себя lib/reading.ts по data-toc, закрытие по пункту -- lib/toc-menu.ts */}
+<div class="toc-menu" data-toc-menu>
+	<button
+		class="toc-menu__button"
+		type="button"
+		aria-label="Разделы статьи"
+		aria-expanded="false"
+		aria-controls="toc-menu"
+		popovertarget="toc-menu"
+	>
+		<span class="toc-menu__button-icon" aria-hidden="true" set:html={TableOfContents} />
+	</button>
+	<nav class="toc-menu__panel" id="toc-menu" popover="auto" aria-label="Разделы статьи" data-toc>
+		<ol class="toc-menu__list">
+			{sections.map((section) => (
+				<li>
+					<a class="toc-menu__link" href={`#${section.id}`}>
+						<span class="toc-menu__icon" aria-hidden="true" set:html={section.icon} />
+						{section.title}
+					</a>
+				</li>
+			))}
+		</ol>
+	</nav>
+</div>

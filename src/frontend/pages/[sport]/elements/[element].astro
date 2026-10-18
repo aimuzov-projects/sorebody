@@ -28,9 +28,9 @@ const injuries = entries
 ---
 
 <Base
-	{title}
+	title={`${title} ${sport.phrase}`}
 	index={injuries.length > 0}
-	description={`Какие травмы случаются на движении «${title}» и как их избежать.`}
+	description={`Какие травмы ${sport.phrase} случаются ${sport.elementOn} «${title}» и как их избежать.`}
 	bare
 	bodyClass="scene-page"
 	sport={sport.slug}

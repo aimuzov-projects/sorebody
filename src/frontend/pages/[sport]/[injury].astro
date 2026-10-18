@@ -7,12 +7,11 @@ export async function getStaticPaths() {
 	const paths = await Promise.all(
 		SPORTS.map(async (sport) => {
 			const entries = await sportInjuries(sport)
-			const injuries = new Set(entries.map((e) => e.slug))
 
 			return Promise.all(
 				entries.map(async ({ slug, injury, lens }) => ({
 					params: { sport: sport.slug, injury: slug },
-					props: { injury, lens: { sport, entry: lens, injuries }, sports: await sportsOf(slug) },
+					props: { injury, lens: { sport, entry: lens }, sports: await sportsOf(slug) },
 				})),
 			)
 		}),

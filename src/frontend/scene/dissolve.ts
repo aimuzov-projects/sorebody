@@ -1,7 +1,7 @@
 import { Color, DoubleSide, MeshStandardMaterial, Vector3, Vector4 } from 'three'
 
 /** Цвета среза у края проёма: снаружи и на изнанке, ширина -- в метрах модели. */
-export type Rim = {
+type Rim = {
 	front: string
 	back: string
 	/** Нижний слой у самого края снаружи, под `front`; без него -- тот же `front`. */

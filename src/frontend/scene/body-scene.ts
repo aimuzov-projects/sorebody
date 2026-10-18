@@ -252,6 +252,10 @@ export async function createBodyScene(
 
 	controls.addEventListener('start', () => {
 		manual = true
+
+		// Схватил по пути к общему плану: наклон дотянет цикл, его не зажимаем
+		if (!focusTo && restore) return
+
 		// Человек вертит фигуру: наклон остаётся тем, к которому камера успела приехать
 		orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
 		controls.minPolarAngle = controls.maxPolarAngle = orbit.phi
@@ -321,7 +325,9 @@ export async function createBodyScene(
 		skin.uniforms.uTintStrength.value += (tintTo - skin.uniforms.uTintStrength.value) * tintEase
 		skin.uniforms.uTintPrevStrength.value *= 1 - tintEase
 
-		const goal = manual ? null : (focusTo ?? restore)
+		// Возврат к общему плану доезжает и под рукой человека: иначе камера застряла бы на высоте
+		// зоны с увеличенным зумом и зажатым наклоном. Азимут тогда его, остальное -- наше
+		const goal = focusTo ? (manual ? null : focusTo) : restore
 
 		if (goal) {
 			const k = 1 - Math.exp(-dt * 6)
@@ -329,7 +335,9 @@ export async function createBodyScene(
 
 			orbit.setFromVector3(offset.subVectors(camera.position, controls.target))
 			// Облёт к ракурсу вокруг центра орбиты, по азимуту -- кратчайшей дугой
-			const turn = Math.atan2(Math.sin(goal.azimuth - orbit.theta), Math.cos(goal.azimuth - orbit.theta))
+			const turn = manual
+				? 0
+				: Math.atan2(Math.sin(goal.azimuth - orbit.theta), Math.cos(goal.azimuth - orbit.theta))
 			const tilt = goal.polar - orbit.phi
 			const zoomGap = goal.zoom - camera.zoom
 

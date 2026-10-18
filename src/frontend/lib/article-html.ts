@@ -1,6 +1,8 @@
 import {
 	ArrowRight,
 	ChartColumn,
+	CircleCheck,
+	CircleX,
 	Dumbbell,
 	Footprints,
 	Info,
@@ -207,9 +209,16 @@ function splitSwap(li: Element) {
 	li.attributes.class = 'swap'
 
 	li.children = [
-		el('span', { class: 'swap__was' }, [el('span', { class: 'swap__label' }, [text('Вместо')]), text(' '), ...was]),
+		el('span', { class: 'swap__was' }, [
+			el('span', { class: 'swap__label' }, [icon(CircleX, 'swap__mark'), text('Вместо')]),
+			text(' '),
+			...was,
+		]),
 		icon(ArrowRight, 'swap__arrow'),
-		el('span', { class: 'swap__now' }, [el('span', { class: 'swap__hint' }, [text('Лучше: ')]), ...now]),
+		el('span', { class: 'swap__now' }, [
+			el('span', { class: 'swap__hint' }, [icon(CircleCheck, 'swap__mark'), text('Лучше: ')]),
+			...now,
+		]),
 	]
 }
 

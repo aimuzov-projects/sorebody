@@ -64,12 +64,12 @@ test('splits "Вместо X → Y" and "Вместо X — Y" into was/now pair
 
 	assert.match(
 		html,
-		/<li class="swap"><span class="swap__was"><span class="swap__label">Вместо<\/span> прыжков на тумбу<\/span><span class="swap__arrow"[^>]*><svg[\s\S]*?<\/span><span class="swap__now"><span class="swap__hint">Лучше: <\/span>зашагивания<\/span><\/li>/,
+		/<li class="swap"><span class="swap__was"><span class="swap__label"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Вместо<\/span> прыжков на тумбу<\/span><span class="swap__arrow"[^>]*><svg[\s\S]*?<\/span><span class="swap__now"><span class="swap__hint"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Лучше: <\/span>зашагивания<\/span><\/li>/,
 	)
 
 	assert.match(
 		html,
-		/<span class="swap__label">Вместо<\/span> бега<\/span>[\s\S]*?<span class="swap__hint">Лучше: <\/span>гребля<\/span>/,
+		/<span class="swap__label"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Вместо<\/span> бега<\/span>[\s\S]*?<span class="swap__hint"><span class="swap__mark"[^>]*><svg[\s\S]*?<\/span>Лучше: <\/span>гребля<\/span>/,
 	)
 
 	assert.match(html, /<li>Просто совет<\/li>/)

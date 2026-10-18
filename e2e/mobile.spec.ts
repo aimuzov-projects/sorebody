@@ -28,6 +28,17 @@ test('поиск и фильтры прячутся в остров и раск�
 	await expect(page.locator('.search__input')).toBeHidden()
 })
 
+test('фильтры в раскрытом острове помещаются в ширину экрана', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__island-open').tap()
+
+	const filters = page.locator('.index__filters')
+
+	await expect(page.locator('.index__chip', { hasText: 'Редкие' })).toBeInViewport({ ratio: 1 })
+	expect(await filters.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
+	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
 test('тап по зоне раскрывает её список', async ({ page }) => {
 	await page.goto('/')
 	await page.locator('.index__zone', { hasText: 'Плечо' }).tap()
@@ -96,6 +107,44 @@ test.describe('на широком экране', () => {
 
 		await expect(page.getByRole('button', { name: 'Разделы статьи' })).toBeHidden()
 		await expect(page.locator('.article__toc')).toBeVisible()
+	})
+})
+
+test.describe('на ноутбуке с узкой шторкой', () => {
+	test.use({ viewport: { width: 820, height: 900 }, hasTouch: false, isMobile: false })
+
+	test('переключатель частоты одной строкой не вылезает из шторки на модель', async ({ page }) => {
+		await page.goto('/')
+
+		const edge = (selector: string) => page.locator(selector).evaluate((el) => el.getBoundingClientRect().right)
+		const rare = page.getByRole('button', { name: 'Редкие' })
+
+		expect(await edge('.index__freq')).toBeLessThanOrEqual(await edge('.index'))
+		// Невыбранный уровень -- одним знаком, подпись остаётся именем кнопки
+		await expect(rare).toBeVisible()
+		await rare.click()
+		await expect(rare).toHaveAttribute('aria-pressed', 'true')
+		expect(await edge('.index__freq')).toBeLessThanOrEqual(await edge('.index'))
+	})
+})
+
+test.describe('на ноутбуке 1280×720', () => {
+	test.use({ viewport: { width: 1280, height: 720 }, hasTouch: false, isMobile: false })
+
+	test('заголовок главной в одну строку, все зоны видны без прокрутки', async ({ page }) => {
+		await page.goto('/')
+
+		const title = page.locator('.index__title')
+		const zones = page.locator('.index__zones')
+
+		expect(
+			await title.evaluate(
+				(el) => el.getBoundingClientRect().height < parseFloat(getComputedStyle(el).fontSize) * 2,
+			),
+		).toBe(true)
+
+		// Сколько пикселей списку не хватает: в сообщении падения видно, на сколько промахнулись
+		expect(await zones.evaluate((list) => Math.max(0, list.scrollHeight - list.clientHeight))).toBe(0)
 	})
 })
 

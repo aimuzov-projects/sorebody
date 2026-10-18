@@ -21,7 +21,17 @@
 <script lang="ts">
 	import { flushSync, onMount, tick, type Snippet } from 'svelte'
 
-	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, TextQuote, X } from 'lucide-static'
+	import {
+		ChevronDown,
+		ChevronLeft,
+		Diamond,
+		FunnelX,
+		PersonStanding,
+		Search,
+		Shapes,
+		TextQuote,
+		X,
+	} from 'lucide-static'
 
 	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
 	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -61,7 +71,10 @@
 	let { zones, whole, movements, modelUrl, footer, movementPage }: Props = $props()
 
 	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
-	const FREQUENCY_CHIPS = [['all', 'Все', ''], ...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const)] as const
+	const FREQUENCY_CHIPS = [
+		['all', 'Все', Shapes],
+		...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const),
+	] as const
 
 	/** Фильтры индекса. Они же решают, какие травмы видны в списке зоны и какие точки горят на модели. */
 	let query = $state('')
@@ -1311,7 +1324,7 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
+				<p class="index__title index__title--home" aria-hidden="true">Травмы в кроссфите</p>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
 					Разбираемся, что болит после тренировки, когда пора к врачу и как тренироваться дальше. Всё <a
@@ -1374,9 +1387,11 @@
 									class="index__chip index__chip--{value}"
 									type="button"
 									aria-pressed={frequency === value}
+									title={label}
 									onclick={() => (frequency = value)}
-									>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
-										>{/if}<span class="index__chip-label" data-label={label}>{label}</span></button
+									><span class="index__chip-icon" aria-hidden="true">{@html icon}</span><span
+										class="index__chip-label">{label}</span
+									></button
 								>
 							{/each}
 						</div>
@@ -1631,13 +1646,14 @@
 		}
 
 		/* Подсказка первого визита: таблетка как у подсказок значков (.tip в global.css).
-		   Центр -- по оси фигуры, высота -- строка шапки, на телефоне -- низ фигуры */
+		   Центр -- по оси фигуры, сверху -- под строкой шапки: в самой строке на ноутбуке она
+		   ложилась на «Что нового» и тему. На телефоне -- низ фигуры */
 		&__hint {
 			position: absolute;
 			z-index: 4;
-			top: calc(var(--theme-toggle-top) + var(--header-row) / 2);
+			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
 			left: var(--hint-x);
-			translate: -50% -50%;
+			translate: -50% 0;
 			display: flex;
 			gap: 4px;
 			align-items: center;
@@ -1655,7 +1671,6 @@
 
 			@media (width < 700px) {
 				top: var(--hint-y);
-				translate: -50% 0;
 			}
 		}
 
@@ -1978,6 +1993,12 @@
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
 
+		/* На невысоком экране вместе с плотными строками зон (&__zone): список без прокрутки.
+		   С запасом под шрифт шире SF (Windows, Linux): лид под заголовком там в три строки */
+		@media (width >= 700px) and (height < 820px) {
+			gap: 12px;
+		}
+
 		@media (width < 700px) {
 			top: auto;
 			right: 0;
@@ -2268,6 +2289,18 @@
 			}
 		}
 
+		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
+		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
+		   кегль тянется за колонкой, 39px на широком экране */
+		&__title--home {
+			font-size: clamp(22px, 3.1vw, 39px);
+			white-space: nowrap;
+
+			@media (width < 700px) {
+				font-size: 26px;
+			}
+		}
+
 		&__icon {
 			display: inline-flex;
 			flex: none;
@@ -2284,7 +2317,9 @@
 			}
 		}
 
+		/* Контейнер для частоты: она перестраивается по ширине колонки, а не экрана */
 		&__filters {
+			container-type: inline-size;
 			display: flex;
 			flex-wrap: wrap;
 			gap: 12px 20px;
@@ -2312,35 +2347,42 @@
 			}
 		}
 
-		/* Частота -- переключатель из трёх положений: общая подложка без рамки, выбранное
-		   положение -- залитая таблетка, его видно сразу, а не по жирности шрифта */
+		/* Частота -- переключатель из четырёх положений во всю ширину колонки: общая подложка без
+		   рамки, невыбранные положения -- подпись в цвете уровня, выбранное -- залитая таблетка
+		   со знаком. Кегль идёт за шириной колонки (cqi от &__filters): влезает и в остров на 320px */
 		&__freq {
-			display: inline-flex;
+			display: flex;
 			gap: 2px;
+			width: 100%;
 			padding: 3px;
 			border-radius: 999px;
+			font-size: clamp(11px, 5.2cqi, 15px);
 			background: var(--a-fill);
 		}
 
+		/* Знак и подпись лежат в одной ячейке, ширину чипа держит подпись: у выбранного она
+		   прозрачна, а знак встаёт на её место. Ширина чипа от выбора не зависит -- соседи не
+		   прыгают. Подпись остаётся именем кнопки и всплывает в title */
 		&__chip {
 			--chip: var(--a-fg);
 
 			cursor: pointer;
-			display: inline-flex;
-			gap: 6px;
-			align-items: center;
-			padding: 5px 14px;
+			display: inline-grid;
+			flex: 1 1 auto;
+			place-items: center;
+			padding: 0.34em 0.6em;
 			border: 0;
 			border-radius: 999px;
 			font: inherit;
-			font-size: 15px;
-			color: var(--a-fg2);
+			color: var(--chip);
 			background: transparent;
-			transition:
-				color 0.3s var(--a-ease),
-				background 0.3s var(--a-ease);
+			transition: background 0.3s var(--a-ease);
 
-			/* Каждый уровень частоты в своём цвете: знак в нём всегда, выбранный залит им */
+			@media (--reduced-motion) {
+				transition: none;
+			}
+
+			/* Каждый уровень частоты в своём цвете: подпись в нём, выбранный залит им */
 			&--common {
 				--chip: var(--common);
 			}
@@ -2354,13 +2396,12 @@
 			}
 
 			&[aria-pressed='true'] {
-				font-weight: 600;
 				color: var(--a-bg);
 				background: var(--chip);
 			}
 
 			&:hover:not([aria-pressed='true']) {
-				color: var(--a-fg);
+				background: color-mix(in srgb, var(--chip) 12%, transparent);
 			}
 
 			&:focus-visible {
@@ -2369,11 +2410,28 @@
 			}
 		}
 
+		&__chip-icon,
+		&__chip-label {
+			grid-area: 1 / 1;
+			transition:
+				opacity 0.25s var(--a-ease),
+				scale 0.25s var(--a-ease);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
+		}
+
+		&__chip-label {
+			white-space: nowrap;
+		}
+
 		&__chip-icon {
+			scale: 0.6;
 			display: inline-flex;
-			width: 11px;
-			height: 11px;
-			color: var(--chip);
+			width: 1em;
+			height: 1em;
+			opacity: 0;
 
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
@@ -2384,23 +2442,12 @@
 		}
 
 		&__chip[aria-pressed='true'] &__chip-icon {
-			color: inherit;
+			scale: 1;
+			opacity: 1;
 		}
 
-		/* Выбранная подпись жирнее; невидимая жирная копия заранее держит ширину, чтобы фильтр не прыгал */
-		&__chip-label {
-			display: inline-flex;
-			flex-direction: column;
-
-			&::after {
-				pointer-events: none;
-				content: attr(data-label);
-				user-select: none;
-				overflow: hidden;
-				height: 0;
-				font-weight: 600;
-				visibility: hidden;
-			}
+		&__chip[aria-pressed='true'] &__chip-label {
+			opacity: 0;
 		}
 
 		/* Зоны и результаты поиска: скроллится только список, края гаснут маской */
@@ -2424,6 +2471,11 @@
 				#000000 calc(100% - var(--zones-fade)),
 				transparent
 			);
+
+			@media (width >= 700px) and (height < 820px) {
+				padding-bottom: 8px;
+			}
+
 			/* Строки столбцом сами несут поля по 9px: без поправки список отходит от фильтров дальше,
 			   чем блоки индекса друг от друга */
 			@media (width >= 700px) {
@@ -2444,8 +2496,13 @@
 
 		/* На телефоне зоны переносятся в несколько рядов: в прокручиваемой строке половина зон
 		   пряталась за правым краем, и ничто не намекало, что строку можно листать. После общего
-		   правила, иначе его прокрутка и маска перебивают перенос */
+		   правила, иначе его прокрутка и маска перебивают перенос. На десктопе список -- контейнер
+		   по высоте: строки уплотняются, только когда не влезают (&__zone) */
 		&__zones {
+			@media (width >= 700px) {
+				container: zones / size;
+			}
+
 			@media (width < 700px) {
 				overflow: visible;
 				display: flex;
@@ -2478,6 +2535,17 @@
 			transition:
 				color 0.3s var(--a-ease),
 				opacity 0.3s var(--a-ease);
+
+			/* Строки плотнее, только когда восемь зон иначе не влезают в список без прокрутки:
+			   сперва меньше поля, потом и интерлиньяж. Пороги -- высота восьми строк каждой ступени */
+			@container zones (height < 394px) {
+				padding: 4px 0;
+			}
+
+			@container zones (height < 313px) {
+				padding: 2px 0;
+				line-height: 1.25;
+			}
 
 			@media (width < 700px) {
 				padding: 3px 0;
@@ -2730,8 +2798,8 @@
 				display: inline-grid;
 				flex: none;
 				place-items: center;
-				width: 36px;
-				height: 36px;
+				width: 40px;
+				height: 40px;
 				padding: 0;
 				border: 0;
 				border-radius: 50%;
@@ -2744,15 +2812,14 @@
 				}
 			}
 
-			/* Частота на всю ширину карточки: три положения поровну */
-			& .index__freq {
-				display: flex;
-				width: 100%;
+			/* Чипы частоты под палец: не меньше 40 на 40 */
+			& .index__chip {
+				min-width: 40px;
+				min-height: 40px;
 			}
 
-			& .index__chip {
-				flex: 1;
-				justify-content: center;
+			& .index__filters :global(.mselect__button) {
+				min-height: 40px;
 			}
 		}
 	}

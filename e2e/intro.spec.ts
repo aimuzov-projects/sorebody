@@ -50,3 +50,35 @@ test('подсказки нет, если адрес сразу открывае
 	await expect(hint(page)).toHaveCount(0)
 	await expect(page.locator('.index__lead')).toHaveCount(0)
 })
+
+// Подсказка поверх сцены: ни кнопка, ни ссылка, ни поле под ней не должны прятаться
+const overlaps = (page: Page) =>
+	hint(page).evaluate((hint) => {
+		const box = hint.getBoundingClientRect()
+		const controls = 'a, button, input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"])'
+
+		return [...document.querySelectorAll(controls)]
+			.filter((el) => !hint.contains(el) && !el.closest('.theme-peek') && el.checkVisibility())
+			.filter((el) => {
+				const r = el.getBoundingClientRect()
+
+				return (
+					r.width > 0 && r.left < box.right && r.right > box.left && r.top < box.bottom && r.bottom > box.top
+				)
+			})
+			.map((el) => el.getAttribute('aria-label') ?? el.textContent?.trim())
+	})
+
+for (const [width, height] of [
+	[375, 663],
+	[820, 900],
+	[1024, 800],
+]) {
+	test(`подсказка не ложится на кнопки и ссылки на ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height })
+		await page.goto('/')
+		await expect(hint(page)).toBeVisible()
+
+		expect(await overlaps(page)).toEqual([])
+	})
+}

@@ -8,6 +8,7 @@ import { REGIONS } from '#frontend/data/regions.ts'
 import { SPORTS } from '#frontend/data/sports.ts'
 
 import { INJURY_HEADINGS, LENS_HEADINGS } from './article-html.ts'
+import { IMAGE_HEIGHT, IMAGE_VARIANTS, IMAGE_WIDTH, imageVariant } from './article-image.ts'
 import { atlasSrc } from './atlas.ts'
 import { injurySchema, lensSchema } from './injury-schema.ts'
 import { footnotes, sourceHref } from './sources.ts'
@@ -165,8 +166,25 @@ for (const doc of injuries) {
 			const file = readFileSync(new URL(`.${src}`, `${PUBLIC}/`))
 			const size = src.endsWith('.webp') ? webpSize(file) : jpegSize(file)
 
-			assert.deepEqual(size, { width: 1200, height: 669 }, src)
+			assert.deepEqual(size, { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }, src)
 		}
+	})
+
+	// Копии для srcset собирает scripts/images/resize.mjs: без копии телефон получит 404 вместо картинки
+	test(`${slug}: every image has its srcset variants`, () => {
+		for (const { src } of data.images)
+			for (const width of IMAGE_VARIANTS) {
+				const variant = imageVariant(src, width)
+				const path = new URL(`.${variant}`, `${PUBLIC}/`)
+
+				assert.ok(existsSync(path), `${variant}: нет копии, запусти node scripts/images/resize.mjs`)
+
+				const file = readFileSync(path)
+				const size = variant.endsWith('.webp') ? webpSize(file) : jpegSize(file)
+
+				assert.equal(size.width, width, variant)
+				assert.ok(Math.abs(size.height - (IMAGE_HEIGHT * width) / IMAGE_WIDTH) <= 1, variant)
+			}
 	})
 
 	test(`${slug}: has a lens in at least one sport`, () => {

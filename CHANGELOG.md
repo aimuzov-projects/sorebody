@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/aimuzov-projects/wodcare/compare/v1.8.0...v1.9.0) (2026-10-18)
+
+
+### Features
+
+* move the site to sorebody.aimuzov.online ([#61](https://github.com/aimuzov-projects/wodcare/issues/61)) ([1a0d3ad](https://github.com/aimuzov-projects/wodcare/commit/1a0d3ad4bea1ff5bce5e111a95dbbf29c67e4741))
+
 ## [1.8.0](https://github.com/aimuzov-projects/wodcare/compare/v1.7.0...v1.8.0) (2026-10-18)
 
 

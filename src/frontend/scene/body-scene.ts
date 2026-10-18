@@ -90,8 +90,9 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	controls.autoRotateSpeed = 0.6
 	controls.update()
 
-	// Слои снаружи внутрь: в зоне раскрывается кожа, под ней мышцы; у травмы глубже (связка, мениск,
-	// диск, нерв) мышцы расходятся малой сферой. Сатиновая керамика снаружи, кромка среза -- синяя
+	// Слои снаружи внутрь: в зоне раскрывается кожа, под ней мышцы; у травмы глубже
+	// (связка, мениск, диск, нерв) мышцы расходятся малой сферой.
+	// Сатиновая керамика снаружи, на срезе -- слои кожи (`SKIN_RIM`)
 	const skin = createDissolveMaterial('#f5f5f3', SKIN_RIM, 0.42)
 
 	// Подсветка всей фигуры (зона «Всё тело»): синее свечение кожи, по умолчанию погашено
@@ -135,7 +136,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 	scene.add(gltf.scene)
 
-	// Коробка фигуры вместе с тенью на полу: по ней скрипт режет постер, а страница его ставит
+	// Коробка фигуры вместе с тенью на полу: по ней скрипт режет постер, а страница его ставит.
+	// Пятно тени -- размер плоскости из createContactShadow(), меняются вместе
 	const bounds = new Box3()
 		.setFromObject(gltf.scene)
 		.union(new Box3(new Vector3(-0.45, 0, -0.3), new Vector3(0.45, 0, 0.3)))
@@ -219,7 +221,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		}
 	}
 
-	/** Направление "к камере" -- по нему отсекаем точки на обратной стороне тела. */
+	/** Нормаль, спроецированная на направление к камере: меньше нуля -- точка на обратной стороне тела. */
 	function facing(normal: Vec3) {
 		return camera.position
 			.clone()
@@ -273,6 +275,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	const velocity = { target: new Vector3(), zoom: 0, azimuth: 0, polar: 0 }
 	const rest = new Vector3()
 	const STIFFNESS = 90
+	// 0.72 от критического затухания: пружина чуть перелетает цель и возвращается
 	const DAMPING = 2 * Math.sqrt(STIFFNESS) * 0.72
 	const springStep = (gap: number, v: number, dt: number) => v + (gap * STIFFNESS - v * DAMPING) * dt
 
@@ -478,11 +481,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		project,
 		facing,
 		controls,
+		/** Вызывается после каждой отрисовки: тут DOM-метки догоняют фигуру через `project()`. */
 		set onFrame(fn: (() => void) | undefined) {
 			onFrame = fn
 		},
-		/** Сдвиг кадра в долях экрана: x вправо, y вверх. Плавно, в цикле отрисовки. */
-		/** `instant` -- без доезда: первый кадр после загрузки сразу встаёт на место. */
+		/**
+		 * Сдвиг кадра в долях экрана: x вправо, y вверх. Плавно, в цикле отрисовки.
+		 * `scale` больше 1 -- фигура мельче. `instant` -- без доезда: первый кадр после загрузки
+		 * сразу встаёт на место.
+		 */
 		frame(x: number, y: number, scale = 1, instant = false) {
 			shiftTo.x = x
 			shiftTo.y = y
@@ -493,6 +500,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				applyFrame()
 			}
 		},
+		/** Синее свечение всей фигуры -- зона "Всё тело". */
 		glow(on: boolean) {
 			glowTo = on ? 0.16 : 0
 		},

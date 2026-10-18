@@ -1,5 +1,4 @@
 ---
-// src/frontend/components/article-figure.astro
 import { BookOpen, ExternalLink, Sparkles } from 'lucide-static'
 
 import { atlasSrc, atlasUrl, type Atlas } from '#frontend/lib/atlas.ts'
@@ -16,6 +15,8 @@ const caption = splitCaption(image.caption)
 ---
 
 <figure class="article__figure">
+	{/* Все иллюстрации 1200 на 669: размеры заранее держат место под картинку,
+	    и текст не прыгает при загрузке. Первая стоит в шапке статьи, её грузим сразу */}
 	<img
 		class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
 		src={image.src}

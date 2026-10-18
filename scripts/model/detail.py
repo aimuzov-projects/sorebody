@@ -106,7 +106,8 @@ for zone, (c, r) in ZONES.items():
                 continue
             near = sorted(f for f in files if f in boxes and touches(boxes[f], center, radius))
             if near:
-                # Мышцы помечаются по вершинам: номер мышцы и направление волокон (см. build.mjs)
+                # У мышц своя доля: воксельные сетки remesh.py плотнее исходных. `parts` -- номер мышцы
+                # и направление волокон по вершинам (см. build.mjs)
                 share = muscle_ratio if name == 'muscles' and muscle_ratio else ratio
                 groups.append({'name': name, 'files': near, 'ratio': share * RATIO.get(zone, 1), 'error': 0.005, 'parts': name == 'muscles'})
         base = {'objDirs': [*muscle_dirs, obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},

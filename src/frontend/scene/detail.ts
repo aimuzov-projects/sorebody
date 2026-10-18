@@ -73,6 +73,7 @@ export function createDetail(options: {
 	)
 	const all = Object.values(materials)
 
+	// Кусок рисуется только внутри своей сферы, снаружи остаётся базовая фигура
 	for (const m of all) m.uniforms.uCutSide.value = -1
 
 	let index: Promise<Record<string, { nerves: boolean }>> | undefined
@@ -238,6 +239,7 @@ export function createDetail(options: {
 
 			const groups = (await Promise.all((await files(key)).map(load))).filter((g): g is Group => !!g)
 
+			// Пока грузили, зону успели сменить или закрыть -- этот кусок уже не нужен
 			if (wanted !== key) return
 
 			replace(groups)

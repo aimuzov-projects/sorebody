@@ -1,7 +1,7 @@
-# Выгрузка из Z-Anatomy (Startup.blend) связок, менисков, суставных губ, капсул, нервов и мышц,
-# которых нет в BodyParts3D, в OBJ:
-# сетки берутся после модификаторов (Subdivision, Solidify, Hook, кривые с толщиной), в мировых
-# координатах Blender. Рядом кладутся опорные кости для совмещения с BodyParts3D.
+# Выгружает в OBJ из Z-Anatomy (Startup.blend) связки, мениски, суставные губы,
+# капсулы, нервы и мышцы, которых нет в BodyParts3D. Сетки берутся после модификаторов
+# (Subdivision, Solidify, Hook, кривые с толщиной), в мировых координатах Blender.
+# Рядом кладутся опорные кости для z_align.py и manifest.json.
 # usage: blender -b Startup.blend --python z_anatomy_export.py -- <out dir>
 import bpy, json, os, re, sys
 

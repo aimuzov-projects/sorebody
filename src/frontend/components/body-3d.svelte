@@ -253,6 +253,8 @@
 		const zoom = clamp(0.26 / lead.zone.radius, 1, 2.2) * Math.sqrt(target.zoom)
 		// На телефоне список занимает низ: место травмы -- в середину свободной верхней части, а
 		// фигура мельче, чтобы не наезжала на строки
+		// NOTE: 700 -- тот же порог, что у `@media (width < 700px)` в стилях ниже:
+		// кадр и раскладка меняются вместе, поэтому числа держим одинаковыми.
 		const phone = wrap.clientWidth < 700
 
 		if (phone) body.frame(0, 0)
@@ -407,6 +409,7 @@
 	let progressBar = $state<HTMLElement>()
 	let stopReading: (() => void) | undefined
 	let sceneHidden = $state(false)
+	/** Номер последней загрузки статьи: ответ, пришедший после перехода к другой, отбрасываем. */
 	let loadToken = 0
 	let sleepTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -601,6 +604,7 @@
 							Object.assign(window, { posterBounds: scene.bounds })
 						}
 
+						// Постер гаснет за 0.3s (`.body3d__poster`), из DOM убираем с запасом после этого
 						setTimeout(() => (posterShown = false), 400)
 					}
 
@@ -939,7 +943,7 @@
 
 			if (!main) throw new Error('no <main> in article page')
 
-			// Метка зоны и плашка черновика в полноэкранной статье лишние
+			// Чипы зоны и частоты в полноэкранной статье лишние
 			main.querySelector('.article__meta')?.remove()
 			await tick()
 
@@ -1012,6 +1016,7 @@
 		if (!downAt || status !== 'ready' || article) return
 
 		const { x, y } = local(event)
+		// Сдвиг больше 8px -- это поворот модели, а не клик
 		const moved = Math.hypot(x - downAt.x, y - downAt.y) > 8
 
 		downAt = null
@@ -1239,7 +1244,8 @@
 		>
 	</SiteHeader>
 
-	<!-- Индекс главной: поиск, фильтры и зоны. Наведение на зону подсвечивает её точки на модели -->
+	<!-- Индекс: на странице движения -- его травмы, на главной -- поиск, фильтры и зоны.
+	     Наведение на строку подсвечивает её зону на модели -->
 	{#if movementPage}
 		{@const total = movementInjuries.length}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Травмы движения">

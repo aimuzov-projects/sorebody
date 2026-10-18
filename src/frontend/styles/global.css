@@ -43,9 +43,6 @@
 	color-scheme: light;
 }
 
-/* Тёмная тема: по системе, если вручную не выбрана светлая, или выбрана вручную
-   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий.
-   Классы .light и .dark -- у копии страницы в круге подсмотра темы (theme-peek из kit) */
 @media (width < 600px) {
 	:root {
 		--frame-pad: 20px;
@@ -58,6 +55,9 @@
 	}
 }
 
+/* Тёмная тема: по системе, если вручную не выбрана светлая, или выбрана вручную
+   (lib/theme.ts ставит <html data-theme>). Набор один, повторён для двух условий.
+   Классы .light и .dark -- у копии страницы в круге подсмотра темы (theme-peek из kit) */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
 		--bg: #161617;
@@ -144,13 +144,13 @@ img {
 	padding-inline: var(--gutter);
 }
 
-/* Полноэкранный Mini App Telegram: содержимое не уходит под системные кнопки сверху и снизу.
-   Переменные ставит SDK Telegram, вне него их нет и отступ нулевой. */
 /* Отступ под системные кнопки Telegram сверху: им пользуются липкие и фиксированные элементы. */
 [data-telegram] {
 	--tg-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 }
 
+/* Полноэкранный Mini App Telegram: содержимое не уходит под системные кнопки сверху и снизу.
+   Переменные ставит SDK Telegram, вне него их нет и отступ нулевой. */
 [data-telegram] body {
 	padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	padding-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
@@ -202,7 +202,6 @@ img {
 		animation-name: bubble-in-right;
 	}
 
-	/* Таблица атласа: гравюра на светлой бумаге в обеих темах, как вклейка из книги */
 	/* display только у открытой: иначе он перебивает display: none закрытого popover, и
 	   карточка оставалась на экране вне верхнего слоя */
 	&--atlas:popover-open {
@@ -217,6 +216,7 @@ img {
 		font-size: 13px;
 	}
 
+	/* Таблица атласа: гравюра на светлой бумаге в обеих темах, как вклейка из книги */
 	&__plate {
 		width: 100%;
 		max-height: min(360px, 50vh);

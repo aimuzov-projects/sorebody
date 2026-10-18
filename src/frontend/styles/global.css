@@ -1,3 +1,12 @@
+/* Цвет спорта -- пара для светлой и тёмной темы. <html data-sport> ставит base.astro, цвета --
+   `accent` спорта в data/sports.ts, совпадение сверяет тест. Страницы без спорта пока синие,
+   как кроссфит */
+:root,
+:root[data-sport='crossfit'] {
+	--accent-light: #0066cc;
+	--accent-dark: #2997ff;
+}
+
 :root,
 .light {
 	--font-sans: system-ui, sans-serif;
@@ -9,7 +18,7 @@
 	--bg: #ffffff;
 	--fg: #1d1d1f;
 	--muted: #6e6e73;
-	--accent: #0066cc;
+	--accent: var(--accent-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;
 	/* Частота травмы: свой цвет и знак у каждого уровня, одни на всём сайте */
@@ -66,7 +75,7 @@
 		--bg: #161617;
 		--fg: #f5f5f7;
 		--muted: #a1a1a6;
-		--accent: #2997ff;
+		--accent: var(--accent-dark);
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
 		--common: #5ac8d8;
@@ -82,7 +91,7 @@
 	--bg: #161617;
 	--fg: #f5f5f7;
 	--muted: #a1a1a6;
-	--accent: #2997ff;
+	--accent: var(--accent-dark);
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
 	--common: #5ac8d8;

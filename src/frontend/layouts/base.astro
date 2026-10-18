@@ -8,6 +8,7 @@ import '#frontend/styles/global.css'
 import ThemeBoot from '@aimuzov-projects/infra-site-kit/theme-boot.astro'
 import '@aimuzov-projects/infra-site-kit/theme-peek.css'
 import { site } from '#frontend/data/site.ts'
+import type { SportSlug } from '#frontend/data/sports.ts'
 import { THEME_KEY } from '#frontend/lib/theme.ts'
 import { pageTitle } from '#frontend/lib/title.ts'
 
@@ -22,9 +23,13 @@ type Props = {
 	bare?: boolean
 	/** Класс на `<body>`: полноэкранной странице нужно задать фон и токены всему документу. */
 	bodyClass?: string
+	/** Спорт страницы: `<html data-sport>` красит акцент его цветом (styles/global.css). */
+	sport?: SportSlug
+	/** Адрес canonical, если страница -- копия другой, по умолчанию своя. */
+	canonical?: string
 }
 
-const { title, description = site.description, index = true, bare = false, bodyClass } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass, sport } = Astro.props
 
 /**
  * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
@@ -39,11 +44,11 @@ const TELEGRAM_FLAG =
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 
 const fullTitle = pageTitle(title)
-const canonical = new URL(Astro.url.pathname, Astro.site)
+const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.site)
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-sport={sport}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

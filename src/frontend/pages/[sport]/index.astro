@@ -1,0 +1,11 @@
+---
+import SportHome from '#frontend/components/sport-home.astro'
+import { SPORTS } from '#frontend/data/sports.ts'
+
+// У спорта по умолчанию та же сцена живёт и на `/`: canonical там, ссылки сайта ведут туда же
+export function getStaticPaths() {
+	return SPORTS.map((sport) => ({ params: { sport: sport.slug }, props: { sport } }))
+}
+---
+
+<SportHome sport={Astro.props.sport} />

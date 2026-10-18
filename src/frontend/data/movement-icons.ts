@@ -21,14 +21,14 @@ import {
 	Zap,
 } from 'lucide-static'
 
-import type { Movement } from './movements.ts'
+import type { CrossfitElement } from './sports.ts'
 
 /**
- * Иконки Lucide у движений. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
+ * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
  * движения: куда идёт штанга, за что держатся, чем работают. Гиря -- `weight`,
  * кольца -- `infinity`.
  */
-export const MOVEMENT_ICONS: Record<Movement, string> = {
+export const MOVEMENT_ICONS: Record<CrossfitElement, string> = {
 	squat: ArrowDownToLine,
 	deadlift: ArrowUpFromLine,
 	'hip-thrust': ArrowBigUp,

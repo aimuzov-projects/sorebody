@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { injurySchema } from './injury-schema.ts'
+import { injurySchema, lensSchema } from './injury-schema.ts'
 import { citedPmids, pubmedUrl } from './pubmed.ts'
 
 test('pubmedUrl builds a canonical PubMed link', () => {
@@ -26,9 +26,6 @@ const valid = {
 	title: 'Разрыв мениска',
 	titleEn: 'Meniscus tear',
 	region: 'knee',
-	frequency: 'common',
-	movements: ['squat'],
-	summary: 'Надрыв хрящевой прокладки колена.',
 	images: [],
 	sources: [{ pmid: '35278328', label: 'Knapik 2022, метаанализ' }],
 	draft: true,
@@ -38,10 +35,29 @@ test('schema accepts a complete article', () => {
 	assert.equal(injurySchema.safeParse(valid).success, true)
 })
 
-test('schema rejects an article without sources or with an unknown movement', () => {
+test('schema rejects an article without sources or with an unknown region', () => {
 	assert.equal(injurySchema.safeParse({ ...valid, sources: [] }).success, false)
-	assert.equal(injurySchema.safeParse({ ...valid, movements: ['yoga'] }).success, false)
 	assert.equal(injurySchema.safeParse({ ...valid, region: 'neck' }).success, false)
+})
+
+test('the sport fields live in the lens, not in the common part', () => {
+	assert.equal(injurySchema.safeParse({ ...valid, frequency: 'common' }).success, false)
+	assert.equal(injurySchema.safeParse({ ...valid, movements: ['squat'] }).success, false)
+})
+
+const lens = {
+	frequency: 'common',
+	elements: ['squat'],
+	summary: 'Надрыв хрящевой прокладки колена.',
+	sources: [{ pmid: '35278328', label: 'Knapik 2022, метаанализ' }],
+	draft: true,
+}
+
+test('lens schema accepts a complete lens and rejects a broken one', () => {
+	assert.equal(lensSchema.safeParse(lens).success, true)
+	assert.equal(lensSchema.safeParse({ ...lens, sources: [] }).success, false)
+	assert.equal(lensSchema.safeParse({ ...lens, frequency: 'often' }).success, false)
+	assert.equal(lensSchema.safeParse({ ...lens, elements: ['Squat'] }).success, false)
 })
 
 test('schema rejects malformed pmid', () => {

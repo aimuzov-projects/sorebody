@@ -1,4 +1,4 @@
-import type { Movement } from '#frontend/data/movements.ts'
+import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
 
 /**
  * Корни, по которым движение узнаётся в свободном тексте пары "Вместо/Лучше". `\b` в JS

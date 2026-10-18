@@ -43,9 +43,6 @@ const article = {
 	title: 'Разрыв мениска',
 	titleEn: 'Meniscus tear',
 	region: 'knee',
-	frequency: 'common',
-	movements: ['squat'],
-	summary: 'Надрыв хрящевой прокладки колена.',
 	images: [],
 	draft: true,
 }

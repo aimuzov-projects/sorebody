@@ -1,5 +1,6 @@
-import { frequencyRank, type Frequency } from '#frontend/data/frequency.ts'
+import type { Frequency } from '#frontend/data/frequency.ts'
 import { REGIONS, type Region } from '#frontend/data/regions.ts'
+import { frequencyRank, type Sport } from '#frontend/data/sports.ts'
 
 type Vec3 = [number, number, number]
 
@@ -72,15 +73,18 @@ const WHOLE = {
 }
 
 /**
- * Зоны фигуры с травмами, внутри зоны -- от частых к редким по `FREQUENCY_ORDER`. Регион `other` своего сустава не имеет:
+ * Зоны фигуры с травмами спорта, внутри зоны -- от частых к редким по его `frequencyOrder`. Регион `other` своего сустава не имеет:
  * он становится `whole`, растворением всей фигуры от груди.
  */
-export function buildZones(injuries: (ZoneInjury & { region: Region })[]) {
+export function buildZones(sport: Sport, injuries: (ZoneInjury & { region: Region })[]) {
 	const byRegion = (slug: Region) =>
 		injuries
 			.filter((i) => i.region === slug)
 			.map(({ region: _region, ...injury }) => injury)
-			.sort((a, b) => frequencyRank(a.slug) - frequencyRank(b.slug) || a.title.localeCompare(b.title, 'ru'))
+			.sort(
+				(a, b) =>
+					frequencyRank(sport, a.slug) - frequencyRank(sport, b.slug) || a.title.localeCompare(b.title, 'ru'),
+			)
 	const zones: Zone[] = REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
 		slug: r.slug,
 		label: r.label,

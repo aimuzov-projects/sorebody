@@ -63,7 +63,7 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 		// сферы (там его заменяет кусок), -1 -- рисуется только внутри (сам кусок), 0 -- выреза нет
 		uCut: { value: new Vector4() },
 		uCutSide: { value: 0 },
-		// Подсветка зоны: голубое свечение вокруг двух точек (парная зона), к краю -- в серый
+		// Подсветка зоны: свечение цветом спорта вокруг двух точек (парная зона), к краю -- в серый
 		uTint: { value: [new Vector3(), new Vector3()] },
 		uTintRadius: { value: 0.1 },
 		uTintStrength: { value: 0 },
@@ -71,7 +71,7 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 		uTintPrev: { value: [new Vector3(), new Vector3()] },
 		uTintPrevRadius: { value: 0.1 },
 		uTintPrevStrength: { value: 0 },
-		uTintColor: { value: new Color('#3d8bfd') },
+		uTintColor: { value: new Color() },
 		// Подсветка мышц травмы: номера мышц из `_part` (до 8, -1 -- пусто) и сила свечения
 		uParts: { value: Array.from({ length: 8 }, () => -1) },
 		uHighlight: { value: 0 },

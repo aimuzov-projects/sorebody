@@ -1,6 +1,6 @@
 import type { Frequency } from '#frontend/data/frequency.ts'
-import type { Movement } from '#frontend/data/movements.ts'
 import { regionLabel, type Region } from '#frontend/data/regions.ts'
+import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
 
 /** Что нужно острову главной от статьи: без тела статьи, чтобы не раздувать HTML. */
 export type InjuryListItem = {

@@ -49,9 +49,24 @@
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { SceneSport } from '#frontend/scene/scene-data.ts'
-	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
+	import {
+		fitShift,
+		homeShift,
+		placeHint,
+		POSTER_SHIFT,
+		projectBox,
+		type Box,
+		type HintPlace,
+	} from '#frontend/scene/frame.ts'
 	import poster from '#frontend/scene/poster.json'
-	import { ANCHORS, injuryFocus, injuryLayer, type InjuryFocus, type Zone } from '#frontend/scene/zones.ts'
+	import {
+		ANKLES_BOX,
+		HEAD_BOX,
+		injuryFocus,
+		injuryLayer,
+		type InjuryFocus,
+		type Zone,
+	} from '#frontend/scene/zones.ts'
 
 	type Props = {
 		zones: Zone[]
@@ -422,40 +437,21 @@
 
 		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, shift)
 
-		if (innerWidth < 700) {
-			const feet = posterRect.top + posterRect.height * 0.95
-			const sheet = wrap?.querySelector('.index__title--home')?.getBoundingClientRect().top ?? innerHeight
+		// Пол подсказки: на телефоне -- заголовок шторки (не лечь на селект спорта), шире --
+		// подвал сцены (не лечь на ссылки подписи)
+		const floor = wrap?.querySelector(innerWidth < 700 ? '.index__title--home' : '.scene-footer .footer')
 
-			hintPlace = { x: posterRect.left + posterRect.width / 2, y: feet, room: sheet - 8 - feet }
-
-			return
-		}
-
-		const { radius, points } = ANCHORS.head
-		const [x, y, z] = points[0].position
-		const head = projectBox(
-			{ min: [x - radius, y - radius, z - radius], max: [x + radius, y + radius, z + radius] },
+		hintPlace = placeHint(
+			{ figure: poster.box as Box, head: HEAD_BOX, ankles: ANKLES_BOX },
 			innerWidth,
 			innerHeight,
 			shift,
+			(floor?.getBoundingClientRect().top ?? innerHeight) - 8,
 		)
-		const left = head.left + head.width + 16
-		const room = innerWidth - 16 - left
-
-		// В строку подсказка занимает около 330px. Уже -- сразу в две ровные строки: иначе плашка
-		// тянулась на всё место, а перенос оставлял справа пустоту
-		hintPlace = { x: left, y: head.top, room: room < 340 ? Math.min(room, 210) : room }
 	}
 
-	/**
-	 * Где подсказка первого визита. На телефоне -- под ногами фигуры: x -- ось
-	 * фигуры, room -- место до заголовка шторки. Не хватает -- подсказка встаёт
-	 * выше, чтобы не лечь на селект спорта. На широком экране -- справа от головы,
-	 * вровень с макушкой: над головой она закрывала зону "Голова", под ногами --
-	 * точку стопы и ссылки подвала. Там x -- левый край, room -- ширина до края
-	 * окна, уже неё текст переносится. Шрифт догрузился позже -- меряем снова.
-	 */
-	let hintPlace = $state({ x: 0, y: 0, room: Infinity })
+	/** Место подсказки первого визита (scene/frame.ts). Шрифт догрузился позже -- меряем снова. */
+	let hintPlace = $state<HintPlace>({ x: 0, y: 0, room: Infinity, side: false })
 
 	/**
 	 * Подсказка первого визита "как пользоваться моделью": у фигуры, пока посетитель не закроет
@@ -784,6 +780,9 @@
 		sportAnnounce = next.sport.heading
 
 		if (zonesList) zonesList.scrollTop = 0
+
+		// Шторка на телефоне с другим спортом другой высоты: место подсказки и фигуры -- заново
+		void tick().then(placePoster)
 	}
 
 	/**
@@ -935,6 +934,10 @@
 				if (disposed) return scene.dispose()
 
 				body = scene
+				// Подсказка стоит по стартовому кадру: повернули или приблизили фигуру -- точки
+				// уходят под неё. Прячем до конца визита, но увиденной не отмечаем: покрутить
+				// модель не значит узнать про точки, в следующий раз подсказка всплывёт снова
+				scene.controls.addEventListener('start', () => (hintShown = false))
 				// Спорт могли сменить, пока модель грузилась: подсветка -- цветом текущего
 				scene.glowColor(sport.glow, true)
 				scene.resize()
@@ -1542,11 +1545,11 @@
 		</picture>
 	{/if}
 
-	<!-- Место считает placePoster (hintPlace): на широком экране -- справа от головы, на телефоне --
-	     под ногами, над шторкой -->
+	<!-- Место -- placeHint (scene/frame.ts): справа от головы или под ногами -->
 	{#if hintShown && posterRect}
 		<p
 			class="body3d__hint"
+			class:body3d__hint--below={!hintPlace.side}
 			style:--hint-x="{hintPlace.x}px"
 			style:--hint-y="{hintPlace.y}px"
 			style:--hint-room="{hintPlace.room}px"
@@ -2070,9 +2073,9 @@
 				backdrop-filter: none;
 			}
 
-			/* На телефоне -- под ногами по оси фигуры. Низ не ниже заголовка шторки: --hint-room --
-			   место до него, 100% -- своя высота */
-			@media (width < 700px) {
+			/* Под ногами по оси фигуры: на телефоне и на узком планшете. Низ не ниже пола
+			   (заголовок шторки или подвал): --hint-room -- место до него, 100% -- своя высота */
+			&--below {
 				top: var(--hint-y);
 				translate: -50% min(0px, calc(var(--hint-room) - 100%));
 				max-width: calc(100vw - 32px);

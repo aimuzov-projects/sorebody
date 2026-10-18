@@ -4,6 +4,7 @@ import { test } from 'node:test'
 
 import * as frame from './frame.ts'
 import poster from './poster.json' with { type: 'json' }
+import { ANKLES_BOX, HEAD_BOX } from './zones.ts'
 
 test('poster was rendered with the current start frame', () => {
 	// Разошлись -- перерендерить постер: node scripts/poster/render.mjs
@@ -58,4 +59,42 @@ test('on phones the figure fills the free band between the header and the sheet'
 		assert.ok(r.height >= free * 0.85, JSON.stringify({ width, height, r }))
 		assert.ok(Math.abs(r.top + r.height / 2 - (top + free / 2)) < 1, JSON.stringify({ width, height, r }))
 	}
+})
+
+const hintBoxes = { figure: poster.box as frame.Box, head: HEAD_BOX, ankles: ANKLES_BOX }
+
+test('the first-visit hint stands beside the head when wide and under the feet when narrow', () => {
+	// Пол -- верх подвала сцены, как его меряет body-3d: строка около 43px у низа окна
+	for (const [width, height, side] of [
+		[1920, 1080, true],
+		[1024, 800, true],
+		[820, 900, true],
+		[744, 1133, false],
+	] as const) {
+		const floor = height - 43 - 8
+		const hint = frame.placeHint(hintBoxes, width, height, frame.homeShift(width), floor)
+		const size = `${width}x${height}`
+		const head = frame.projectBox(HEAD_BOX, width, height)
+		const ankles = frame.projectBox(ANKLES_BOX, width, height)
+
+		assert.equal(hint.side, side, size)
+
+		if (hint.side) {
+			assert.ok(hint.x >= head.left + head.width, `${size}: правее головы`)
+			assert.ok(hint.x + hint.room <= width - 16, `${size}: не за правым краем`)
+			assert.ok(hint.room >= frame.HINT_SIDE_LAST, `${size}: есть место под текст`)
+		} else {
+			assert.ok(hint.y >= ankles.top + ankles.height, `${size}: ниже точек стопы`)
+			assert.ok(hint.y + frame.HINT_HEIGHT <= floor, `${size}: выше подвала`)
+		}
+	}
+})
+
+test('the first-visit hint stays under the feet on phones', () => {
+	const hint = frame.placeHint(hintBoxes, 390, 844, frame.homeShift(390), 500)
+	const body = frame.projectBox(poster.box as frame.Box, 390, 844)
+
+	assert.equal(hint.side, false)
+	assert.ok(Math.abs(hint.x - (body.left + body.width / 2)) < 1, 'по оси фигуры')
+	assert.equal(hint.room, 500 - hint.y)
 })

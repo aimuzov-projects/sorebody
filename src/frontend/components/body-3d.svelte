@@ -1022,7 +1022,7 @@
 			if (!el) continue
 
 			el.style.transform = `translate(${p.x}px, ${p.y}px)`
-			el.dataset.hidden = String(!spot.visible)
+			setData(el, 'hidden', String(!spot.visible))
 		}
 
 		// У парной зоны подпись левой точки -- слева от неё, наружу от тела: справа она ложилась
@@ -1030,7 +1030,10 @@
 		for (const [i, spot] of spots.entries()) {
 			const twin = spots.find((other) => other.zone === spot.zone && other !== spot)
 
-			spotEls[i]?.toggleAttribute('data-left', twin !== undefined && spot.x < twin.x)
+			const left = twin !== undefined && spot.x < twin.x
+
+			if (spotEls[i] && spotEls[i].hasAttribute('data-left') !== left)
+				spotEls[i].toggleAttribute('data-left', left)
 		}
 
 		for (const [i, mark] of marks.entries()) {
@@ -1041,8 +1044,16 @@
 			const p = body.project(mark.focus.position)
 
 			el.style.transform = `translate(${p.x + mark.shift * MARK_SHIFT}px, ${p.y}px)`
-			el.dataset.hidden = String(body.facing(mark.focus.normal) < -0.05)
+			setData(el, 'hidden', String(body.facing(mark.focus.normal) < -0.05))
 		}
+	}
+
+	/**
+	 * Пишем data-атрибут, только если значение другое: он в селекторах, и даже та же
+	 * запись каждый кадр заставляла браузер заново считать стили точек
+	 */
+	function setData(el: HTMLElement, key: string, value: string) {
+		if (el.dataset[key] !== value) el.dataset[key] = value
 	}
 
 	function nearest(x: number, y: number, radius: number) {

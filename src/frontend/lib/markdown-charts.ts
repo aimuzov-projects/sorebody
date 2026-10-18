@@ -11,7 +11,7 @@ const MARKER = /^<div data-chart="([a-z0-9-]+)"><\/div>$/
  * Маркер без данных роняет сборку: опечатка в id иначе тихо оставит в статье пустой блок.
  */
 export const chartsPlugin: HastPluginDefinition = {
-	name: 'wodcare-charts',
+	name: 'sorebody-charts',
 	raw(node, ctx) {
 		const id = node.value.trim().match(MARKER)?.[1]
 

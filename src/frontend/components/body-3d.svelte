@@ -1602,7 +1602,7 @@
 			class="index__brand-row logo-host"
 			class:index__brand-row--away={open?.side === 'bottom'}
 			href="/about/"
-			aria-label="Wodcare, о справочнике"
+			aria-label="Sorebody, о справочнике"
 			aria-describedby="about-tip"
 			bind:this={aboutLink}
 		>

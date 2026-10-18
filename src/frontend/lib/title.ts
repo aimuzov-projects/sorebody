@@ -1,8 +1,11 @@
 import { site } from '#frontend/data/site.ts'
 
-/** Заголовок страницы: своё название и через тире название сайта, у главной -- только сайт. */
+/** Название сайта с дескриптором: `og:site_name` и заголовок страницы без своего названия. */
+export const siteTitle = `${site.name} — ${site.tagline}`
+
+/** Заголовок страницы: своё название и через тире название сайта. */
 export function pageTitle(title?: string) {
-	return title ? `${title} — ${site.name}` : site.name
+	return title ? `${title} — ${site.name}` : siteTitle
 }
 
 /**

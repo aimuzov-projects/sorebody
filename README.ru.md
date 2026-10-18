@@ -3,22 +3,20 @@
 	<img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-0066cc?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5IDYiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoOXYzSDB6Ii8+PHBhdGggZmlsbD0iIzAwMzlhNiIgZD0iTTAgMmg5djJIMHoiLz48cGF0aCBmaWxsPSIjZDUyYjFlIiBkPSJNMCA0aDl2MkgweiIvPjwvc3ZnPg==" alt="Русский">
 </p>
 
-<!-- Раскомментировать, когда в .github/assets появится banner.jpg.
 <p align="center">
-	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Wodcare: Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования." width="100%"></a>
+	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.jpg" alt="Sorebody — справочник спортивных травм: как часто случаются в кроссфите и паделе, симптомы, когда к врачу и как адаптировать тренировки, со ссылками на исследования." width="100%"></a>
 </p>
--->
 
 <p align="center">
-	<a href="https://github.com/aimuzov-projects/wodcare/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/wodcare/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://github.com/aimuzov-projects/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://sorebody.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fsorebody.aimuzov.online&label=site" alt="Site status"></a>
-	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fwodcare%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
-	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
-	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
-	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/wodcare" alt="License"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/sorebody" alt="License"></a>
 </p>
 
-<h3 align="center">Справочник травм в кроссфите: как часто случаются, симптомы, когда к врачу и как адаптировать тренировки — со ссылками на исследования.</h3>
+<h3 align="center">Sorebody — справочник спортивных травм: как часто случаются в кроссфите и паделе, симптомы, когда к врачу и как адаптировать тренировки, со ссылками на исследования.</h3>
 
 <!-- Раскомментировать, когда в .github/assets появятся скриншоты.
 <table>
@@ -33,8 +31,10 @@
 
 ## Что внутри
 
-- **Главная** (`/`): название и описание сайта из [`src/frontend/data/site.ts`](src/frontend/data/site.ts).
-- **404**: заглушка «такой страницы нет» со ссылкой на главную.
+- **Главная спорта** (`/` у кроссфита, `/<sport>/`): 3D-модель тела с зонами травм, поиск и фильтры. Спорт меняется списком в заголовке, у каждого свой цвет ([`src/frontend/data/sports.ts`](src/frontend/data/sports.ts)).
+- **Статья** (`/<sport>/<injury>/`): общая часть травмы и разбор для спорта. Общая часть без спорта — `/injuries/<injury>/`.
+- **О справочнике**, **Что нового** и **404** — страницы без спорта, их акцент графитовый.
+- **Бренд**: знак «точка боли» в [`logo.svelte`](src/frontend/components/logo.svelte), фавикон, иконки, OG-картинку и баннер README собирает [`scripts/brand/render.mjs`](scripts/brand/render.mjs). Название и дескриптор — в [`site.ts`](src/frontend/data/site.ts).
 - **Футер**: подпись автора из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) со ссылкой на исходный код, `repo` в [`site.ts`](src/frontend/data/site.ts).
 
 ## Как устроено
@@ -86,7 +86,7 @@ Safari на iPhone сам приближает страницу, когда вс
 
 ## Выкладка
 
-Сервер проектов из [infra-server](https://github.com/aimuzov-projects/infra-server): мерж релизного PR, который ведёт release-please, запускает `deploy.yml`, он гоняет проверки и заходит по SSH. Шаги обоих берутся из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), там же адрес сервера и его строка `known_hosts`. Там ключ запускает общий [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) из infra-server, который переключается на релизный тег и пересобирает контейнер `wodcare` (nginx со статикой) из [`deploy/docker-compose.yml`](deploy/docker-compose.yml). Сборка идёт в юните systemd, так что оборванное SSH-соединение её не прерывает. Домен и TLS держит общий Caddy. `.env` лежит на сервере в `/srv/wodcare`.
+Сервер проектов из [infra-server](https://github.com/aimuzov-projects/infra-server): мерж релизного PR, который ведёт release-please, запускает `deploy.yml`, он гоняет проверки и заходит по SSH. Шаги обоих берутся из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), там же адрес сервера и его строка `known_hosts`. Там ключ запускает общий [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) из infra-server, который переключается на релизный тег и пересобирает контейнер `wodcare` (nginx со статикой) из [`deploy/docker-compose.yml`](deploy/docker-compose.yml). Сборка идёт в юните systemd, так что оборванное SSH-соединение её не прерывает. Домен и TLS держит общий Caddy. `.env` лежит на сервере в `/srv/wodcare`: клон, контейнер и сайт в Caddy пока носят старое имя.
 
 Job выкладки запускается, только когда переменная репозитория `DEPLOY_ENABLED` равна `true`, а SSH-ключ лежит в секрете `DEPLOY_SSH_KEY`. Пока сервер не готов, релиз гоняет одни проверки.
 

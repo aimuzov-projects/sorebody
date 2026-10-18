@@ -3,22 +3,20 @@
 	<a href="README.ru.md"><img src="https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-555?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5IDYiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoOXYzSDB6Ii8+PHBhdGggZmlsbD0iIzAwMzlhNiIgZD0iTTAgMmg5djJIMHoiLz48cGF0aCBmaWxsPSIjZDUyYjFlIiBkPSJNMCA0aDl2MkgweiIvPjwvc3ZnPg==" alt="Русский"></a>
 </p>
 
-<!-- Uncomment once .github/assets/banner.en.jpg is in place.
 <p align="center">
-	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Wodcare: A CrossFit injury reference: how common each injury is, its symptoms, when to see a doctor and how to adapt training, with links to the research." width="100%"></a>
+	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Sorebody, a sports injury reference: how common each injury is in CrossFit and padel, its symptoms, when to see a doctor and how to adapt training, with links to the research." width="100%"></a>
 </p>
--->
 
 <p align="center">
-	<a href="https://github.com/aimuzov-projects/wodcare/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/wodcare/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://github.com/aimuzov-projects/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://sorebody.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fsorebody.aimuzov.online&label=site" alt="Site status"></a>
-	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fwodcare%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
-	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
-	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/wodcare/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
-	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/wodcare" alt="License"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/sorebody" alt="License"></a>
 </p>
 
-<h3 align="center">A CrossFit injury reference: how common each injury is, its symptoms, when to see a doctor and how to adapt training, with links to the research.</h3>
+<h3 align="center">Sorebody, a sports injury reference: how common each injury is in CrossFit and padel, its symptoms, when to see a doctor and how to adapt training, with links to the research.</h3>
 
 <!-- Uncomment once the screenshots are in .github/assets.
 <table>
@@ -35,8 +33,10 @@ The site is in Russian, so the names below are translated.
 
 ## What's inside
 
-- **Home** (`/`): the site name and description from [`src/frontend/data/site.ts`](src/frontend/data/site.ts).
-- **404**: a "no such page" stub with a link home.
+- **Sport home** (`/` for CrossFit, `/<sport>/`): a 3D body with injury zones, search and filters. The sport is switched from a list in the heading, each one has its own color ([`src/frontend/data/sports.ts`](src/frontend/data/sports.ts)).
+- **Article** (`/<sport>/<injury>/`): the shared part of an injury plus the take for the sport. The shared part on its own is at `/injuries/<injury>/`.
+- **About**, **What's new** and **404** have no sport, their accent is graphite.
+- **Brand**: the "pain point" mark in [`logo.svelte`](src/frontend/components/logo.svelte); the favicon, icons, OG image and README banner are rendered by [`scripts/brand/render.mjs`](scripts/brand/render.mjs). The name and descriptor live in [`site.ts`](src/frontend/data/site.ts).
 - **Footer**: the author credit from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) with a link to the source code, `repo` in [`site.ts`](src/frontend/data/site.ts).
 
 ## How it is built
@@ -88,7 +88,7 @@ The build puts a CSP with hashes of Astro's scripts and styles into every page (
 
 ## Deployment
 
-The projects server from [infra-server](https://github.com/aimuzov-projects/infra-server): merging the release PR that release-please keeps open runs `deploy.yml`, which runs the checks and logs in over SSH. The steps of both come from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), which also holds the server address and its `known_hosts` line. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) of infra-server, which checks out the release tag and rebuilds the `wodcare` container (nginx with the static site) from [`deploy/docker-compose.yml`](deploy/docker-compose.yml). The build runs in a systemd unit, so a dropped SSH connection does not cut it short. The domain and TLS are handled by the shared Caddy. `.env` lives on the server in `/srv/wodcare`.
+The projects server from [infra-server](https://github.com/aimuzov-projects/infra-server): merging the release PR that release-please keeps open runs `deploy.yml`, which runs the checks and logs in over SSH. The steps of both come from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), which also holds the server address and its `known_hosts` line. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) of infra-server, which checks out the release tag and rebuilds the `wodcare` container (nginx with the static site) from [`deploy/docker-compose.yml`](deploy/docker-compose.yml). The build runs in a systemd unit, so a dropped SSH connection does not cut it short. The domain and TLS are handled by the shared Caddy. `.env` lives on the server in `/srv/wodcare`: the clone, the container and the Caddy site still carry the old name.
 
 The deploy job runs only when the repository variable `DEPLOY_ENABLED` is `true`, and the SSH key is the `DEPLOY_SSH_KEY` secret. Until the server is set up, a release only runs the checks.
 

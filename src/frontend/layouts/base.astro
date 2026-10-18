@@ -12,7 +12,7 @@ import MetrikaPixel from '@aimuzov-projects/infra-site-kit/metrika-pixel.astro'
 import { site } from '#frontend/data/site.ts'
 import type { SportSlug } from '#frontend/data/sports.ts'
 import { THEME_KEY } from '#frontend/lib/theme.ts'
-import { pageTitle } from '#frontend/lib/title.ts'
+import { pageTitle, siteTitle } from '#frontend/lib/title.ts'
 
 type Props = {
 	/** Название страницы, к нему добавится название сайта. У главной не задаётся. */
@@ -66,11 +66,16 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<meta name="description" content={description} />
 		{index ? <link rel="canonical" href={canonical} /> : <meta name="robots" content="noindex" />}
 		<meta property="og:type" content="website" />
-		<meta property="og:site_name" content={site.name} />
+		<meta property="og:site_name" content={siteTitle} />
 		<meta property="og:locale" content="ru_RU" />
 		<meta property="og:url" content={canonical} />
 		<meta property="og:title" content={fullTitle} />
 		<meta property="og:description" content={description} />
+		<!-- Картинка превью одна на сайт, её собирает scripts/brand/render.mjs -->
+		<meta property="og:image" content={new URL('/brand/og.png', Astro.site)} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script is:inline set:html={TELEGRAM_FLAG} />

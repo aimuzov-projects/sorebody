@@ -17,24 +17,13 @@ import Base from '#frontend/layouts/base.astro'
 </Base>
 
 <style>
-	/* Логотип красится токенами сцены (styles/scene.css), а её стили тут не нужны: те же цвета
-	   по светлой и тёмной теме задаём сами */
+	/* Логотип красится токенами сцены (styles/scene.css), а её стили тут не нужны. Спорта
+	   у страницы нет, поэтому "body" и знак серые в обеих темах */
 	:global(.missing-page) {
 		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
 		--a-fg: var(--fg);
 		--a-blue: var(--accent);
 		--a-logo: #8e8e93;
-		--a-care: #aeaeb2;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:global(:root:not([data-theme='light']) .missing-page) {
-			--a-care: #a1a1a6;
-		}
-	}
-
-	:global(:root[data-theme='dark'] .missing-page) {
-		--a-care: #a1a1a6;
 	}
 
 	.missing {

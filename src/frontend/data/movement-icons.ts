@@ -1,34 +1,45 @@
 import {
+	ArrowBigDownDash,
 	ArrowBigUp,
 	ArrowBigUpDash,
 	ArrowDownToLine,
 	ArrowUpFromLine,
 	BicepsFlexed,
 	Box,
+	BrickWall,
 	ChevronsUp,
+	CircleDot,
+	CornerRightDown,
+	CornerUpLeft,
+	Crosshair,
 	Dumbbell,
+	FastForward,
 	Flame,
 	Footprints,
 	Hand,
 	HandGrab,
+	MoveDown,
 	MoveVertical,
 	Repeat2,
 	Infinity as Rings,
+	RotateCcw,
 	Spline,
+	Undo2,
+	Users,
 	Volleyball,
 	Waves,
 	Weight,
 	Zap,
 } from 'lucide-static'
 
-import type { CrossfitElement } from './sports.ts'
+import type { CrossfitElement, PadelElement } from './sports.ts'
 
 /**
  * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
  * движения: куда идёт штанга, за что держатся, чем работают. Гиря -- `weight`,
  * кольца -- `infinity`.
  */
-export const MOVEMENT_ICONS: Record<CrossfitElement, string> = {
+export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement, string> = {
 	squat: ArrowDownToLine,
 	deadlift: ArrowUpFromLine,
 	'hip-thrust': ArrowBigUp,
@@ -49,4 +60,19 @@ export const MOVEMENT_ICONS: Record<CrossfitElement, string> = {
 	'wall-ball': Volleyball,
 	'kettlebell-swing': Weight,
 	burpee: Flame,
+	// Падел: куда летит мяч или игрок, обо что бьются
+	smash: ArrowBigDownDash,
+	'bandeja-vibora': CornerRightDown,
+	volley: Crosshair,
+	backhand: Undo2,
+	'off-the-glass': CornerUpLeft,
+	'sprint-to-ball': FastForward,
+	lunge: ArrowDownToLine,
+	'jump-landing': MoveDown,
+	'ball-impact': CircleDot,
+	'glass-collision': BrickWall,
+	'partner-collision': Users,
+	'racket-rebound': RotateCcw,
 }
+
+export type ElementIcon = keyof typeof MOVEMENT_ICONS

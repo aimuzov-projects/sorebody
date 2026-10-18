@@ -7,6 +7,11 @@
 	--accent-dark: #2997ff;
 }
 
+:root[data-sport='padel'] {
+	--accent-light: #467509;
+	--accent-dark: #a3e635;
+}
+
 :root,
 .light {
 	--font-sans: system-ui, sans-serif;

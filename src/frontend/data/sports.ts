@@ -34,6 +34,27 @@ const CROSSFIT_ELEMENTS = [
 export type CrossfitElement = (typeof CROSSFIT_ELEMENTS)[number]['slug']
 
 /**
+ * Удары и игровые ситуации падела по docs/research/padel-injuries-pubmed.md, раздел 4. Бандеха
+ * и вибора -- один элемент: в литературе их не разделяют, а травмы у них те же.
+ */
+const PADEL_ELEMENTS = [
+	{ slug: 'smash', title: 'Смэш', titleEn: 'Smash' },
+	{ slug: 'bandeja-vibora', title: 'Бандеха и вибора', titleEn: 'Bandeja and víbora' },
+	{ slug: 'volley', title: 'Удар с лёта', titleEn: 'Volley' },
+	{ slug: 'backhand', title: 'Удар слева', titleEn: 'Backhand' },
+	{ slug: 'off-the-glass', title: 'Игра от стекла', titleEn: 'Off-the-glass shot' },
+	{ slug: 'sprint-to-ball', title: 'Рывок к мячу', titleEn: 'Sprint to the ball' },
+	{ slug: 'lunge', title: 'Выпад к низкому мячу', titleEn: 'Lunge' },
+	{ slug: 'jump-landing', title: 'Приземление после прыжка', titleEn: 'Jump landing' },
+	{ slug: 'ball-impact', title: 'Попадание мячом', titleEn: 'Ball impact' },
+	{ slug: 'glass-collision', title: 'Удар о стекло или сетку', titleEn: 'Glass or net collision' },
+	{ slug: 'partner-collision', title: 'Столкновение с партнёром', titleEn: 'Partner collision' },
+	{ slug: 'racket-rebound', title: 'Отскок ракетки от стекла', titleEn: 'Racket rebound' },
+] as const
+
+export type PadelElement = (typeof PADEL_ELEMENTS)[number]['slug']
+
+/**
  * Все травмы кроссфита от самой частой к самой редкой: в этом порядке они стоят в списках зон.
  * Уровень и порядок -- из таблицы диагнозов в docs/research/crossfit-injuries-pubmed.md:
  * частые -- там "очень часто" и "часто", нечастые -- "нередко" и "нечасто", редкие -- только
@@ -77,10 +98,31 @@ const CROSSFIT_FREQUENCY_ORDER = [
 	'meralgia-paresthetica',
 ]
 
+/**
+ * Травмы падела от частых к редким, уровни -- из таблицы диагнозов (раздел 3) и пилота (раздел 5)
+ * в docs/research/padel-injuries-pubmed.md.
+ */
+const PADEL_FREQUENCY_ORDER = [
+	// Частые
+	'elbow-tendinopathy',
+	'ankle-sprain',
+	'tennis-leg',
+	'rotator-cuff-tendinopathy',
+	'patellofemoral-pain',
+	'low-back-strain',
+	// Нечастые
+	'plantar-fasciitis',
+	'fall-contusions',
+	'eye-injury',
+	'wrist-sprain',
+	// Редкие
+	'orofacial-trauma',
+]
+
 export type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
-export type SportSlug = 'crossfit'
+export type SportSlug = 'crossfit' | 'padel'
 
 export type Sport = {
 	slug: SportSlug
@@ -89,6 +131,8 @@ export type Sport = {
 	phrase: string
 	/** Подпись фильтра по элементам: «Движение любое». */
 	elementLabel: string
+	/** Заголовок списка элементов в конце статьи: «Связанные движения». */
+	elementsTitle: string
 	/** Заголовок раздела о механизме в статье спорта. */
 	mechanismTitle: string
 	/** Техники или ситуации спорта: варианты фильтра и страницы `/<sport>/elements/<slug>`. */
@@ -108,10 +152,24 @@ export const SPORTS = [
 		title: 'Кроссфит',
 		phrase: 'в кроссфите',
 		elementLabel: 'Движение',
+		elementsTitle: 'Связанные движения',
 		mechanismTitle: 'Механизм и движения',
 		elements: CROSSFIT_ELEMENTS,
 		frequencyOrder: CROSSFIT_FREQUENCY_ORDER,
 		accent: { light: '#0066cc', dark: '#2997ff', glow: '#3d8bfd' },
+	},
+	{
+		slug: 'padel',
+		title: 'Падел',
+		phrase: 'в паделе',
+		elementLabel: 'Удар или действие',
+		elementsTitle: 'Удары и действия',
+		mechanismTitle: 'Механизм и удары',
+		elements: PADEL_ELEMENTS,
+		frequencyOrder: PADEL_FREQUENCY_ORDER,
+		// Лайм: светлый -- 5.5:1 на белом и 4.5:1 на серой заливке чипов, тёмный -- 12:1 на фоне
+		// тёмной темы. По тону далеко и от бирюзы частых травм, и от красного «опасно»
+		accent: { light: '#467509', dark: '#a3e635', glow: '#84cc16' },
 	},
 ] as const satisfies readonly Sport[]
 

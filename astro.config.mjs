@@ -48,8 +48,9 @@ export default defineConfig({
 	// Маркеры `data-chart` в статьях превращаются в пиктограммы из frontmatter.
 	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [chartsPlugin] }) },
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
-	// `frame-ancestors` в `<meta>` не работает, встраивание блокирует Caddy
-	// через `X-Frame-Options`.
+	// `frame-ancestors` в `<meta>` не работает: его ставит Caddy (infra-server, sites/wodcare.caddy),
+	// там разрешено встраивание только Метрике для вебвизора и карты кликов.
+	// Источники Яндекса добавляет только components/metrika.astro, на страницы со счётчиком.
 	security: {
 		csp: {
 			// SDK Mini App грузится с telegram.org, как в wodlog.

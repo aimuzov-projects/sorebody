@@ -196,6 +196,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		half = aspect < NARROW ? (FRAME * NARROW) / aspect / 2 : FRAME / 2
 		halfWidth = half * aspect
 		applyFrame()
+		// Кадр сразу: до следующего requestAnimationFrame канвас уже нового размера, а точки
+		// ещё на старых местах, и на ресайзе они на кадр отставали от фигуры
+		renderer.render(scene, camera)
+		onFrame?.()
 	}
 
 	// Сдвиг кадра в долях экрана: на главной фигура стоит правее индекса (на телефоне -- выше).

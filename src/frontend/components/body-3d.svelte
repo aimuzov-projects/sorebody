@@ -38,7 +38,7 @@
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
-	import { metrikaHit } from '#frontend/lib/metrika.ts'
+	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
@@ -59,7 +59,7 @@
 		type Box,
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
-	import { softwareWebGL } from '#frontend/scene/gpu.ts'
+	import { probeWebGL } from '#frontend/scene/gpu.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
 	import { ANKLES_BOX, HEAD_BOX, injuryFocus, injuryLayer, type Zone } from '#frontend/scene/zones.ts'
@@ -420,7 +420,9 @@
 	let posterShown = $state(true)
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
-	const posterMode = typeof location !== 'undefined' && new URLSearchParams(location.search).has('poster')
+	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
+	const flags = new URLSearchParams(location.search)
+	const posterMode = flags.has('poster')
 
 	/**
 	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
@@ -907,13 +909,33 @@
 
 		baseLevel = parseHash().level
 
-		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
-		if (!location.hash) {
+		// `?scene` включает сцену и под автотестом, и на медленном WebGL. Рендер постера (`?poster`)
+		// её требует
+		const forced = posterMode || flags.has('scene')
+		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный
+		// WebGL, и страница с ней занимает у axe десятки секунд. Остаются постер и разметка
+		const automated = navigator.webdriver && !forced
+		const webgl = automated || forced || flags.has('lite') ? 'gpu' : probeWebGL()
+
+		// Без видеокарты сцена на секунды занимает процессор и тормозит всю страницу: остаются
+		// постер и индекс, 3D включается кнопкой. `?lite` -- этот режим на любом устройстве.
+		// Цель в Метрике -- чтобы видеть, у какой доли посетителей он включается
+		lite = flags.has('lite') || webgl === 'software'
+
+		if (lite) metrikaGoal('scene-lite')
+
+		// Без WebGL вовсе -- сразу сообщение, код сцены не грузим
+		if (webgl === 'none') status = 'error'
+
+		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра.
+		// Без сцены кадр всегда общий: постер и плашка нужны и после «Назад» из зоны по ссылке
+		if (!location.hash || lite) {
 			placePoster()
 			void document.fonts?.ready.then(placePoster)
 			window.addEventListener('resize', placePoster)
-			hintShown = !movementPage && !introHintSeen()
 		}
+
+		if (!location.hash && !lite) hintShown = !movementPage && !introHintSeen()
 
 		sync()
 		window.addEventListener('popstate', onHistory)
@@ -923,24 +945,11 @@
 		let disposed = false
 		let frames = 0
 		let fpsFrom = performance.now()
-		const params = new URLSearchParams(location.search)
-		// `?scene` включает сцену и под автотестом, и на медленном WebGL. Рендер постера (`?poster`)
-		// её требует
-		const forced = posterMode || params.has('scene')
-		// Под автотестом (axe, проверка страниц) сцену не запускаем: в CI её рисует программный
-		// WebGL, и страница с ней занимает у axe десятки секунд. Остаются постер и разметка
-		const automated = navigator.webdriver && !forced
-
-		// Без видеокарты сцена на секунды занимает процессор и тормозит всю страницу: остаются
-		// постер и индекс, 3D включается кнопкой. `?lite` -- этот режим на любом устройстве
-		lite = params.has('lite') || (!automated && !forced && softwareWebGL())
-
-		if (lite) hintShown = false
 
 		loadScene = load
 
 		// Код сцены -- сотни килобайт: сначала кадр с постером и индексом, потом он
-		if (!automated && !lite) requestAnimationFrame(() => setTimeout(load))
+		if (!automated && !lite && webgl !== 'none') requestAnimationFrame(() => setTimeout(load))
 
 		function load() {
 			const ready = import('#frontend/scene/body-scene.ts').then(async ({ createBodyScene }) => {
@@ -1589,10 +1598,11 @@
 	{/if}
 
 	<!-- Медленный WebGL: на месте подсказки -- кнопка, включающая 3D. Зоны открываются из индекса -->
-	{#if lite && posterRect && !open}
+	{#if lite && !open}
 		<p
 			class="body3d__hint body3d__lite"
-			class:body3d__hint--below={!hintPlace.side}
+			class:body3d__hint--below={posterRect && !hintPlace.side}
+			class:body3d__lite--corner={!posterRect}
 			style:--hint-x="{hintPlace.x}px"
 			style:--hint-y="{hintPlace.y}px"
 			style:--hint-room="{hintPlace.room}px"
@@ -2174,6 +2184,13 @@
 			gap: 8px;
 			align-items: flex-start;
 			padding: 12px 14px;
+		}
+
+		/* Места фигуры ещё не знаем: плашка в правом верхнем углу под шапкой */
+		&__lite--corner {
+			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
+			right: var(--theme-toggle-right);
+			left: auto;
 		}
 
 		&__lite-start {

@@ -1,4 +1,4 @@
-import { ChartColumn, Globe, PersonStanding, Rocket, Smartphone, Stethoscope } from 'lucide-static'
+import { ArrowLeftRight, ChartColumn, Globe, PersonStanding, Rocket, Smartphone, Stethoscope } from 'lucide-static'
 
 import { PADEL_RACKET } from '#frontend/lib/icons.ts'
 
@@ -19,6 +19,18 @@ export type Release = {
 }
 
 export const RELEASES: Release[] = [
+	{
+		version: '1.10.0',
+		date: '2026-10-18',
+		title: 'Спорт меняется без перезагрузки',
+		icon: ArrowLeftRight,
+		items: [
+			'Спорт в заголовке теперь меняется без перезагрузки: фигура остаётся на месте, цвет плавно перетекает, а открытая зона переезжает вместе с вами. Кнопка «Назад» в браузере возвращает прежний спорт.',
+			'У каждой травмы на фигуре своя метка с одним номером. Раньше на одной точке могло стоять «1,2».',
+			'Подсказка «Нажмите на точку» больше не закрывает голову: она стоит рядом с фигурой на полупрозрачной подложке и прячется, как только вы начинаете вращать или приближать модель.',
+			'Подключили Яндекс Метрику, чтобы понимать, какие травмы ищут чаще. Статистика обезличена, а то, что вы вводите в поиск, в неё не попадает.',
+		],
+	},
 	{
 		version: '1.9.0',
 		date: '2026-10-18',

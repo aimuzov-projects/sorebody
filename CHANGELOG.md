@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.10.0](https://github.com/aimuzov-projects/wodcare/compare/v1.9.0...v1.10.0) (2026-10-18)
+
+
+### Features
+
+* add Yandex Metrika with webvisor and a masked search field ([#69](https://github.com/aimuzov-projects/wodcare/issues/69)) ([519ef34](https://github.com/aimuzov-projects/wodcare/commit/519ef34e717cf17e3be03818796303ca3be41174))
+* **home:** move the first-visit hint beside the head and give it a glass backdrop ([#68](https://github.com/aimuzov-projects/wodcare/issues/68)) ([895dbdb](https://github.com/aimuzov-projects/wodcare/commit/895dbdb8c05c48a143dc22c35b3e60086b953cb0))
+* **home:** switch sports in place without reloading the scene ([#62](https://github.com/aimuzov-projects/wodcare/issues/62)) ([1ad879f](https://github.com/aimuzov-projects/wodcare/commit/1ad879fd9f4927ae57ddb107d5bf419fa7ed7c3b))
+* **model:** give every injury its own marker instead of joined numbers ([#65](https://github.com/aimuzov-projects/wodcare/issues/65)) ([6492460](https://github.com/aimuzov-projects/wodcare/commit/6492460f0f7102eae39ba173ee14bd791df8df78))
+
+
+### Bug Fixes
+
+* **changelog:** use a padel racket icon for the padel release ([#63](https://github.com/aimuzov-projects/wodcare/issues/63)) ([60b75e6](https://github.com/aimuzov-projects/wodcare/commit/60b75e65df503ae0763b5de8516b0b950bd76509))
+* keep the theme peek quiet when hovering the changelog link ([#66](https://github.com/aimuzov-projects/wodcare/issues/66)) ([8ad0a34](https://github.com/aimuzov-projects/wodcare/commit/8ad0a344897f9bb4ebf513abebf2f09bae202698))
+
 ## [1.9.0](https://github.com/aimuzov-projects/wodcare/compare/v1.8.0...v1.9.0) (2026-10-18)
 
 

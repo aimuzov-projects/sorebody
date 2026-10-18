@@ -1,27 +1,50 @@
 ---
+import NotFound from '@aimuzov-projects/infra-site-kit/not-found.astro'
+
+import Logo from '#frontend/components/logo.svelte'
+import SiteHeader from '#frontend/components/site-header.svelte'
 import Base from '#frontend/layouts/base.astro'
 ---
 
-<Base title="Страница не найдена" description="Такой страницы на сайте нет." index={false}>
+<Base title="Страница не найдена" description="Такой страницы на сайте нет." index={false} bodyClass="missing-page">
+	<!-- Та же шапка, что у статей: слева логотип на главную, справа переключатель темы из Base -->
+	<SiteHeader>
+		<Logo href="/" />
+	</SiteHeader>
 	<main class="missing">
-		<div class="container">
-			<h1 class="missing__title">Такой страницы нет</h1>
-			<p>Возможно, ссылка устарела или в ней опечатка.</p>
-			<a href="/" class="missing__link">
-				На главную
-			</a>
-		</div>
+		<NotFound />
 	</main>
 </Base>
 
 <style>
-	.missing {
-		display: grid;
-		align-items: center;
-		min-height: 100svh;
+	/* Логотип красится токенами сцены (styles/scene.css), а её стили тут не нужны: те же цвета
+	   по светлой и тёмной теме задаём сами */
+	:global(.missing-page) {
+		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
+		--a-fg: var(--fg);
+		--a-blue: var(--accent);
+		--a-logo: #8e8e93;
+		--a-care: #aeaeb2;
+	}
 
-		&__link {
-			color: var(--accent);
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme='light']) .missing-page) {
+			--a-care: #a1a1a6;
 		}
+	}
+
+	:global(:root[data-theme='dark'] .missing-page) {
+		--a-care: #a1a1a6;
+	}
+
+	.missing {
+		--not-found-accent: var(--accent);
+		--not-found-muted: var(--muted);
+		--not-found-radius: 12px;
+
+		display: grid;
+		flex: 1;
+		align-items: center;
+		padding: 0 var(--gutter) var(--section-y);
 	}
 </style>

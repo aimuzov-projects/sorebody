@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { basename } from 'node:path'
 import { test } from 'node:test'
 import { parse } from 'yaml'
 
@@ -8,6 +10,7 @@ import { REGIONS } from '#frontend/data/regions.ts'
 import { SPORTS } from '#frontend/data/sports.ts'
 
 import { INJURY_HEADINGS, LENS_HEADINGS } from './article-html.ts'
+import { IMAGE_HEIGHT, IMAGE_VARIANTS, IMAGE_WIDTH, imageVariant } from './article-image.ts'
 import { atlasSrc } from './atlas.ts'
 import { injuryPage } from './injury-page.ts'
 import { injurySchema, lensSchema } from './injury-schema.ts'
@@ -16,6 +19,11 @@ import { sportWordsIn } from './sport-words.ts'
 
 const CONTENT = new URL('../content/', import.meta.url)
 const PUBLIC = new URL('../../../public', import.meta.url)
+const RESIZE = 'node scripts/images/resize.mjs'
+/** Хеши оригиналов, с которых сняты копии для srcset: пишет их scripts/images/resize.mjs. */
+const variantHashes: Record<string, string> = JSON.parse(
+	readFileSync(new URL('../data/image-variants.json', import.meta.url), 'utf8'),
+)
 
 type Doc = { slug: string; data: Record<string, any>; body: string; headings: string[] }
 
@@ -166,7 +174,35 @@ for (const doc of injuries) {
 			const file = readFileSync(new URL(`.${src}`, `${PUBLIC}/`))
 			const size = src.endsWith('.webp') ? webpSize(file) : jpegSize(file)
 
-			assert.deepEqual(size, { width: 1200, height: 669 }, src)
+			assert.deepEqual(size, { width: IMAGE_WIDTH, height: IMAGE_HEIGHT }, src)
+		}
+	})
+
+	// Копии для srcset собирает scripts/images/resize.mjs: без копии телефон получит 404 вместо картинки
+	test(`${slug}: every image has its srcset variants`, () => {
+		for (const { src } of data.images)
+			for (const width of IMAGE_VARIANTS) {
+				const variant = imageVariant(src, width)
+				const path = new URL(`.${variant}`, `${PUBLIC}/`)
+
+				assert.ok(existsSync(path), `${variant}: нет копии, запусти ${RESIZE}`)
+
+				const file = readFileSync(path)
+				const size = variant.endsWith('.webp') ? webpSize(file) : jpegSize(file)
+
+				assert.equal(size.width, width, variant)
+				assert.ok(Math.abs(size.height - (IMAGE_HEIGHT * width) / IMAGE_WIDTH) <= 1, variant)
+			}
+	})
+
+	// Оригинал заменили на месте, а копии остались от старого: размеры у них те же, ловим по хешу
+	test(`${slug}: srcset variants are cut from the current original`, () => {
+		for (const { src } of data.images) {
+			const hash = createHash('sha256')
+				.update(readFileSync(new URL(`.${src}`, `${PUBLIC}/`)))
+				.digest('hex')
+
+			assert.equal(variantHashes[basename(src)], hash, `${src}: копии устарели, запусти ${RESIZE}`)
 		}
 	})
 
@@ -185,6 +221,27 @@ for (const doc of injuries) {
 		assert.deepEqual(sportWordsIn([prose, ...captions].join('\n')), [])
 	})
 }
+
+// Картинку убрали из статьи или переименовали, а файл и его копии остались лежать в public
+test('public/injuries holds only the article images and their srcset variants', () => {
+	const used = injuries.flatMap(({ data }) => data.images.map(({ src }: { src: string }) => src))
+	const expected = new Set(used.flatMap((src) => [src, ...IMAGE_VARIANTS.map((w) => imageVariant(src, w))]))
+	const files = readdirSync(new URL('injuries/', `${PUBLIC}/`), { withFileTypes: true })
+		.filter((entry) => entry.isFile())
+		.map((entry) => `/injuries/${entry.name}`)
+
+	assert.deepEqual(
+		files.filter((file) => !expected.has(file)),
+		[],
+		'не нужны ни одной статье',
+	)
+
+	assert.deepEqual(
+		Object.keys(variantHashes).filter((file) => !used.includes(`/injuries/${file}`)),
+		[],
+		`в data/image-variants.json лишние картинки, запусти ${RESIZE}`,
+	)
+})
 
 test('every folder in content/sports is a sport from data/sports.ts', () => {
 	assert.deepEqual(

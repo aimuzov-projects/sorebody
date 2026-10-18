@@ -352,10 +352,13 @@
 
 	function placePoster() {
 		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
-		sheetTop = wrap?.querySelector<HTMLElement>('.index')?.offsetTop ?? Infinity
+		sheetTop = wrap?.querySelector('.index__title--home')?.getBoundingClientRect().top ?? Infinity
 	}
 
-	/** Верх шторки на телефоне: подсказка под ногами фигуры не заходит на заголовок с селектом спорта. */
+	/**
+	 * Верх заголовка в шторке: на телефоне подсказка под ногами фигуры поднимается над ним на свою
+	 * высоту, чтобы не лечь на селект спорта. Шрифт может догрузиться позже -- тогда меряем снова.
+	 */
 	let sheetTop = $state(Infinity)
 
 	/**
@@ -620,6 +623,7 @@
 		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
 		if (!location.hash) {
 			placePoster()
+			void document.fonts?.ready.then(placePoster)
 			window.addEventListener('resize', placePoster)
 			hintShown = !movementPage && !introHintSeen()
 		}
@@ -1030,9 +1034,10 @@
 
 	/**
 	 * Статья проявляется со сдвигом снизу, при reduced motion -- только прозрачностью.
+	 * `rise` -- насколько снизу: подсказке на телефоне сдвиг не нужен, снизу у неё заголовок шторки.
 	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
 	 */
-	function fadeUp(node: HTMLElement) {
+	function fadeUp(node: HTMLElement, { rise = 24 } = {}) {
 		// Статья из адреса стоит на месте с первого кадра: mount у Astro проигрывает и вход
 		if (!mounted) return { duration: 0 }
 
@@ -1043,7 +1048,7 @@
 			easing: (t: number) => 1 - (1 - t) ** 4,
 			tick: (t: number) => {
 				node.style.opacity = String(t)
-				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 24}px)`
+				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * rise}px)`
 			},
 		}
 	}
@@ -1249,8 +1254,11 @@
 		<p
 			class="body3d__hint"
 			style:--hint-x="{posterRect.left + posterRect.width / 2}px"
-			style:--hint-y="{Math.min(posterRect.top + posterRect.height * 0.95, sheetTop - 46)}px"
-			transition:fadeUp
+			style:--hint-y="{posterRect.top + posterRect.height * 0.95}px"
+			style:--hint-room={Number.isFinite(sheetTop)
+				? `${sheetTop - 8 - (posterRect.top + posterRect.height * 0.95)}px`
+				: null}
+			transition:fadeUp={{ rise: innerWidth < 700 ? 0 : 24 }}
 		>
 			Нажмите на точку — откроются травмы зоны
 			<button class="body3d__hint-close" type="button" aria-label="Закрыть подсказку" onclick={dismissHint}
@@ -1730,6 +1738,8 @@
 
 			@media (width < 700px) {
 				top: var(--hint-y);
+				/* Низ подсказки не ниже заголовка шторки: --hint-room -- место до него, 100% -- своя высота */
+				translate: -50% min(0px, calc(var(--hint-room, 100%) - 100%));
 			}
 		}
 

@@ -1311,7 +1311,7 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__title" aria-hidden="true">Травмы в кроссфите</p>
+				<p class="index__title index__title--home" aria-hidden="true">Травмы в кроссфите</p>
 				<!-- Кто попал на главную впервые: что за сайт и где о нём подробнее -->
 				<p class="index__lead">
 					Справочник: что это за травма, когда к врачу и как тренироваться дальше.
@@ -1372,6 +1372,7 @@
 									class="index__chip index__chip--{value}"
 									type="button"
 									aria-pressed={frequency === value}
+									title={label}
 									onclick={() => (frequency = value)}
 									>{#if icon}<span class="index__chip-icon" aria-hidden="true">{@html icon}</span
 										>{/if}<span class="index__chip-label" data-label={label}>{label}</span></button
@@ -1976,6 +1977,11 @@
 			opacity 0.45s var(--a-ease),
 			transform 0.45s var(--a-ease);
 
+		/* На невысоком экране вместе с плотными строками зон (&__zone): список без прокрутки */
+		@media (width >= 700px) and (height < 820px) {
+			gap: 16px;
+		}
+
 		@media (width < 700px) {
 			top: auto;
 			right: 0;
@@ -2266,6 +2272,18 @@
 			}
 		}
 
+		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
+		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
+		   кегль тянется за колонкой, 39px на широком экране */
+		&__title--home {
+			font-size: clamp(22px, 3.1vw, 39px);
+			white-space: nowrap;
+
+			@media (width < 700px) {
+				font-size: 26px;
+			}
+		}
+
 		&__icon {
 			display: inline-flex;
 			flex: none;
@@ -2321,17 +2339,26 @@
 			border-radius: 999px;
 			background: var(--a-fill);
 
-			/* Четыре положения одной строкой -- около 375px: в колонке уже этого (шторка на
-			   ноутбуке, остров на телефоне) переключатель встаёт сеткой 2×2, а не вылезает за край */
+			/* Четыре подписи в строку -- около 375px: в колонке уже этого (шторка на ноутбуке,
+			   остров на телефоне) подпись остаётся только у выбранного положения, у остальных --
+			   знак уровня. Подпись при этом не пропадает для скринридера и всплывает в title */
 			@container (width < 380px) {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				width: 100%;
-				border-radius: 20px;
-
 				& .index__chip {
 					justify-content: center;
 					padding-inline: 10px;
+				}
+
+				& .index__chip:has(.index__chip-icon):not([aria-pressed='true']) {
+					padding-inline: 8px;
+
+					& .index__chip-label {
+						position: absolute;
+						overflow: hidden;
+						width: 1px;
+						height: 1px;
+						white-space: nowrap;
+						clip-path: inset(50%);
+					}
 				}
 			}
 		}
@@ -2340,6 +2367,7 @@
 			--chip: var(--a-fg);
 
 			cursor: pointer;
+			position: relative;
 			display: inline-flex;
 			gap: 6px;
 			align-items: center;
@@ -2492,6 +2520,12 @@
 			transition:
 				color 0.3s var(--a-ease),
 				opacity 0.3s var(--a-ease);
+
+			/* Ноутбук с невысоким экраном (1280×720, 1366×768): строки плотнее, чтобы все зоны
+			   влезли без прокрутки */
+			@media (width >= 700px) and (height < 820px) {
+				padding: 3px 0;
+			}
 
 			@media (width < 700px) {
 				padding: 3px 0;
@@ -2758,8 +2792,9 @@
 				}
 			}
 
-			/* Частота на всю ширину карточки сеткой 2×2 (см. &__freq), под палец -- не ниже 40px */
+			/* Чипы частоты под палец: не меньше 40 на 40 */
 			& .index__chip {
+				min-width: 40px;
 				min-height: 40px;
 			}
 

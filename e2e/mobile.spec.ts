@@ -99,12 +99,37 @@ test.describe('на широком экране', () => {
 test.describe('на ноутбуке с узкой шторкой', () => {
 	test.use({ viewport: { width: 820, height: 900 }, hasTouch: false, isMobile: false })
 
-	test('переключатель частоты не вылезает из шторки на модель', async ({ page }) => {
+	test('переключатель частоты одной строкой не вылезает из шторки на модель', async ({ page }) => {
 		await page.goto('/')
 
 		const edge = (selector: string) => page.locator(selector).evaluate((el) => el.getBoundingClientRect().right)
+		const rare = page.getByRole('button', { name: 'Редкие' })
 
 		expect(await edge('.index__freq')).toBeLessThanOrEqual(await edge('.index'))
+		// Невыбранный уровень -- одним знаком, подпись остаётся именем кнопки
+		await expect(rare).toBeVisible()
+		await rare.click()
+		await expect(rare).toHaveAttribute('aria-pressed', 'true')
+		expect(await edge('.index__freq')).toBeLessThanOrEqual(await edge('.index'))
+	})
+})
+
+test.describe('на ноутбуке 1280×720', () => {
+	test.use({ viewport: { width: 1280, height: 720 }, hasTouch: false, isMobile: false })
+
+	test('заголовок главной в одну строку, все зоны видны без прокрутки', async ({ page }) => {
+		await page.goto('/')
+
+		const title = page.locator('.index__title')
+		const zones = page.locator('.index__zones')
+
+		expect(
+			await title.evaluate(
+				(el) => el.getBoundingClientRect().height < parseFloat(getComputedStyle(el).fontSize) * 2,
+			),
+		).toBe(true)
+
+		expect(await zones.evaluate((list) => list.scrollHeight <= list.clientHeight)).toBe(true)
 	})
 })
 

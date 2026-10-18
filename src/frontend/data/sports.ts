@@ -110,6 +110,7 @@ const PADEL_FREQUENCY_ORDER = [
 	'rotator-cuff-tendinopathy',
 	'patellofemoral-pain',
 	'low-back-strain',
+	'achilles-tendinopathy',
 	// Нечастые
 	'plantar-fasciitis',
 	'fall-contusions',

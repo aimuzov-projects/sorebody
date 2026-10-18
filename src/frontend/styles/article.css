@@ -276,10 +276,12 @@
 		mask-image: var(--article-image-mask);
 		mask-composite: intersect;
 
-		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только верх и низ -- кости
-		   уходят за кадр и иначе обрывались бы линией */
+		/* Вырезанная иллюстрация: фон уже прозрачный, гасим только края кадра -- кости уходят
+		   за него и иначе обрывались бы линией. По бокам переход короче, чтобы не съедать рисунок */
 		&--cutout {
-			mask-image: linear-gradient(to bottom, transparent, #000000 10%, #000000 85%, transparent);
+			mask-image:
+				linear-gradient(to bottom, transparent, #000000 10%, #000000 85%, transparent),
+				linear-gradient(to right, transparent, #000000 8%, #000000 92%, transparent);
 		}
 	}
 

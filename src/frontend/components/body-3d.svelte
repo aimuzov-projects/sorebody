@@ -1533,8 +1533,15 @@
 			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
-			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css -->
-			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
+			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
+			     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
+			<p
+				class="article-bar__title"
+				aria-hidden="true"
+				style:visibility={articleStatus === 'ready' ? null : 'hidden'}
+			>
+				{splitTitle(article.title).name}
+			</p>
 		</SiteHeader>
 		{#if articleStatus === 'loading'}
 			<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
@@ -3465,6 +3472,19 @@
 			& :global(.article) {
 				padding-top: 8px;
 			}
+
+			/* Название и "Коротко" стоят с начала загрузки, пришедшее следом проявляется: иначе
+			   текст выскакивал разом, будто страница рендерится кусками. backwards, а не both:
+			   после конца анимация не держит opacity и не мешает липкому оглавлению */
+			& :global(.article__hero > :not(.article__title, .article__summary)),
+			& :global(.article > :not(.article__hero)) {
+				animation: fade-in 0.5s var(--a-ease) backwards;
+			}
+		}
+
+		/* Подвал приходит вместе со статьёй и проявляется с ней */
+		& :global(.footer) {
+			animation: fade-in 0.5s var(--a-ease) backwards;
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой

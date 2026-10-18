@@ -35,11 +35,18 @@ export type ZoneInjury = {
 /**
  * Центры суставов в координатах `public/model/body.glb`: метры, Y вверх, лицо к +Z, правая сторона
  * тела на -X. Посчитаны скриптом сборки модели по костям BodyParts3D (головка плечевой, дистальный
- * эпифиз плечевой, кости запястья, L1–L5, головка бедренной, надколенник, таранная).
+ * эпифиз плечевой, кости запястья, L1–L5, головка бедренной, надколенник, таранная). Голова и
+ * голень -- по костям фигуры `body.glb`: центр черепа с нижней челюстью и середина большеберцовой
+ * и малоберцовой между коленом и лодыжкой.
  * Ракурсы подобраны по снимкам: плечо и таз спереди-сбоку, локоть и кисть сбоку, чтобы их
- * не закрывало туловище, поясница сзади, голеностоп чуть сверху.
+ * не закрывало туловище, поясница сзади, голеностоп чуть сверху, голова спереди, голень сзади-сбоку --
+ * со стороны икры.
  */
 export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
+	head: {
+		radius: 0.12,
+		points: [{ position: [0, 1.6, 0], normal: [0, 0, 1], view: { azimuth: 20, polar: 82 } }],
+	},
 	shoulder: { radius: 0.13, points: pair([0.165, 1.39, -0.024], 1, 0.3, { azimuth: 40, polar: 70 }) },
 	elbow: { radius: 0.06, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
 	'wrist-hand': { radius: 0.1, points: pair([0.25, 0.874, 0.021], 1, 0.3, { azimuth: 70, polar: 74 }) },
@@ -49,8 +56,16 @@ export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points:
 	},
 	'hip-groin': { radius: 0.12, points: pair([0.107, 0.882, -0.025], 0.6, 1, { azimuth: 35, polar: 76 }) },
 	knee: { radius: 0.085, points: pair([0.081, 0.459, 0.011], 0.4, 1, { azimuth: 25, polar: 76 }) },
+	shin: { radius: 0.11, points: pair([0.09, 0.273, -0.028], 1, -0.6, { azimuth: 125, polar: 76 }) },
 	'ankle-foot': { radius: 0.09, points: pair([0.07, 0.064, -0.024], 0.5, 1, { azimuth: 40, polar: 62 }) },
 }
+
+/**
+ * Зоны, у которых ещё нет детальных кусков в `public/model/detail`: их собирают из исходников
+ * BodyParts3D и Z-Anatomy (scripts/model/README.md). Пока кусков нет, раскрытая зона показывает
+ * мышцы и кости лёгкой фигуры, без связок, сосудов и подсветки мышц травмы.
+ */
+export const NO_DETAIL: ReadonlySet<Region> = new Set(['head', 'shin'])
 
 /**
  * Левая точка по данным и зеркальная правая; нормаль -- наружу вбок (`side`) и вперёд (`front`),
@@ -73,8 +88,9 @@ const WHOLE = {
 }
 
 /**
- * Зоны фигуры с травмами спорта, внутри зоны -- от частых к редким по его `frequencyOrder`. Регион `other` своего сустава не имеет:
- * он становится `whole`, растворением всей фигуры от груди.
+ * Зоны фигуры с травмами спорта, внутри зоны -- от частых к редким по его `frequencyOrder`. Зон без
+ * травм спорта на его странице нет: голова паделу нужна, кроссфиту -- нет. Регион `other` своего
+ * сустава не имеет: он становится `whole`, растворением всей фигуры от груди.
  */
 export function buildZones(sport: Sport, injuries: (ZoneInjury & { region: Region })[]) {
 	const byRegion = (slug: Region) =>
@@ -85,12 +101,14 @@ export function buildZones(sport: Sport, injuries: (ZoneInjury & { region: Regio
 				(a, b) =>
 					frequencyRank(sport, a.slug) - frequencyRank(sport, b.slug) || a.title.localeCompare(b.title, 'ru'),
 			)
-	const zones: Zone[] = REGIONS.filter((r) => r.slug !== 'other').map((r) => ({
-		slug: r.slug,
-		label: r.label,
-		...ANCHORS[r.slug as Exclude<Region, 'other'>],
-		injuries: byRegion(r.slug),
-	}))
+	const zones: Zone[] = REGIONS.filter((r) => r.slug !== 'other')
+		.map((r) => ({
+			slug: r.slug,
+			label: r.label,
+			...ANCHORS[r.slug as Exclude<Region, 'other'>],
+			injuries: byRegion(r.slug),
+		}))
+		.filter((zone) => zone.injuries.length > 0)
 	const other = REGIONS.find((r) => r.slug === 'other')!
 	const whole: Zone = { slug: other.slug, label: other.label, ...WHOLE, injuries: byRegion(other.slug) }
 
@@ -133,14 +151,18 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Поясница: диск по центру, мышцы -- сбоку от позвоночника
 	'lumbar-disc-herniation': { offset: [0, -0.03, 0], zoom: 1.8 },
 	'low-back-strain': { offset: [0.05, 0, -0.04], normal: [0.3, 0, -1] },
-	// Всё тело: шея и лицо
+	// Голова: глаз и рот спереди, от центра черепа
+	'eye-injury': { offset: [0.032, 0, 0.07], normal: [0.2, 0, 1], view: { azimuth: 15, polar: 84 }, zoom: 2.4 },
+	'orofacial-trauma': { offset: [0, -0.075, 0.085], normal: [0, 0, 1], view: { azimuth: 15, polar: 86 }, zoom: 2.2 },
+	// Голень: медиальная головка икроножной сзади и изнутри
+	'tennis-leg': { offset: [-0.02, 0.03, -0.075], normal: [-0.3, 0, -1], view: { azimuth: 175, polar: 78 } },
+	// Всё тело: шея
 	'cervical-artery-dissection': {
 		offset: [0, 0.2, -0.01],
 		normal: [0, 0, 1],
 		view: { azimuth: 25, polar: 80 },
 		zoom: 3,
 	},
-	'orofacial-trauma': { offset: [0, 0.31, 0.05], normal: [0, 0, 1], view: { azimuth: 15, polar: 80 }, zoom: 3.2 },
 }
 
 /**

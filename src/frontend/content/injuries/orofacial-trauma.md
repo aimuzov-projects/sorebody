@@ -1,7 +1,7 @@
 ---
 title: Травмы лица и зубов
 titleEn: Orofacial and dental trauma
-region: other
+region: head
 images:
     - src: /injuries/orofacial-trauma-01.webp
       alt: 'Постоянный верхний резец целиком: коронка подсвечена зелёным как место, за которое можно держать зуб, длинный конический корень без подсветки'

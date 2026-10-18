@@ -65,8 +65,6 @@
 		bind:value
 		onkeydown={onKey}
 	/>
-	<!-- Подсказка клавиши: только там, где есть клавиатура и курсор, и пока поле пустое -->
-	<kbd class="search__key" aria-hidden="true">/</kbd>
 </div>
 
 <style>
@@ -179,36 +177,6 @@
 			&::-webkit-search-decoration {
 				appearance: none;
 			}
-		}
-
-		/* Клавиша «/»: тонкая плашка, только с мышью и пока поле пустое и не в фокусе */
-		&__key {
-			display: none;
-			flex: none;
-			place-items: center;
-			min-width: 22px;
-			height: 22px;
-			padding: 0 6px;
-			border-radius: 6px;
-			font: inherit;
-			font-size: 13px;
-			font-weight: 500;
-			color: var(--a-fg2);
-			background: var(--a-fill);
-			transition: opacity 0.25s var(--search-ease);
-
-			@media (hover: hover) and (pointer: fine) {
-				display: inline-grid;
-			}
-		}
-
-		&:focus-within &__key,
-		&--filled &__key {
-			opacity: 0;
-		}
-
-		&--filled &__key {
-			display: none;
 		}
 
 		/* Очистка: кружок 18px в приглушённом цвете с тонким крестиком цвета фона. Проявляется

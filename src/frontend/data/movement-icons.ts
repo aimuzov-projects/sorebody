@@ -3,10 +3,12 @@ import {
 	ArrowBigUp,
 	ArrowBigUpDash,
 	ArrowDownToLine,
+	ArrowUpFromDot,
 	ArrowUpFromLine,
 	BicepsFlexed,
 	Box,
 	BrickWall,
+	ChevronsRight,
 	ChevronsUp,
 	CircleDot,
 	CornerRightDown,
@@ -16,14 +18,20 @@ import {
 	FastForward,
 	Flame,
 	Footprints,
+	Goal,
 	Hand,
 	HandGrab,
+	Merge,
 	MoveDown,
 	MoveVertical,
+	OctagonPause,
 	Repeat2,
 	Infinity as Rings,
 	RotateCcw,
+	Shield,
 	Spline,
+	Split,
+	Swords,
 	Undo2,
 	Users,
 	Volleyball,
@@ -32,14 +40,14 @@ import {
 	Zap,
 } from 'lucide-static'
 
-import type { CrossfitElement, PadelElement } from './sports.ts'
+import type { CrossfitElement, FootballElement, PadelElement } from './sports.ts'
 
 /**
  * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
  * движения: куда идёт штанга, за что держатся, чем работают. Гиря -- `weight`,
  * кольца -- `infinity`.
  */
-export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement, string> = {
+export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballElement, string> = {
 	squat: ArrowDownToLine,
 	deadlift: ArrowUpFromLine,
 	'hip-thrust': ArrowBigUp,
@@ -73,6 +81,16 @@ export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement, string> = {
 	'glass-collision': BrickWall,
 	'partner-collision': Users,
 	'racket-rebound': RotateCcw,
+	// Футбол: куда уходит мяч или игрок, кто с кем сходится. Приземление и попадание мячом -- общие
+	// с паделом
+	kicking: Goal,
+	sprint: ChevronsRight,
+	'change-of-direction': Split,
+	deceleration: OctagonPause,
+	tackle: Swords,
+	heading: ArrowUpFromDot,
+	collision: Merge,
+	goalkeeping: Shield,
 }
 
 export type ElementIcon = keyof typeof MOVEMENT_ICONS

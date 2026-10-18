@@ -23,6 +23,32 @@ function contrast(a: string, b: string) {
 	return (hi! + 0.05) / (lo! + 0.05)
 }
 
+/**
+ * Насколько разные два цвета #rrggbb на глаз: расстояние в OKLab, где равные шаги видятся
+ * примерно равными. Порог заметной разницы около 0.02, соседние спорты разводим сильнее.
+ */
+function distance(a: string, b: string) {
+	const oklab = (hex: string) => {
+		const [r, g, b] = [1, 3, 5].map((i) => {
+			const v = parseInt(hex.slice(i, i + 2), 16) / 255
+
+			return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+		}) as [number, number, number]
+		const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+		const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+		const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+
+		return [
+			0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+			1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+			0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+		]
+	}
+	const [p, q] = [oklab(a), oklab(b)]
+
+	return Math.hypot(p[0]! - q[0]!, p[1]! - q[1]!, p[2]! - q[2]!)
+}
+
 test('regions have unique slugs and Russian labels', () => {
 	const slugs = REGIONS.map((r) => r.slug)
 
@@ -68,6 +94,13 @@ for (const sport of SPORTS) {
 		assert.match(block, new RegExp(`--on-accent-dark: ${sport.accent.onDark};`))
 	})
 
+	// Ссылки и фраза спорта в заголовке -- мелкий текст акцентом: AA на фоне и на серой заливке чипов
+	test(`${sport.slug}: accent text passes AA on the page and chip backgrounds`, () => {
+		for (const bg of ['#ffffff', '#f5f5f7']) assert.ok(contrast(sport.accent.light, bg) >= 4.5, `light на ${bg}`)
+
+		assert.ok(contrast(sport.accent.dark, '#161617') >= 4.5, 'dark')
+	})
+
 	// Номер текущей строки и метка травмы на модели -- крупные цифры: для них хватает 3:1
 	test(`${sport.slug}: digits on the accent fill are readable in both themes`, () => {
 		assert.ok(contrast(sport.accent.onLight, sport.accent.light) >= 3, 'light')
@@ -82,3 +115,15 @@ for (const sport of SPORTS) {
 		for (const color of [sport.accent.light, sport.accent.dark]) assert.ok(!taken.includes(color), color)
 	})
 }
+
+// Цвет -- знак спорта: при переключении в заголовке и на модели спорты не должны сливаться.
+// Лайм падела и зелёный футбола -- самая близкая пара, порог взят с запасом над ней
+test('sport accents are far apart from each other in both themes', () => {
+	for (const theme of ['light', 'dark'] as const)
+		for (const [i, a] of SPORTS.entries())
+			for (const b of SPORTS.slice(i + 1)) {
+				const d = distance(a.accent[theme], b.accent[theme])
+
+				assert.ok(d >= 0.08, `${a.slug} и ${b.slug} в теме ${theme}: ${d.toFixed(3)}`)
+			}
+})

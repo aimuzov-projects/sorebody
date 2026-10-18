@@ -186,7 +186,7 @@ export const SPORTS = [
 	},
 ] as const satisfies readonly Sport[]
 
-/** Спорт, который открывает `/`. Пока спорт один, его страницы и ссылки живут от корня. */
+/** Спорт, который открывает `/`: ссылки на его сцену ведут сюда, а не на `/<sport>/`. */
 export const DEFAULT_SPORT: SportSlug = 'crossfit'
 
 export const sportOf = (slug: SportSlug): Sport => SPORTS.find((s) => s.slug === slug)!

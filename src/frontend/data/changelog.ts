@@ -17,7 +17,7 @@ import { PADEL_RACKET } from '#frontend/lib/icons.ts'
  * версия из CHANGELOG.md, его дата, короткий заголовок и пункты о том, что заметит читатель.
  * CI, рефакторинг и зависимости не пишем. Ссылка внутри пункта -- `[текст](/путь)`.
  */
-export type Release = {
+type Release = {
 	version: string
 	/** `YYYY-MM-DD`, как в CHANGELOG.md. */
 	date: string

@@ -6,7 +6,7 @@ export type Injury = CollectionEntry<'injuries'>
 export type Lens = CollectionEntry<'lenses'>
 
 /** Травма в спорте: общая часть и линза. */
-export type SportInjury = { slug: string; injury: Injury; lens: Lens }
+type SportInjury = { slug: string; injury: Injury; lens: Lens }
 
 /**
  * Травмы спорта: линзы из `content/sports/<sport>` вместе с общими частями. Линза без общей

@@ -70,8 +70,6 @@ export const injurySchema = z.strictObject({
 	draft: draftSchema,
 })
 
-export type InjuryData = z.infer<typeof injurySchema>
-
 /**
  * Frontmatter линзы (`content/sports/<sport>/<slug>.md`): травма глазами одного спорта, slug --
  * как у общей части. Элементы сверяет со списком спорта сборка (lib/catalog.ts) и тест контента:
@@ -86,5 +84,3 @@ export const lensSchema = z.strictObject({
 	sources: sourcesSchema,
 	draft: draftSchema,
 })
-
-export type LensData = z.infer<typeof lensSchema>

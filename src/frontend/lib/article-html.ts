@@ -47,7 +47,7 @@ export const SECTIONS = [
 
 export type SectionId = (typeof SECTIONS)[number]['id']
 
-export type Section = { id: SectionId; title: string; icon: string }
+type Section = { id: SectionId; title: string; icon: string }
 
 /**
  * Заголовки разделов в файлах: общей части и линзы, в порядке шаблона (его держит тест контента).
@@ -75,7 +75,7 @@ export const LENS_HEADINGS: typeof INJURY_HEADINGS = [
 ]
 
 /** Заголовок раздела на странице: со спортом -- его фразы, без спорта -- как в общей части. */
-export function sectionTitle(id: SectionId, sport?: Sport) {
+function sectionTitle(id: SectionId, sport?: Sport) {
 	if (id === 'frequency') return `Как часто ${sport?.phrase ?? ''}`.trim()
 
 	if (id === 'mechanism') return sport?.mechanismTitle ?? 'Механизм'

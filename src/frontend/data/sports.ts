@@ -141,21 +141,21 @@ const PADEL_FREQUENCY_ORDER = [
 
 /**
  * Травмы футбола от частых к редким, уровни -- из таблицы диагнозов (раздел 3) и пилота (раздел 5)
- * в docs/research/football-injuries-pubmed.md.
+ * в docs/research/football-injuries-pubmed.md, внутри уровня -- по доле в таблице диагнозов UEFA ECIS.
  */
 const FOOTBALL_FREQUENCY_ORDER = [
 	// Частые
 	'hamstring-strain',
+	'fall-contusions',
 	'adductor-groin-pain',
 	'ankle-sprain',
-	'fall-contusions',
 	'muscle-strains',
 	'mcl-sprain',
 	// Нечастые
-	'acl-tear',
-	'concussion',
-	'meniscus-tear',
 	'achilles-tendinopathy',
+	'concussion',
+	'acl-tear',
+	'meniscus-tear',
 	'fifth-metatarsal-fracture',
 	// Редкие
 	'orofacial-trauma',

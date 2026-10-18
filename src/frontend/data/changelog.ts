@@ -1,4 +1,13 @@
-import { ArrowLeftRight, ChartColumn, Globe, PersonStanding, Rocket, Smartphone, Stethoscope } from 'lucide-static'
+import {
+	ArrowLeftRight,
+	ChartColumn,
+	Globe,
+	PersonStanding,
+	Rocket,
+	Smartphone,
+	Sparkles,
+	Stethoscope,
+} from 'lucide-static'
 
 import { PADEL_RACKET } from '#frontend/lib/icons.ts'
 
@@ -19,6 +28,18 @@ export type Release = {
 }
 
 export const RELEASES: Release[] = [
+	{
+		version: '1.11.0',
+		date: '2026-10-18',
+		title: 'Новое имя: Sorebody',
+		icon: Sparkles,
+		items: [
+			'Справочник теперь называется Sorebody, по-английски это значит «ноющее тело». Он давно не только про кроссфит, и старое имя Wodcare стало ему тесно.',
+			'Новый логотип: точка с кольцом, как раскрытая зона на фигуре. Он окрашен в цвет выбранного спорта.',
+			'На страницах, которые не относятся к конкретному спорту, акцентный цвет стал нейтральным, а ссылки подчёркнуты.',
+			'Выбранная тема и закрытые подсказки сохранились.',
+		],
+	},
 	{
 		version: '1.10.0',
 		date: '2026-10-18',

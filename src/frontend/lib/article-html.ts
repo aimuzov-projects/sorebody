@@ -16,6 +16,7 @@ import { ELEMENT_NODE, parse, renderSync, TEXT_NODE } from 'ultrahtml'
 import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 
 import { movementIn } from './movement-match.ts'
+import { citeKey } from './sources.ts'
 
 type Node = { type: number; name?: string; value?: string; attributes?: Record<string, string>; children?: Node[] }
 type Element = Node & { name: string; attributes: Record<string, string>; children: Node[] }
@@ -36,8 +37,6 @@ export const SECTIONS = [
 ] as const
 
 export type Section = (typeof SECTIONS)[number]
-
-const PUBMED = /^https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/\d+\/?$/
 
 const text = (value: string): Node => ({ type: TEXT_NODE, value })
 
@@ -124,10 +123,10 @@ function walk(node: Element, visit: (parent: Element) => void) {
 }
 
 const isCite = (node: Node | undefined): node is Element =>
-	isElement(node, 'a') && PUBMED.test(node.attributes.href ?? '') && /^\d+$/.test(textOf(node).trim())
+	isElement(node, 'a') && citeKey(node.attributes.href ?? '') !== undefined && /^\d+$/.test(textOf(node).trim())
 
 /**
- * Сноски `(N)` и `(N, M)`: ссылки на PubMed с номером источника, в скобках, через запятую.
+ * Сноски `(N)` и `(N, M)`: ссылки на PubMed или рекомендацию с номером источника, в скобках, через запятую.
  * Группу меняем на `<sup>` без скобок; у ссылки подпись из списка источников для тултипа.
  */
 function groupCites(parent: Element, sources: { label: string }[]) {

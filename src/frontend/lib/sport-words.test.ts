@@ -38,6 +38,14 @@ test('catches CrossFit, the gym and its equipment in any case and form', () => {
 		assert.notDeepEqual(sportWordsIn(text), [], text)
 })
 
+test('catches football gear and the tackle, but not the same letters elsewhere', () => {
+	for (const text of ['подкат сзади', 'после подката', 'бутсы', 'в бутсах', 'щитки', 'без щитков'])
+		assert.notDeepEqual(sportWordsIn(text), [], text)
+
+	for (const text of ['к горлу подкатывает тошнота', 'подкатила слабость', 'щитовидный хрящ'])
+		assert.deepEqual(sportWordsIn(text), [], text)
+})
+
 test('lets medical and everyday words through', () => {
 	for (const text of [
 		'толчок стопой',

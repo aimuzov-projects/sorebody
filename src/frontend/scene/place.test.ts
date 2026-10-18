@@ -30,7 +30,17 @@ test('статья -- уровень 2 с её зоной, в том числе 
 })
 
 test('пустой, чужой и битый хеш -- сцена', () => {
-	for (const hash of ['', '#', '#zone=knee:5', '#zone=elbow:0', '#no-such', '#%', '#zone=knee:x'])
+	for (const hash of [
+		'',
+		'#',
+		'#zone=knee:5',
+		'#zone=elbow:0',
+		'#no-such',
+		'#%',
+		'#zone=knee:x',
+		'#zone=knee',
+		'#tgWebAppData=query_id%3DAA%26user%3D%257B%257D',
+	])
 		assert.deepEqual(parseHash(hash, zones), { level: 0 }, hash)
 })
 
@@ -50,6 +60,7 @@ test('спорт по пути главной', () => {
 
 	assert.equal(sportAt('/', sports), 'crossfit')
 	assert.equal(sportAt('/crossfit/', sports), 'crossfit')
+	assert.equal(sportAt('/crossfit', sports), 'crossfit')
 	assert.equal(sportAt('/padel', sports), 'padel')
 	assert.equal(sportAt('/padel/', sports), 'padel')
 	assert.equal(sportAt('/about/', sports), undefined)

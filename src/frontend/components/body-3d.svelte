@@ -876,6 +876,8 @@
 	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал
 	openRegion()
 	sync()
+	// openRegion меняет `?region=` на хеш зоны: referer первого хита -- уже этот адрес
+	hitFrom = location.href
 
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
 	let mounted = false
@@ -1263,6 +1265,11 @@
 		loadToken++
 		stopReading?.()
 		stopReading = undefined
+
+		// Переключатели спорта статьи смонтированы в её HTML, который сейчас уйдёт из DOM
+		for (const app of articleSwitches) void unmount(app)
+
+		articleSwitches = []
 		sceneHidden = false
 		clearTimeout(sleepTimer)
 		body?.pause(false)

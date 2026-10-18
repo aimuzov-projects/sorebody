@@ -35,3 +35,24 @@ test('смена спорта без перезагрузки отправляе
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
 	expect(await hits()).toHaveLength(2)
 })
+
+// Ссылка «/?region=knee» со статьи сразу меняет адрес на хеш зоны: referer -- уже он
+test('первый хит после захода по ссылке на зону не несёт ?region= в referer', async ({ page }) => {
+	await page.addInitScript(() => {
+		const hits: unknown[][] = []
+
+		Object.assign(window, { hits, ym: (...args: unknown[]) => hits.push(args) })
+	})
+
+	await page.goto('/?region=knee')
+	await expect(page.locator('.zone__title')).toHaveText('Колено')
+	await page.getByRole('button', { name: 'Назад' }).click()
+	await page.getByRole('button', { name: 'Вид спорта Кроссфит' }).click()
+	await page.getByRole('option', { name: 'Падел' }).click()
+	await expect(page).toHaveURL(/\/padel\//)
+
+	const hits = () => page.evaluate(() => (window as unknown as { hits: unknown[][] }).hits)
+
+	await expect.poll(hits).toHaveLength(1)
+	expect((await hits())[0][3]).toMatchObject({ referer: expect.not.stringContaining('region=') })
+})

@@ -1,4 +1,4 @@
-import { ChartColumn, PersonStanding, Rocket, Smartphone, Stethoscope, Volleyball } from 'lucide-static'
+import { ChartColumn, Globe, PersonStanding, Rocket, Smartphone, Stethoscope, Volleyball } from 'lucide-static'
 
 /**
  * Что нового на сайте, для читателя, а не для разработчика: страница /changelog. Технический
@@ -17,6 +17,15 @@ export type Release = {
 }
 
 export const RELEASES: Release[] = [
+	{
+		version: '1.9.0',
+		date: '2026-10-18',
+		title: 'Новый адрес сайта',
+		icon: Globe,
+		items: [
+			'Сайт переехал на sorebody.aimuzov.online: справочник теперь не только про кроссфит, и старое имя ему стало тесно. Закладки стоит обновить.',
+		],
+	},
 	{
 		version: '1.8.0',
 		date: '2026-10-18',

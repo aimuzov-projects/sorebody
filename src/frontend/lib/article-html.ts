@@ -213,6 +213,9 @@ function splitSwap(li: Element) {
 	]
 }
 
+/** Процент или диапазон целиком: «14%», «18,5 %», «22,2–43,8%», «75%–93%». */
+const PERCENT = /(\d+(?:[.,]\d+)?(?:\s?%?\s?[–—-]\s?\d+(?:[.,]\d+)?)?\s?%)/
+
 /** Проценты в разделе о частоте -- крупнее и жирнее, кроме текста ссылок. */
 function highlightPercents(parent: Element) {
 	if (parent.name === 'a' || parent.name === 'sup' || parent.name === 'strong') return
@@ -220,11 +223,13 @@ function highlightPercents(parent: Element) {
 	parent.children = parent.children.flatMap((node) => {
 		if (node.type !== TEXT_NODE || !/\d\s?%/.test(node.value!)) return [node]
 
-		return node
-			.value!.split(/(\d+(?:[.,]\d+)?\s?%)/)
-			.filter(Boolean)
-			.map((part) =>
-				/^\d+(?:[.,]\d+)?\s?%$/.test(part) ? el('strong', { class: 'stat' }, [text(part)]) : text(part),
-			)
+		return (
+			node
+				.value!.split(PERCENT)
+				// Нечётные куски -- то, что поймала группа в PERCENT
+				.flatMap((part, i) =>
+					!part ? [] : i % 2 ? [el('strong', { class: 'stat' }, [text(part)])] : [text(part)],
+				)
+		)
 	})
 }

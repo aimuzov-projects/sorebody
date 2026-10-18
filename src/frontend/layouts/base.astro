@@ -4,9 +4,10 @@ import { createHash } from 'node:crypto'
 import Footer from '#frontend/components/footer.astro'
 import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
+import ThemeBoot from '@aimuzov-projects/infra-site-kit/theme-boot.astro'
 import '@aimuzov-projects/infra-site-kit/theme-peek.css'
 import { site } from '#frontend/data/site.ts'
-import { THEME_BOOT } from '#frontend/lib/theme.ts'
+import { THEME_KEY } from '#frontend/lib/theme.ts'
 import { pageTitle } from '#frontend/lib/title.ts'
 
 type Props = {
@@ -34,8 +35,7 @@ const TELEGRAM_FLAG =
 	"document.documentElement.dataset.telegram=''}catch{if(/tgWebApp(Data|Platform)=/.test(location.hash))" +
 	"document.documentElement.dataset.telegram=''}"
 
-for (const script of [TELEGRAM_FLAG, THEME_BOOT])
-	Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(script).digest('base64')}`)
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -58,7 +58,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script is:inline set:html={TELEGRAM_FLAG} />
-		<script is:inline set:html={THEME_BOOT} />
+		<ThemeBoot key={THEME_KEY} />
 		<slot name="head" />
 	</head>
 	<body class={bodyClass}>

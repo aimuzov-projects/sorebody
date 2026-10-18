@@ -2665,12 +2665,12 @@
 
 		/* Данные спорта ещё грузятся: фраза спорта мерцает. С задержкой, чтобы быстрая загрузка
 		   не мигала */
-		&__title--loading :global(button) {
+		&__title--loading :global(.pselect__button) {
 			animation: sport-loading 1s ease-in-out 150ms infinite alternate;
 
 			@media (prefers-reduced-motion: reduce) {
-				animation: none;
 				opacity: 0.6;
+				animation: none;
 			}
 		}
 

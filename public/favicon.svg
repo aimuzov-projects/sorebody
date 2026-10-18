@@ -1,13 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-	<!-- Одни цвета для любой темы: вкладка браузера бывает светлой и при тёмной теме ОС -->
-	<style>
-		.ear { stroke: #8e8e93 }
-		.body { fill: #0071e3 }
-	</style>
-	<mask id="w">
-		<rect width="32" height="32" fill="#fff" />
-		<path d="M9.6 17.4 L12 24.4 L16 18.6 L20 24.4 L22.4 17.4" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-	</mask>
-	<path class="ear" d="M9 13.8 C7.8 6.4 11.2 2.8 16 2.8 C20.8 2.8 24.2 6.4 23 13.8" fill="none" stroke-width="4.6" stroke-linecap="round" />
-	<path class="body" d="M10 30.4 C6 28 4.2 24.6 4.2 20.6 C4.2 14.2 9.4 9.4 16 9.4 C22.6 9.4 27.8 14.2 27.8 20.6 C27.8 24.6 26 28 22 30.4 C20 31.2 12 31.2 10 30.4 Z" mask="url(#w)" />
+	<!-- Собирается scripts/brand/render.mjs -->
+	<circle cx="16" cy="16" r="16" fill="#ffffff" />
+	<circle cx="16" cy="16" r="7.5" fill="#1d1d1f"/><circle cx="16" cy="16" r="12.75" fill="none" stroke="#1d1d1f" stroke-width="2.5"/>
 </svg>

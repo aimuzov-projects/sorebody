@@ -10,7 +10,7 @@
  * Со сцены движения шаг вверх -- главная.
  *
  * Акцент на странице спорта остаётся цветом спорта: он знак спорта на всём сайте, цвет ссылок
- * Telegram его не заменяет.
+ * Telegram его не заменяет. Без спорта акцент -- графит, то есть цвет текста из темы Telegram.
  */
 import { BACK_EVENT, STEP_EVENT } from './telegram-events.ts'
 
@@ -35,7 +35,7 @@ function init(app: WebApp | undefined) {
 		'--bg': theme.bg_color,
 		'--fg': theme.text_color,
 		'--muted': theme.hint_color,
-		'--accent': root.dataset.sport === undefined ? theme.link_color : undefined,
+		'--accent': root.dataset.sport === undefined ? theme.text_color : undefined,
 		'--surface': theme.secondary_bg_color,
 	}
 

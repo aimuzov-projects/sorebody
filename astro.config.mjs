@@ -24,9 +24,9 @@ export default defineConfig({
 	srcDir: './src/frontend',
 	// Абсолютные URL в canonical, og:url и sitemap.
 	site: 'https://sorebody.aimuzov.online',
-	// CSS немного, и встроенный в HTML он не блокирует первую отрисовку
-	// отдельным запросом.
-	build: { inlineStylesheets: 'always' },
+	// CSS -- файлами в /_astro/ с вечным кешем: встроенный, он был почти половиной
+	// веса каждой страницы и качался заново. Мелкие куски Astro встраивает сам
+	build: { inlineStylesheets: 'auto' },
 	// Svelte для интерактивных островов, остальное -- статический HTML
 	// с ванильными скриптами.
 	// В sitemap нет переадресаций со старых адресов (`/movements/`, `/injuries/` с одним спортом)

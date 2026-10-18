@@ -128,27 +128,42 @@
 
 	/**
 	 * Подложка выбранной частоты одна на весь переключатель и переезжает под выбранный чип.
-	 * Место и ширину берём у самого чипа: подписи разной длины, а кегль идёт за шириной колонки.
+	 * Края берём у самого чипа: подписи разной длины, а кегль идёт за шириной колонки.
 	 * Едет она только при смене выбора; пересчёт от размеров (первая отрисовка, ресайз, остров
 	 * на телефоне раскрылся из `display: none`) ставит её на место без движения.
+	 *
+	 * Переезд мультяшный: передний край убегает первым, задний догоняет с перелётом внутрь,
+	 * и таблетка тянется, а потом пружинит. По высоте её на растяжении чуть сплющивает.
 	 */
 	let freqGroup = $state<HTMLDivElement>()
+	let freqThumb = $state<HTMLSpanElement>()
 	let freqChips = $state<HTMLButtonElement[]>([])
-	let thumb = $state({ x: 0, width: 0 })
-	let thumbMoves = $state(false)
+	let thumb = $state({ left: 0, right: 0, width: 0 })
+	let thumbMoves = $state<'forward' | 'backward' | null>(null)
+
+	const THUMB_SQUASH: Keyframe[] = [
+		{ scale: '1 1' },
+		{ scale: '1 0.84', offset: 0.35 },
+		{ scale: '1 1.06', offset: 0.7 },
+		{ scale: '1 1' },
+	]
 
 	function placeThumb(moves: boolean) {
 		const chip = freqChips[FREQUENCY_CHIPS.findIndex(([value]) => value === frequency)]
 
-		if (!chip?.offsetWidth) return
+		if (!chip?.offsetWidth || !freqGroup) return
 
-		const x = chip.offsetLeft
+		const left = chip.offsetLeft
 		const width = chip.offsetWidth
+		const right = freqGroup.clientWidth - left - width
 
-		if (x === thumb.x && width === thumb.width) return
+		if (left === thumb.left && width === thumb.width) return
 
-		thumbMoves = moves && thumb.width > 0
-		thumb = { x, width }
+		thumbMoves = moves && thumb.width > 0 ? (left > thumb.left ? 'forward' : 'backward') : null
+		thumb = { left, right, width }
+
+		if (thumbMoves && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+			freqThumb?.animate(THUMB_SQUASH, { duration: 520, easing: 'ease-out' })
 	}
 
 	$effect(() => {
@@ -1499,14 +1514,16 @@
 					<div class="index__filters">
 						<div
 							class="index__freq index__freq--{frequency}"
-							class:index__freq--moves={thumbMoves}
+							class:index__freq--forward={thumbMoves === 'forward'}
+							class:index__freq--backward={thumbMoves === 'backward'}
 							role="group"
 							aria-label="Частота"
 							bind:this={freqGroup}
-							style:--thumb-x="{thumb.x}px"
-							style:--thumb-width="{thumb.width}px"
+							style:--thumb-left="{thumb.left}px"
+							style:--thumb-right="{thumb.right}px"
 						>
 							<span
+								bind:this={freqThumb}
 								class="index__freq-thumb"
 								class:index__freq-thumb--placed={thumb.width > 0}
 								aria-hidden="true"
@@ -2523,15 +2540,19 @@
 		}
 
 		/* Залитая таблетка выбранного положения -- одна на весь переключатель, лежит под чипами.
-		   Место и ширину ставит скрипт по выбранному чипу. Едет и перекрашивается только при
-		   смене выбора (&__freq--moves), подпись и знак чипа меняются с ней в такт */
+		   Края ставит скрипт по выбранному чипу. Едет и перекрашивается только при смене выбора,
+		   подпись и знак чипа меняются с ней в такт. Края едут порознь: передний быстро и без
+		   перелёта (у крайнего чипа таблетка не вылезет за переключатель), задний с задержкой
+		   и перелётом внутрь -- таблетка тянется и пружинит */
 		&__freq-thumb {
+			--lead: 0.26s cubic-bezier(0.3, 0.7, 0.4, 1);
+			--trail: 0.46s cubic-bezier(0.34, 1.5, 0.64, 1) 0.07s;
+
 			position: absolute;
 			top: 3px;
+			right: var(--thumb-right);
 			bottom: 3px;
-			left: 0;
-			translate: var(--thumb-x) 0;
-			width: var(--thumb-width);
+			left: var(--thumb-left);
 			border-radius: 999px;
 			opacity: 0;
 			background: var(--thumb);
@@ -2541,12 +2562,22 @@
 			}
 		}
 
-		&__freq--moves &__freq-thumb {
+		&__freq--forward &__freq-thumb {
 			transition:
-				translate 0.35s var(--a-ease),
-				width 0.35s var(--a-ease),
+				right var(--lead),
+				left var(--trail),
 				background-color 0.35s var(--a-ease);
+		}
 
+		&__freq--backward &__freq-thumb {
+			transition:
+				left var(--lead),
+				right var(--trail),
+				background-color 0.35s var(--a-ease);
+		}
+
+		&__freq--forward &__freq-thumb,
+		&__freq--backward &__freq-thumb {
 			@media (--reduced-motion) {
 				transition: none;
 			}

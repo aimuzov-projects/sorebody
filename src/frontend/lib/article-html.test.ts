@@ -31,6 +31,26 @@ test('wraps every template section with its id and icon', () => {
 	}
 })
 
+test('keeps the template order: urgent care first, then the path from doctor to return', () => {
+	assert.deepEqual(
+		SECTIONS.map((s) => s.title),
+		[
+			'Что это',
+			'Как часто в кроссфите',
+			'Механизм и движения',
+			'Симптомы',
+			'Когда сразу к врачу',
+			'Первые шаги',
+			'К какому врачу',
+			'Диагностика',
+			'Лечение',
+			'Сроки возврата',
+			'Как адаптировать тренировки',
+			'Профилактика',
+		],
+	)
+})
+
 test('throws on an unknown section instead of guessing', () => {
 	assert.throws(() => enhanceArticle('<h2>Что-то новое</h2><p>x</p>', sources), /неизвестный раздел/)
 })

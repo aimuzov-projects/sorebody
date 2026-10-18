@@ -1,5 +1,7 @@
 import {
 	ArrowRight,
+	Bandage,
+	CalendarClock,
 	ChartColumn,
 	CircleCheck,
 	CircleX,
@@ -7,9 +9,11 @@ import {
 	Footprints,
 	Info,
 	Repeat,
+	ScanSearch,
 	ShieldCheck,
 	Stethoscope,
 	TriangleAlert,
+	UserRoundSearch,
 } from 'lucide-static'
 import { ELEMENT_NODE, parse, renderSync, TEXT_NODE } from 'ultrahtml'
 
@@ -32,6 +36,10 @@ export const SECTIONS = [
 	{ id: 'symptoms', title: 'Симптомы', icon: Stethoscope },
 	{ id: 'urgent', title: 'Когда сразу к врачу', icon: TriangleAlert },
 	{ id: 'first-steps', title: 'Первые шаги', icon: Footprints },
+	{ id: 'specialist', title: 'К какому врачу', icon: UserRoundSearch },
+	{ id: 'diagnosis', title: 'Диагностика', icon: ScanSearch },
+	{ id: 'treatment', title: 'Лечение', icon: Bandage },
+	{ id: 'return', title: 'Сроки возврата', icon: CalendarClock },
 	{ id: 'adapt', title: 'Как адаптировать тренировки', icon: Repeat },
 	{ id: 'prevention', title: 'Профилактика', icon: ShieldCheck },
 ] as const

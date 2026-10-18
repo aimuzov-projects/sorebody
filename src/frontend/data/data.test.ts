@@ -117,13 +117,43 @@ for (const sport of SPORTS) {
 }
 
 // Цвет -- знак спорта: при переключении в заголовке и на модели спорты не должны сливаться.
-// Лайм падела и зелёный футбола -- самая близкая пара, порог взят с запасом над ней
-test('sport accents are far apart from each other in both themes', () => {
-	for (const theme of ['light', 'dark'] as const)
+// Самая близкая пара -- лайм падела и зелёный футбола в светлой теме (0.087), порог чуть ниже
+const MIN_DISTANCE = 0.08
+
+test('sport accents and model glows are far apart from each other', () => {
+	for (const key of ['light', 'dark', 'glow'] as const)
 		for (const [i, a] of SPORTS.entries())
 			for (const b of SPORTS.slice(i + 1)) {
-				const d = distance(a.accent[theme], b.accent[theme])
+				const d = distance(a.accent[key], b.accent[key])
 
-				assert.ok(d >= 0.08, `${a.slug} и ${b.slug} в теме ${theme}: ${d.toFixed(3)}`)
+				assert.ok(d >= MIN_DISTANCE, `${a.slug} и ${b.slug}, ${key}: ${d.toFixed(3)}`)
+			}
+})
+
+// С цветами частоты и «опасно» спорт стоит рядом в одной строке, но у уровня частоты есть ещё
+// и знак. Самая близкая пара -- синий кроссфита и индиго нечастых (0.046), она была до других
+// спортов; порог не даёт новому спорту подойти ещё ближе
+test('sport accents are far from the frequency and danger colors of their theme', () => {
+	const [light, dark] = ['light', 'dark'].map((theme) => {
+		const block =
+			theme === 'light'
+				? GLOBAL_CSS.split('@media (prefers-color-scheme: dark)')[0]!
+				: GLOBAL_CSS.split(":root[data-theme='dark']")[1]!
+
+		return [...block.matchAll(/--(common|uncommon|rare|danger): (#[0-9a-f]{6});/g)].map((m) => m[2]!)
+	})
+
+	assert.equal(light!.length, 4)
+	assert.equal(dark!.length, 4)
+
+	for (const sport of SPORTS)
+		for (const [theme, taken] of [
+			['light', light!],
+			['dark', dark!],
+		] as const)
+			for (const color of taken) {
+				const d = distance(sport.accent[theme], color)
+
+				assert.ok(d >= 0.04, `${sport.slug}, ${theme}, ${color}: ${d.toFixed(3)}`)
 			}
 })

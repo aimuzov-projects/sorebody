@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
 
+import { sportOf, SPORTS, type SportSlug } from '#frontend/data/sports.ts'
+
+const CROSSFIT = sportOf('crossfit')
+const PADEL = sportOf('padel')
+
+/** `#0066cc` -> `rgb(0, 102, 204)`: так цвет отдаёт getComputedStyle. */
+const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair) => parseInt(pair, 16)).join(', ')})`
+
 // Этап 0 многоспортивного справочника (docs/multisport-concept.md): кроссфит переехал под
 // `/crossfit/`, старые адреса ведут туда же, раздел статьи и зона сцены в хеше не теряются
 test('старый адрес статьи ведёт на статью кроссфита к тому же разделу', async ({ page }) => {
@@ -46,12 +54,12 @@ test('страницы спорта красят акцент цветом сп�
 	for (const path of ['/', '/crossfit/', '/crossfit/acl-tear/', '/crossfit/elements/burpee/']) {
 		await page.goto(path)
 		await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
-		expect(await accent(), path).toBe('rgb(0, 102, 204)')
+		expect(await accent(), path).toBe(rgb(CROSSFIT.accent.light))
 	}
 
 	await page.goto('/about/')
 	await expect(page.locator('html')).not.toHaveAttribute('data-sport')
-	expect(await accent()).toBe('rgb(18, 52, 86)')
+	expect(await accent()).toBe(rgb('#123456'))
 })
 
 test('главная спорта по умолчанию живёт и на /crossfit/, canonical -- на /', async ({ page }) => {
@@ -66,6 +74,19 @@ test('главная спорта по умолчанию живёт и на /cr
 // вместе со стороной тела
 const sportButton = (page: Page, title: string) => page.getByRole('button', { name: `Вид спорта ${title}` })
 
+// Стрелками от спорта `from` к `to` в открытом списке: шагов столько, сколько между ними в SPORTS.
+// Подсветку сверяем по имени, а не по числу нажатий
+async function highlight(page: Page, from: SportSlug, to: SportSlug) {
+	const steps = SPORTS.findIndex((s) => s.slug === to) - SPORTS.findIndex((s) => s.slug === from)
+	const list = page.getByRole('listbox')
+
+	for (let i = 0; i < Math.abs(steps); i++) await page.keyboard.press(steps > 0 ? 'ArrowDown' : 'ArrowUp')
+
+	const target = await list.getByRole('option', { name: sportOf(to).title }).getAttribute('id')
+
+	await expect(list).toHaveAttribute('aria-activedescendant', target!)
+}
+
 test('падел красит акцент лаймом, а выбор спорта в заголовке переносит зону', async ({ page }) => {
 	await page.goto('/padel/#zone=shoulder:1')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
@@ -74,7 +95,7 @@ test('падел красит акцент лаймом, а выбор спор�
 
 	const button = sportButton(page, 'Падел')
 
-	await expect(button).toHaveCSS('color', 'rgb(70, 117, 9)')
+	await expect(button).toHaveCSS('color', rgb(PADEL.accent.light))
 	// click() упадёт, если кнопку нельзя нажать: под inert-панелью, скрыта или прозрачна
 	await button.click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
@@ -89,14 +110,14 @@ test('выбор спорта с клавиатуры: стрелка двига
 	await button.focus()
 	await page.keyboard.press('ArrowDown')
 	await expect(page.getByRole('listbox')).toBeVisible()
-	await page.keyboard.press('ArrowDown')
+	await highlight(page, 'crossfit', 'padel')
 	await expect(page).toHaveURL(/\/$/)
 	await page.keyboard.press('Escape')
 	await expect(page.getByRole('listbox')).toHaveCount(0)
 	await expect(page).toHaveURL(/\/$/)
 
 	await page.keyboard.press('ArrowDown')
-	await page.keyboard.press('ArrowDown')
+	await highlight(page, 'crossfit', 'padel')
 	await page.keyboard.press('Enter')
 	await expect(page).toHaveURL(/\/padel\/$/)
 })
@@ -146,7 +167,7 @@ test('смена спорта на главной не перезагружае�
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/padel\/$/)
 	// Цвет перетекает, ждём, пока он дойдёт до лайма
-	await expect(sportButton(page, 'Падел')).toHaveCSS('color', 'rgb(70, 117, 9)')
+	await expect(sportButton(page, 'Падел')).toHaveCSS('color', rgb(PADEL.accent.light))
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(1)
 	expect(await samePage(page)).toBe(true)
 
@@ -154,7 +175,7 @@ test('смена спорта на главной не перезагружае�
 	await expect(page).toHaveURL(HOME)
 	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
-	await expect(sportButton(page, 'Кроссфит')).toHaveCSS('color', 'rgb(0, 102, 204)')
+	await expect(sportButton(page, 'Кроссфит')).toHaveCSS('color', rgb(CROSSFIT.accent.light))
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 	expect(await samePage(page)).toBe(true)
 
@@ -210,7 +231,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const)
 
 		await chooseSport(page, 'Кроссфит', 'Падел')
 		await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
-		await expect(sportButton(page, 'Падел')).toHaveCSS('color', 'rgb(70, 117, 9)')
+		await expect(sportButton(page, 'Падел')).toHaveCSS('color', rgb(PADEL.accent.light))
 
 		const started = await page.evaluate(() => (window as unknown as { started: string[] }).started)
 
@@ -222,7 +243,7 @@ test('смена спорта сбрасывает поиск, частоту и
 	await page.getByRole('searchbox').fill('растяжение')
 	await page.getByRole('button', { name: 'Частые', exact: true }).click()
 	await page.getByRole('button', { name: /^Движение/ }).click()
-	await page.getByRole('option').nth(1).click()
+	await page.getByRole('option', { name: CROSSFIT.elements[0].title, exact: true }).click()
 	await chooseSport(page, 'Кроссфит', 'Падел')
 
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
@@ -271,6 +292,8 @@ test('зона, открытая во время загрузки спорта, 
 // Без анимаций цвет встаёт сразу: программный WebGL под нагрузкой рисует кадр раз в секунды,
 // и перетекание не успевало бы
 test('подсветка модели -- цвет спорта, даже если его сменили до загрузки модели', async ({ page }) => {
+	// Модель грузится до минуты: 45 секунд на тест ей мало
+	test.slow()
 	await page.emulateMedia({ reducedMotion: 'reduce' })
 
 	let release!: () => void
@@ -288,18 +311,20 @@ test('подсветка модели -- цвет спорта, даже есл�
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	release()
 	await page.waitForFunction(() => 'bodyScene' in window, null, { timeout: 60_000 })
-	expect(await glow()).toBe('#84cc16')
+	expect(await glow()).toBe(PADEL.accent.glow)
 
 	await page.goBack()
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
-	expect(await glow()).toBe('#3d8bfd')
+	expect(await glow()).toBe(CROSSFIT.accent.glow)
 })
 
-// Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет
+// Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет. Какие зоны
+// у спорта, считает zones.test.ts, здесь -- что страница спорта берёт свои. Список зон рисуется
+// и без модели, поэтому без `?scene`: сцена тут только тормозила
 test('на странице спорта видны только зоны с его травмами', async ({ page }) => {
-	await page.goto('/padel/?scene')
+	await page.goto('/padel/')
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toBeVisible()
-	await page.goto('/crossfit/?scene')
+	await page.goto('/crossfit/')
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 })
 
@@ -310,7 +335,7 @@ test('«Разбор в …» ведёт на статью другого спо
 	// Фокус без прокрутки: читатель остаётся в разделе «Лечение»
 	await sportButton(page, 'Кроссфит').evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
 	await page.keyboard.press('Enter')
-	await page.keyboard.press('ArrowDown')
+	await highlight(page, 'crossfit', 'padel')
 	await page.keyboard.press('Enter')
 	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/#treatment$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')

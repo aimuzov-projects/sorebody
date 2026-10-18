@@ -1,7 +1,7 @@
 ---
 import InjuryArticle from '#frontend/components/injury-article.astro'
 import { SPORTS } from '#frontend/data/sports.ts'
-import { sportInjuries } from '#frontend/lib/catalog.ts'
+import { sportInjuries, sportsOf } from '#frontend/lib/catalog.ts'
 
 export async function getStaticPaths() {
 	const paths = await Promise.all(
@@ -9,10 +9,12 @@ export async function getStaticPaths() {
 			const entries = await sportInjuries(sport)
 			const injuries = new Set(entries.map((e) => e.slug))
 
-			return entries.map(({ slug, injury, lens }) => ({
-				params: { sport: sport.slug, injury: slug },
-				props: { injury, lens: { sport, entry: lens, injuries } },
-			}))
+			return Promise.all(
+				entries.map(async ({ slug, injury, lens }) => ({
+					params: { sport: sport.slug, injury: slug },
+					props: { injury, lens: { sport, entry: lens, injuries }, sports: await sportsOf(slug) },
+				})),
+			)
 		}),
 	)
 

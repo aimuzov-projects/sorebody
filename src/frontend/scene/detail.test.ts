@@ -4,7 +4,7 @@ import { test, type TestContext } from 'node:test'
 import { BufferGeometry, Float32BufferAttribute, Group, Mesh, Scene } from 'three'
 
 import { createDetail, detailKey } from './detail.ts'
-import { ANCHORS, INJURY_LAYER, injuryLayer } from './zones.ts'
+import { ANCHORS, INJURY_LAYER, injuryLayer, NO_DETAIL } from './zones.ts'
 
 test('the chunk name follows the side of the body: left is +X, the spine is the center', () => {
 	assert.equal(detailKey('knee', [0.081, 0.459, 0.011]), 'knee-left')
@@ -15,8 +15,12 @@ test('the chunk name follows the side of the body: left is +X, the spine is the 
 test('every zone point has a chunk in public/model/detail', () => {
 	const index = JSON.parse(readFileSync('public/model/detail/index.json', 'utf8'))
 
-	for (const [slug, { points }] of Object.entries(ANCHORS))
-		for (const { position } of points) assert.ok(index[detailKey(slug, position)], detailKey(slug, position))
+	for (const [slug, { points }] of Object.entries(ANCHORS)) {
+		const key = (position: [number, number, number]) => detailKey(slug, position)
+
+		for (const { position } of points)
+			assert.equal(!!index[key(position)], !NO_DETAIL.has(slug as never), `${key(position)}: в NO_DETAIL или нет`)
+	}
 })
 
 test('chunks are built around the same points and radii as the zones', () => {

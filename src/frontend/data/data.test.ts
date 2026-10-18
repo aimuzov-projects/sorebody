@@ -7,6 +7,22 @@ import { DEFAULT_SPORT, SPORTS } from './sports.ts'
 
 const GLOBAL_CSS = readFileSync(new URL('../styles/global.css', import.meta.url), 'utf8')
 
+/** Контраст двух цветов #rrggbb по WCAG 2. */
+function contrast(a: string, b: string) {
+	const luminance = (hex: string) => {
+		const [r, g, b] = [1, 3, 5].map((i) => {
+			const v = parseInt(hex.slice(i, i + 2), 16) / 255
+
+			return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+		})
+
+		return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+	}
+	const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+
+	return (hi! + 0.05) / (lo! + 0.05)
+}
+
 test('regions have unique slugs and Russian labels', () => {
 	const slugs = REGIONS.map((r) => r.slug)
 
@@ -48,6 +64,14 @@ for (const sport of SPORTS) {
 		assert.ok(block, `нет блока :root[data-sport='${sport.slug}'] в global.css`)
 		assert.match(block, new RegExp(`--accent-light: ${sport.accent.light};`))
 		assert.match(block, new RegExp(`--accent-dark: ${sport.accent.dark};`))
+		assert.match(block, new RegExp(`--on-accent-light: ${sport.accent.onLight};`))
+		assert.match(block, new RegExp(`--on-accent-dark: ${sport.accent.onDark};`))
+	})
+
+	// Номер текущей строки и метка травмы на модели -- крупные цифры: для них хватает 3:1
+	test(`${sport.slug}: digits on the accent fill are readable in both themes`, () => {
+		assert.ok(contrast(sport.accent.onLight, sport.accent.light) >= 3, 'light')
+		assert.ok(contrast(sport.accent.onDark, sport.accent.dark) >= 3, 'dark')
 	})
 
 	test(`${sport.slug}: accent differs from the frequency and danger colors`, () => {

@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-	import { flushSync, onMount, tick, type Snippet } from 'svelte'
+	import { flushSync, mount, onMount, tick, unmount, type Snippet } from 'svelte'
 
 	import {
 		ChevronDown,
@@ -34,8 +34,7 @@
 	} from 'lucide-static'
 
 	import { FREQUENCIES, frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
-	import { MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
-	import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
+	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
@@ -47,6 +46,7 @@
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
+	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import type { BodyScene } from '#frontend/scene/body-scene.ts'
 	import type { SceneSport } from '#frontend/scene/scene-data.ts'
 	import { fitShift, homeShift, POSTER_SHIFT, projectBox } from '#frontend/scene/frame.ts'
@@ -95,7 +95,8 @@
 		)
 	}
 
-	const allZones = $derived([...zones, whole])
+	// «Всё тело» без травм спорта в индексе не показываем, как и пустые зоны (scene/zones.ts)
+	const allZones = $derived(whole.injuries.length > 0 ? [...zones, whole] : zones)
 	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
 	/**
 	 * Включённые фильтры для шапки раскрытой зоны: каждый своим чипом и со своим знаком --
@@ -113,7 +114,7 @@
 			movement && {
 				key: 'movement',
 				label: movements.find((m) => m.slug === movement)?.title ?? movement,
-				icon: MOVEMENT_ICONS[movement as Movement] ?? '',
+				icon: MOVEMENT_ICONS[movement as ElementIcon] ?? '',
 				tone: '',
 			},
 		].filter((f) => f !== false && f !== ''),
@@ -351,7 +352,14 @@
 
 	function placePoster() {
 		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, startShift(innerWidth, innerHeight))
+		sheetTop = wrap?.querySelector('.index__title--home')?.getBoundingClientRect().top ?? Infinity
 	}
+
+	/**
+	 * Верх заголовка в шторке: на телефоне подсказка под ногами фигуры поднимается над ним на свою
+	 * высоту, чтобы не лечь на селект спорта. Шрифт может догрузиться позже -- тогда меряем снова.
+	 */
+	let sheetTop = $state(Infinity)
 
 	/**
 	 * Подсказка первого визита "как пользоваться моделью": у фигуры, пока посетитель не закроет
@@ -565,13 +573,43 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
-	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны. */
+	/** Последняя закрытая зона и сторона тела: выбор спорта виден только на общем плане. */
+	let lastZone: { zone: Zone; index: number } | null = null
+
+	/**
+	 * Выбран другой спорт в заголовке -- переход на его главную. Последняя зона едет в адресе вместе
+	 * со стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у спорта
+	 * такой зоны -- откроется сцена целиком.
+	 */
+	function switchSport(target: { href: string }) {
+		const recent = open ?? lastZone
+
+		location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
+	}
+
+	/** Выбор спорта в статье поверх модели: острова Astro во вставленном HTML не оживают, монтируем сами. */
+	let articleSwitches: ReturnType<typeof mount>[] = []
+
+	function mountSportSwitches(root: HTMLElement) {
+		for (const app of articleSwitches) void unmount(app)
+
+		articleSwitches = [...root.querySelectorAll<HTMLElement>('[data-sport-switch]')].map((target) => {
+			const props = JSON.parse(target.dataset.sportSwitch ?? '{}')
+
+			target.replaceChildren()
+
+			return mount(SportSwitch, { target, props })
+		})
+	}
+
+	/** Ссылка «/?region=knee» (или «knee:1» -- с точкой зоны) со страницы статьи открывает список зоны. */
 	function openRegion() {
-		const region = new URLSearchParams(location.search).get('region')
+		const [region, point] = (new URLSearchParams(location.search).get('region') ?? '').split(':')
 		const regionZone = allZones.find((zone) => zone.slug === region)
+		const index = regionZone?.points[Number(point)] ? Number(point) : 0
 
 		if (regionZone && !location.hash)
-			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, index)}`)
 	}
 
 	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
@@ -603,6 +641,7 @@
 		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра
 		if (!location.hash) {
 			placePoster()
+			void document.fonts?.ready.then(placePoster)
 			window.addEventListener('resize', placePoster)
 			hintShown = !movementPage && !introHintSeen()
 		}
@@ -905,6 +944,7 @@
 	function closeZone() {
 		if (!open) return
 
+		lastZone = { zone: open.zone, index: open.index }
 		open = null
 		hovered = null
 		clearAccent()
@@ -995,6 +1035,7 @@
 			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
 			stopReading?.()
 			articleBody.replaceChildren(root)
+			mountSportSwitches(root)
 			readerElement.scrollTo(0, 0)
 			stopReading = initReading(root, readerElement, progressBar ?? null)
 			articleStatus = 'ready'
@@ -1012,9 +1053,10 @@
 
 	/**
 	 * Статья проявляется со сдвигом снизу, при reduced motion -- только прозрачностью.
+	 * `rise` -- насколько снизу: подсказке на телефоне сдвиг не нужен, снизу у неё заголовок шторки.
 	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
 	 */
-	function fadeUp(node: HTMLElement) {
+	function fadeUp(node: HTMLElement, { rise = 24 } = {}) {
 		// Статья из адреса стоит на месте с первого кадра: mount у Astro проигрывает и вход
 		if (!mounted) return { duration: 0 }
 
@@ -1025,7 +1067,7 @@
 			easing: (t: number) => 1 - (1 - t) ** 4,
 			tick: (t: number) => {
 				node.style.opacity = String(t)
-				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * 24}px)`
+				node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * rise}px)`
 			},
 		}
 	}
@@ -1232,7 +1274,10 @@
 			class="body3d__hint"
 			style:--hint-x="{posterRect.left + posterRect.width / 2}px"
 			style:--hint-y="{posterRect.top + posterRect.height * 0.95}px"
-			transition:fadeUp
+			style:--hint-room={Number.isFinite(sheetTop)
+				? `${sheetTop - 8 - (posterRect.top + posterRect.height * 0.95)}px`
+				: null}
+			transition:fadeUp={{ rise: innerWidth < 700 ? 0 : 24 }}
 		>
 			Нажмите на точку — откроются травмы зоны
 			<button class="body3d__hint-close" type="button" aria-label="Закрыть подсказку" onclick={dismissHint}
@@ -1345,15 +1390,20 @@
 	{:else}
 		<aside class="index" class:index--away={open} inert={!!open} aria-label="Поиск и зоны тела">
 			<header class="index__head">
-				<p class="index__title index__title--home" aria-hidden="true">
-					Травмы {sport.phrase.replaceAll(' ', ' ')}
-				</p>
+				<!-- «Травмы ‹в паделе ▾›»: фраза спорта -- кнопка списка спортов, как у фильтра движения -->
+				<div class="index__title index__title--home">
+					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<SportSwitch
+							sports={sport.sports}
+							value={sport.slug}
+							size="title"
+							onchoose={switchSport}
+						/>{:else}<span class="index__sport" aria-hidden="true">{sport.phrase.replaceAll(' ', ' ')}</span
+						>{/if}
+				</div>
 				<!-- Кто попал на главную впервые: что за сайт; ссылка в тексте ведёт на about -->
 				<p class="index__lead">
-					Разбираемся, что болит после тренировки, когда пора к врачу и как тренироваться дальше. Всё <a
-						class="index__lead-link"
-						href="/about/">по исследованиям</a
-					>, а не по слухам из зала.
+					Разбираемся, что болит после тренировки или игры, когда пора к врачу и как тренироваться дальше.
+					Всё <a class="index__lead-link" href="/about/">по исследованиям</a>, а не по слухам.
 				</p>
 			</header>
 			<!-- Поиск и фильтры. На десктопе обёртки прозрачны для раскладки, на телефоне это остров
@@ -1701,6 +1751,8 @@
 
 			@media (width < 700px) {
 				top: var(--hint-y);
+				/* Низ подсказки не ниже заголовка шторки: --hint-room -- место до него, 100% -- своя высота */
+				translate: -50% min(0px, calc(var(--hint-room, 100%) - 100%));
 			}
 		}
 
@@ -1903,7 +1955,7 @@
 
 		&__mark--accent &__mark-dot {
 			transform: scale(1.2);
-			color: #ffffff;
+			color: var(--a-on-blue);
 			background: var(--a-blue);
 			box-shadow:
 				0 0 0 2px var(--a-blue),
@@ -2319,10 +2371,18 @@
 			}
 		}
 
+		/* Фраза спорта в заголовке, когда спорт один и выбирать не из чего */
+		&__sport {
+			color: var(--a-blue);
+		}
+
 		/* Заголовок главной -- одной строкой: в две он съедал у списка зон строку и на ноутбуке
 		   список уходил под скролл. Строка шириной около 9.4em, колонка -- min(380px, 32vw):
 		   кегль тянется за колонкой, 39px на широком экране */
 		&__title--home {
+			/* Список спортов раскрывается поверх подводки и фильтров под заголовком */
+			position: relative;
+			z-index: 6;
 			font-size: clamp(22px, 3.1vw, 39px);
 			white-space: nowrap;
 
@@ -2566,13 +2626,14 @@
 				color 0.3s var(--a-ease),
 				opacity 0.3s var(--a-ease);
 
-			/* Строки плотнее, только когда восемь зон иначе не влезают в список без прокрутки:
-			   сперва меньше поля, потом и интерлиньяж. Пороги -- высота восьми строк каждой ступени */
-			@container zones (height < 394px) {
+			/* Строки плотнее, только когда десять строк (все зоны и «Всё тело») иначе не влезают
+			   в список без прокрутки: сперва меньше поля, потом и интерлиньяж. Пороги -- высота
+			   десяти строк каждой ступени */
+			@container zones (height < 493px) {
 				padding: 4px 0;
 			}
 
-			@container zones (height < 313px) {
+			@container zones (height < 392px) {
 				padding: 2px 0;
 				line-height: 1.25;
 			}
@@ -2848,7 +2909,7 @@
 				min-height: 40px;
 			}
 
-			& .index__filters :global(.mselect__button) {
+			& .index__filters :global(.pselect__button) {
 				min-height: 40px;
 			}
 		}
@@ -3331,7 +3392,7 @@
 		}
 
 		&__item--current &__num {
-			color: #ffffff;
+			color: var(--a-on-blue);
 			background: var(--a-blue);
 		}
 

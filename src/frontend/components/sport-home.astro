@@ -1,7 +1,6 @@
 ---
 import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
-import { site } from '#frontend/data/site.ts'
 import { sportArticle, sportHome, type Sport } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
 import { sceneData } from '#frontend/scene/scene-data.ts'
@@ -21,12 +20,17 @@ Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
 const { entries, zones, whole, movements, scene } = await sceneData(sport)
 ---
 
-<Base bare bodyClass="scene-page" sport={sport.slug} canonical={sportHome(sport.slug)}>
+<Base
+	title={`Травмы ${sport.phrase}`}
+	description={sport.description}
+	bare
+	bodyClass="scene-page"
+	sport={sport.slug}
+	canonical={sportHome(sport.slug)}
+>
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
-		<h1 class="scene-page__title">
-			{site.name}: травмы {sport.phrase}
-		</h1>
+		<h1 class="scene-page__title">Травмы {sport.phrase}</h1>
 		<Body3d client:only="svelte" {zones} {whole} {movements} sport={scene} modelUrl="/model/body.glb">
 			<Footer slot="footer" />
 		</Body3d>

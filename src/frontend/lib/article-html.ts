@@ -91,7 +91,7 @@ export type ArticlePart = { html: string; kind: 'injury' | 'lens' }
 type Options = {
 	sources: Source[]
 	sport?: Sport
-	/** Адрес травмы для ссылок `/injuries/<slug>/` в тексте: на странице спорта -- его статья, если есть. */
+	/** Адрес травмы для ссылок `/injuries/<slug>/` в тексте: страница разбора без переадресаций (lib/injury-page.ts). */
 	injuryHref?: (slug: string) => string | undefined
 }
 
@@ -210,7 +210,7 @@ function renumberCites(doc: Element, sources: Source[]) {
 	return [...order.keys()].map((key) => byKey.get(key)!)
 }
 
-/** Ссылка на травму из текста общей части -- на её статью в спорте страницы, если она там есть. */
+/** Ссылка на травму из текста -- на страницу, которую назовёт `injuryHref`. */
 function relink(link: Element, injuryHref: (slug: string) => string | undefined) {
 	const slug = link.attributes.href?.match(/^\/injuries\/([a-z0-9-]+)\/?(#.*)?$/)
 

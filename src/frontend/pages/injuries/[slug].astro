@@ -11,7 +11,7 @@ import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle } from '#frontend/lib/article-html.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
-import { pubmedUrl } from '#frontend/lib/pubmed.ts'
+import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
@@ -158,8 +158,8 @@ const nameTail = name.slice(nameHead.length)
 					{data.sources.map((s) => (
 						<li class="article__source">
 							{s.label} ·{' '}
-							<a class="article__source-link" href={pubmedUrl(s.pmid)}>
-								PMID {s.pmid}
+							<a class="article__source-link" href={sourceHref(s)}>
+								{sourceSite(s)}
 								<span class="article__source-icon" aria-hidden="true" set:html={ExternalLink} />
 							</a>
 						</li>

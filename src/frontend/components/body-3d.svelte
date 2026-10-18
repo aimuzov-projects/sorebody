@@ -562,7 +562,26 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
+	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны. */
+	function openRegion() {
+		const region = new URLSearchParams(location.search).get('region')
+		const regionZone = allZones.find((zone) => zone.slug === region)
+
+		if (regionZone && !location.hash)
+			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
+	}
+
+	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
+	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал
+	openRegion()
+	sync()
+
+	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
+	let mounted = false
+
 	onMount(() => {
+		mounted = true
+
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
 		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
 		const stopPageZoom = (event: Event) => {
@@ -575,13 +594,6 @@
 
 		for (const type of ['wheel', 'gesturestart', 'gesturechange'])
 			wrap.addEventListener(type, stopPageZoom, { passive: false })
-
-		// Ссылка «/?region=knee» со страницы статьи открывает список зоны
-		const region = new URLSearchParams(location.search).get('region')
-		const regionZone = allZones.find((zone) => zone.slug === region)
-
-		if (regionZone && !location.hash)
-			history.replaceState(null, '', `${location.pathname}${zoneHash(regionZone, 0)}`)
 
 		baseLevel = parseHash().level
 
@@ -765,7 +777,9 @@
 	function showZone(zone: Zone, index: number) {
 		if (open?.zone === zone && open.index === index) return
 
-		const side = wrap.clientWidth < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
+		// До монтирования (зона из адреса) сцены ещё нет, а она во всё окно
+		const width = wrap ? wrap.clientWidth : innerWidth
+		const side = width < 700 ? 'bottom' : zone.points[index].position[0] >= 0 ? 'right' : 'left'
 
 		toolsOpen = false
 		hovered = null
@@ -998,6 +1012,9 @@
 	 * Через `tick`, а не `css`: `css` вставляет тег стилей, а CSP сайта такое блокирует.
 	 */
 	function fadeUp(node: HTMLElement) {
+		// Статья из адреса стоит на месте с первого кадра: mount у Astro проигрывает и вход
+		if (!mounted) return { duration: 0 }
+
 		return {
 			duration: reduceMotion ? 250 : 550,
 			delay: reduceMotion ? 0 : 120,
@@ -1516,14 +1533,20 @@
 			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={up}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
-			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css -->
-			<p class="article-bar__title" aria-hidden="true">{splitTitle(article.title).name}</p>
+			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
+			     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
+			<p
+				class="article-bar__title"
+				aria-hidden="true"
+				style:visibility={articleStatus === 'ready' ? null : 'hidden'}
+			>
+				{splitTitle(article.title).name}
+			</p>
 		</SiteHeader>
 		{#if articleStatus === 'loading'}
-			<!-- Скелетон из тех же классов, что у статьи: название и "Коротко" уже известны из списка
-			     и сразу стоят на своих местах, вместо иллюстрации и текста -- плашки. Подмена на
-			     загруженную статью их не сдвигает, а не строка "Загружаем" на месте заголовка -->
-			<div class="reader__body reader__skeleton" aria-hidden="true">
+			<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
+			     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
+			<div class="reader__body" aria-hidden="true">
 				<div class="article">
 					<header class="article__hero">
 						<h1 class="article__title">{splitTitle(article.title).name}</h1>
@@ -1533,10 +1556,6 @@
 							</p>
 							<p class="article__summary-text">{article.summary}</p>
 						</div>
-						<div class="reader__bone reader__bone--figure"></div>
-						{#each [92, 100, 84, 96, 60] as width, i (i)}
-							<div class="reader__bone" style:width="{width}%"></div>
-						{/each}
 					</header>
 				</div>
 			</div>
@@ -3444,26 +3463,6 @@
 			color: var(--a-fg2);
 		}
 
-		/* Плашки скелетона: заливка цвета подложек, тихо дышит, пока статья грузится */
-		&__bone {
-			height: 14px;
-			margin-top: 12px;
-			border-radius: 7px;
-			background: var(--a-fill);
-			animation: bone-pulse 1.4s ease-in-out infinite;
-
-			@media (--reduced-motion) {
-				animation: none;
-			}
-
-			&--figure {
-				aspect-ratio: 4 / 3;
-				height: auto;
-				margin: 24px 0 28px;
-				border-radius: 16px;
-			}
-		}
-
 		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */
 		&__body {
 			padding-bottom: 40px;
@@ -3473,6 +3472,19 @@
 			& :global(.article) {
 				padding-top: 8px;
 			}
+
+			/* Название и "Коротко" стоят с начала загрузки, пришедшее следом проявляется: иначе
+			   текст выскакивал разом, будто страница рендерится кусками. backwards, а не both:
+			   после конца анимация не держит opacity и не мешает липкому оглавлению */
+			& :global(.article__hero > :not(.article__title, .article__summary)),
+			& :global(.article > :not(.article__hero)) {
+				animation: fade-in 0.5s var(--a-ease) backwards;
+			}
+		}
+
+		/* Подвал приходит вместе со статьёй и проявляется с ней */
+		& :global(.footer) {
+			animation: fade-in 0.5s var(--a-ease) backwards;
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой
@@ -3529,12 +3541,6 @@
 		from {
 			transform: translateY(12px);
 			opacity: 0;
-		}
-	}
-
-	@keyframes bone-pulse {
-		50% {
-			opacity: 0.5;
 		}
 	}
 

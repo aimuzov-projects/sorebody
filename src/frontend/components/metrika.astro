@@ -1,0 +1,102 @@
+---
+/**
+ * Счётчик Яндекс Метрики с вебвизором. Ленивый загрузчик и CSP -- как в metrika.astro из
+ * infra-site-kit, но счётчик включается не везде:
+ * - только на продовом домене: локальная продовая сборка не шлёт визиты;
+ * - не в Telegram Mini App (флаг ставит base.astro раньше): в `#tgWebAppData` id, имя
+ *   и подпись, а вебвизор пишет адрес целиком. Хеш не трогаем, его читает SDK Telegram.
+ * Появится в kit условие запуска -- вернуться на его компонент.
+ */
+import { createHash } from 'node:crypto'
+
+type Props = {
+	/** Номер счётчика в Яндекс Метрике. */
+	id: number
+	/** Хост, где счётчик работает; пустая строка -- любой, для проверки CSP локально. */
+	host: string
+}
+
+const { id, host } = Astro.props
+
+// Выполняется на странице как есть, поэтому ES5, как и штатный сниппет. Скрипт счётчика (~85 КБ)
+// грузится на первое взаимодействие или через 4 с после load, чтобы не отъедать канал у первой
+// отрисовки; вызовы ym до этого копятся в очереди.
+function loader(m: any, e: Document, t: string, r: string, i: string, k?: any, a?: any) {
+	m[i] =
+		m[i] ||
+		function () {
+			;(m[i].a = m[i].a || []).push(arguments)
+		}
+
+	m[i].l = 1 * (new Date() as any)
+
+	for (var j = 0; j < e.scripts.length; j++) if (e.scripts[j].src === r) return
+
+	var events = ['scroll', 'pointerdown', 'keydown', 'touchstart']
+	var load = function () {
+		if (k) return
+
+		events.forEach(function (name) {
+			m.removeEventListener(name, load)
+		})
+
+		k = e.createElement(t)
+		a = e.getElementsByTagName(t)[0]
+		k.async = 1
+		k.src = r
+		a.parentNode.insertBefore(k, a)
+	}
+
+	events.forEach(function (name) {
+		m.addEventListener(name, load, { passive: true })
+	})
+
+	var later = function () {
+		setTimeout(load, 4000)
+	}
+
+	if (e.readyState === 'complete') later()
+	else m.addEventListener('load', later)
+}
+
+const options = {
+	ssr: true,
+	webvisor: true,
+	clickmap: true,
+	ecommerce: 'dataLayer',
+	accurateTrackBounce: true,
+	trackLinks: true,
+}
+const where = [
+	host && `location.hostname === ${JSON.stringify(host)}`,
+	"!document.documentElement.hasAttribute('data-telegram')",
+]
+	.filter(Boolean)
+	.join(' && ')
+const code = [
+	`if (${where}) {`,
+	`;(${loader})(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=${id}', 'ym')`,
+	`ym(${id}, 'init', Object.assign(${JSON.stringify(options)}, { referrer: document.referrer, url: location.href }))`,
+	'}',
+].join('\n')
+
+// Источники из справки Метрики (install-counter-csp): основной домен, запасной mc.yandex.com
+// и домены вебвизора; wss -- для его записи.
+const MC = ['https://mc.yandex.ru', 'https://mc.yandex.com']
+const WEBVISOR = ['https://mc.webvisor.com', 'https://mc.webvisor.org']
+
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(code).digest('base64')}`)
+
+for (const resource of [...MC, 'https://yastatic.net']) Astro.csp?.insertScriptResource(resource)
+
+Astro.csp?.insertDirective(`img-src ${MC.join(' ')}`)
+
+Astro.csp?.insertDirective(
+	`connect-src ${[...MC, ...WEBVISOR, ...[...MC, ...WEBVISOR].map((url) => url.replace('https', 'wss'))].join(' ')}`,
+)
+
+Astro.csp?.insertDirective(`frame-src blob: ${MC.join(' ')}`)
+Astro.csp?.insertDirective(`child-src blob: ${MC.join(' ')}`)
+---
+
+<script is:inline set:html={code} />

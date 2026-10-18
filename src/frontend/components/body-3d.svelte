@@ -38,6 +38,7 @@
 	import { normalize } from '#frontend/lib/filter.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
+	import { metrikaHit } from '#frontend/lib/metrika.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { pageTitle, splitTitle } from '#frontend/lib/title.ts'
@@ -778,6 +779,15 @@
 		history.pushState(null, '', zone ? `${target.href}${zoneHash(zone, index)}` : target.href)
 		baseLevel = parseHash().level
 		sync()
+		sportHit()
+	}
+
+	// Адрес последнего просмотра для Метрики: referer хита при смене спорта без перезагрузки
+	let hitFrom = location.href
+
+	function sportHit() {
+		metrikaHit(hitFrom)
+		hitFrom = location.href
 	}
 
 	/** Спорт по адресу главной: `/` и `/crossfit/` -- кроссфит, `/padel/` -- падел. */
@@ -806,6 +816,7 @@
 				applySport(next)
 				baseLevel = parseHash().level
 				sync()
+				sportHit()
 			},
 			(error) => {
 				console.error(error)
@@ -1666,7 +1677,8 @@
 						onclick={openTools}
 					>
 						<span class="index__island-icon" aria-hidden="true">{@html Search}</span>
-						<span class="index__island-label"
+						<!-- В подписи бывает текст запроса: вебвизор её не пишет, как и поле поиска -->
+						<span class="index__island-label" class:ym-hide-content={query.trim() !== ''}
 							>{activeFilters.length
 								? activeFilters.map((f) => f.label).join(' · ')
 								: 'Поиск и фильтры'}</span
@@ -1806,7 +1818,8 @@
 						<p class="zone__filter">{shown.length} из {total} {plural(total)}</p>
 						<ul class="zone__tags" aria-label="Фильтры">
 							{#each activeFilters as filter (filter.key)}
-								<li class="zone__tag">
+								<!-- Текст запроса вебвизор Метрики не пишет: в поиске бывают симптомы -->
+								<li class="zone__tag" class:ym-hide-content={filter.key === 'query'}>
 									<span
 										class="zone__tag-icon zone__tag-icon--{filter.tone || 'plain'}"
 										aria-hidden="true">{@html filter.icon}</span

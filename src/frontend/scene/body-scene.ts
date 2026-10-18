@@ -400,6 +400,9 @@ export async function createBodyScene(
 	// Слабый GPU не тянет ретину: если за секунду меньше 45 кадров, рисуем в 1x
 	let windowFrom = performance.now()
 	let windowFrames = 0
+	let lastFrame = windowFrom
+	// Кадр дольше этого -- не медленный GPU, а пауза: вкладку прятали, rAF стоял
+	const FRAME_GAP = 250
 
 	// Распаковка детального куска сама съедает кадры: пока куски грузятся, не меряем
 	let loading = 0
@@ -417,7 +420,11 @@ export async function createBodyScene(
 	function adaptPixelRatio(now: number) {
 		if (slow) return
 
-		if (loading) {
+		const gap = now - lastFrame
+
+		lastFrame = now
+
+		if (loading || gap > FRAME_GAP) {
 			windowFrom = now
 			windowFrames = 0
 

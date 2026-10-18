@@ -1629,13 +1629,14 @@
 		}
 
 		/* Подсказка первого визита: таблетка как у подсказок значков (.tip в global.css).
-		   Центр -- по оси фигуры, высота -- строка шапки, на телефоне -- низ фигуры */
+		   Центр -- по оси фигуры, сверху -- под строкой шапки: в самой строке на ноутбуке она
+		   ложилась на «Что нового» и тему. На телефоне -- низ фигуры */
 		&__hint {
 			position: absolute;
 			z-index: 4;
-			top: calc(var(--theme-toggle-top) + var(--header-row) / 2);
+			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
 			left: var(--hint-x);
-			translate: -50% -50%;
+			translate: -50% 0;
 			display: flex;
 			gap: 4px;
 			align-items: center;
@@ -1653,7 +1654,6 @@
 
 			@media (width < 700px) {
 				top: var(--hint-y);
-				translate: -50% 0;
 			}
 		}
 
@@ -2282,7 +2282,9 @@
 			}
 		}
 
+		/* Контейнер для частоты: она перестраивается по ширине колонки, а не экрана */
 		&__filters {
+			container-type: inline-size;
 			display: flex;
 			flex-wrap: wrap;
 			gap: 12px 20px;
@@ -2318,6 +2320,20 @@
 			padding: 3px;
 			border-radius: 999px;
 			background: var(--a-fill);
+
+			/* Четыре положения одной строкой -- около 375px: в колонке уже этого (шторка на
+			   ноутбуке, остров на телефоне) переключатель встаёт сеткой 2×2, а не вылезает за край */
+			@container (width < 380px) {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				width: 100%;
+				border-radius: 20px;
+
+				& .index__chip {
+					justify-content: center;
+					padding-inline: 10px;
+				}
+			}
 		}
 
 		&__chip {
@@ -2728,8 +2744,8 @@
 				display: inline-grid;
 				flex: none;
 				place-items: center;
-				width: 36px;
-				height: 36px;
+				width: 40px;
+				height: 40px;
 				padding: 0;
 				border: 0;
 				border-radius: 50%;
@@ -2742,15 +2758,13 @@
 				}
 			}
 
-			/* Частота на всю ширину карточки: три положения поровну */
-			& .index__freq {
-				display: flex;
-				width: 100%;
+			/* Частота на всю ширину карточки сеткой 2×2 (см. &__freq), под палец -- не ниже 40px */
+			& .index__chip {
+				min-height: 40px;
 			}
 
-			& .index__chip {
-				flex: 1;
-				justify-content: center;
+			& .index__filters :global(.mselect__button) {
+				min-height: 40px;
 			}
 		}
 	}

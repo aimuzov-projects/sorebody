@@ -28,6 +28,17 @@ test('поиск и фильтры прячутся в остров и раск�
 	await expect(page.locator('.search__input')).toBeHidden()
 })
 
+test('фильтры в раскрытом острове помещаются в ширину экрана', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__island-open').tap()
+
+	const filters = page.locator('.index__filters')
+
+	await expect(page.locator('.index__chip', { hasText: 'Редкие' })).toBeInViewport({ ratio: 1 })
+	expect(await filters.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
+	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
 test('тап по зоне раскрывает её список', async ({ page }) => {
 	await page.goto('/')
 	await page.locator('.index__zone', { hasText: 'Плечо' }).tap()
@@ -82,6 +93,18 @@ test.describe('на широком экране', () => {
 
 		await expect(page.getByRole('button', { name: 'Разделы статьи' })).toBeHidden()
 		await expect(page.locator('.article__toc')).toBeVisible()
+	})
+})
+
+test.describe('на ноутбуке с узкой шторкой', () => {
+	test.use({ viewport: { width: 820, height: 900 }, hasTouch: false, isMobile: false })
+
+	test('переключатель частоты не вылезает из шторки на модель', async ({ page }) => {
+		await page.goto('/')
+
+		const edge = (selector: string) => page.locator(selector).evaluate((el) => el.getBoundingClientRect().right)
+
+		expect(await edge('.index__freq')).toBeLessThanOrEqual(await edge('.index'))
 	})
 })
 

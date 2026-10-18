@@ -120,7 +120,7 @@ const PADEL_FREQUENCY_ORDER = [
 	'orofacial-trauma',
 ]
 
-export type SportElement = { slug: string; title: string; titleEn: string }
+type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
 export type SportSlug = 'crossfit' | 'padel'

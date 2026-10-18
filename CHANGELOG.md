@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/aimuzov-projects/sorebody/compare/v1.10.0...v1.11.0) (2026-10-18)
+
+
+### Features
+
+* rebrand Wodcare as Sorebody with the pain point mark ([#70](https://github.com/aimuzov-projects/sorebody/issues/70)) ([e06bb9a](https://github.com/aimuzov-projects/sorebody/commit/e06bb9aa078bb7b0191a575f4315d07280e89a3d))
+
 ## [1.10.0](https://github.com/aimuzov-projects/wodcare/compare/v1.9.0...v1.10.0) (2026-10-18)
 
 

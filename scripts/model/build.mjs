@@ -97,7 +97,7 @@ function findObj(id) {
 const doc = new Document()
 const buffer = doc.createBuffer()
 const scene = doc.createScene('body')
-let missing = 0
+const missing = []
 
 // Мышцы помечаются по вершинам: номер мышцы в `parts` меша (с 1) и направление волокон
 const positions = []
@@ -113,7 +113,7 @@ for (const group of cfg.groups) {
 		const p = findObj(id)
 
 		if (!p) {
-			missing++
+			missing.push(id)
 			continue
 		}
 
@@ -166,7 +166,11 @@ for (const group of cfg.groups) {
 	scene.addChild(doc.createNode(group.name).setMesh(mesh))
 }
 
-console.log('missing files', missing)
+// Без части файлов модель собралась бы неполной, и никто бы этого не заметил
+if (missing.length) {
+	console.error(`missing ${missing.length} files in ${cfg.objDirs.join(', ')}: ${missing.join(' ')}`)
+	process.exit(1)
+}
 
 // Центрируем по X/Z, ставим стопы на y = 0
 {
@@ -214,6 +218,8 @@ console.log('missing files', missing)
 			hi = Math.max(hi, v[i])
 		}
 
+		if (!v.length) throw new Error(`anchor ${an.zone}/${an.side}: no vertices in [${an.files.join(' ')}]`)
+
 		const keep = (y) => (an.mode === 'top' ? y > hi - an.band : an.mode === 'bottom' ? y < lo + an.band : true)
 		const bmin = [Infinity, Infinity, Infinity]
 		const bmax = [-Infinity, -Infinity, -Infinity]
@@ -226,6 +232,10 @@ console.log('missing files', missing)
 				bmax[k] = Math.max(bmax[k], v[i + k])
 			}
 		}
+
+		// Пустая полоса записала бы в anchors.json [null, null, null]
+		if (bmin[0] > bmax[0])
+			throw new Error(`anchor ${an.zone}/${an.side}: no vertices in ${an.mode} band ${an.band}`)
 
 		const c = bmin.map((m, k) => +((m + bmax[k]) / 2).toFixed(3))
 

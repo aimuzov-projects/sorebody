@@ -52,9 +52,9 @@ for side, sx in (('right', -1), ('left', 1)):
         {'zone': 'ankle-foot', 'side': side, 'files': ids(f'{side} talus'), 'mode': 'center'},
     ]
 anchors.append({'zone': 'lumbar', 'side': 'center', 'files': [f for n in ('first', 'second', 'third', 'fourth', 'fifth') for f in ids(f'{n} lumbar vertebra')], 'mode': 'center'})
-for a in anchors:
-    if not a['files']:
-        print('NO FILES for anchor', a['zone'], a['side'])
+empty = [f"{a['zone']}/{a['side']}" for a in anchors if not a['files']]
+if empty:
+    sys.exit(f"no files for anchors: {', '.join(empty)}")
 
 groups = [
     {'name': 'bones', 'files': sorted(bones), 'ratio': float(b_ratio), 'error': 0.01},

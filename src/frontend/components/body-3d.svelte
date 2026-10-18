@@ -2533,6 +2533,7 @@
 			   влезли без прокрутки */
 			@media (width >= 700px) and (height < 820px) {
 				padding: 2px 0;
+				line-height: 1.2;
 			}
 
 			@media (width < 700px) {

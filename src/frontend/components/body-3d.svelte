@@ -23,9 +23,7 @@
 
 	import { ChevronDown, ChevronLeft, Diamond, FunnelX, PersonStanding, Search, X } from 'lucide-static'
 
-	import { frequencyOf, type Frequency } from '#frontend/data/frequency.ts'
-	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
-	import { normalize } from '#frontend/lib/filter.ts'
+	import type { Frequency } from '#frontend/data/frequency.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
@@ -52,6 +50,7 @@
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
 	import { probeWebGL } from '#frontend/scene/gpu.ts'
+	import { activeFilterChips, isFiltering, matchesFilters, zoneEntries } from '#frontend/scene/filters.ts'
 	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
 	import { applySportHead, createRequestGuard, createSportLoader } from '#frontend/scene/sport-loader.ts'
 	import poster from '#frontend/scene/poster.json'
@@ -92,41 +91,15 @@
 	let frequency = $state<'all' | Frequency>('all')
 	let movement = $state('')
 
+	// Проверки фильтров -- scene/filters.ts. На странице движения его фильтр задан страницей
 	function matches(injury: Injury) {
-		const q = normalize(query)
-		const only = movementPage?.slug ?? movement
-
-		return (
-			(frequency === 'all' || injury.frequency === frequency) &&
-			(!only || injury.movements.includes(only)) &&
-			(!q || normalize(`${injury.title} ${injury.titleEn} ${injury.summary}`).includes(q))
-		)
+		return matchesFilters(injury, { query, frequency, movement: movementPage?.slug ?? movement })
 	}
 
 	// «Всё тело» без травм спорта в индексе не показываем, как и пустые зоны (scene/zones.ts)
 	const allZones = $derived(whole.injuries.length > 0 ? [...zones, whole] : zones)
-	const filtering = $derived(query.trim() !== '' || frequency !== 'all' || movement !== '')
-	/**
-	 * Включённые фильтры для шапки раскрытой зоны: каждый своим чипом и со своим знаком --
-	 * частота своим знаком в её цвете, движение его иконкой, поиск лупой.
-	 */
-	const activeFilters = $derived(
-		[
-			query.trim() && { key: 'query', label: `«${query.trim()}»`, icon: Search, tone: '' },
-			frequency !== 'all' && {
-				key: 'frequency',
-				label: frequencyOf(frequency).label,
-				icon: frequencyOf(frequency).icon,
-				tone: frequency,
-			},
-			movement && {
-				key: 'movement',
-				label: movements.find((m) => m.slug === movement)?.title ?? movement,
-				icon: MOVEMENT_ICONS[movement as ElementIcon] ?? '',
-				tone: '',
-			},
-		].filter((f) => f !== false && f !== ''),
-	)
+	const filtering = $derived(isFiltering({ query, frequency, movement }))
+	const activeFilters = $derived(activeFilterChips({ query, frequency, movement }, movements))
 
 	function resetFilters() {
 		query = ''
@@ -178,17 +151,9 @@
 	})
 
 	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
-	const results = $derived(
-		query.trim()
-			? allZones.flatMap((zone) => zone.injuries.filter(matches).map((injury) => ({ zone, injury })))
-			: [],
-	)
+	const results = $derived(query.trim() ? zoneEntries(allZones, matches) : [])
 	/** Травмы движения по зонам сверху вниз, в порядке индекса главной. */
-	const movementInjuries = $derived(
-		movementPage
-			? allZones.flatMap((zone) => zone.injuries.filter(matches).map((injury) => ({ zone, injury })))
-			: [],
-	)
+	const movementInjuries = $derived(movementPage ? zoneEntries(allZones, matches) : [])
 
 	/** Зона, на строку которой навели в индексе: её точки на модели подсвечиваются. */
 	let highlighted = $state.raw<Zone | null>(null)

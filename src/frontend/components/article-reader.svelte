@@ -10,7 +10,7 @@
 	import BarLead from '#frontend/components/bar-lead.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
-	import { sportHome, type SportSlug } from '#frontend/data/sports.ts'
+	import { sportHome, sportOf, type SportSlug } from '#frontend/data/sports.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
@@ -36,6 +36,13 @@
 	let { injury, sport, section, instant, reduceMotion, onback, onsport, footer }: Props = $props()
 
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+	/**
+	 * Разбор другого спорта той же травмы грузится поверх показанной статьи: она стоит до подмены,
+	 * а не уступает место заготовке без строки «Разбор» -- иначе селект пропадал, и текст прыгал.
+	 */
+	let reloading = $state(false)
+	/** Травма, чья статья сейчас в теле ридера. */
+	let shown: string | undefined
 	let body = $state<HTMLDivElement>()
 	let reader = $state<HTMLElement>()
 	let progressBar = $state<HTMLElement>()
@@ -85,7 +92,8 @@
 	async function load(slug: string) {
 		const token = ++loadToken
 
-		status = 'loading'
+		if (status === 'ready' && shown === slug) reloading = true
+		else status = 'loading'
 
 		try {
 			const response = await fetch(`/${sport}/${slug}/`)
@@ -118,10 +126,12 @@
 			root.append(...[...main.childNodes].map((node) => document.importNode(node, true)))
 			stopReading?.()
 			body.replaceChildren(root)
+			shown = slug
 			mountSwitches(root)
 			reader.scrollTo(0, 0)
 			stopReading = initReading(root, reader, progressBar ?? null)
 			status = 'ready'
+			reloading = false
 			await tick()
 
 			// К разделу -- когда статья уже показана: пока она грузится, тело скрыто и прокрутке
@@ -138,6 +148,8 @@
 
 			console.error(error)
 			status = 'error'
+			reloading = false
+			shown = undefined
 		}
 	}
 </script>
@@ -152,7 +164,7 @@
 	bind:this={reader}
 	transition:fadeUp|global={{ instant, reduceMotion }}
 	aria-label={injury.title}
-	aria-busy={status === 'loading'}
+	aria-busy={status === 'loading' || reloading}
 >
 	<div class="reader__progress" aria-hidden="true">
 		<span class="reader__progress-bar" bind:this={progressBar}></span>
@@ -178,6 +190,10 @@
 			<div class="article">
 				<header class="article__hero">
 					<h1 class="article__title">{splitTitle(injury.title).name}</h1>
+					<!-- Строка «Разбор» той же высоты, что в статье: «Коротко» под ней не подскакивает -->
+					<div class="article__sport">
+						Разбор <span class="article__sport-phrase">{sportOf(sport as SportSlug).phrase}</span>
+					</div>
 					<div class="article__summary">
 						<p class="article__summary-label">
 							<span class="article__summary-icon">{@html TextQuote}</span>Коротко

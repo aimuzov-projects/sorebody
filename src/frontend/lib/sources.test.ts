@@ -9,6 +9,7 @@ const MINZDRAV = 'https://cr.minzdrav.gov.ru/preview-cr/667_1'
 test('guidelineSite knows listed hosts over https only', () => {
 	assert.equal(guidelineSite(MINZDRAV), 'Минздрав России')
 	assert.equal(guidelineSite('https://bestpractice.bmj.com/topics/en-gb/582'), 'BMJ Best Practice')
+	assert.equal(guidelineSite('https://www.orthoguidelines.org/topic?id=1042'), 'AAOS')
 	assert.equal(guidelineSite('http://cks.nice.org.uk/topics/back-pain/'), undefined)
 	assert.equal(guidelineSite('https://example.com/guide'), undefined)
 	assert.equal(guidelineSite('not a url'), undefined)

@@ -72,7 +72,8 @@ draft: true
 - Статья PubMed — `pmid` и `label`.
 - Клиническая рекомендация или справочник для врачей — `url` и `label`. Ссылка только `https` и
   только с сайта из `GUIDELINE_SITES` в `src/frontend/lib/sources.ts` (Минздрав России, BMJ Best
-  Practice, NICE, NICE CKS), иначе схема её отклонит. Обзоры Cochrane и консенсусы BJSM есть
+  Practice, NICE, NICE CKS, AAOS), иначе схема её отклонит. NICE CKS закрыт от автоматической
+  проверки (403), текст его рекомендации сверить нельзя — ставим только NICE guidance. Обзоры Cochrane и консенсусы BJSM есть
   в PubMed — их цитируем по PMID.
 
 У каждого файла свой `sources`: только то, что процитировано в нём. Источник, который нужен

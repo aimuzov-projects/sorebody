@@ -14,7 +14,7 @@ sources:
     - pmid: '41458779'
       label: Owusu Otoo 2025, обзор оценки сотрясения на месте травмы и ведения (полный текст)
     - pmid: '41441439'
-      label: Graham 2025, систематический обзор рекомендаций по сотрясению, раздел о красных флагах CRT и SCAT (полный текст)
+      label: 'Graham 2025, систематический обзор рекомендаций по сотрясению в парусном спорте: пересказ красных флагов CRT и SCAT (полный текст)'
     - pmid: '38510627'
       label: Demetriades 2024, обзор рекомендаций футбольных федераций по сотрясению (полный текст)
     - pmid: '37316183'
@@ -49,15 +49,15 @@ draft: true
 
 - Сознание ухудшается: человек всё сонливее, ему трудно держать глаза открытыми ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Потеря сознания, даже короткая ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
-- Судороги ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
+- Судороги ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Повторная рвота ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Сильная или нарастающая головная боль ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Двоение в глазах ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Слабость, онемение, покалывание или жжение в руке или ноге ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
-- Боль в шее или боль при нажатии на шею: возможна травма шейного отдела позвоночника ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/)). Самим человека не поднимать, не усаживать и не уводить: при травме шеи её обездвиживают медики ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
+- Боль в шее или боль при нажатии на шею: возможна травма шейного отдела позвоночника ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/)). Самим человека не поднимать, не усаживать и не уводить: обездвиживать ли шею и как это делать, решают медики ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Спутанность и необычное поведение: человек «не в себе», легко отвлекается, не помнит, что было до или после удара ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Нарастающее беспокойство, возбуждение или агрессия ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
-- Видимая деформация черепа ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
+- Видимая деформация черепа ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Прозрачная жидкость из носа или ушей, кровь из уха, синяк за ухом или вокруг глаза без удара по глазу — признаки перелома черепа ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Зрачки разного размера ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Удар был сильным: падение с высоты больше 1 м или больше чем с пяти ступенек, наезд машины на пешехода, столкновение на велосипеде. NICE относит такую травму к поводам срочно ехать в приёмное отделение, при необходимости на скорой ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))

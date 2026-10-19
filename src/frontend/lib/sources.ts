@@ -10,6 +10,8 @@ const GUIDELINE_SITES: Record<string, string> = {
 	'bestpractice.bmj.com': 'BMJ Best Practice',
 	'cks.nice.org.uk': 'NICE CKS',
 	'www.nice.org.uk': 'NICE',
+	// Рекомендации Американской академии хирургов-ортопедов (AAOS): в PubMed их нет
+	'www.orthoguidelines.org': 'AAOS',
 }
 
 export type Source = { pmid: string; label: string } | { url: string; label: string }

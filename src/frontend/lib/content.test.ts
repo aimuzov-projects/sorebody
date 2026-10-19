@@ -222,6 +222,32 @@ for (const doc of injuries) {
 	})
 }
 
+// Библиографию источников (data/pubmed.json) пишет scripts/sources/fetch.mjs: без записи
+// источник в статье останется голым PMID, а запись без ссылок -- мусор в файле
+test('data/pubmed.json covers every PMID in the articles and nothing else', () => {
+	const fetchScript = 'node scripts/sources/fetch.mjs'
+	const meta: Record<string, unknown> = JSON.parse(
+		readFileSync(new URL('../data/pubmed.json', import.meta.url), 'utf8'),
+	)
+	const cited = new Set(
+		[...injuries, ...lenses.flatMap((l) => l.docs)].flatMap(({ data }) =>
+			(data.sources as { pmid?: string }[]).flatMap((s) => (s.pmid ? [s.pmid] : [])),
+		),
+	)
+
+	assert.deepEqual(
+		[...cited].filter((pmid) => !(pmid in meta)),
+		[],
+		`нет выходных данных, запусти ${fetchScript}`,
+	)
+
+	assert.deepEqual(
+		Object.keys(meta).filter((pmid) => !cited.has(pmid)),
+		[],
+		`лишние записи, запусти ${fetchScript}`,
+	)
+})
+
 // Картинку убрали из статьи или переименовали, а файл и его копии остались лежать в public
 test('public/injuries holds only the article images and their srcset variants', () => {
 	const used = injuries.flatMap(({ data }) => data.images.map(({ src }: { src: string }) => src))

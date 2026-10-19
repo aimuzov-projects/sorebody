@@ -88,12 +88,13 @@
 	/* Переключатель темы на всех страницах в одной точке: по вертикали на строке шапки (её
 	   верхнее поле 12px, строка 40px), по горизонтали правый край значка -- на правом крае
 	   колонки текста (--frame-right). Значок 22px в кнопке 40px, отсюда 9px. На узком экране
-	   не ближе 16px к краю. Слева от него через --header-gap -- ссылка "Что нового"
-	   (changelog-link.astro). Шапка оставляет справа место под обе кнопки: --theme-toggle-room */
+	   не ближе 16px к краю. Слева от него через --header-gap -- ссылки «Что нового» и
+	   «О справочнике» (corner-link.astro). Шапка оставляет справа место под три значка:
+	   --theme-toggle-room */
 	--theme-toggle-top: calc(12px + var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	--theme-toggle-right: max(16px, env(safe-area-inset-right, 0px), var(--frame-right) - 9px);
 	--header-gap: 4px;
-	--theme-toggle-room: calc(var(--theme-toggle-right) + 80px + var(--header-gap) + 8px);
+	--theme-toggle-room: calc(var(--theme-toggle-right) + 120px + 2 * var(--header-gap) + 8px);
 
 	/* Каркас страниц. Левый край колонки -- одна вертикаль везде: индекс сцены, оглавление
 	   статьи, поле about и начало шапки. Это край колонки статьи: 1052px по центру и поля
@@ -355,6 +356,30 @@ img {
 @keyframes bubble-fade {
 	from {
 		opacity: 0;
+	}
+}
+
+/* Подсказка под значком в правом верхнем углу (lib/corner-tip.ts): тема, «Что нового»,
+   «О справочнике». В верхнем слое (popover), иначе её накрыл бы круг подсмотра темы; место
+   ставит скрипт. Без плашки, а круг под текстом бывает в другой схеме: белый текст в режиме
+   difference читается и на светлом, и на тёмном */
+.corner-tip {
+	pointer-events: none;
+	position: fixed;
+	inset: auto;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: #ffffff;
+	white-space: nowrap;
+	background: none;
+	mix-blend-mode: difference;
+	animation: bubble-fade 0.25s ease;
+
+	@media (--reduced-motion) {
+		animation: none;
 	}
 }
 

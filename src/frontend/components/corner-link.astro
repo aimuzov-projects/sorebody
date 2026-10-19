@@ -1,0 +1,103 @@
+---
+type Props = {
+	href: string
+	/** Подпись для скринридера, она же текст подсказки. */
+	label: string
+	/** SVG из lucide-static или `lib/icons.ts`. */
+	icon: string
+	/** Место в ряду слева от переключателя темы: 1 -- вплотную к нему, 2 -- следующее. */
+	place: 1 | 2
+}
+
+const { href, label, icon, place } = Astro.props
+const current = Astro.url.pathname.replace(/\/$/, '') === href.replace(/\/$/, '')
+---
+
+<a
+	class="corner-link"
+	data-place={place}
+	{href}
+	aria-label={label}
+	aria-current={current ? 'page' : undefined}
+	data-corner-link
+>
+	<span class="corner-link__icon" aria-hidden="true" set:html={icon} />
+</a>
+<!-- Подпись уже есть в aria-label ссылки: подсказка только для глаз -->
+<span class="corner-tip" aria-hidden="true" popover="manual" data-corner-tip>
+	{label}
+</span>
+
+<style>
+	/* В строке переключателя темы, слева от него, в том же языке: без подложки, в покое
+	   приглушена. В Mini App переключателя нет, и ряд сдвигается в угол на его место.
+	   Место в ряду -- через data-place, а не style: CSP сайта режет inline-стили */
+	.corner-link {
+		--corner-step: calc(40px + var(--header-gap));
+		--corner-place: 1;
+
+		position: fixed;
+		z-index: 30;
+		top: var(--theme-toggle-top);
+		right: calc(var(--theme-toggle-right) + var(--corner-place) * var(--corner-step));
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		color: var(--fg);
+		opacity: 0.55;
+		transition: opacity 0.3s ease;
+		-webkit-tap-highlight-color: transparent;
+
+		&[data-place='2'] {
+			--corner-place: 2;
+		}
+
+		:global([data-telegram]) & {
+			right: calc(var(--theme-toggle-right) + (var(--corner-place) - 1) * var(--corner-step));
+		}
+
+		/* Мягкое свечение вместо обводки фокуса, как у переключателя темы */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: -4px;
+			border-radius: 50%;
+			opacity: 0;
+			background: radial-gradient(closest-side, color-mix(in srgb, var(--fg) 20%, transparent), transparent);
+			transition: opacity 0.3s ease;
+		}
+
+		&:hover,
+		&:focus-visible,
+		&[aria-current='page'] {
+			opacity: 1;
+		}
+
+		/* Текущая страница: значок горит, но не кликается, ссылка на саму себя бесполезна */
+		&[aria-current='page'] {
+			pointer-events: none;
+		}
+
+		&:focus-visible {
+			outline: none;
+
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
+	.corner-link__icon {
+		display: inline-flex;
+		width: 22px;
+		height: 22px;
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& :global(svg) {
+			width: 100%;
+			height: 100%;
+			stroke-width: 1.8;
+		}
+	}
+</style>

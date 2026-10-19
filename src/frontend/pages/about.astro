@@ -1,6 +1,7 @@
 ---
 import { BookOpen, ChevronLeft, FlaskConical, PersonStanding, Sparkles, Stethoscope } from 'lucide-static'
 
+import BarLead from '#frontend/components/bar-lead.svelte'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import Base from '#frontend/layouts/base.astro'
 import { pubmedUrl } from '#frontend/lib/pubmed.ts'
@@ -25,9 +26,7 @@ const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 	</div>
 	<SiteHeader>
 		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
-		<p class="article-bar__title" aria-hidden="true">
-			{title}
-		</p>
+		<BarLead {title} home="/" />
 	</SiteHeader>
 	<main class="article" data-article>
 		<header class="article__hero">

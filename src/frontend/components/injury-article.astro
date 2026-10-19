@@ -24,6 +24,7 @@ import {
 	type SportSlug,
 } from '#frontend/data/sports.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
+import BarLead from '#frontend/components/bar-lead.svelte'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import SportSwitch from '#frontend/components/sport-switch.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
@@ -115,9 +116,7 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 	</div>
 	<SiteHeader>
 		<a class="article-bar__back" href={home} aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
-		<p class="article-bar__title" aria-hidden="true">
-			{name}
-		</p>
+		<BarLead title={name} {home} />
 	</SiteHeader>
 	<main class="article" data-article>
 		<header class="article__hero">

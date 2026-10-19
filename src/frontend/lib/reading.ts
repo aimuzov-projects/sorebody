@@ -44,6 +44,8 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		if (titleByScript) {
 			box.style.setProperty('--title-out', String(Math.min(1, y / 140)))
 			box.style.setProperty('--title-in', String(Math.min(1, Math.max(0, (y - 80) / 80))))
+			box.style.setProperty('--logo-out', String(Math.min(1, Math.max(0, (y - 40) / 60))))
+			box.style.setProperty('--logo-visibility', y >= 100 ? 'hidden' : 'visible')
 		}
 
 		// Активный -- последний раздел, чей верх уже поднялся выше трети экрана

@@ -605,42 +605,13 @@
 		color: var(--accent);
 	}
 
-	/* Источники свёрнуты: в заголовке число и из чего список состоит, шеврон справа */
+	/* Источники: в заголовке число, под ним из чего список состоит */
 	&__sources {
 		scroll-margin-top: var(--header-clear);
 	}
 
-	&__sources-summary {
-		cursor: pointer;
-		display: flex;
-		gap: 16px;
-		align-items: center;
-		justify-content: space-between;
-		border-radius: 12px;
-		list-style: none;
-
-		&::-webkit-details-marker {
-			display: none;
-		}
-
-		&:focus-visible {
-			outline: 2px solid var(--accent);
-			outline-offset: 6px;
-		}
-	}
-
-	&__sources-head {
-		display: grid;
-		gap: 2px;
-	}
-
 	&__sources-title {
-		margin: 0;
-		transition: color 0.3s var(--article-ease);
-	}
-
-	&__sources-summary:hover &__sources-title {
-		color: var(--accent);
+		margin-bottom: 2px;
 	}
 
 	&__sources-count {
@@ -649,29 +620,64 @@
 	}
 
 	&__sources-note {
+		margin: 0 0 20px;
 		font-size: 14px;
 		color: var(--muted);
 	}
 
-	&__sources-chevron {
-		display: inline-flex;
-		flex: none;
-		width: 24px;
-		height: 24px;
-		color: var(--muted);
-		transition: rotate 0.3s var(--article-ease);
+	/* Свёрнутый список (lib/sources-peek.ts): виден первый источник, второй тает в фон, кнопка
+	   под фейдом. Остальные скрыты через hidden="until-found", но пункт списка и так
+	   оставляет строку под номер: без номера (display: block) и отступов сетки их не видно */
+	&__sources[data-collapsed] &__source-list {
+		row-gap: 0;
+		mask-image: linear-gradient(to bottom, #000 calc(100% - 96px), transparent);
+	}
 
-		@media (--reduced-motion) {
-			transition: none;
+	&__sources[data-collapsed] &__source:nth-child(2) {
+		pointer-events: none;
+		margin-top: 14px;
+	}
+
+	&__sources[data-collapsed] &__source[hidden] {
+		display: block;
+	}
+
+	/* Раскрыть список -- действие, а не переход: ссылка цвета акцента, а не чипс, как у движений */
+	&__sources-more {
+		cursor: pointer;
+		position: relative;
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		margin-top: 4px;
+		padding: 0;
+		border: 0;
+		border-radius: 4px;
+		font: inherit;
+		font-size: 15px;
+		font-weight: 500;
+		color: var(--accent);
+		text-underline-offset: 3px;
+		background: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 4px;
+		}
+
+		&[hidden] {
+			display: none;
 		}
 	}
 
-	&__sources[open] &__sources-chevron {
-		rotate: 180deg;
-	}
-
-	&__sources[open] &__source-list {
-		margin-top: 20px;
+	&__sources-more-icon {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
 	}
 
 	&__source-list {
@@ -1192,19 +1198,9 @@
 	}
 }
 
-/* На печати источники открыты, даже если beforeprint не сработал (печать из меню без JS):
-   содержимое свёрнутого details показываем через ::details-content, где он есть */
+/* Список на печати раскрывает beforeprint (lib/sources-peek.ts), кнопка на бумаге не нужна */
 @media print {
-	.article__sources::details-content {
-		content-visibility: visible;
-		display: contents;
-	}
-
-	.article__source-list {
-		margin-top: 20px;
-	}
-
-	.article__sources-chevron {
+	.article__sources-more {
 		display: none;
 	}
 }

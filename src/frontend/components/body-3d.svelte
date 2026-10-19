@@ -287,20 +287,23 @@
 	}
 
 	function placePoster() {
-		const shift = startShift(innerWidth, innerHeight)
+		// По сцене, как и живая модель: окно шире на место под полосу прокрутки (styles/global.css)
+		const width = wrap?.clientWidth || innerWidth
+		const height = wrap?.clientHeight || innerHeight
+		const shift = startShift(width, height)
 
-		posterRect = projectBox(poster.box as never, innerWidth, innerHeight, shift)
+		posterRect = projectBox(poster.box as never, width, height, shift)
 
 		// Пол подсказки: на телефоне -- заголовок шторки (не лечь на селект спорта), шире --
 		// подвал сцены (не лечь на ссылки подписи)
-		const floor = wrap?.querySelector(innerWidth < 700 ? '.index__title--home' : '.scene-footer .footer')
+		const floor = wrap?.querySelector(width < 700 ? '.index__title--home' : '.scene-footer .footer')
 
 		hintPlace = placeHint(
 			{ figure: poster.box as Box, head: HEAD_BOX, ankles: ANKLES_BOX },
-			innerWidth,
-			innerHeight,
+			width,
+			height,
 			shift,
-			(floor?.getBoundingClientRect().top ?? innerHeight) - 8,
+			(floor?.getBoundingClientRect().top ?? height) - 8,
 		)
 	}
 

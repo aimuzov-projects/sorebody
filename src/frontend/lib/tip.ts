@@ -1,3 +1,5 @@
+import { pageWidth } from '#frontend/lib/page-gutter.ts'
+
 type TipOptions = {
 	/** Колонка, за края которой подсказка не выходит: заголовок статьи, индекс главной. */
 	column: Element
@@ -47,7 +49,7 @@ function attachTip(
 
 		const { width, height } = tip.getBoundingClientRect()
 		const box = column.getBoundingClientRect()
-		const viewport = document.documentElement.clientWidth
+		const viewport = pageWidth()
 		const left = rect.right + 4
 
 		if (side === 'right' && left + width <= viewport - 16) {

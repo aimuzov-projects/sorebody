@@ -1,5 +1,43 @@
 # Changelog
 
+## [1.12.0](https://github.com/aimuzov-projects/sorebody/compare/v1.11.0...v1.12.0) (2026-10-19)
+
+
+### Features
+
+* add football as the third sport ([#88](https://github.com/aimuzov-projects/sorebody/issues/88)) ([7930d2a](https://github.com/aimuzov-projects/sorebody/commit/7930d2a6c772375b7d881d48818e4fdff8374fd7))
+* **article:** collapse the sources list under a summary ([#101](https://github.com/aimuzov-projects/sorebody/issues/101)) ([d76260b](https://github.com/aimuzov-projects/sorebody/commit/d76260bbc37225e33695ad2c5eed81daef36f572))
+* **article:** fill the mobile section menu button with the sport accent ([#107](https://github.com/aimuzov-projects/sorebody/issues/107)) ([4b041d1](https://github.com/aimuzov-projects/sorebody/commit/4b041d1da7324d8aefe7142d10255ad01a989339))
+* **article:** show PubMed citation, work type, full text and DOI in sources ([#98](https://github.com/aimuzov-projects/sorebody/issues/98)) ([fb83e03](https://github.com/aimuzov-projects/sorebody/commit/fb83e0315e82949075d44d53e91c91ed8ee13939))
+* **article:** show the first sources and a link to the rest ([#112](https://github.com/aimuzov-projects/sorebody/issues/112)) ([a6b8e7d](https://github.com/aimuzov-projects/sorebody/commit/a6b8e7dd9204aa1c7d709a1eb069559e0c9f2527))
+* brand gradient on pages without a sport ([#111](https://github.com/aimuzov-projects/sorebody/issues/111)) ([803d825](https://github.com/aimuzov-projects/sorebody/commit/803d8251304a80d3fb896eacd8af0e0a4ff8fa6f))
+* grow football to 22 injuries ([#96](https://github.com/aimuzov-projects/sorebody/issues/96)) ([a349979](https://github.com/aimuzov-projects/sorebody/commit/a349979cff3cae63c3e97b457910eba8ce3c98b4))
+* **header:** add an About link with tooltips next to What's new ([#105](https://github.com/aimuzov-projects/sorebody/issues/105)) ([fdfd408](https://github.com/aimuzov-projects/sorebody/commit/fdfd408b9d89470539aa54b5e0441ad9b8a5aaa7))
+* **header:** show the logo beside Back on inner pages ([#106](https://github.com/aimuzov-projects/sorebody/issues/106)) ([0b41532](https://github.com/aimuzov-projects/sorebody/commit/0b4153208fd65c2da85759ce100a5b8ffb37ce4d))
+
+
+### Bug Fixes
+
+* **about:** describe sources as they are cited ([#99](https://github.com/aimuzov-projects/sorebody/issues/99)) ([e64f659](https://github.com/aimuzov-projects/sorebody/commit/e64f6594ebab2f8dbdcc4abdf1913c2e386b05b1))
+* **content:** keep shared injury parts sport-neutral and correctly sourced ([#97](https://github.com/aimuzov-projects/sorebody/issues/97)) ([f3e4914](https://github.com/aimuzov-projects/sorebody/commit/f3e49141df330705a80490e978251f43e2cc7ae8))
+* **deps:** update astro and svelte ([#86](https://github.com/aimuzov-projects/sorebody/issues/86)) ([c84275f](https://github.com/aimuzov-projects/sorebody/commit/c84275f1187f9bf7de912582d45466515eae2241))
+* **home:** do not light a zone with no injuries left under the filters ([#100](https://github.com/aimuzov-projects/sorebody/issues/100)) ([e976a68](https://github.com/aimuzov-projects/sorebody/commit/e976a68e1c189339e31626dc9bfb46e542ed9faa))
+* **home:** keep the article and its sport line in place while switching sports in the reader ([#110](https://github.com/aimuzov-projects/sorebody/issues/110)) ([3498bb5](https://github.com/aimuzov-projects/sorebody/commit/3498bb5d2f13e4b667f7c1de414e5b0ad4bed272))
+* **home:** keep the open mobile island above the page title ([#92](https://github.com/aimuzov-projects/sorebody/issues/92)) ([fc7894b](https://github.com/aimuzov-projects/sorebody/commit/fc7894b1700cb25fc117c59747daa3705f316c3e))
+* **home:** put the scene logo where the article header has it ([#113](https://github.com/aimuzov-projects/sorebody/issues/113)) ([d222980](https://github.com/aimuzov-projects/sorebody/commit/d222980a8a8c5220f01e9ff7f7b038339a6a569a))
+* **home:** switch sports in place from an open article and keep history in the chosen sport ([#95](https://github.com/aimuzov-projects/sorebody/issues/95)) ([95bfb6a](https://github.com/aimuzov-projects/sorebody/commit/95bfb6a2a0d8ae48115c43ce05f9c4eee061ac6a))
+* **home:** take the Metrika referer from the address bar and unmount article switches after the fade ([#72](https://github.com/aimuzov-projects/sorebody/issues/72)) ([2645ff8](https://github.com/aimuzov-projects/sorebody/commit/2645ff8a90883023cfb04d99b8bd532466b17c47))
+* **layout:** keep the header still when the page gains a scrollbar ([#109](https://github.com/aimuzov-projects/sorebody/issues/109)) ([b39b4e7](https://github.com/aimuzov-projects/sorebody/commit/b39b4e78a94f7ce8d466d78f834eb2aa596cafe0))
+* **links:** point changelog and article links straight at the injury page ([#76](https://github.com/aimuzov-projects/sorebody/issues/76)) ([81b1e62](https://github.com/aimuzov-projects/sorebody/commit/81b1e6284e80059e27c51be5ff786b3dbf9433fa))
+
+
+### Performance Improvements
+
+* **article:** serve 600 and 900 px copies of article images through srcset ([#75](https://github.com/aimuzov-projects/sorebody/issues/75)) ([77aa861](https://github.com/aimuzov-projects/sorebody/commit/77aa861ac6b104e5b9f71924786977a1873d20cc))
+* **home:** skip the 3D scene on software WebGL and load it after the first paint ([#79](https://github.com/aimuzov-projects/sorebody/issues/79)) ([6e7288c](https://github.com/aimuzov-projects/sorebody/commit/6e7288cd1f55ad4f3cb449ea91f7551b28f51fd5))
+* **scene:** stop recomputing styles while placing spots every frame ([#77](https://github.com/aimuzov-projects/sorebody/issues/77)) ([b5bb038](https://github.com/aimuzov-projects/sorebody/commit/b5bb03880d4cabd6116c09227b0ffebff2b68c6c))
+* serve CSS as cached files instead of inlining it into every page ([#80](https://github.com/aimuzov-projects/sorebody/issues/80)) ([99b16c5](https://github.com/aimuzov-projects/sorebody/commit/99b16c54a0d6f07abee324ff7667f3b8ea390125))
+
 ## [1.11.0](https://github.com/aimuzov-projects/sorebody/compare/v1.10.0...v1.11.0) (2026-10-18)
 
 

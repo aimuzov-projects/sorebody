@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { mount, onDestroy, tick, unmount, untrack, type Snippet } from 'svelte'
 
-	import { ChevronLeft, TextQuote } from 'lucide-static'
+	import { ChevronLeft, CloudOff, TextQuote } from 'lucide-static'
 
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
@@ -182,9 +182,28 @@
 			</div>
 		</div>
 	{:else if status === 'error'}
-		<p class="reader__status">
-			Не получилось загрузить статью. <a href="/{sport}/{injury.slug}/">Открыть отдельно</a>
-		</p>
+		<div class="reader__failed" role="alert">
+			<span class="reader__failed-icon" aria-hidden="true">{@html CloudOff}</span>
+			<p class="reader__failed-title">Статья не загрузилась</p>
+			<p class="reader__failed-text">
+				«{splitTitle(injury.title).name}» не открылась: похоже, пропала связь. Попробуйте ещё раз или откройте
+				статью отдельной страницей.
+			</p>
+			<div class="reader__failed-actions">
+				<button
+					type="button"
+					class="reader__action reader__action--main"
+					onclick={() => void load(injury.slug)}
+				>
+					Попробовать ещё раз<span class="reader__action-mark reader__action-mark--retry" aria-hidden="true"
+						>↻</span
+					>
+				</button>
+				<a class="reader__action" href="/{sport}/{injury.slug}/">
+					Открыть отдельно<span class="reader__action-mark" aria-hidden="true">→</span>
+				</a>
+			</div>
+		</div>
 	{/if}
 	<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
 	{#if footer && status === 'ready'}{@render footer()}{/if}
@@ -202,6 +221,12 @@
 
 		overscroll-behavior: contain;
 		background: var(--a-page);
+
+		@media (prefers-reduced-motion: reduce) {
+			&__action-mark {
+				transition: none;
+			}
+		}
 
 		&:focus {
 			outline: none;
@@ -261,11 +286,110 @@
 			}
 		}
 
-		&__status {
-			max-width: 680px;
+		/* Статья не загрузилась: по центру экрана знак в мягком круге цвета спорта, пояснение
+		   и два выхода -- повторить здесь или открыть отдельную страницу */
+		&__failed {
+			display: grid;
+			align-content: center;
+			justify-items: center;
+			max-width: 480px;
+			min-height: 70dvh;
 			margin: 0 auto;
 			padding: 24px;
+			text-align: center;
+		}
+
+		&__failed-icon {
+			display: grid;
+			place-items: center;
+			width: 72px;
+			height: 72px;
+			margin-bottom: 20px;
+			border-radius: 50%;
+			color: var(--a-blue);
+			background: color-mix(in srgb, var(--a-blue) 10%, transparent);
+			box-shadow: 0 0 0 10px color-mix(in srgb, var(--a-blue) 5%, transparent);
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 32px;
+				height: 32px;
+				stroke-width: 1.6;
+			}
+		}
+
+		&__failed-title {
+			margin: 0;
+			font-size: 24px;
+			font-weight: 700;
+			line-height: 1.2;
+			color: var(--a-fg);
+			letter-spacing: -0.01em;
+		}
+
+		&__failed-text {
+			margin: 10px 0 0;
+			font-size: 16px;
+			line-height: 1.45;
 			color: var(--a-fg2);
+			text-wrap: pretty;
+		}
+
+		&__failed-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 4px 8px;
+			justify-content: center;
+			margin-top: 20px;
+		}
+
+		/* Действия -- как строки списка травм (injury-list.svelte): жирный текст и знак цветом
+		   спорта, который при наведении сдвигается. Подложка при наведении -- как у "‹" в шапке.
+		   Главное действие -- "Попробовать ещё раз", оно целиком цветом спорта */
+		&__action {
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			min-height: 44px;
+			padding: 0 14px;
+			border: 0;
+			border-radius: 999px;
+			font: inherit;
+			font-size: 17px;
+			font-weight: 600;
+			color: var(--a-fg);
+			text-decoration: none;
+			background: none;
+			transition: background 0.3s ease;
+
+			&:hover {
+				background: color-mix(in srgb, var(--a-fg) 7%, transparent);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				outline-offset: -2px;
+			}
+
+			&--main {
+				color: var(--a-blue);
+			}
+		}
+
+		&__action-mark {
+			display: inline-block;
+			margin-left: 6px;
+			font-weight: 400;
+			color: var(--a-blue);
+			transition: transform 0.35s var(--a-ease);
+		}
+
+		&__action:is(:hover, :focus-visible) &__action-mark {
+			transform: translateX(4px);
+		}
+
+		&__action:is(:hover, :focus-visible) &__action-mark--retry {
+			transform: rotate(180deg);
 		}
 
 		/* Саму статью оформляет общий styles/article.css, тот же, что у отдельной страницы */

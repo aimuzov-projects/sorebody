@@ -55,6 +55,25 @@ const PADEL_ELEMENTS = [
 export type PadelElement = (typeof PADEL_ELEMENTS)[number]['slug']
 
 /**
+ * Игровые действия и ситуации футбола по docs/research/football-injuries-pubmed.md, раздел 4.
+ * Отбор и подкат -- один элемент с двумя сторонами: атакуешь сам или атакуют тебя.
+ */
+const FOOTBALL_ELEMENTS = [
+	{ slug: 'kicking', title: 'Удар по мячу', titleEn: 'Kicking' },
+	{ slug: 'sprint', title: 'Спринт', titleEn: 'Sprint' },
+	{ slug: 'change-of-direction', title: 'Резкая смена направления', titleEn: 'Change of direction' },
+	{ slug: 'deceleration', title: 'Торможение', titleEn: 'Deceleration' },
+	{ slug: 'tackle', title: 'Единоборство и подкат', titleEn: 'Tackle' },
+	{ slug: 'heading', title: 'Игра головой', titleEn: 'Heading' },
+	{ slug: 'jump-landing', title: 'Приземление после прыжка', titleEn: 'Jump landing' },
+	{ slug: 'collision', title: 'Столкновение', titleEn: 'Collision' },
+	{ slug: 'ball-impact', title: 'Попадание мячом', titleEn: 'Ball impact' },
+	{ slug: 'goalkeeping', title: 'Вратарские действия', titleEn: 'Goalkeeping' },
+] as const
+
+export type FootballElement = (typeof FOOTBALL_ELEMENTS)[number]['slug']
+
+/**
  * Все травмы кроссфита от самой частой к самой редкой: в этом порядке они стоят в списках зон.
  * Уровень и порядок -- из таблицы диагнозов в docs/research/crossfit-injuries-pubmed.md:
  * частые -- там "очень часто" и "часто", нечастые -- "нередко" и "нечасто", редкие -- только
@@ -120,10 +139,32 @@ const PADEL_FREQUENCY_ORDER = [
 	'orofacial-trauma',
 ]
 
+/**
+ * Травмы футбола от частых к редким, уровни -- из таблицы диагнозов (раздел 3) и пилота (раздел 5)
+ * в docs/research/football-injuries-pubmed.md, внутри уровня -- по доле в таблице диагнозов Ekstrand 2020 (62% травм -- UEFA ECIS).
+ */
+const FOOTBALL_FREQUENCY_ORDER = [
+	// Частые
+	'hamstring-strain',
+	'fall-contusions',
+	'adductor-groin-pain',
+	'ankle-sprain',
+	'muscle-strains',
+	'mcl-sprain',
+	// Нечастые
+	'achilles-tendinopathy',
+	'concussion',
+	'acl-tear',
+	'meniscus-tear',
+	'fifth-metatarsal-fracture',
+	// Редкие
+	'orofacial-trauma',
+]
+
 type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
-export type SportSlug = 'crossfit' | 'padel'
+export type SportSlug = 'crossfit' | 'padel' | 'football'
 
 export type Sport = {
 	slug: SportSlug
@@ -183,6 +224,23 @@ export const SPORTS = [
 		// тёмной темы, цифры на нём тоже тёмные. По тону далеко и от бирюзы частых травм, и от
 		// красного «опасно»
 		accent: { light: '#467509', dark: '#a3e635', onLight: '#ffffff', onDark: '#161617', glow: '#84cc16' },
+	},
+	{
+		slug: 'football',
+		title: 'Футбол',
+		phrase: 'в футболе',
+		elementLabel: 'Действие',
+		elementsTitle: 'Игровые действия',
+		elementOn: 'на действии',
+		description:
+			'Справочник травм в футболе: как часто случаются, симптомы, когда к врачу и как изменить игру и тренировки — со ссылками на исследования.',
+		mechanismTitle: 'Механизм и игровые действия',
+		elements: FOOTBALL_ELEMENTS,
+		frequencyOrder: FOOTBALL_FREQUENCY_ORDER,
+		// Зелёный газона: светлый -- 7:1 на белом и 6.5:1 на серой заливке чипов, тёмный -- 9:1 на фоне
+		// тёмной темы, цифры на нём тёмные. Тон сдвинут к бирюзе дальше лайма падела, но светлота
+		// и насыщенность не дают спутать его с бирюзой частых травм
+		accent: { light: '#0a6640', dark: '#30d18a', onLight: '#ffffff', onDark: '#161617', glow: '#22c07a' },
 	},
 ] as const satisfies readonly Sport[]
 

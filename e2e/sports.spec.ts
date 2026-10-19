@@ -4,6 +4,7 @@ import { sportOf, SPORTS, type SportSlug } from '#frontend/data/sports.ts'
 
 const CROSSFIT = sportOf('crossfit')
 const PADEL = sportOf('padel')
+const FOOTBALL = sportOf('football')
 
 /** `#0066cc` -> `rgb(0, 102, 204)`: так цвет отдаёт getComputedStyle. */
 const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair) => parseInt(pair, 16)).join(', ')})`
@@ -11,8 +12,8 @@ const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair)
 // Этап 0 многоспортивного справочника (docs/multisport-concept.md): кроссфит переехал под
 // `/crossfit/`, старые адреса ведут туда же, раздел статьи и зона сцены в хеше не теряются
 test('старый адрес статьи ведёт на статью кроссфита к тому же разделу', async ({ page }) => {
-	await page.goto('/injuries/acl-tear/#urgent')
-	await expect(page).toHaveURL(/\/crossfit\/acl-tear\/#urgent$/)
+	await page.goto('/injuries/distal-biceps-rupture/#urgent')
+	await expect(page).toHaveURL(/\/crossfit\/distal-biceps-rupture\/#urgent$/)
 	await expect(page.locator('.article__title')).toBeVisible()
 })
 
@@ -20,8 +21,8 @@ test('старый адрес статьи ведёт на статью крос
 // а не обратно в поисковик: страница статьи не должна считать, что пришла с сайта
 test('из поисковика по старому адресу «Назад» в статье ведёт на главную', async ({ page }) => {
 	await page.goto('about:blank')
-	await page.goto('/injuries/acl-tear/', { referer: 'https://www.google.com/' })
-	await expect(page).toHaveURL(/\/crossfit\/acl-tear\/$/)
+	await page.goto('/injuries/distal-biceps-rupture/', { referer: 'https://www.google.com/' })
+	await expect(page).toHaveURL(/\/crossfit\/distal-biceps-rupture\/$/)
 	await page.locator('[data-back]').click()
 	await expect(page).toHaveURL(/\/$/)
 	await expect(page.locator('.index__title--home')).toBeVisible()
@@ -152,6 +153,22 @@ async function chooseSport(page: Page, from: string, to: string) {
 	await sportButton(page, from).click()
 	await page.getByRole('option', { name: to }).click()
 }
+
+// Третий спорт: из падела в футбол на месте, цвет перетекает из лайма в зелёный, а голень, которая
+// есть только у падела, уходит со списка зон
+test('из падела в футбол -- на месте, со своим цветом и своими зонами', async ({ page }) => {
+	await page.goto('/padel/')
+	await markPage(page)
+	await chooseSport(page, 'Падел', 'Футбол')
+
+	await expect(page).toHaveURL(/\/football\/$/)
+	await expect(page.locator('h1')).toHaveText('Травмы в футболе')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'football')
+	await expect(sportButton(page, 'Футбол')).toHaveCSS('color', rgb(FOOTBALL.accent.light))
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
+	await expect(page.locator('.index__zone-label', { hasText: 'Голова' })).toHaveCount(1)
+	expect(await samePage(page)).toBe(true)
+})
 
 // Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит
 const HOME = /\/\/[^/]+\/$/
@@ -318,7 +335,7 @@ test('подсветка модели -- цвет спорта, даже есл�
 	expect(await glow()).toBe(CROSSFIT.accent.glow)
 })
 
-// Голова и голень есть только у травм падела: у кроссфита пустых зон в списке нет. Какие зоны
+// Голень есть только у травм падела: у кроссфита и футбола пустых зон в списке нет. Какие зоны
 // у спорта, считает zones.test.ts, здесь -- что страница спорта берёт свои. Список зон рисуется
 // и без модели, поэтому без `?scene`: сцена тут только тормозила
 test('на странице спорта видны только зоны с его травмами', async ({ page }) => {
@@ -342,7 +359,7 @@ test('«Разбор в …» ведёт на статью другого спо
 })
 
 test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {
-	await page.goto('/crossfit/acl-tear/')
+	await page.goto('/crossfit/distal-biceps-rupture/')
 	await expect(page.locator('.article__sport')).toHaveText('Разбор в кроссфите')
 	await expect(page.locator('[data-sport-switch]')).toHaveCount(0)
 })

@@ -133,6 +133,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'acl-tear': { offset: [0, 0, 0], zoom: 2 },
 	'meniscus-tear': { offset: [-0.035, -0.015, 0.015], normal: [-0.3, 0, 1], view: { azimuth: 0, polar: 78 } },
 	'iliotibial-band-syndrome': { offset: [0.045, 0.02, 0], normal: [1, 0, 0], view: { azimuth: 80, polar: 78 } },
+	// Медиальная коллатеральная связка -- изнутри и выше суставной щели, у медиального надмыщелка: так её
+	// кружок не ложится на мениск, а ракурс смотрит мимо другого колена
+	'mcl-sprain': { offset: [-0.055, 0.015, 0.02], normal: [-0.6, 0, 0.8], view: { azimuth: -30, polar: 78 } },
 	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
 	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
 	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },
@@ -150,6 +153,8 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'inguinal-hernia': { offset: [-0.055, 0, 0.085], normal: [0, 0, 1], view: { azimuth: 10, polar: 76 } },
 	'meralgia-paresthetica': { offset: [0.03, -0.07, 0.07], normal: [0.5, 0, 1], view: { azimuth: 35, polar: 76 } },
 	'hamstring-strain': { offset: [0, -0.15, -0.07], normal: [0, 0, -1], view: { azimuth: 155, polar: 76 } },
+	// Приводящие начинаются от лобковой кости и идут по внутренней стороне бедра
+	'adductor-groin-pain': { offset: [-0.07, -0.07, 0.06], normal: [-0.4, 0, 1], view: { azimuth: 0, polar: 78 } },
 	'stress-urinary-incontinence': {
 		offset: [-0.107, 0.01, 0.07],
 		normal: [0, 0, 1],
@@ -161,6 +166,8 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Голова: глаз и рот спереди, от центра черепа
 	'eye-injury': { offset: [0.032, 0, 0.07], normal: [0.2, 0, 1], view: { azimuth: 15, polar: 84 }, zoom: 2.4 },
 	'orofacial-trauma': { offset: [0, -0.075, 0.085], normal: [0, 0, 1], view: { azimuth: 15, polar: 86 }, zoom: 2.2 },
+	// Сотрясение -- весь мозг, маркер на темени, кадр головы целиком
+	concussion: { offset: [0, 0.07, 0.01], normal: [0, 1, 0.3], view: { azimuth: 20, polar: 70 }, zoom: 1.4 },
 	// Локоть: тендинопатия -- наружный надмыщелок, бицепс крепится спереди в сгибе локтя
 	'elbow-tendinopathy': { offset: [0.03, 0, 0], normal: [1, 0, 0] },
 	'distal-biceps-rupture': { offset: [0, -0.025, 0.04], normal: [0, 0, 1], view: { azimuth: 25, polar: 76 } },
@@ -178,6 +185,12 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'ankle-sprain': { offset: [0.03, -0.01, -0.005], normal: [1, 0, 0], view: { azimuth: 85, polar: 70 } },
 	'plantar-fasciitis': { offset: [0, -0.055, -0.035], normal: [0, -0.6, -1], view: { azimuth: 160, polar: 95 } },
 	'achilles-tendinopathy': { offset: [0, 0.035, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
+	// Пятая плюсневая -- наружный край стопы впереди лодыжки
+	'fifth-metatarsal-fracture': {
+		offset: [0.04, -0.05, 0.06],
+		normal: [1, -0.2, 0.3],
+		view: { azimuth: 70, polar: 70 },
+	},
 	// Разрыв на том же сухожилии, но маркер ниже, к пятке: если у падела появится его линза,
 	// оба ахилла окажутся в одной зоне и не должны делить место
 	'achilles-tendon-rupture': { offset: [0, 0.01, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
@@ -229,6 +242,12 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	'meralgia-paresthetica': { depth: 'deep' },
 	'iliotibial-band-syndrome': { depth: 'muscle', muscles: ['iliotibial tract'] },
 	'hamstring-strain': { depth: 'muscle', muscles: ['biceps femoris', 'semitendinosus', 'semimembranosus'] },
+	'adductor-groin-pain': {
+		depth: 'muscle',
+		muscles: ['adductor longus', 'adductor brevis', 'adductor magnus', 'pectineus', 'gracilis'],
+	},
+	'mcl-sprain': { depth: 'deep' },
+	'fifth-metatarsal-fracture': { depth: 'deep' },
 	'stress-urinary-incontinence': { depth: 'muscle', muscles: ['coccygeus', 'levator ani'], peel: true },
 	'femoroacetabular-impingement': { depth: 'deep' },
 	'lumbar-disc-herniation': { depth: 'deep' },

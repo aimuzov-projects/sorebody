@@ -117,6 +117,18 @@
 	 */
 	let previewTimer: ReturnType<typeof setTimeout> | undefined
 
+	// Фильтр сменили, пока курсор или фокус на зоне, и она опустела: подсветку снимаем сразу,
+	// а не при следующем движении мыши
+	$effect(() => {
+		const current = counts
+
+		untrack(() => {
+			if (highlighted && !litZone(highlighted, current)) previewZone(null, false)
+
+			if (hovered && !litZone(hovered.zone, current)) hover(null)
+		})
+	})
+
 	function previewZone(target: Zone | null, pointer = true) {
 		const zone = litZone(target, counts)
 

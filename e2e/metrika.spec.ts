@@ -34,6 +34,9 @@ test('смена спорта без перезагрузки отправляе
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
 	expect(await hits()).toHaveLength(1)
 
+	// Список выбора спорта в заголовке гаснет после выбора: ждём, чтобы не спутать его со статейным
+	await expect(page.getByRole('listbox')).toHaveCount(0)
+
 	// «Разбор ‹в …›» в открытой статье -- та же смена спорта и тот же хит
 	await page.evaluate(() => (location.hash = '#ankle-sprain'))
 	await page.locator('.reader:not(.theme-peek *) [data-sport-switch] button').click()

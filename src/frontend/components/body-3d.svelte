@@ -458,9 +458,6 @@
 			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
 	})
 
-	/** Последняя закрытая зона и сторона тела: выбор спорта виден только на общем плане. */
-	let lastZone: { zone: Zone; index: number } | null = null
-
 	// Данные других спортов догружаем по запросу (scene/sport-loader.ts): тянуть их в каждую
 	// главную дороже
 	const loadSport = createSportLoader<SportData>(untrack(() => ({ slug: data.sport.slug, data })))
@@ -544,10 +541,9 @@
 	 * нового спорта, а прошлые шаги при возврате открываются в нём же (onHistory). Поэтому
 	 * «Назад» на странице и в браузере ведут в одно место.
 	 *
-	 * Статья остаётся открытой, сменяется разбор, раздел (`section`) -- тот, что читали. На общем
-	 * плане последняя зона едет вместе со стороной: смотрел левое плечо в кроссфите -- видишь
-	 * левое плечо в паделе, и она открывается шагом над общим планом. Данные не пришли -- обычный
-	 * переход, тоже без нового шага.
+	 * Статья остаётся открытой, сменяется разбор, раздел (`section`) -- тот, что читали. С общего
+	 * плана -- общий план нового спорта: зоны, которые уже закрыли, сами не открываются. Данные не
+	 * пришли -- обычный переход, тоже без нового шага.
 	 */
 	async function switchSport(target: { slug: string }, section?: string) {
 		const home = sport.sports.find((s) => s.slug === target.slug)?.href
@@ -561,16 +557,7 @@
 			next = await fetchSport(target.slug)
 		} catch (error) {
 			console.error(error)
-
-			const recent = open ?? lastZone
-
-			location.replace(
-				reading
-					? `/${target.slug}/${reading.slug}/${section ? `#${section}` : ''}`
-					: recent
-						? `${home}?region=${recent.zone.slug}:${recent.index}`
-						: home,
-			)
+			location.replace(reading ? `/${target.slug}/${reading.slug}/${section ? `#${section}` : ''}` : home)
 
 			return
 		}
@@ -589,19 +576,8 @@
 			return
 		}
 
-		// Зону берём после загрузки: она могла смениться, пока данные шли
-		const recent = open ?? lastZone
-
 		applySport(next)
-
-		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
-		const index = recent && zone?.points[recent.index] ? recent.index : 0
-
 		history.replaceState(null, '', home)
-		baseLevel = 0
-
-		if (zone) history.pushState(null, '', `${home}${zoneHash(zone, index)}`)
-
 		sync()
 		metrikaHit(from)
 	}
@@ -1005,7 +981,6 @@
 	function closeZone() {
 		if (!open) return
 
-		lastZone = { zone: open.zone, index: open.index }
 		open = null
 		hovered = null
 		clearAccent()

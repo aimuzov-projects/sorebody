@@ -154,7 +154,7 @@ async function chooseSport(page: Page, from: string, to: string) {
 	await page.getByRole('option', { name: to }).click()
 }
 
-// Третий спорт: из падела в футбол на месте, цвет перетекает из лайма в зелёный, а голень, которая
+// Третий спорт: из падела в футбол на месте, цвет перетекает из лайма в зелёный, а локоть, который
 // есть только у падела, уходит со списка зон
 test('из падела в футбол -- на месте, со своим цветом и своими зонами', async ({ page }) => {
 	await page.goto('/padel/')
@@ -165,7 +165,7 @@ test('из падела в футбол -- на месте, со своим цв
 	await expect(page.locator('h1')).toHaveText('Травмы в футболе')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'football')
 	await expect(sportButton(page, 'Футбол')).toHaveCSS('color', rgb(FOOTBALL.accent.light))
-	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
+	await expect(page.locator('.index__zone-label', { hasText: 'Локоть' })).toHaveCount(0)
 	await expect(page.locator('.index__zone-label', { hasText: 'Голова' })).toHaveCount(1)
 	expect(await samePage(page)).toBe(true)
 })
@@ -335,11 +335,13 @@ test('подсветка модели -- цвет спорта, даже есл�
 	expect(await glow()).toBe(CROSSFIT.accent.glow)
 })
 
-// Голень есть только у травм падела: у кроссфита и футбола пустых зон в списке нет. Какие зоны
+// Голень есть у травм падела и футбола, а у кроссфита нет: пустых зон в списке не бывает. Какие зоны
 // у спорта, считает zones.test.ts, здесь -- что страница спорта берёт свои. Список зон рисуется
 // и без модели, поэтому без `?scene`: сцена тут только тормозила
 test('на странице спорта видны только зоны с его травмами', async ({ page }) => {
 	await page.goto('/padel/')
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toBeVisible()
+	await page.goto('/football/')
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toBeVisible()
 	await page.goto('/crossfit/')
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)

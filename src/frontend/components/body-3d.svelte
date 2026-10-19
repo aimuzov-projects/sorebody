@@ -29,7 +29,7 @@
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
 	import { probeWebGL } from '#frontend/scene/gpu.ts'
-	import { activeFilterChips, isFiltering, matchesFilters, zoneEntries } from '#frontend/scene/filters.ts'
+	import { activeFilterChips, isFiltering, litZone, matchesFilters, zoneEntries } from '#frontend/scene/filters.ts'
 	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
 	import { applySportHead, createRequestGuard, createSportLoader } from '#frontend/scene/sport-loader.ts'
 	import poster from '#frontend/scene/poster.json'
@@ -115,7 +115,21 @@
 	 */
 	let previewTimer: ReturnType<typeof setTimeout> | undefined
 
-	function previewZone(zone: Zone | null, pointer = true) {
+	// Фильтр сменили, пока курсор или фокус на зоне, и она опустела: подсветку снимаем сразу,
+	// а не при следующем движении мыши
+	$effect(() => {
+		const current = counts
+
+		untrack(() => {
+			if (highlighted && !litZone(highlighted, current)) previewZone(null, false)
+
+			if (hovered && !litZone(hovered.zone, current)) hover(null)
+		})
+	})
+
+	function previewZone(target: Zone | null, pointer = true) {
+		const zone = litZone(target, counts)
+
 		setHighlight(zone)
 		clearTimeout(previewTimer)
 
@@ -849,7 +863,7 @@
 		let bestD = radius
 
 		for (const spot of spots) {
-			if (!spot.visible) continue
+			if (!spot.visible || !litZone(spot.zone, counts)) continue
 
 			const d = Math.hypot(spot.x - x, spot.y - y)
 
@@ -866,7 +880,9 @@
 	 * Наведение только подсвечивает точку и придерживает автоповорот, чтобы цель не уезжала
 	 * из-под курсора. Зона раскрывается лишь по клику, тапу или Enter на точке.
 	 */
-	function hover(spot: Spot | null) {
+	function hover(target: Spot | null) {
+		const spot = target && litZone(target.zone, counts) ? target : null
+
 		if (open || spot === hovered) return
 
 		hovered = spot
@@ -1271,6 +1287,7 @@
 			type="button"
 			style:--i={i}
 			hidden={!live}
+			tabindex={counts.get(spot.zone) === 0 ? -1 : undefined}
 			aria-label="{spot.zone.label}: {counts.get(spot.zone)} {plural(counts.get(spot.zone) ?? 0)}"
 			onclick={() => openZone(spot.zone, spot.index)}
 			onfocus={() => !noHover && hover(spot)}

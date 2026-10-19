@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { activeFilterChips, isFiltering, matchesFilters, zoneEntries } from './filters.ts'
+import { activeFilterChips, isFiltering, litZone, matchesFilters, zoneEntries } from './filters.ts'
 import type { Zone } from './zones.ts'
 
 type Injury = Zone['injuries'][number]
@@ -79,4 +79,18 @@ test('травмы по зонам сверху вниз', () => {
 			['ankle-foot', 'ankle-sprain'],
 		],
 	)
+})
+
+test('пустую под фильтры зону не подсвечиваем, непустую и «нет зоны» отдаём как есть', () => {
+	const knee = { slug: 'knee' }
+	const head = { slug: 'head' }
+	const counts = new Map([
+		[knee, 2],
+		[head, 0],
+	])
+
+	assert.equal(litZone(knee, counts), knee)
+	assert.equal(litZone(head, counts), null)
+	assert.equal(litZone({ slug: 'elbow' }, counts), null)
+	assert.equal(litZone(null, counts), null)
 })

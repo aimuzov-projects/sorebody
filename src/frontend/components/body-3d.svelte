@@ -1,27 +1,7 @@
-<script lang="ts" module>
-	function plural(n: number) {
-		const mod10 = n % 10
-		const mod100 = n % 100
-
-		if (mod10 === 1 && mod100 !== 11) return 'травма'
-
-		if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'травмы'
-
-		return 'травм'
-	}
-
-	/** Последнее слово отдельно: его склеиваем со стрелкой, чтобы она не уезжала одна на новую строку. */
-	function splitLastWord(text: string) {
-		const at = text.lastIndexOf(' ') + 1
-
-		return [text.slice(0, at), text.slice(at)]
-	}
-</script>
-
 <script lang="ts">
 	import { onMount, tick, untrack, type Snippet } from 'svelte'
 
-	import { ChevronLeft, Diamond, FunnelX, PersonStanding, X } from 'lucide-static'
+	import { PersonStanding, X } from 'lucide-static'
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
@@ -29,10 +9,12 @@
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
-	import { splitTitle } from '#frontend/lib/title.ts'
+	import { plural } from '#frontend/lib/plural.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import IndexTools from '#frontend/components/index-tools.svelte'
 	import ArticleReader from '#frontend/components/article-reader.svelte'
+	import InjuryList from '#frontend/components/injury-list.svelte'
+	import ZonePanel from '#frontend/components/zone-panel.svelte'
 	import Logo from '#frontend/components/logo.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
@@ -1186,47 +1168,6 @@
 
 <svelte:window onkeydown={onKey} />
 
-<!-- Строка травмы: в раскрытой зоне и в списке движения. `zoneLabel` -- зона перед описанием,
-     `onAccent` -- наведение или фокус на строке; `pointer` отличает мышь от клавиатуры -->
-{#snippet injuryRow(
-	injury: Injury,
-	i: number,
-	active: boolean,
-	zoneLabel: string,
-	onAccent: (on: boolean, pointer: boolean) => void,
-)}
-	<!-- Без другого названия в скобках: его показывает статья, а поиск ищет по полному -->
-	{@const [head, tail] = splitLastWord(splitTitle(injury.title).name)}
-	<li class="zone__row" style:--i={i}>
-		<a
-			class="zone__item"
-			class:zone__item--current={active}
-			href="/{sport.slug}/{injury.slug}/"
-			data-slug={injury.slug}
-			onclick={(event) => onItemClick(event, injury)}
-			onpointerenter={(event) => event.pointerType !== 'touch' && onAccent(true, true)}
-			onpointerleave={(event) => event.pointerType !== 'touch' && onAccent(false, true)}
-			onfocus={() => onAccent(true, false)}
-			onblur={() => onAccent(false, false)}
-		>
-			<span class="zone__num" aria-hidden="true">{i + 1}</span>
-			<span class="zone__name">
-				{head}<span class="zone__tail">{tail}<span class="zone__arrow" aria-hidden="true">→</span></span>
-			</span>
-			<span class="zone__summary">
-				{#if zoneLabel}<span class="zone__where">{zoneLabel}</span> ·
-				{/if}
-				{#if injury.frequency === 'rare'}<span class="zone__rare"
-						><span class="zone__rare-icon" aria-hidden="true">{@html Diamond}</span>Редко</span
-					>
-					·
-				{/if}
-				{injury.summary}
-			</span>
-		</a>
-	</li>
-{/snippet}
-
 <div
 	class="body3d"
 	class:body3d--open={open}
@@ -1369,17 +1310,15 @@
 				</p>
 			</header>
 			{#if total}
-				<ul class="zone__list index__injuries" onscroll={onListScroll}>
-					{#each movementInjuries as entry, i (entry.injury.slug)}
-						{@render injuryRow(
-							entry.injury,
-							i,
-							lead?.injury === entry.injury,
-							entry.zone.label,
-							(on, pointer) => previewInjury(on ? entry : null, pointer),
-						)}
-					{/each}
-				</ul>
+				<InjuryList
+					class="index__injuries"
+					rows={movementInjuries.map((entry) => ({ injury: entry.injury, where: entry.zone.label }))}
+					current={lead?.injury}
+					sport={sport.slug}
+					onaccent={(i, on, pointer) => previewInjury(on ? movementInjuries[i] : null, pointer)}
+					onscroll={onListScroll}
+					onpick={onItemClick}
+				/>
 			{:else}
 				<div class="index__none">
 					<p class="index__none-title">Статей пока нет</p>
@@ -1461,47 +1400,20 @@
 	{/if}
 
 	{#if open}
-		{@const total = open.zone.injuries.length}
-		{@const shown = open.zone.injuries.filter(matches)}
-		<section class="zone zone--{open.side}" aria-label={open.zone.label}>
-			<header class="zone__head">
-				<div class="zone__heading">
-					<button class="zone__back" type="button" aria-label="Назад" title="Назад" onclick={up}
-						><span class="zone__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
-					>
-					<h2 class="zone__title" style:--chars={open.zone.label.length}>{open.zone.label}</h2>
-				</div>
-				{#if filtering}
-					<div class="zone__filters">
-						<button
-							class="zone__reset"
-							type="button"
-							aria-label="Сбросить фильтры"
-							title="Сбросить фильтры"
-							onclick={resetFilters}
-							><span class="zone__reset-icon" aria-hidden="true">{@html FunnelX}</span></button
-						>
-						<p class="zone__filter">{shown.length} из {total} {plural(total)}</p>
-						<ul class="zone__tags" aria-label="Фильтры">
-							{#each activeFilters as filter (filter.key)}
-								<!-- Текст запроса вебвизор Метрики не пишет: в поиске бывают симптомы -->
-								<li class="zone__tag" class:ym-hide-content={filter.key === 'query'}>
-									<span
-										class="zone__tag-icon zone__tag-icon--{filter.tone || 'plain'}"
-										aria-hidden="true">{@html filter.icon}</span
-									>{filter.label}
-								</li>
-							{/each}
-						</ul>
-					</div>
-				{/if}
-			</header>
-			<ul class="zone__list" onscroll={onListScroll}>
-				{#each shown as injury, i (injury.slug)}
-					{@render injuryRow(injury, i, accent === injury, '', (on) => setAccent(on ? injury : null))}
-				{/each}
-			</ul>
-		</section>
+		<ZonePanel
+			zone={open.zone}
+			side={open.side}
+			injuries={open.zone.injuries.filter(matches)}
+			{filtering}
+			chips={activeFilters}
+			current={accent}
+			sport={sport.slug}
+			onback={up}
+			onreset={resetFilters}
+			onaccent={setAccent}
+			onscroll={onListScroll}
+			onpick={onItemClick}
+		/>
 	{/if}
 
 	<!-- Подвал на десктопе -- строкой внизу сцены по сетке шапки: от левой колонки до линии
@@ -2267,8 +2179,8 @@
 
 		/* Список травм движения -- те же строки, что в раскрытой зоне, но в колонке индекса */
 		/* Сдвиг вверх -- на высоту маски над первой строкой, иначе между шапкой и строками дыра.
-		   Двойной класс перебивает отступы строк зоны, объявленные ниже */
-		&__injuries.zone__list {
+		   Двойной класс перебивает отступы строк зоны (injury-list.svelte) */
+		& :global(.index__injuries.zone__list) {
 			margin-top: -12px;
 			padding-top: 14px;
 
@@ -2608,458 +2520,6 @@
 		}
 	}
 
-	/* Список зоны в свободной половине экрана. Подложка полупрозрачная с размытием, как
-	   у шапки, и растворяется к центру градиентом; строки гаснут к краям скролла маской */
-	.zone {
-		/* Своя стопка: подложка с z-index -1 иначе уходит под canvas сцены и размывать ей нечего */
-		isolation: isolate;
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		display: flex;
-		flex-direction: column;
-		width: min(440px, calc(50vw - 32px - 4vw));
-		/* backwards, а не both: анимация прозрачности, которая держится после конца, делает
-		   колонку корнем для backdrop-filter, и подложка размывала бы только саму себя */
-		animation: fade-in 0.5s var(--a-ease) backwards;
-
-		&::before {
-			pointer-events: none;
-			content: '';
-			position: absolute;
-			z-index: -1;
-			top: 0;
-			bottom: 0;
-		}
-
-		/* Колонка сразу за серединой экрана, фигура -- в середине другой половины. Подложка уходит
-		   до края экрана, а к фигуре растворяется по smoothstep: прозрачная за 48 px до текста,
-		   почти сплошная у его края. На фигуру и точку зоны она не заходит */
-		&--left {
-			right: calc(50% + 32px);
-
-			&::before {
-				right: -48px;
-				left: -50vw;
-				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
-				-webkit-backdrop-filter: blur(12px);
-				backdrop-filter: blur(12px);
-				mask-image: linear-gradient(
-					to left,
-					rgb(0 0 0 / 0%) 0px,
-					rgb(0 0 0 / 7%) 12px,
-					rgb(0 0 0 / 26%) 24px,
-					rgb(0 0 0 / 50%) 36px,
-					rgb(0 0 0 / 74%) 48px,
-					rgb(0 0 0 / 93%) 60px,
-					rgb(0 0 0 / 100%) 72px
-				);
-			}
-		}
-
-		&--right {
-			left: calc(50% + 32px);
-
-			&::before {
-				right: -50vw;
-				left: -48px;
-				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
-				-webkit-backdrop-filter: blur(12px);
-				backdrop-filter: blur(12px);
-				mask-image: linear-gradient(
-					to right,
-					rgb(0 0 0 / 0%) 0px,
-					rgb(0 0 0 / 7%) 12px,
-					rgb(0 0 0 / 26%) 24px,
-					rgb(0 0 0 / 50%) 36px,
-					rgb(0 0 0 / 74%) 48px,
-					rgb(0 0 0 / 93%) 60px,
-					rgb(0 0 0 / 100%) 72px
-				);
-			}
-		}
-
-		/* Телефон: шапка прибита к верху, строки -- в нижней половине под зоной */
-		&--bottom {
-			/* Колонка на весь экран, а модель видна между шапкой и строками: жест там должен
-			   доходить до сцены, иначе зону не повернуть. Касания ловят только шапка и список */
-			pointer-events: none;
-			/* Над шапкой сцены: заголовок зоны стоит в её строке, и её дымка мутила его */
-			z-index: 4;
-			right: 0;
-			left: 0;
-			width: auto;
-			padding-inline: 24px;
-
-			& .zone__head,
-			& .zone__list {
-				pointer-events: auto;
-			}
-
-			/* Под строками та же подложка, что у колонки на десктопе: полупрозрачная, с размытием,
-			   к зоне растворяется по smoothstep. Сверху своей подложки нет: там тот же
-			   полупрозрачный край шапки сцены, и модель видна под заголовком */
-			&::before {
-				inset: 0;
-				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
-				-webkit-backdrop-filter: blur(12px);
-				backdrop-filter: blur(12px);
-				mask-image: linear-gradient(
-					to top,
-					rgb(0 0 0 / 100%) 44%,
-					rgb(0 0 0 / 93%) 47.7%,
-					rgb(0 0 0 / 74%) 51.3%,
-					rgb(0 0 0 / 50%) 55%,
-					rgb(0 0 0 / 26%) 58.7%,
-					rgb(0 0 0 / 7%) 62.3%,
-					rgb(0 0 0 / 0%) 66%
-				);
-			}
-		}
-
-		&__head {
-			flex: none;
-			/* Под шапкой сцены и ниже её мягкого края: на высоте заголовка индекса крупный
-			   заголовок зоны тонул в градиенте шапки */
-			padding-top: calc(var(--theme-toggle-top) + var(--header-row) + 40px);
-
-			/* На телефоне заголовок зоны встаёт в строку шапки вместо логотипа, справа от него --
-			   переключатель темы: крупный заголовок под шапкой съедал треть экрана над зоной */
-			.zone--bottom & {
-				padding-top: calc(var(--theme-toggle-top) + (var(--header-row) - 44px) / 2);
-				padding-right: calc(var(--theme-toggle-room) - 24px);
-			}
-		}
-
-		/* «Назад» -- стрелка в строке заголовка, без подписи: место на шапке дороже слова */
-		&__heading {
-			container-type: inline-size;
-			display: flex;
-			gap: 6px;
-			align-items: center;
-			margin-left: -12px;
-		}
-
-		&__back {
-			cursor: pointer;
-			display: inline-grid;
-			flex: none;
-			place-items: center;
-			width: 44px;
-			height: 44px;
-			padding: 0;
-			border: 0;
-			border-radius: 50%;
-			color: var(--a-blue);
-			background: none;
-			transition:
-				opacity 0.3s var(--a-ease),
-				background 0.3s var(--a-ease);
-
-			/* В Mini App своя «Назад» не нужна: у Telegram есть системная кнопка */
-			:global([data-telegram]) & {
-				display: none;
-			}
-
-			&:hover {
-				background: var(--a-fill);
-			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
-			}
-		}
-
-		&__back-icon {
-			display: inline-flex;
-			width: 34px;
-			height: 34px;
-
-			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-			& :global(svg) {
-				/* Оптическая поправка влево, как у .article-bar__back */
-				translate: -6% 0;
-				width: 100%;
-				height: 100%;
-				stroke-width: 2.4;
-			}
-		}
-
-		&__title {
-			margin: 0;
-			/* Длинное название зоны («Голеностоп и стопа») мельчает, чтобы встать в одну строку
-			   рядом со стрелкой: средний знак этого жирного начертания -- около 0,56 em.
-			   Короткие остаются крупными, перенос остаётся запасным вариантом */
-			font-size: min(clamp(32px, 4vw, 48px), calc((100cqi - 48px) / (var(--chars, 1) * 0.56)));
-			font-weight: 700;
-			line-height: 1.08;
-			letter-spacing: -0.03em;
-
-			/* В строке шапки -- кегль под её высоту */
-			.zone--bottom & {
-				font-size: min(28px, calc((100cqi - 48px) / (var(--chars, 1) * 0.56)));
-			}
-		}
-
-		/* Под фильтром список неполный: слева, под стрелкой "Назад", -- сброс иконкой, дальше
-		   счётчик синей таблеткой и включённые фильтры чипами */
-		&__filters {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-			align-items: center;
-			margin: 10px 0 0 -12px;
-			font-size: 15px;
-		}
-
-		&__reset {
-			cursor: pointer;
-			display: inline-grid;
-			flex: none;
-			place-items: center;
-			width: 44px;
-			height: 32px;
-			padding: 0;
-			border: 0;
-			border-radius: 999px;
-			color: var(--a-blue);
-			background: none;
-			transition: background 0.3s var(--a-ease);
-
-			&:hover {
-				background: var(--a-fill);
-			}
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: 2px;
-			}
-		}
-
-		&__reset-icon,
-		&__tag-icon {
-			display: inline-flex;
-
-			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-			& :global(svg) {
-				width: 100%;
-				height: 100%;
-			}
-		}
-
-		&__reset-icon {
-			width: 20px;
-			height: 20px;
-		}
-
-		&__filter {
-			margin: 0;
-			padding: 4px 12px;
-			border-radius: 999px;
-			font-weight: 600;
-			font-variant-numeric: tabular-nums;
-			color: var(--a-blue);
-			white-space: nowrap;
-			background: color-mix(in srgb, var(--a-blue) 13%, var(--a-bg));
-		}
-
-		&__tags {
-			display: contents;
-		}
-
-		&__tag {
-			display: inline-flex;
-			gap: 6px;
-			align-items: center;
-			padding: 4px 12px 4px 10px;
-			border-radius: 999px;
-			color: var(--a-fg);
-			white-space: nowrap;
-			list-style: none;
-			background: color-mix(in srgb, var(--a-fg) 7%, var(--a-bg));
-		}
-
-		&__tag-icon {
-			width: 15px;
-			height: 15px;
-			color: var(--a-fg2);
-
-			/* Частота -- залитым знаком в своём цвете, как в переключателе индекса */
-			&--common,
-			&--uncommon,
-			&--rare {
-				width: 10px;
-				height: 10px;
-
-				/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-				& :global(svg) {
-					fill: currentcolor;
-				}
-			}
-
-			&--common {
-				color: var(--common);
-			}
-
-			&--uncommon {
-				color: var(--uncommon);
-			}
-
-			&--rare {
-				color: var(--rare);
-			}
-		}
-
-		/* Скроллятся только строки, к краям они гаснут маской, а не обрезаются */
-		&__list {
-			scrollbar-width: none;
-			overflow-y: auto;
-			overscroll-behavior: contain;
-			flex: 1;
-			/* Поля по бокам -- место под подложку строк: прокрутка обрезает всё за краем списка */
-			margin: 12px -14px 0;
-			padding: 14px 14px 22dvh;
-			list-style: none;
-			mask-image: linear-gradient(to bottom, transparent, #000000 18px, #000000 calc(100% - 120px), transparent);
-		}
-
-		/* На телефоне строки прилипают к верху списка, текущая травма -- прилипшая. Снизу запас почти
-		   на высоту списка: иначе последние строки до верха не доезжали и стать текущими не могли */
-		&--bottom &__list {
-			scroll-padding-top: 14px;
-			scroll-snap-type: y mandatory;
-			flex: none;
-			height: 50dvh;
-			margin-top: auto;
-			padding-bottom: calc(50dvh - 140px);
-		}
-
-		&--bottom &__row {
-			scroll-snap-align: start;
-		}
-
-		&__row {
-			animation: row-in 0.55s var(--a-ease) both;
-			animation-delay: calc(120ms + var(--i) * 45ms);
-
-			@media (--reduced-motion) {
-				animation-name: fade-in;
-			}
-		}
-
-		/* Номер слева -- тот же, что на маркере травмы на модели. Сетка общая с заголовком:
-		   номер по центру под стрелкой «назад», текст на линии названия зоны. Подложка выходит
-		   за них полями, а не сдвигает: строки стоят на месте, когда она появляется */
-		&__item {
-			display: grid;
-			grid-template-columns: 28px 1fr;
-			row-gap: 4px;
-			column-gap: 16px;
-			margin-inline: -14px;
-			padding: 14px 14px 14px 8px;
-			border-radius: 16px;
-			color: var(--a-fg);
-			text-decoration: none;
-			transition: background 0.35s var(--a-ease);
-
-			&:focus-visible {
-				outline: 2px solid var(--a-blue);
-				outline-offset: -2px;
-			}
-		}
-
-		&__num {
-			display: grid;
-			grid-row: span 2;
-			place-items: center;
-			width: 28px;
-			height: 28px;
-			margin-top: -1px;
-			border-radius: 50%;
-			font-size: 15px;
-			font-weight: 600;
-			font-variant-numeric: tabular-nums;
-			color: var(--a-blue);
-			box-shadow: inset 0 0 0 1.5px var(--a-blue);
-			transition:
-				color 0.35s var(--a-ease),
-				background 0.35s var(--a-ease);
-		}
-
-		/* Текущая строка -- та, к которой подъехала камера: наведение мышью, на таче строка
-		   у центра списка. Остальные не гаснут, текущая выделена номером и подложкой */
-		&__item--current {
-			background: var(--a-fill);
-		}
-
-		&__item--current &__num {
-			color: var(--a-on-blue);
-			background: var(--a-blue);
-		}
-
-		/* Стрелка после названия: видно, что строка -- ссылка */
-		&__tail {
-			white-space: nowrap;
-		}
-
-		&__arrow {
-			display: inline-block;
-			margin-left: 6px;
-			font-weight: 400;
-			color: var(--a-blue);
-			transition: transform 0.35s var(--a-ease);
-		}
-
-		&__item:hover &__arrow,
-		&__item:focus-visible &__arrow {
-			transform: translateX(4px);
-		}
-
-		&__name {
-			font-size: 20px;
-			font-weight: 600;
-			line-height: 1.25;
-			letter-spacing: -0.02em;
-		}
-
-		/* Зона травмы в списке движения: там травмы разных зон идут подряд */
-		&__where {
-			font-weight: 600;
-			color: var(--a-fg);
-		}
-
-		/* Редкие травмы отмечены словом, а не цветной точкой: точка читалась как уведомление */
-		&__rare {
-			display: inline-flex;
-			gap: 4px;
-			align-items: center;
-			font-weight: 600;
-			color: var(--rare);
-		}
-
-		&__rare-icon {
-			display: inline-flex;
-			width: 12px;
-			height: 12px;
-
-			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
-			& :global(svg) {
-				width: 100%;
-				height: 100%;
-				fill: currentcolor;
-			}
-		}
-
-		/* Описание целиком, без многоточия: строка и так ссылка, это видно по стрелке */
-		&__summary {
-			font-size: 15px;
-			line-height: 1.45;
-			color: var(--a-fg2);
-			letter-spacing: -0.01em;
-		}
-	}
-
 	@keyframes spot-in {
 		from {
 			opacity: 0;
@@ -3080,13 +2540,6 @@
 
 	@keyframes fade-in {
 		from {
-			opacity: 0;
-		}
-	}
-
-	@keyframes row-in {
-		from {
-			transform: translateY(12px);
 			opacity: 0;
 		}
 	}

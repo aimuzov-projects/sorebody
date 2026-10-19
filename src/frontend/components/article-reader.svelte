@@ -78,7 +78,10 @@
 	}
 
 	$effect(() => {
-		void load(injury.slug)
+		const slug = injury.slug
+
+		// Только от травмы: load читает status, и без untrack ошибка загрузки перезапускала её по кругу
+		untrack(() => void load(slug))
 	})
 
 	// Компонент уходит, когда статья догаснет: переключатели и чтение снимаем тогда же
@@ -169,66 +172,70 @@
 	<div class="reader__progress" aria-hidden="true">
 		<span class="reader__progress-bar" bind:this={progressBar}></span>
 	</div>
-	<SiteHeader>
-		<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
-			><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
-		>
-		<!-- Логотип и маленький заголовок, который проявляется по мере прокрутки. Пока статья
-		     грузится, прокручивать нечего, и без скрытия он стоял бы над тем же названием.
-		     Логотип ведёт на эту же главную: закрывает статью, как "Назад" -->
-		<BarLead
-			title={splitTitle(injury.title).name}
-			home={sportHome(sport as SportSlug)}
-			titleHidden={status !== 'ready'}
-			onhome={onback}
-		/>
-	</SiteHeader>
-	{#if status === 'loading'}
-		<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
-		     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
-		<div class="reader__body" aria-hidden="true">
-			<div class="article">
-				<header class="article__hero">
-					<h1 class="article__title">{splitTitle(injury.title).name}</h1>
-					<!-- Строка «Разбор» той же высоты, что в статье: «Коротко» под ней не подскакивает -->
-					<div class="article__sport">
-						Разбор <span class="article__sport-phrase">{sportOf(sport as SportSlug).phrase}</span>
-					</div>
-					<div class="article__summary">
-						<p class="article__summary-label">
-							<span class="article__summary-icon">{@html TextQuote}</span>Коротко
-						</p>
-						<p class="article__summary-text">{injury.summary}</p>
-					</div>
-				</header>
+	<!-- Шире прокрутки на место под полосу окна: см. .reader__page -->
+	<div class="reader__page">
+		<SiteHeader>
+			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
+				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+			>
+			<!-- Логотип и маленький заголовок, который проявляется по мере прокрутки. Пока статья
+			     грузится, прокручивать нечего, и без скрытия он стоял бы над тем же названием.
+			     Логотип ведёт на эту же главную: закрывает статью, как "Назад" -->
+			<BarLead
+				title={splitTitle(injury.title).name}
+				home={sportHome(sport as SportSlug)}
+				titleHidden={status !== 'ready'}
+				onhome={onback}
+			/>
+		</SiteHeader>
+		{#if status === 'loading'}
+			<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
+			     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
+			<div class="reader__body" aria-hidden="true">
+				<div class="article">
+					<header class="article__hero">
+						<h1 class="article__title">{splitTitle(injury.title).name}</h1>
+						<!-- Строка «Разбор» той же высоты, что в статье: «Коротко» под ней не подскакивает -->
+						<div class="article__sport">
+							Разбор <span class="article__sport-phrase">{sportOf(sport as SportSlug).phrase}</span>
+						</div>
+						<div class="article__summary">
+							<p class="article__summary-label">
+								<span class="article__summary-icon">{@html TextQuote}</span>Коротко
+							</p>
+							<p class="article__summary-text">{injury.summary}</p>
+						</div>
+					</header>
+				</div>
 			</div>
-		</div>
-	{:else if status === 'error'}
-		<div class="reader__failed" role="alert">
-			<span class="reader__failed-icon" aria-hidden="true">{@html CloudOff}</span>
-			<p class="reader__failed-title">Статья не загрузилась</p>
-			<p class="reader__failed-text">
-				«{splitTitle(injury.title).name}» не открылась: похоже, пропала связь. Попробуйте ещё раз или откройте
-				статью отдельной страницей.
-			</p>
-			<div class="reader__failed-actions">
-				<button
-					type="button"
-					class="reader__action reader__action--main"
-					onclick={() => void load(injury.slug)}
-				>
-					Попробовать ещё раз<span class="reader__action-mark reader__action-mark--retry" aria-hidden="true"
-						>↻</span
+		{:else if status === 'error'}
+			<div class="reader__failed" role="alert">
+				<span class="reader__failed-icon" aria-hidden="true">{@html CloudOff}</span>
+				<p class="reader__failed-title">Статья не загрузилась</p>
+				<p class="reader__failed-text">
+					«{splitTitle(injury.title).name}» не открылась: похоже, пропала связь. Попробуйте ещё раз или
+					откройте статью отдельной страницей.
+				</p>
+				<div class="reader__failed-actions">
+					<button
+						type="button"
+						class="reader__action reader__action--main"
+						onclick={() => void load(injury.slug)}
 					>
-				</button>
-				<a class="reader__action" href="/{sport}/{injury.slug}/">
-					Открыть отдельно<span class="reader__action-mark" aria-hidden="true">→</span>
-				</a>
+						Попробовать ещё раз<span
+							class="reader__action-mark reader__action-mark--retry"
+							aria-hidden="true">↻</span
+						>
+					</button>
+					<a class="reader__action" href="/{sport}/{injury.slug}/">
+						Открыть отдельно<span class="reader__action-mark" aria-hidden="true">→</span>
+					</a>
+				</div>
 			</div>
-		</div>
-	{/if}
-	<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
-	{#if footer && status === 'ready'}{@render footer()}{/if}
+		{/if}
+		<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
+		{#if footer && status === 'ready'}{@render footer()}{/if}
+	</div>
 </article>
 
 <style>
@@ -239,6 +246,7 @@
 		position: fixed;
 		z-index: 2;
 		inset: 0;
+		overflow-x: hidden;
 		overflow-y: auto;
 
 		overscroll-behavior: contain;
@@ -436,6 +444,15 @@
 		/* Подвал приходит вместе со статьёй и проявляется с ней */
 		& :global(.footer) {
 			animation: fade-in 0.5s var(--a-ease) backwards;
+		}
+
+		/* На главной у окна нет своей прокрутки, но место под его полосу держится
+		   (scrollbar-gutter в styles/global.css), а у статьи ещё и своя полоса. Без поправки
+		   колонка текста считалась бы от ширины без двух полос и стояла бы левее, чем на
+		   отдельной странице статьи. Содержимое заходит под свою полосу на ширину полосы окна
+		   (lib/page-gutter.ts): там только поля, а раскладка та же, что у отдельной страницы */
+		&__page {
+			margin-right: calc(-1 * var(--page-gutter, 0px));
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой

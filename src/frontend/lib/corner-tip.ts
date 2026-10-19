@@ -1,3 +1,5 @@
+import { pageWidth } from '#frontend/lib/page-gutter.ts'
+
 /**
  * Подсказка под значком в правом верхнем углу: «О справочнике», «Что нового», тема.
  * Значки стоят у края экрана, поэтому подсказка прижата к правому краю значка. Показывается
@@ -12,7 +14,7 @@ export function attachCornerTip(target: HTMLElement, tip: HTMLElement) {
 		const rect = target.getBoundingClientRect()
 
 		tip.style.top = `${rect.bottom + 2}px`
-		tip.style.right = `${document.documentElement.clientWidth - rect.right}px`
+		tip.style.right = `${pageWidth() - rect.right}px`
 	}
 
 	const show = () => {

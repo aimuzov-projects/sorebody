@@ -141,7 +141,7 @@ const PADEL_FREQUENCY_ORDER = [
 
 /**
  * Травмы футбола от частых к редким, уровни -- из таблицы диагнозов (раздел 3) и пилота (раздел 5)
- * в docs/research/football-injuries-pubmed.md, внутри уровня -- по доле в таблице диагнозов UEFA ECIS.
+ * в docs/research/football-injuries-pubmed.md, внутри уровня -- по доле в таблице диагнозов Ekstrand 2020 (62% травм -- UEFA ECIS).
  */
 const FOOTBALL_FREQUENCY_ORDER = [
 	// Частые

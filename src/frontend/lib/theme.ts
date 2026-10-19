@@ -9,6 +9,8 @@ import {
 	type Theme,
 } from '@aimuzov-projects/infra-site-kit/theme.js'
 
+import { attachCornerTip } from './corner-tip.ts'
+
 /**
  * Тема сайта: как в системе, светлая или тёмная, логика в infra-site-kit. До отрисовки выбор
  * ставит ThemeBoot в layouts/base.astro. В Mini App тему задаёт Telegram, переключатель там скрыт.
@@ -77,16 +79,7 @@ export function initThemeToggle() {
 	if (!button) return
 
 	const tip = document.querySelector<HTMLElement>('[data-theme-tip]')
-
-	/** Подсказка под значком, прижата к его правому краю: значок стоит у края экрана. */
-	const place = () => {
-		if (!tip?.matches(':popover-open')) return
-
-		const rect = button.getBoundingClientRect()
-
-		tip.style.top = `${rect.bottom + 2}px`
-		tip.style.right = `${document.documentElement.clientWidth - rect.right}px`
-	}
+	const place = tip ? attachCornerTip(button, tip) : () => {}
 
 	const sync = () => {
 		button.setAttribute('aria-label', themeLabel(currentTheme(), systemScheme()))
@@ -95,23 +88,6 @@ export function initThemeToggle() {
 
 		place()
 	}
-
-	const showTip = () => {
-		tip?.showPopover()
-		sync()
-	}
-
-	const hideTip = () => {
-		if (tip?.matches(':popover-open')) tip.hidePopover()
-	}
-
-	// С пальца подсказка не нужна: после касания она так и висела бы до следующего тапа
-	button.addEventListener('pointerenter', (event) => event.pointerType !== 'touch' && showTip())
-	button.addEventListener('pointerleave', hideTip)
-	button.addEventListener('focus', () => button.matches(':focus-visible') && showTip())
-	button.addEventListener('blur', hideTip)
-	addEventListener('scroll', place, { capture: true, passive: true })
-	addEventListener('resize', place)
 
 	button.addEventListener('click', () => toggleTheme({ key: THEME_KEY }))
 

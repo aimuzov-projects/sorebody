@@ -1,6 +1,24 @@
 import { initArticleTips } from './tip.ts'
 import { initTocMenu } from './toc-menu.ts'
 
+/** Раскрывает свёрнутые блоки вокруг элемента и сам блок. Отдаёт, был ли хоть один свёрнут. */
+function reveal(target: Element) {
+	let opened = false
+
+	for (
+		let details = target.closest('details');
+		details;
+		details = details.parentElement?.closest('details') ?? null
+	) {
+		if (details.open) continue
+
+		details.open = true
+		opened = true
+	}
+
+	return opened
+}
+
 /**
  * Чтение лонгрида: полоса прогресса сверху и активный раздел в оглавлении. Одно и то же
  * для отдельной страницы статьи (скроллится окно) и статьи поверх модели на главной
@@ -56,10 +74,33 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		if (!target) return
 
 		event.preventDefault()
+		reveal(target)
 		target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
 	}
 
 	root.addEventListener('click', onClick)
+
+	// Адрес с якорем внутри свёрнутого блока (#sources): Chromium раскрыл бы его сам, Safari --
+	// нет. На главной хеш -- адрес статьи, такого элемента в ней нет, и сюда он не попадает
+	const anchored = location.hash && root.querySelector(`#${CSS.escape(location.hash.slice(1))}`)
+
+	if (anchored && reveal(anchored)) anchored.scrollIntoView({ block: 'start' })
+
+	// Печать: свёрнутое открываем, после -- возвращаем как было
+	let printed: HTMLDetailsElement[] = []
+	const beforePrint = () => {
+		printed = [...root.querySelectorAll<HTMLDetailsElement>('details:not([open])')]
+
+		for (const details of printed) details.open = true
+	}
+	const afterPrint = () => {
+		for (const details of printed) details.open = false
+
+		printed = []
+	}
+
+	addEventListener('beforeprint', beforePrint)
+	addEventListener('afterprint', afterPrint)
 
 	const stopTips = initArticleTips(root, scroller)
 	const stopTocMenu = initTocMenu(root)
@@ -69,6 +110,8 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		stopTocMenu()
 		scroller.removeEventListener('scroll', onScroll)
 		root.removeEventListener('click', onClick)
+		removeEventListener('beforeprint', beforePrint)
+		removeEventListener('afterprint', afterPrint)
 		cancelAnimationFrame(frame)
 	}
 }

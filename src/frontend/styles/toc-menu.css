@@ -28,17 +28,25 @@
 		padding: 0;
 		border: 0;
 		border-radius: 50%;
-		color: var(--fg);
-		background: color-mix(in srgb, var(--fg) 6%, color-mix(in srgb, var(--bg) 80%, transparent));
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
+		/* Закрытое меню -- заливка цветом спорта, чтобы кнопка не терялась на тексте и картинках;
+		   открытое -- серое стекло, как у панели меню. Без спорта акцент графитовый (global.css) */
+		color: var(--on-accent);
+		background: var(--accent-fill);
 		box-shadow: 0 6px 24px rgb(0 0 0 / 16%);
 		transition:
 			color 0.3s ease,
+			background-color 0.3s ease,
 			scale 0.2s ease;
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
 
 		&[aria-expanded='true'] {
 			color: var(--accent);
+			background: color-mix(in srgb, var(--fg) 6%, color-mix(in srgb, var(--bg) 80%, transparent));
+			-webkit-backdrop-filter: blur(12px);
+			backdrop-filter: blur(12px);
 		}
 
 		&:active {

@@ -4,12 +4,10 @@
 	import { PersonStanding, X } from 'lucide-static'
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
-	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { recalledSport, rememberSport } from '#frontend/lib/sport-memory.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
-	import { attachTip } from '#frontend/lib/tip.ts'
 	import { plural } from '#frontend/lib/plural.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import IndexTools from '#frontend/components/index-tools.svelte'
@@ -449,15 +447,6 @@
 		baseLevel = level - 1
 		sync()
 	}
-
-	/** Значок «О справочнике» у названия сайта: подсказка мышью и с клавиатуры, тап просто ведёт на about. */
-	let aboutLink = $state<HTMLAnchorElement>()
-	let aboutTip = $state<HTMLElement>()
-
-	$effect(() => {
-		if (aboutLink && aboutTip)
-			return attachTip(aboutLink, aboutTip, { column: aboutLink.closest('.site-header') ?? aboutLink })
-	})
 
 	// Данные других спортов догружаем по запросу (scene/sport-loader.ts): тянуть их в каждую
 	// главную дороже
@@ -1308,23 +1297,12 @@
 		</span>
 	{/each}
 
-	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип с «i», ссылка на about (в Mini App
-	     это единственный путь туда). Справа в той же строке -- переключатель темы из base.astro -->
+	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип, просто знак без ссылки.
+	     На about ведёт (i) справа, из base.astro -->
 	<SiteHeader floating>
-		<a
-			class="index__brand-row logo-host"
-			class:index__brand-row--away={open?.side === 'bottom'}
-			href="/about/"
-			aria-label="Sorebody, о справочнике"
-			aria-describedby="about-tip"
-			bind:this={aboutLink}
-		>
+		<div class="index__brand-row" class:index__brand-row--away={open?.side === 'bottom'}>
 			<Logo />
-			<span class="index__about" aria-hidden="true">{@html INFO_DOT}</span>
-		</a>
-		<span class="tip tip--compact" id="about-tip" popover="auto" bind:this={aboutTip}
-			>Источники и как сделан справочник</span
-		>
+		</div>
 	</SiteHeader>
 
 	<!-- Индекс: на странице движения -- его травмы, на главной -- поиск, фильтры и зоны.
@@ -2056,7 +2034,6 @@
 			gap: 2px;
 		}
 
-		/* Логотип и «i» -- одна ссылка на «О справочнике»: наведение на любую часть красит всё */
 		&__brand-row {
 			isolation: isolate;
 			position: relative;
@@ -2064,7 +2041,6 @@
 			gap: 8px;
 			align-items: center;
 			justify-self: start;
-			text-decoration: none;
 
 			/* Под логотипом фигура: светлое лицо съедало серое «care». Под строкой лёгкая дымка
 			   фона с размытием, плашкой с полукруглыми торцами */
@@ -2084,48 +2060,11 @@
 				}
 			}
 
-			&:focus-visible {
-				border-radius: 6px;
-				outline: 2px solid var(--a-blue);
-				outline-offset: 4px;
-			}
-
 			/* В раскрытой зоне на телефоне строку шапки занимает стрелка назад с названием зоны */
 			&--away {
 				pointer-events: none;
 				visibility: hidden;
 				opacity: 0;
-			}
-		}
-
-		/* Значок «О справочнике»: та же тихая «i», что у другого названия в статье. Сам 13px,
-		   зона нажатия 44 на 44 -- невидимым ::before */
-		&__about {
-			position: relative;
-			display: block;
-			flex: none;
-			width: 13px;
-			height: 13px;
-			border-radius: 50%;
-			color: color-mix(in srgb, var(--a-fg2) 70%, transparent);
-			transition: color 0.3s var(--a-ease);
-
-			&::before {
-				content: '';
-				position: absolute;
-				inset: -15.5px;
-			}
-
-			.index__brand-row:hover &,
-			.index__brand-row:focus-visible & {
-				color: var(--a-blue);
-			}
-
-			/* stylelint-disable-next-line selector-max-type -- SVG приходит строкой без класса */
-			& :global(svg) {
-				display: block;
-				width: 100%;
-				height: 100%;
 			}
 		}
 

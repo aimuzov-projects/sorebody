@@ -18,7 +18,7 @@ const ICONS: [Theme, string][] = [
 		))}
 	</button>
 	<!-- Действие уже есть в aria-label кнопки: подсказка только для глаз -->
-	<span class="theme-toggle__tip" aria-hidden="true" popover="manual" data-theme-tip></span>
+	<span class="corner-tip" aria-hidden="true" popover="manual" data-theme-tip></span>
 </div>
 
 <style>
@@ -112,34 +112,5 @@ const ICONS: [Theme, string][] = [
 		transform: none;
 		opacity: 1;
 		filter: none;
-	}
-
-	/* Подсказка с действием. В верхнем слое (popover), иначе её накрыл бы круг подсмотра
-	   темы; место под значком ставит скрипт. Без плашки, а круг под текстом бывает в другой
-	   схеме: белый текст в режиме difference читается и на светлом, и на тёмном */
-	.theme-toggle__tip {
-		pointer-events: none;
-		position: fixed;
-		inset: auto;
-		margin: 0;
-		padding: 0;
-		border: 0;
-		font-size: 0.75rem;
-		line-height: 1.4;
-		color: #ffffff;
-		white-space: nowrap;
-		background: none;
-		mix-blend-mode: difference;
-		animation: tip-in 0.25s ease;
-
-		@media (--reduced-motion) {
-			animation: none;
-		}
-	}
-
-	@keyframes tip-in {
-		from {
-			opacity: 0;
-		}
 	}
 </style>

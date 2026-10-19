@@ -2141,7 +2141,7 @@
 
 		/* Что за сайт -- под заголовком главной, тише его и не шире колонки */
 		&__lead {
-			max-width: 34ch;
+			max-width: 36ch;
 			margin: 10px 0 0;
 			font-size: 16px;
 			line-height: 1.4;
@@ -2153,12 +2153,25 @@
 			}
 		}
 
+		/* Ссылка на раздел сайта -- плашкой, как внутренние ссылки в статье (styles/article.css) */
 		&__lead-link {
+			padding: 0 0.4em;
+			border-radius: 0.3em;
 			color: var(--a-blue);
 			text-decoration: none;
+			background-image: linear-gradient(
+				color-mix(in srgb, var(--a-blue) 8%, transparent),
+				color-mix(in srgb, var(--a-blue) 8%, transparent)
+			);
+			-webkit-box-decoration-break: clone;
+			box-decoration-break: clone;
+			transition:
+				color 0.2s var(--a-ease),
+				background-color 0.2s var(--a-ease);
 
 			&:hover {
-				text-decoration: underline;
+				color: var(--a-on-blue);
+				background-color: var(--a-blue);
 			}
 
 			&:focus-visible {
@@ -2202,7 +2215,7 @@
 			margin: 0 0 6px;
 			font-size: 21px;
 			font-weight: 600;
-			letter-spacing: -0.02em;
+			letter-spacing: 0;
 		}
 
 		&__none-text {
@@ -2225,7 +2238,7 @@
 			font-size: clamp(30px, 3.4vw, 44px);
 			font-weight: 700;
 			line-height: 1.08;
-			letter-spacing: -0.03em;
+			letter-spacing: -0.015em;
 
 			@media (width < 700px) {
 				font-size: 26px;
@@ -2374,7 +2387,7 @@
 			font-size: 21px;
 			font-weight: 600;
 			color: var(--a-fg);
-			letter-spacing: -0.02em;
+			letter-spacing: 0;
 			white-space: nowrap;
 			background: none;
 			transition:

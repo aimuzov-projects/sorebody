@@ -42,7 +42,7 @@
 	font-size: 17px;
 	line-height: 1.47;
 	color: var(--a-fg);
-	letter-spacing: -0.022em;
+	letter-spacing: 0;
 	background: var(--a-bg);
 }
 

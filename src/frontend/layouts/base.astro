@@ -13,6 +13,7 @@ import Metrika from '#frontend/components/metrika.astro'
 import MetrikaPixel from '@aimuzov-projects/infra-site-kit/metrika-pixel.astro'
 import { site } from '#frontend/data/site.ts'
 import type { SportSlug } from '#frontend/data/sports.ts'
+import { BRAND_GRADIENT_CSS, BRAND_STOP_COUNT } from '#frontend/lib/brand-gradient.ts'
 import { SPORT_RETURN } from '#frontend/lib/sport-memory.ts'
 import { THEME_KEY } from '#frontend/lib/theme.ts'
 import { pageTitle, siteTitle } from '#frontend/lib/title.ts'
@@ -50,6 +51,8 @@ const TELEGRAM_FLAG =
 
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(SPORT_RETURN).digest('base64')}`)
+// Градиент бренда собирает из data/sports.ts lib/brand-gradient.ts, в <head> он встаёт строкой
+Astro.csp?.insertStyleHash(`sha256-${createHash('sha256').update(BRAND_GRADIENT_CSS).digest('base64')}`)
 
 /**
  * Метрика только в продовой сборке и только на продовом домене (components/metrika.astro).
@@ -84,6 +87,7 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<meta name="twitter:card" content="summary_large_image" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<style is:inline set:html={BRAND_GRADIENT_CSS}></style>
 		<script is:inline set:html={TELEGRAM_FLAG} />
 		{sport && <script is:inline set:html={SPORT_RETURN} />}
 		<ThemeBoot key={THEME_KEY} />
@@ -92,6 +96,25 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 	</head>
 	<body class={bodyClass}>
 		{metrika && <MetrikaPixel id={site.metrikaId} />}
+		{!sport && (
+			<svg class="brand-paint" aria-hidden="true" focusable="false">
+				<defs>
+					{/* Градиент для обводки значков Lucide (24 на 24) и знака логотипа (32 на 32) */}
+					{(
+						[
+							['brand-icon', 24],
+							['brand-logo', 32],
+						] as const
+					).map(([id, size]) => (
+						<linearGradient id={id} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={size} y2={size}>
+							{Array.from({ length: BRAND_STOP_COUNT }, (_, i) => (
+								<stop offset={i / Math.max(BRAND_STOP_COUNT - 1, 1)} class={`brand-stop-${i}`} />
+							))}
+						</linearGradient>
+					))}
+				</defs>
+			</svg>
+		)}
 		<CornerLink href="/about/" label="О справочнике" icon={Info} place={2} />
 		<CornerLink href="/changelog" label="Что нового" icon={History} place={1} />
 		<ThemeToggle />

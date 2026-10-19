@@ -78,6 +78,7 @@
 	--fg: #1d1d1f;
 	--muted: #6e6e73;
 	--accent: var(--accent-light);
+	--on-accent: var(--on-accent-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;
 	/* Частота травмы: свой цвет и знак у каждого уровня, одни на всём сайте */
@@ -135,6 +136,7 @@
 		--fg: #f5f5f7;
 		--muted: #a1a1a6;
 		--accent: var(--accent-dark);
+		--on-accent: var(--on-accent-dark);
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
 		--common: #5ac8d8;
@@ -151,6 +153,7 @@
 	--fg: #f5f5f7;
 	--muted: #a1a1a6;
 	--accent: var(--accent-dark);
+	--on-accent: var(--on-accent-dark);
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
 	--common: #5ac8d8;

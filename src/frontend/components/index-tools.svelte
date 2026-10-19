@@ -267,7 +267,7 @@
 			font-size: 18px;
 			font-weight: 600;
 			line-height: 1.3;
-			letter-spacing: -0.015em;
+			letter-spacing: 0;
 		}
 
 		&__result-zone,

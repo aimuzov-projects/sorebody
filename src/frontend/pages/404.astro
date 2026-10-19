@@ -18,7 +18,8 @@ import Base from '#frontend/layouts/base.astro'
 
 <style>
 	/* Логотип красится токенами сцены (styles/scene.css), а её стили тут не нужны. Спорта
-	   у страницы нет, поэтому "body" и знак серые в обеих темах */
+	   у страницы нет: "body" и знак -- градиентом бренда (logo.svelte), серый остаётся
+	   для печати и режима высокого контраста */
 	:global(.missing-page) {
 		--a-ease: cubic-bezier(0.25, 1, 0.5, 1);
 		--a-fg: var(--fg);
@@ -29,11 +30,100 @@ import Base from '#frontend/layouts/base.astro'
 	.missing {
 		--not-found-accent: var(--accent);
 		--not-found-muted: var(--muted);
-		--not-found-radius: 12px;
+		--not-found-radius: 999px;
 
 		display: grid;
 		flex: 1;
 		align-items: center;
 		padding: 0 var(--gutter) var(--section-y);
+	}
+
+	/* Кнопки kit -- как действия на экране "Статья не загрузилась" (article-reader.svelte): жирный
+	   текст без рамки, знак, который при наведении сдвигается, и серая подложка, как у "‹".
+	   Главное действие "На главную" -- градиентом бренда, как ссылки страниц без спорта */
+	.missing :global(.not-found .not-found__action) {
+		min-height: 44px;
+		padding: 0 14px;
+		border: 0;
+		font-size: 17px;
+		font-weight: 600;
+		color: var(--fg);
+		background: none;
+		transition: background 0.3s ease;
+
+		@media (prefers-reduced-motion: reduce) {
+			&::before,
+			&::after {
+				transition: none;
+			}
+		}
+
+		&:hover {
+			background: color-mix(in srgb, var(--fg) 7%, transparent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: -2px;
+		}
+
+		&::before,
+		&::after {
+			display: inline-block;
+			font-weight: 400;
+			color: var(--accent);
+			transition: transform 0.35s var(--a-ease);
+		}
+
+		&:is(:hover, :focus-visible)::before {
+			transform: translateX(-4px);
+		}
+
+		&:is(:hover, :focus-visible)::after {
+			transform: translateX(4px);
+		}
+	}
+
+	.missing :global(.not-found .not-found__action--primary)::after {
+		content: '→';
+		margin-left: 6px;
+	}
+
+	.missing :global(.not-found [data-not-found-back])::before {
+		content: '←';
+		margin-right: 6px;
+	}
+
+	/* Текст главного действия и знаки -- градиентом бренда (lib/brand-gradient.ts). Подложка
+	   наведения -- вторым слоем: заливка цветом при клипе по тексту пропала бы */
+	@supports (background-clip: text) or (-webkit-background-clip: text) {
+		:global(:root:not([data-telegram])) .missing :global(.not-found .not-found__action--primary) {
+			color: transparent;
+			background-image: var(--brand-gradient);
+			-webkit-background-clip: text;
+			background-clip: text;
+
+			&:hover {
+				background-image:
+					var(--brand-gradient),
+					linear-gradient(
+						color-mix(in srgb, var(--fg) 7%, transparent),
+						color-mix(in srgb, var(--fg) 7%, transparent)
+					);
+				-webkit-background-clip: text, padding-box;
+				background-clip: text, padding-box;
+			}
+
+			&::after {
+				color: transparent;
+			}
+		}
+
+		:global(:root:not([data-telegram])) .missing :global(.not-found [data-not-found-back])::before {
+			color: transparent;
+			background-image: var(--brand-gradient);
+			-webkit-background-clip: text;
+			background-clip: text;
+		}
 	}
 </style>

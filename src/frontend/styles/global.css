@@ -1,7 +1,8 @@
 /* Цвет спорта -- пара для светлой и тёмной темы и цвет цифр на заливке им (--on-accent).
    <html data-sport> ставит base.astro, цвета -- `accent` спорта в data/sports.ts, совпадение
-   и контраст сверяет тест. Страницы без спорта -- графит: акцент равен цвету текста, его
-   не спутать ни со спортом, ни с частотой, ни с "опасно" */
+   и контраст сверяет тест. Страницы без спорта -- градиент бренда (--brand-gradient, правила ниже).
+   Сплошной --accent там графит, цвет текста: им рисуются рамки фокуса и то, что градиентом
+   не покрасить */
 :root {
 	--accent-light: #1d1d1f;
 	--accent-dark: #f5f5f7;
@@ -82,6 +83,8 @@
 	   было заменить градиентом, не трогая --accent у текста и рамок */
 	--accent-fill: var(--accent);
 	--on-accent: var(--on-accent-light);
+	--brand-gradient: var(--brand-gradient-light);
+	--brand-tint: var(--brand-tint-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;
 	/* Частота травмы: свой цвет и знак у каждого уровня, одни на всём сайте */
@@ -142,6 +145,8 @@
 		--muted: #a1a1a6;
 		--accent: var(--accent-dark);
 		--on-accent: var(--on-accent-dark);
+		--brand-gradient: var(--brand-gradient-dark);
+		--brand-tint: var(--brand-tint-dark);
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
 		--common: #5ac8d8;
@@ -159,6 +164,8 @@
 	--muted: #a1a1a6;
 	--accent: var(--accent-dark);
 	--on-accent: var(--on-accent-dark);
+	--brand-gradient: var(--brand-gradient-dark);
+	--brand-tint: var(--brand-tint-dark);
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
 	--common: #5ac8d8;
@@ -212,12 +219,138 @@ select {
 	color: var(--accent);
 }
 
-/* Без спорта акцент равен цвету текста: ссылку, которая выделялась только цветом,
-   отличает подчёркивание */
+/* Ссылка на другой сайт (источник, PubMed, лицензия) при наведении теряет подчёркивание на
+   любой странице. Свои ссылки сайт пишет относительными, так что `http` -- всегда чужой адрес */
+:root a[href^='http']:hover {
+	text-decoration-line: none;
+}
+
+/* Без спорта ссылку, которая выделялась только цветом, отличает и подчёркивание: в Telegram
+   и при печати она цвета текста */
 :root:not([data-sport]) :is(.tip__plate-link, .cite__link) {
 	text-decoration: underline;
 	text-decoration-thickness: 1px;
 	text-underline-offset: 3px;
+}
+
+/* Градиент бренда на страницах без спорта: текст ссылок -- от синего кроссфита к зелёному футбола
+   (lib/brand-gradient.ts), при наведении и фокусе градиент плывёт. Каждая его точка проходит AA на
+   фоне страницы и чипов, это сверяет тест. В Telegram фон и текст из темы клиента, контраст
+   градиента с ним не проверить -- там ссылки цвета текста. Без анимации в покое: перелив только
+   у ссылки под курсором, остальные не перерисовываются */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+	:root:not([data-sport], [data-telegram])
+		:is(.article-section a, .cite__link, .tip__plate-link, .article__source-link, .article__sport-link) {
+		color: transparent;
+		text-decoration-color: color-mix(in srgb, var(--fg) 35%, transparent);
+		background-image: var(--brand-gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		background-size: 200% 100%;
+
+		@media (prefers-reduced-motion: no-preference) {
+			&:is(:hover, :focus-visible) {
+				animation: brand-flow 1.6s linear infinite;
+			}
+		}
+
+		/* Без движения наведение просто сдвигает цвета */
+		@media (prefers-reduced-motion: reduce) {
+			&:is(:hover, :focus-visible) {
+				background-position: 100% 0;
+			}
+		}
+
+		@media (forced-colors: active) {
+			color: LinkText;
+			background: none;
+		}
+
+		@media print {
+			color: var(--fg);
+			background: none;
+		}
+
+		/* При наведении подчёркивание уходит: ссылку выделяет плывущий градиент */
+		&:hover {
+			text-decoration-line: none;
+		}
+
+		/* Выделенный текст -- обычным цветом: прозрачный пропал бы на подложке выделения */
+		&::selection {
+			color: var(--fg);
+		}
+
+		/* Плашка ссылки на страницу сайта (styles/article.css) -- вторым слоем под текстом: заливка
+		   цвета клипом по тексту пропала бы. Слои плывут вместе, у них один размер */
+		&:is(.article-section a)[href^='/'] {
+			@media screen and (forced-colors: none) {
+				background-color: transparent;
+				background-image: var(--brand-gradient), var(--brand-tint);
+				-webkit-background-clip: text, padding-box;
+				background-clip: text, padding-box;
+
+				/* Наведение меняет цвета местами: градиент уходит в заливку, текст -- цвета фона */
+				&:hover {
+					color: var(--on-accent);
+					background-image: var(--brand-gradient);
+					-webkit-background-clip: padding-box;
+					background-clip: padding-box;
+				}
+			}
+		}
+	}
+}
+
+/* Повтор первого цвета в конце градиента сшивает его в кольцо: сдвиг на длину фона (200%
+   от ширины ссылки) возвращает картинку в начало без скачка */
+@keyframes brand-flow {
+	to {
+		background-position: -200% 0;
+	}
+}
+
+/* Значки акцентом -- тем же градиентом: обводке Lucide градиент из <svg class="brand-paint">
+   в base.astro. Если ссылки нет, остаётся сплошной цвет. Красный значок «Когда сразу к врачу»
+   не трогаем */
+:root:not([data-sport], [data-telegram])
+	:is(
+		.article-section:not(.article-section--urgent) .article-section__icon,
+		.article__chip-icon,
+		.article__source-icon,
+		.tip__plate-icon,
+		.article-bar__back
+	)
+	svg {
+	stroke: url('#brand-icon') currentcolor;
+
+	@media (forced-colors: active) {
+		stroke: currentcolor;
+	}
+
+	@media print {
+		stroke: currentcolor;
+	}
+}
+
+/* Заливка кнопки меню разделов (toc-menu.css) -- тоже градиентом: на его точках цвет --on-accent
+   проходит AA, как и текст ссылок на фоне. Блоки темы задают --accent-fill с меньшим весом */
+:root:not([data-sport], [data-telegram]) {
+	--accent-fill: var(--brand-gradient);
+}
+
+:root:not([data-sport], [data-telegram]) .reading-progress__bar {
+	background: var(--brand-gradient);
+	mask-image: linear-gradient(to right, transparent, #000000 30%);
+}
+
+/* Определения градиентов для SVG: в документе, но без места на странице. display: none
+   отключил бы и сами градиенты */
+.brand-paint {
+	position: absolute;
+	overflow: hidden;
+	width: 0;
+	height: 0;
 }
 
 img {

@@ -39,6 +39,34 @@ test('фильтры в раскрытом острове помещаются �
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 })
 
+test.describe('на телефоне 390×844', () => {
+	test.use({ viewport: { width: 390, height: 844 } })
+
+	// Заголовок с выбором спорта поднят над подводкой ради списка спортов и рисовался поверх карточки
+	test('раскрытый остров с результатами перекрывает заголовок главной', async ({ page }) => {
+		await page.goto('/')
+		await page.locator('.index__island-open').tap()
+		await page.locator('.search__input').fill('связ')
+
+		const results = page.locator('.index__result')
+
+		await expect(results.first()).toBeVisible()
+
+		for (const result of await results.all()) {
+			const box = await result.boundingBox()
+
+			expect(box).not.toBeNull()
+
+			const hit = await page.evaluate(
+				({ x, y }) => document.elementFromPoint(x, y)?.closest('.index__result') !== null,
+				{ x: box!.x + box!.width / 2, y: box!.y + box!.height / 2 },
+			)
+
+			expect(hit).toBe(true)
+		}
+	})
+})
+
 test('тап по зоне раскрывает её список', async ({ page }) => {
 	await page.goto('/')
 	await page.locator('.index__zone', { hasText: 'Плечо' }).tap()

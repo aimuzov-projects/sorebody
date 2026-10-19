@@ -7,8 +7,10 @@
 
 	import { ChevronLeft, TextQuote } from 'lucide-static'
 
+	import BarLead from '#frontend/components/bar-lead.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
+	import { sportHome, type SportSlug } from '#frontend/data/sports.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
@@ -159,11 +161,15 @@
 		<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
 			><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 		>
-		<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
-		     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
-		<p class="article-bar__title" aria-hidden="true" style:visibility={status === 'ready' ? null : 'hidden'}>
-			{splitTitle(injury.title).name}
-		</p>
+		<!-- Логотип и маленький заголовок, который проявляется по мере прокрутки. Пока статья
+		     грузится, прокручивать нечего, и без скрытия он стоял бы над тем же названием.
+		     Логотип ведёт на эту же главную: закрывает статью, как "Назад" -->
+		<BarLead
+			title={splitTitle(injury.title).name}
+			home={sportHome(sport as SportSlug)}
+			titleHidden={status !== 'ready'}
+			onhome={onback}
+		/>
 	</SiteHeader>
 	{#if status === 'loading'}
 		<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны

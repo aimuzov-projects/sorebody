@@ -1,6 +1,7 @@
 ---
 import { ChevronLeft } from 'lucide-static'
 
+import BarLead from '#frontend/components/bar-lead.svelte'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import { RELEASES } from '#frontend/data/changelog.ts'
@@ -20,9 +21,7 @@ const sections = RELEASES.map((r) => ({ ...r, id: `v${r.version.replaceAll('.', 
 	</div>
 	<SiteHeader>
 		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
-		<p class="article-bar__title" aria-hidden="true">
-			{title}
-		</p>
+		<BarLead {title} home="/" />
 	</SiteHeader>
 	<main class="article" data-article>
 		<header class="article__hero">

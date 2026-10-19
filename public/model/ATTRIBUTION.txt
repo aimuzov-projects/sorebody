@@ -1,7 +1,7 @@
 body.glb and the zone chunks in detail/ are simplified and compressed derivatives of BodyParts3D and Z-Anatomy.
 
 BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan.
-https://dbarchive.biosciencedbc.jp/en/bodyparts3d/
+https://dbarchive.biosciencedbc.jp/en/bodyparts3d/desc.html
 https://creativecommons.org/licenses/by-sa/2.1/jp/deed.en
 
 Z-Anatomy, (c) Gauthier Kervyn, licensed under CC Attribution-ShareAlike 4.0 International.

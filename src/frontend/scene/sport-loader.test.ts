@@ -81,14 +81,14 @@ function fakeDocument() {
 test('заголовки страницы -- как у главной спорта', () => {
 	const { doc, attrs, canonical, heading } = fakeDocument()
 
-	applySportHead(doc, { slug: 'padel', heading: 'Травмы в паделе', description: 'Падел', home: '/padel/' })
+	applySportHead(doc, { slug: 'padel', heading: 'Боль в паделе', description: 'Падел', home: '/padel/' })
 
 	assert.equal(doc.documentElement.dataset.sport, 'padel')
-	assert.match(doc.title, /^Травмы в паделе/)
+	assert.match(doc.title, /^Боль в паделе/)
 	assert.equal(attrs.get('description'), 'Падел')
 	assert.equal(attrs.get('og:description'), 'Падел')
 	assert.equal(attrs.get('og:title'), doc.title)
 	assert.equal(canonical.href, 'https://sorebody.aimuzov.online/padel/')
 	assert.equal(attrs.get('og:url'), canonical.href)
-	assert.equal(heading.textContent, 'Травмы в паделе')
+	assert.equal(heading.textContent, 'Боль в паделе')
 })

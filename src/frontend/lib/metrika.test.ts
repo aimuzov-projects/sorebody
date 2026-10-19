@@ -14,7 +14,7 @@ test('a page change without reload is sent as a hit with the new address and tit
 	const calls: unknown[][] = []
 
 	metrikaHit('https://sorebody.aimuzov.online/', {
-		...page('https://sorebody.aimuzov.online/padel/', 'Травмы в паделе — Sorebody'),
+		...page('https://sorebody.aimuzov.online/padel/', 'Боль в паделе — Sorebody'),
 		ym: (...args) => calls.push(args),
 	})
 
@@ -23,7 +23,7 @@ test('a page change without reload is sent as a hit with the new address and tit
 			site.metrikaId,
 			'hit',
 			'https://sorebody.aimuzov.online/padel/',
-			{ title: 'Травмы в паделе — Sorebody', referer: 'https://sorebody.aimuzov.online/' },
+			{ title: 'Боль в паделе — Sorebody', referer: 'https://sorebody.aimuzov.online/' },
 		],
 	])
 })

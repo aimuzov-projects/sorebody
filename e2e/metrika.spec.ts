@@ -27,7 +27,7 @@ test('смена спорта без перезагрузки отправляе
 	// referer -- адрес в строке в момент ухода
 	const origin = new URL(page.url()).origin
 
-	expect(options).toEqual({ title: expect.stringMatching(/^Травмы в паделе/), referer: `${origin}/` })
+	expect(options).toEqual({ title: expect.stringMatching(/^Боль в паделе/), referer: `${origin}/` })
 
 	// Хеш в том же спорте -- не новая страница: зона открылась, хитов не прибавилось
 	await page.evaluate(() => (location.hash = '#zone=knee:0'))

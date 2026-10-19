@@ -31,7 +31,7 @@ const injuries = entries
 <Base
 	title={`${title} ${sport.phrase}`}
 	index={injuries.length > 0}
-	description={`Какие травмы ${sport.phrase} случаются ${sport.elementOn} «${title}» и как их избежать.`}
+	description={`Какая боль ${sport.phrase} бывает ${sport.elementOn} «${title}» и как её избежать.`}
 	bare
 	bodyClass="scene-page"
 	sport={sport.slug}
@@ -54,7 +54,7 @@ const injuries = entries
 	<noscript>
 		<div class="scene-page__fallback">
 			<p>
-				<a href={sportHome(sport.slug)}>Все травмы</a>
+				<a href={sportHome(sport.slug)}>Вся боль</a>
 			</p>
 			{injuries.length > 0 ? (
 				<ul>

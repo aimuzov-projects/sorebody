@@ -6,7 +6,7 @@ import { site } from '#frontend/data/site.ts'
 import { pageTitle, splitTitle } from './title.ts'
 
 test('a page without its own name gets the site name with the descriptor', () => {
-	assert.equal(pageTitle(), 'Sorebody — Справочник спортивных травм')
+	assert.equal(pageTitle(), 'Sorebody — Справочник спортивной боли')
 })
 
 test('other pages get their own name and the site name after a dash', () => {

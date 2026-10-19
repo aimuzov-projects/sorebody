@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Sorebody, a sports injury reference: how common each injury is in CrossFit, padel and football, its symptoms, when to see a doctor and how to adapt training, with links to the research." width="100%"></a>
+	<a href="https://sorebody.aimuzov.online"><img src=".github/assets/banner.en.jpg" alt="Sorebody, a sports pain reference: how common each kind of pain is in CrossFit, padel and football, its symptoms, when to see a doctor and how to adapt training, with links to the research." width="100%"></a>
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/sorebody" alt="License"></a>
 </p>
 
-<h3 align="center">Sorebody, a sports injury reference: how common each injury is in CrossFit, padel and football, its symptoms, when to see a doctor and how to adapt training, with links to the research.</h3>
+<h3 align="center">Sorebody, a sports pain reference: how common each kind of pain is in CrossFit, padel and football, its symptoms, when to see a doctor and how to adapt training, with links to the research.</h3>
 
 <!-- Uncomment once the screenshots are in .github/assets.
 <table>
@@ -33,7 +33,7 @@ The site is in Russian, so the names below are translated.
 
 ## What's inside
 
-- **Sport home** (`/` for CrossFit, `/<sport>/`): a 3D body with injury zones, search and filters. The sport is switched from a list in the heading, each one has its own color ([`src/frontend/data/sports.ts`](src/frontend/data/sports.ts)).
+- **Sport home** (`/` for CrossFit, `/<sport>/`): a 3D body with pain zones, search and filters. The sport is switched from a list in the heading, each one has its own color ([`src/frontend/data/sports.ts`](src/frontend/data/sports.ts)).
 - **Article** (`/<sport>/<injury>/`): the shared part of an injury plus the take for the sport. The shared part on its own is at `/injuries/<injury>/`.
 - **About**, **What's new** and **404** have no sport, their accent is graphite.
 - **Brand**: the "pain point" mark in [`logo.svelte`](src/frontend/components/logo.svelte); the favicon, icons, OG image and README banner are rendered by [`scripts/brand/render.mjs`](scripts/brand/render.mjs). The name and descriptor live in [`site.ts`](src/frontend/data/site.ts).

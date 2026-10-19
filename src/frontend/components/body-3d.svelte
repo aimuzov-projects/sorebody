@@ -1331,11 +1331,11 @@
 	     Наведение на строку подсвечивает её зону на модели -->
 	{#if movementPage}
 		{@const total = movementInjuries.length}
-		<aside class="index" class:index--away={open} inert={!!open} aria-label="Травмы движения">
+		<aside class="index" class:index--away={open} inert={!!open} aria-label="Боль на движении">
 			<header class="index__head">
 				<!-- В Mini App путь на главную -- системная кнопка «назад» Telegram -->
 				<a class="index__home" href={sport.home}
-					><span class="index__home-arrow" aria-hidden="true">←</span>Все травмы</a
+					><span class="index__home-arrow" aria-hidden="true">←</span>Вся боль</a
 				>
 				<p class="index__title" aria-hidden="true">{movementPage.title}</p>
 				<p class="index__sub">
@@ -1357,7 +1357,7 @@
 				<div class="index__none">
 					<p class="index__none-title">Статей пока нет</p>
 					<p class="index__none-text">
-						Про травмы на этом движении ещё не написали. Остальные травмы — <a
+						Про боль на этом движении ещё не написали. Остальное — <a
 							class="index__none-link"
 							href={sport.home}>на главной</a
 						>.
@@ -1375,7 +1375,7 @@
 					aria-busy={sportLoading}
 					{@attach prefetchSports}
 				>
-					<span aria-hidden="true">Травмы&nbsp;</span>{#if sport.sports.length > 1}<SportSwitch
+					<span aria-hidden="true">Боль </span>{#if sport.sports.length > 1}<SportSwitch
 							sports={sport.sports}
 							value={sport.slug}
 							size="title"

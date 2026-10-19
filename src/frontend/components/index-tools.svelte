@@ -124,7 +124,7 @@
 	</div>
 	<div class="index__panel" id="index-tools" bind:this={toolsPanel}>
 		<div class="index__search-row">
-			<SearchField bind:value={query} placeholder="Травма или часть тела" label="Поиск по травмам" />
+			<SearchField bind:value={query} placeholder="Боль или часть тела" label="Поиск по боли" />
 			<button class="index__panel-close" type="button" aria-label="Свернуть поиск" onclick={closeTools}
 				><span class="index__island-icon" aria-hidden="true">{@html ChevronDown}</span></button
 			>

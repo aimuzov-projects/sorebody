@@ -91,7 +91,7 @@ async function highlight(page: Page, from: SportSlug, to: SportSlug) {
 test('падел красит акцент лаймом, а выбор спорта с общего плана открывает общий план', async ({ page }) => {
 	await page.goto('/padel/#zone=shoulder:1')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
-	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page.locator('h1')).toHaveText('Боль в паделе')
 	await page.locator('.zone__back').click()
 
 	const button = sportButton(page, 'Падел')
@@ -168,7 +168,7 @@ test('из падела в футбол -- на месте, со своим цв
 	await chooseSport(page, 'Падел', 'Футбол')
 
 	await expect(page).toHaveURL(/\/football\/$/)
-	await expect(page.locator('h1')).toHaveText('Травмы в футболе')
+	await expect(page.locator('h1')).toHaveText('Боль в футболе')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'football')
 	await expect(sportButton(page, 'Футбол')).toHaveCSS('color', rgb(FOOTBALL.accent.light))
 	await expect(page.locator('.index__zone-label', { hasText: 'Локоть' })).toHaveCount(0)
@@ -185,8 +185,8 @@ test('смена спорта на главной не перезагружае�
 	await chooseSport(page, 'Кроссфит', 'Падел')
 
 	await expect(page).toHaveURL(/\/padel\/$/)
-	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
-	await expect(page).toHaveTitle(/^Травмы в паделе/)
+	await expect(page.locator('h1')).toHaveText('Боль в паделе')
+	await expect(page).toHaveTitle(/^Боль в паделе/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/padel\/$/)
 	// Цвет перетекает, ждём, пока он дойдёт до лайма
@@ -204,7 +204,7 @@ test('смена спорта на главной не перезагружае�
 
 	// Обновление -- обычная статическая страница падела
 	await page.reload()
-	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page.locator('h1')).toHaveText('Боль в паделе')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	expect(await samePage(page)).toBe(false)
 })
@@ -402,7 +402,7 @@ test('смена спорта сбрасывает поиск, частоту и
 	await expect(page.getByRole('searchbox')).toHaveValue('')
 	await expect(page.getByRole('button', { name: 'Все', exact: true })).toHaveAttribute('aria-pressed', 'true')
 	await expect(page.getByRole('button', { name: /^Удар или действие/ })).toHaveText(/любое/)
-	await expect(page.locator('.index__announce')).toHaveText('Травмы в паделе')
+	await expect(page.locator('.index__announce')).toHaveText('Боль в паделе')
 })
 
 test('данные спорта не пришли -- обычный переход на его страницу', async ({ page }) => {
@@ -412,7 +412,7 @@ test('данные спорта не пришли -- обычный перехо
 	await chooseSport(page, 'Кроссфит', 'Падел')
 
 	await expect(page).toHaveURL(/\/padel\/$/)
-	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
+	await expect(page.locator('h1')).toHaveText('Боль в паделе')
 	await expect.poll(() => page.evaluate(() => 'samePage' in window)).toBe(false)
 })
 
@@ -547,7 +547,7 @@ test('«Назад» на главную после смены спорта на
 	await page.goBack()
 	await expect(page).toHaveURL(HOME)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
-	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
+	await expect(page.locator('h1')).toHaveText('Боль в кроссфите')
 })
 
 test('после ухода на другую страницу «Назад» открывает прошлые шаги в выбранном спорте', async ({ page }) => {

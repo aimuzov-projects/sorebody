@@ -8,6 +8,24 @@
 		"medline": true,
 		"doi": "10.5435/00124635-199907000-00006"
 	},
+	"10462219": {
+		"authors": "Boden BP, et al",
+		"title": "Tibia and fibula fractures in soccer players.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "1999",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s001670050160"
+	},
+	"10751000": {
+		"authors": "Francisco AC, et al",
+		"title": "Comparison of soccer shin guards in preventing tibia fracture.",
+		"journal": "Am J Sports Med",
+		"year": "2000",
+		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/03635465000280021401"
+	},
 	"10959926": {
 		"authors": "Fredericson M, et al",
 		"title": "Hip abductor weakness in distance runners with iliotibial band syndrome.",
@@ -63,6 +81,15 @@
 		"medline": true,
 		"doi": "10.2165/00007256-200333040-00005"
 	},
+	"12742847": {
+		"authors": "Capao Filipe JA, et al",
+		"title": "Soccer-related ocular injuries.",
+		"journal": "Arch Ophthalmol",
+		"year": "2003",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1001/archopht.121.5.687"
+	},
 	"12907487": {
 		"authors": "Pengel LH, et al",
 		"title": "Acute low back pain: systematic review of its prognosis.",
@@ -72,6 +99,25 @@
 		"medline": true,
 		"doi": "10.1136/bmj.327.7410.323",
 		"pmcid": "PMC169642"
+	},
+	"14736763": {
+		"authors": "Vinger PF, et al",
+		"title": "The mechanism and prevention of soccer eye injuries.",
+		"journal": "Br J Ophthalmol",
+		"year": "2004",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1136/bjo.2003.026229",
+		"pmcid": "PMC1771996"
+	},
+	"14966669": {
+		"authors": "Fankhauser F, et al",
+		"title": "The unreamed intramedullary tibial nail in tibial shaft fractures of soccer players: a prospective study.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2004",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s00167-003-0471-7"
 	},
 	"15508543": {
 		"authors": "Kucik CJ, et al",
@@ -196,6 +242,15 @@
 		"year": "2007",
 		"types": ["Journal Article"],
 		"pmcid": "PMC1978464"
+	},
+	"18079558": {
+		"authors": "Fredberg U, et al",
+		"title": "Prophylactic training in asymptomatic soccer players with ultrasonographic abnormalities in Achilles and patellar tendons: the Danish Super League Study.",
+		"journal": "Am J Sports Med",
+		"year": "2008",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/0363546507310073"
 	},
 	"19005354": {
 		"authors": "O'Connor FG, et al",
@@ -340,6 +395,15 @@
 		"medline": true,
 		"doi": "10.1148/rg.313105507"
 	},
+	"21642599": {
+		"authors": "Hägglund M, et al",
+		"title": "Epidemiology of patellar tendinopathy in elite male soccer players.",
+		"journal": "Am J Sports Med",
+		"year": "2011",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/0363546511408877"
+	},
 	"21825112": {
 		"authors": "Petersen J, et al",
 		"title": "Preventive effect of eccentric training on acute hamstring injuries in men's soccer: a cluster-randomized controlled trial.",
@@ -393,6 +457,15 @@
 		"medline": true,
 		"doi": "10.1136/bmj.e787",
 		"pmcid": "PMC3282676"
+	},
+	"22926296": {
+		"authors": "Sonnery-Cottet B, et al",
+		"title": "Proximal hamstring avulsion in a professional soccer player.",
+		"journal": "Orthop Traumatol Surg Res",
+		"year": "2012",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.otsr.2012.05.007"
 	},
 	"22956165": {
 		"authors": "Roche AJ, et al",
@@ -555,6 +628,15 @@
 		"doi": "10.1002/14651858.CD009020.pub2",
 		"pmcid": "PMC6464715"
 	},
+	"24149096": {
+		"authors": "Sheen AJ, et al",
+		"title": "'Treatment of the sportsman's groin': British Hernia Society's 2014 position statement based on the Manchester Consensus Conference.",
+		"journal": "Br J Sports Med",
+		"year": "2014",
+		"types": ["Consensus Statement", "Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2013-092872"
+	},
 	"24276294": {
 		"authors": "Hak PT, et al",
 		"title": "The nature and prevalence of injury during CrossFit training.",
@@ -644,6 +726,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546514540271"
 	},
+	"25138980": {
+		"authors": "Mallee WH, et al",
+		"title": "Surgical versus conservative treatment for high-risk stress fractures of the lower leg (anterior tibial cortex, navicular and fifth metatarsal base): a systematic review.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2013-093246"
+	},
 	"25157180": {
 		"authors": "Ardern CL, et al",
 		"title": "Fifty-five per cent return to competitive sport following anterior cruciate ligament reconstruction surgery: an updated systematic review and meta-analysis including aspects of physical functioning and contextual factors.",
@@ -689,6 +780,15 @@
 		"medline": true,
 		"doi": "10.3174/ajnr.A4173",
 		"pmcid": "PMC4464797"
+	},
+	"25455402": {
+		"authors": "Freilich AM",
+		"title": "Evaluation and treatment of jersey finger and pulley injuries in athletes.",
+		"journal": "Clin Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.csm.2014.09.001"
 	},
 	"25588823": {
 		"authors": "Leivo T, et al",
@@ -744,6 +844,16 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2014-094414"
 	},
+	"25900943": {
+		"authors": "Olds M, et al",
+		"title": "Risk factors which predispose first-time traumatic anterior shoulder dislocations to recurrent instability in adults: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2014-094342",
+		"pmcid": "PMC4687692"
+	},
 	"25907183": {
 		"authors": "Waldén M, et al",
 		"title": "Three distinct mechanisms predominate in non-contact anterior cruciate ligament injuries in male professional football players: a systematic video analysis of 39 cases.",
@@ -791,6 +901,22 @@
 		"doi": "10.1136/bjsports-2015-094869",
 		"pmcid": "PMC4484366"
 	},
+	"26045406": {
+		"authors": "Mallee WH, et al",
+		"title": "Computed tomography versus magnetic resonance imaging versus bone scintigraphy for clinically suspected scaphoid fractures in patients with negative plain radiographs.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2015",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Meta-Analysis",
+			"Research Support, Non-U.S. Gov't",
+			"Systematic Review"
+		],
+		"medline": true,
+		"doi": "10.1002/14651858.CD010023.pub2",
+		"pmcid": "PMC6464799"
+	},
 	"26058528": {
 		"authors": "Andreasen FM, et al",
 		"title": "Diagnosis of acute dental trauma: the importance of standardized documentation: a review.",
@@ -799,6 +925,16 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1111/edt.12187"
+	},
+	"26188245": {
+		"authors": "Prather H, et al",
+		"title": "Are Elite Female Soccer Athletes at Risk for Disordered Eating Attitudes, Menstrual Dysfunction, and Stress Fractures?",
+		"journal": "PM R",
+		"year": "2016",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"medline": true,
+		"doi": "10.1016/j.pmrj.2015.07.003",
+		"pmcid": "PMC8301748"
 	},
 	"26316611": {
 		"authors": "Klouche S, et al",
@@ -883,6 +1019,24 @@
 		"medline": true,
 		"doi": "10.1177/0363546515617472"
 	},
+	"26704800": {
+		"authors": "van Dijk CN, et al",
+		"title": "Classification and diagnosis of acute isolated syndesmotic injuries: ESSKA-AFAS consensus and guidelines.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1007/s00167-015-3942-8"
+	},
+	"26725452": {
+		"authors": "Calder JD, et al",
+		"title": "Stable Versus Unstable Grade II High Ankle Sprains: A Prospective Study Predicting the Need for Surgical Stabilization and Time to Return to Sports.",
+		"journal": "Arthroscopy",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.arthro.2015.10.003"
+	},
 	"26746908": {
 		"authors": "Ekstrand J, et al",
 		"title": "Hamstring injuries have increased by 4% annually in men's professional football, since 2001: a 13-year longitudinal analysis of the UEFA Elite Club injury study.",
@@ -951,6 +1105,15 @@
 		"year": "2016",
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true
+	},
+	"27015852": {
+		"authors": "Larsson D, et al",
+		"title": "Fracture epidemiology in male elite football players from 2001 to 2013: 'How long will this fracture keep me out?'.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2015-095838"
 	},
 	"27034129": {
 		"authors": "Waldén M, et al",
@@ -1028,6 +1191,16 @@
 		"medline": true,
 		"doi": "10.1007/s40279-016-0575-0"
 	},
+	"27340245": {
+		"authors": "Robertson GA, et al",
+		"title": "Return to Sport After Tibial Shaft Fractures: A Systematic Review.",
+		"journal": "Sports Health",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1177/1941738115601425",
+		"pmcid": "PMC4922516"
+	},
 	"27578854": {
 		"authors": "Summitt RJ, et al",
 		"title": "Shoulder Injuries in Individuals Who Participate in CrossFit Training.",
@@ -1083,6 +1256,15 @@
 		"doi": "10.4103/2229-5151.190648",
 		"pmcid": "PMC5051056"
 	},
+	"27732325": {
+		"authors": "Moreira CA, et al",
+		"title": "Stress Fractures: Concepts and Therapeutics.",
+		"journal": "J Clin Endocrinol Metab",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1210/jc.2016-2720"
+	},
 	"27847979": {
 		"authors": "Godenèche A, et al",
 		"title": "Relationship between subscapularis tears and injuries to the biceps pulley.",
@@ -1136,6 +1318,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546516676062"
 	},
+	"28188545": {
+		"authors": "Bachoura A, et al",
+		"title": "A review of mallet finger and jersey finger injuries in the athlete.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12178-017-9395-6",
+		"pmcid": "PMC5344866"
+	},
 	"28192789": {
 		"authors": "Qaseem A, et al",
 		"title": "Noninvasive Treatments for Acute, Subacute, and Chronic Low Back Pain: A Clinical Practice Guideline From the American College of Physicians.",
@@ -1182,6 +1373,16 @@
 		"medline": true,
 		"doi": "10.1016/j.csm.2016.11.006"
 	},
+	"28353415": {
+		"authors": "Carruthers KH, et al",
+		"title": "Casting and Splinting Management for Hand Injuries in the In-Season Contact Sport Athlete.",
+		"journal": "Sports Health",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1177/1941738117700133",
+		"pmcid": "PMC5496703"
+	},
 	"28360143": {
 		"authors": "van der Horst N, et al",
 		"title": "Return to play after hamstring injuries in football (soccer): a worldwide Delphi procedure regarding definition, medical criteria and decision-making.",
@@ -1190,6 +1391,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2016-097206"
+	},
+	"28361017": {
+		"authors": "Robertson GA, et al",
+		"title": "Lower limb stress fractures in sport: Optimising their management and outcome.",
+		"journal": "World J Orthop",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5312/wjo.v8.i3.242",
+		"pmcid": "PMC5359760"
 	},
 	"28389398": {
 		"authors": "Esser S, et al",
@@ -1282,6 +1492,16 @@
 		"doi": "10.1302/2058-5241.2.160056",
 		"pmcid": "PMC5489759"
 	},
+	"28789628": {
+		"authors": "Bode G, et al",
+		"title": "Patellar tendinopathy in young elite soccer- clinical and sonographical analysis of a German elite soccer academy.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1186/s12891-017-1690-2",
+		"pmcid": "PMC5549401"
+	},
 	"28888723": {
 		"authors": "Vap AR, et al",
 		"title": "Isolated Biceps Reflection Pulley Tears Treated With Subpectoral Biceps Tenodesis: Minimum 2-Year Outcomes.",
@@ -1299,6 +1519,15 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1177/0363546517732526"
+	},
+	"29174096": {
+		"authors": "Lin JS, et al",
+		"title": "Surgical and Nonsurgical Management of Mallet Finger: A Systematic Review.",
+		"journal": "J Hand Surg Am",
+		"year": "2018",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.jhsa.2017.10.004"
 	},
 	"29269487": {
 		"authors": "Lubberts B, et al",
@@ -1354,6 +1583,15 @@
 		"types": ["Journal Article", "Practice Guideline"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2017-098106"
+	},
+	"29585730": {
+		"authors": "Mosler AB, et al",
+		"title": "Musculoskeletal Screening Tests and Bony Hip Morphology Cannot Identify Male Professional Soccer Players at Risk of Groin Injuries: A 2-Year Prospective Cohort Study.",
+		"journal": "Am J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546518763373"
 	},
 	"29599121": {
 		"authors": "Montalvo AM, et al",
@@ -1418,6 +1656,23 @@
 		"types": ["Journal Article", "Randomized Controlled Trial"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2017-098937"
+	},
+	"29936432": {
+		"authors": "Kavaja L, et al",
+		"title": "Treatment after traumatic shoulder dislocation: a systematic review with a network meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article", "Systematic Review", "Network Meta-Analysis"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2017-098539",
+		"pmcid": "PMC6241619"
+	},
+	"29939612": {
+		"authors": "Bergman R, et al",
+		"title": "Stress Reaction and Fractures.",
+		"journal": "",
+		"year": "2025",
+		"types": ["Study Guide"]
 	},
 	"29954828": {
 		"authors": "Babatunde OO, et al",
@@ -1491,6 +1746,15 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD005654.pub4",
 		"pmcid": "PMC6516955"
+	},
+	"30323059": {
+		"authors": "van Klij P, et al",
+		"title": "Cam morphology in young male football players mostly develops before proximal femoral growth plate closure: a prospective study with 5-yearfollow-up.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2018-099328"
 	},
 	"30356646": {
 		"authors": "Erickson LN, et al",
@@ -1575,6 +1839,13 @@
 		"medline": true,
 		"doi": "10.1097/SCS.0000000000005138"
 	},
+	"30725858": {
+		"authors": "Mabrouk A, et al",
+		"title": "Tibia Diaphyseal Fracture.",
+		"journal": "",
+		"year": "2025",
+		"types": ["Study Guide"]
+	},
 	"30728120": {
 		"authors": "Vandvik PO, et al",
 		"title": "Subacromial decompression surgery for adults with shoulder pain: a clinical practice guideline.",
@@ -1655,6 +1926,16 @@
 		"doi": "10.1186/s12891-019-2532-1",
 		"pmcid": "PMC6454729"
 	},
+	"31074847": {
+		"authors": "Braun C, et al",
+		"title": "Conservative management following closed reduction of traumatic anterior dislocation of the shoulder.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2019",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1002/14651858.CD004962.pub4",
+		"pmcid": "PMC6510174"
+	},
 	"31171515": {
 		"authors": "López-Valenciano A, et al",
 		"title": "Epidemiology of injuries in professional football: a systematic review and meta-analysis.",
@@ -1719,6 +2000,15 @@
 		"medline": true,
 		"doi": "10.1016/j.avsg.2019.04.028"
 	},
+	"31362925": {
+		"authors": "Grassi A, et al",
+		"title": "Eighty-two per cent of male professional football (soccer) players return to play at the previous level two seasons after Achilles tendon rupture treated with surgical repair.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2019-100556"
+	},
 	"31377722": {
 		"authors": "Dubois B, et al",
 		"title": "Soft-tissue injuries simply need PEACE and LOVE.",
@@ -1754,6 +2044,16 @@
 		"medline": true,
 		"doi": "10.1186/s12891-019-2749-z",
 		"pmcid": "PMC6698340"
+	},
+	"31473593": {
+		"authors": "D'Hooghe P, et al",
+		"title": "Return to play after surgery for isolated unstable syndesmotic ankle injuries (West Point grade IIB and III) in 110 male professional football players: a retrospective cohort study.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2018-100298",
+		"pmcid": "PMC7513252"
 	},
 	"31524367": {
 		"authors": "Hu JS, et al",
@@ -1800,6 +2100,15 @@
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000000553"
 	},
+	"31688186": {
+		"authors": "van der Made AD, et al",
+		"title": "Abduction in Proximal Hamstring Tendon Avulsion Injury Mechanism: A Report on 3 Athletes.",
+		"journal": "Clin J Sport Med",
+		"year": "2019",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.1097/JSM.0000000000000543"
+	},
 	"31775556": {
 		"authors": "Saraceni N, et al",
 		"title": "To Flex or Not to Flex? Is There a Relationship Between Lumbar Spine Flexion During Lifting and Low Back Pain? A Systematic Review With Meta-analysis.",
@@ -1824,6 +2133,25 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD013502",
 		"pmcid": "PMC6900168"
+	},
+	"31850973": {
+		"authors": "Asher CM, et al",
+		"title": "Ring removal: an illustrated summary of the literature.",
+		"journal": "Eur J Emerg Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/MEJ.0000000000000658"
+	},
+	"31910838": {
+		"authors": "Krastman P, et al",
+		"title": "Diagnostic accuracy of history taking, physical examination and imaging for phalangeal, metacarpal and carpal fractures: a systematic review update.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1186/s12891-019-2988-z",
+		"pmcid": "PMC6947988"
 	},
 	"32007452": {
 		"authors": "Doiron-Cadrin P, et al",
@@ -1915,6 +2243,13 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2019-100983"
+	},
+	"32310599": {
+		"authors": "Walters BB, et al",
+		"title": "Fibula Fractures.",
+		"journal": "",
+		"year": "2023",
+		"types": ["Study Guide"]
 	},
 	"32376673": {
 		"authors": "Kemp JL, et al",
@@ -2053,6 +2388,15 @@
 		"doi": "10.1016/j.asmr.2020.04.001",
 		"pmcid": "PMC7451906"
 	},
+	"32982496": {
+		"authors": "Tojima M, et al",
+		"title": "Factors Associated with Ball Velocity and Low Back Pain During Kicking in Adolescent Soccer Players.",
+		"journal": "Open Access J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.2147/OAJSM.S262990",
+		"pmcid": "PMC7490067"
+	},
 	"33038045": {
 		"authors": "Cassoudesalle H, et al",
 		"title": "Video analysis of concussion mechanisms and immediate management in French men's professional football (soccer) from 2015 to 2019.",
@@ -2150,6 +2494,15 @@
 		"medline": true,
 		"doi": "10.1177/1071100720969633"
 	},
+	"33312709": {
+		"authors": "Begum FA, et al",
+		"title": "The management of proximal rectus femoris avulsion injuries.",
+		"journal": "EFORT Open Rev",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1302/2058-5241.5.200055",
+		"pmcid": "PMC7722942"
+	},
 	"33322981": {
 		"authors": "Ángel Rodríguez M, et al",
 		"title": "Injury in CrossFit®: A Systematic Review of Epidemiology and Risk Factors.",
@@ -2159,6 +2512,15 @@
 		"medline": true,
 		"doi": "10.1080/00913847.2020.1864675"
 	},
+	"33347092": {
+		"authors": "Bezuglov E, et al",
+		"title": "Asymptomatic Degenerative Changes in the Lumbar Spine Among Professional Soccer Players.",
+		"journal": "Spine (Phila Pa 1976)",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/BRS.0000000000003726"
+	},
 	"33355180": {
 		"authors": "Thornton JS, et al",
 		"title": "Treating low back pain in athletes: a systematic review with meta-analysis.",
@@ -2167,6 +2529,15 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2020-102723"
+	},
+	"33356776": {
+		"authors": "Heerey J, et al",
+		"title": "The Size and Prevalence of Bony Hip Morphology Do Not Differ Between Football Players With and Without Hip and/or Groin Pain: Findings From the FORCe Cohort.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2021",
+		"types": ["Comparative Study", "Journal Article"],
+		"medline": true,
+		"doi": "10.2519/jospt.2021.9622"
 	},
 	"33362991": {
 		"authors": "Halabchi F, et al",
@@ -2240,6 +2611,15 @@
 		"medline": true,
 		"doi": "10.1016/j.fcl.2020.08.012"
 	},
+	"33553455": {
+		"authors": "Andersson JK, et al",
+		"title": "Hand, Wrist, and Forearm Injuries in Male Professional Soccer Players: A Prospective Cohort Study of 558 Team-Seasons From 2001-2002 to 2018-2019.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967120977091",
+		"pmcid": "PMC7841683"
+	},
 	"33563131": {
 		"authors": "Sedrak P, et al",
 		"title": "Return to Play After Symptomatic Lumbar Disc Herniation in Elite Athletes: A Systematic Review and Meta-analysis of Operative Versus Nonoperative Treatment.",
@@ -2296,6 +2676,15 @@
 		"doi": "10.1136/bmj.n375",
 		"pmcid": "PMC7941216"
 	},
+	"33709003": {
+		"authors": "Geoghegan L, et al",
+		"title": "Return to Sport After Metacarpal and Phalangeal Fractures: A Systematic Review and Evidence Appraisal.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/2325967120980013",
+		"pmcid": "PMC7907947"
+	},
 	"33718592": {
 		"authors": "Beaudouin F, et al",
 		"title": "Head Impact Situations in Professional Football (Soccer).",
@@ -2333,6 +2722,24 @@
 		"medline": true,
 		"doi": "10.1177/23247096211003263",
 		"pmcid": "PMC7983469"
+	},
+	"33774464": {
+		"authors": "Netterström-Wedin F, et al",
+		"title": "Diagnostic accuracy of clinical tests assessing ligamentous injury of the ankle syndesmosis: A systematic review with meta-analysis.",
+		"journal": "Phys Ther Sport",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.ptsp.2021.03.005"
+	},
+	"33783303": {
+		"authors": "Patel PA, et al",
+		"title": "Trends in Soccer-Related Ocular Injuries within the United States from 2010 through 2019.",
+		"journal": "Semin Ophthalmol",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1080/08820538.2021.1909077"
 	},
 	"33785535": {
 		"authors": "Morrissey D, et al",
@@ -2408,6 +2815,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000000935"
+	},
+	"34138672": {
+		"authors": "Al Attar WSA, et al",
+		"title": "The FIFA 11+ Shoulder Injury Prevention Program Was Effective in Reducing Upper Extremity Injuries Among Soccer Goalkeepers: A Randomized Controlled Trial.",
+		"journal": "Am J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/03635465211021828"
 	},
 	"34156668": {
 		"authors": "Thörnland C, et al",
@@ -2675,6 +3091,15 @@
 		"doi": "10.1186/s13047-021-00507-2",
 		"pmcid": "PMC8783477"
 	},
+	"35146029": {
+		"authors": "Forlenza EM, et al",
+		"title": "Return to Play and Player Performance After Achilles Tendon Rupture in UEFA Professional Soccer Players: A Matched-Cohort Analysis of Players From 1999 to 2018.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671211024199",
+		"pmcid": "PMC8822021"
+	},
 	"35146034": {
 		"authors": "Lädermann A, et al",
 		"title": "Diagnostic Accuracy of Clinical Tests for Subscapularis Tears: A Systematic Review and Meta-analysis.",
@@ -2757,6 +3182,16 @@
 		"medline": true,
 		"doi": "10.3390/ijerph19074153",
 		"pmcid": "PMC8998509"
+	},
+	"35437946": {
+		"authors": "Ashraf G, et al",
+		"title": "Sports-related ocular injuries at a tertiary eye hospital in Australia: A 5-year retrospective descriptive study.",
+		"journal": "Emerg Med Australas",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/1742-6723.13982",
+		"pmcid": "PMC9790689"
 	},
 	"35494495": {
 		"authors": "Arnold MT, et al",
@@ -2907,6 +3342,15 @@
 		"doi": "10.1136/bjsports-2022-105674",
 		"pmcid": "PMC10086287"
 	},
+	"36280886": {
+		"authors": "Carmody S, et al",
+		"title": "Lumbar spine MRI findings in asymptomatic elite male academy footballers: a case series.",
+		"journal": "BMC Sports Sci Med Rehabil",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s13102-022-00576-1",
+		"pmcid": "PMC9590204"
+	},
 	"36281183": {
 		"authors": "Ruiz-Sánchez FJ, et al",
 		"title": "Management and treatment of ankle sprain according to clinical practice guidelines: A PRISMA systematic review.",
@@ -2945,6 +3389,15 @@
 		"medline": true,
 		"doi": "10.1016/j.arthro.2022.08.005"
 	},
+	"36466593": {
+		"authors": "Pasqualini I, et al",
+		"title": "Effect of Playing Position on Return to Sport, Functional Outcomes, and Recurrence After Arthroscopic Bankart Repair in Soccer Players.",
+		"journal": "Orthop J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671221138106",
+		"pmcid": "PMC9709182"
+	},
 	"36509105": {
 		"authors": "Kozlowski KM, et al",
 		"title": "A Thirteen-Year Analysis of Facial Fractures among Professional Soccer Players.",
@@ -2953,6 +3406,24 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1055/a-1996-7595"
+	},
+	"36509592": {
+		"authors": "Sivakumar BS, et al",
+		"title": "Acute Mallet Finger Injuries-A Review.",
+		"journal": "J Hand Surg Am",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.jhsa.2022.10.013"
+	},
+	"36515745": {
+		"authors": "de Souza Lima EB, et al",
+		"title": "Epidemiology of Upper Limb Injuries in two major Brazilian Soccer Championships from 2016 to 2019.",
+		"journal": "J Exp Orthop",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s40634-022-00560-1",
+		"pmcid": "PMC9751235"
 	},
 	"36554736": {
 		"authors": "Muñoz D, et al",
@@ -3090,6 +3561,16 @@
 		"doi": "10.1002/14651858.CD005431.pub5",
 		"pmcid": "PMC10010597"
 	},
+	"36947232": {
+		"authors": "Sjövall Anari S, et al",
+		"title": "High-level soccer players have a low rate of return to performance after hip arthroscopy for femoroacetabular impingement syndrome.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s00167-023-07336-9",
+		"pmcid": "PMC10183425"
+	},
 	"36948224": {
 		"authors": "Deen R, et al",
 		"title": "Review article: Non-penetrating neck artery dissection in young adults: Not to be missed!",
@@ -3098,6 +3579,16 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1111/1742-6723.14202"
+	},
+	"36977780": {
+		"authors": "Hoenig T, et al",
+		"title": "Video analysis of Achilles tendon ruptures in professional male football (soccer) reveals underlying injury patterns and provides strategies for injury prevention.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s00167-023-07384-1",
+		"pmcid": "PMC10183418"
 	},
 	"36988238": {
 		"authors": "Hong IS, et al",
@@ -3163,6 +3654,15 @@
 		"medline": true,
 		"doi": "10.1111/aos.15685"
 	},
+	"37169546": {
+		"authors": "Coventry L, et al",
+		"title": "Which clinical features best predict occult scaphoid fractures? A systematic review of diagnostic test accuracy studies.",
+		"journal": "Emerg Med J",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1136/emermed-2023-213119"
+	},
 	"37173686": {
 		"authors": "Gulle H, et al",
 		"title": "Predicting the outcome of plantar heel pain in adults: a systematic review of prognostic factors.",
@@ -3227,6 +3727,15 @@
 		"doi": "10.7759/cureus.39781",
 		"pmcid": "PMC10313087"
 	},
+	"37445581": {
+		"authors": "Lorente A, et al",
+		"title": "Nerve Injuries after Glenohumeral Dislocation, a Systematic Review of Incidence and Risk Factors.",
+		"journal": "J Clin Med",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm12134546",
+		"pmcid": "PMC10342334"
+	},
 	"37486886": {
 		"authors": "Rashed S, et al",
 		"title": "Systematic review and meta-analysis of predictive factors for spontaneous regression in lumbar disc herniation.",
@@ -3269,6 +3778,15 @@
 		"medline": true,
 		"doi": "10.1016/j.ejvs.2023.08.065"
 	},
+	"37704028": {
+		"authors": "Kolovich GP, et al",
+		"title": "Proximal interphalangeal joint dislocations and fracture-dislocations.",
+		"journal": "J Hand Surg Eur Vol",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1177/17531934231183259"
+	},
 	"37720893": {
 		"authors": "Recker AJ, et al",
 		"title": "Baseball Pitchers who Suffer Latissimus Dorsi and Teres Major Tendon Injuries Have a High Return to Play Rate After Either Operative or Nonoperative Treatment.",
@@ -3277,6 +3795,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1016/j.asmr.2023.100787",
 		"pmcid": "PMC10500456"
+	},
+	"37740902": {
+		"authors": "Juch EEAE, et al",
+		"title": "Growth-related sports injuries among young male professional football players in the Netherlands: a prospective cohort study concerning injury incidence, severity and burden.",
+		"journal": "Sci Med Footb",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1080/24733938.2023.2261399"
 	},
 	"37752011": {
 		"authors": "Mountjoy M, et al",
@@ -3323,6 +3850,15 @@
 		"doi": "10.3390/jcm12196293",
 		"pmcid": "PMC10573283"
 	},
+	"37867759": {
+		"authors": "Ngai ASH, et al",
+		"title": "Fractures in professional footballers: 7-years data from 106 team seasons in the Middle East.",
+		"journal": "Biol Sport",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.5114/biolsport.2023.125588",
+		"pmcid": "PMC10588583"
+	},
 	"37898508": {
 		"authors": "Della Villa F, et al",
 		"title": "Injury mechanisms and situational patterns of severe lower limb muscle injuries in male professional football (soccer) players: a systematic video analysis study on 103 cases.",
@@ -3358,6 +3894,25 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.23736/S0022-4707.23.15418-1"
+	},
+	"37963039": {
+		"authors": "Cavalcanti Kussmaul A, et al",
+		"title": "The Treatment of Closed Finger and Metacarpal Fractures.",
+		"journal": "Dtsch Arztebl Int",
+		"year": "2023",
+		"types": ["Journal Article", "Review", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.3238/arztebl.m2023.0226",
+		"pmcid": "PMC10840131"
+	},
+	"38115872": {
+		"authors": "Diz JBM, et al",
+		"title": "LOW BACK PAIN ESTIMATES IN PROFESSIONAL SOCCER: A SYSTEMATIC REVIEW AND META-ANALYSIS.",
+		"journal": "Acta Ortop Bras",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1590/1413-785220233105e266012",
+		"pmcid": "PMC10726716"
 	},
 	"38147700": {
 		"authors": "Mehta P, et al",
@@ -3395,6 +3950,26 @@
 		"types": ["Journal Article", "Consensus Statement"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2023-107490"
+	},
+	"38353018": {
+		"authors": "Lefèvre N, et al",
+		"title": "Predictors of Early Return to Sport After Surgical Repair of Proximal Hamstring Complex Injuries in Professional Athletes: A Prospective Study.",
+		"journal": "Am J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/03635465231225486",
+		"pmcid": "PMC10943609"
+	},
+	"38383359": {
+		"authors": "Arriaza R, et al",
+		"title": "Prevalence of hip femoroacetabular impingement deformities in high-level (La Liga) male professional football players.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1186/s12891-024-07247-x",
+		"pmcid": "PMC10880309"
 	},
 	"38395699": {
 		"authors": "Magaña-Ramírez M, et al",
@@ -3460,6 +4035,15 @@
 		"medline": true,
 		"doi": "10.1016/j.asjsur.2024.03.091"
 	},
+	"38534061": {
+		"authors": "Thorarinsdottir S, et al",
+		"title": "Groin injuries in women's premier league football in Norway: A two-season prospective cohort study describing clinical and imaging characteristics.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/sms.14611"
+	},
 	"38641923": {
 		"authors": "de Lima LGH, et al",
 		"title": "Comparative analysis of dental trauma in contact and non-contact sports: A systematic review.",
@@ -3468,6 +4052,15 @@
 		"types": ["Systematic Review", "Journal Article", "Comparative Study"],
 		"medline": true,
 		"doi": "10.1111/edt.12959"
+	},
+	"38643395": {
+		"authors": "Schneider KN, et al",
+		"title": "Shoulder dislocations in professional male football (soccer): A retrospective epidemiological analysis of the German Bundesliga from season 2012/2013 until 2022/2023.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1002/ksa.12199"
 	},
 	"38684328": {
 		"authors": "Achenbach L, et al",
@@ -3607,6 +4200,15 @@
 		"doi": "10.3390/jcm13175219",
 		"pmcid": "PMC11395971"
 	},
+	"39315553": {
+		"authors": "Dean B, et al",
+		"title": "Guideline on managing thumb ulnar collateral ligament injuries: the British Society of Surgery for the Hand Evidence for Surgical Treatment (BEST) findings and recommendations.",
+		"journal": "J Hand Surg Eur Vol",
+		"year": "2024",
+		"types": ["Journal Article", "Practice Guideline", "Review"],
+		"medline": true,
+		"doi": "10.1177/17531934241274612"
+	},
 	"39327396": {
 		"authors": "Koslosky EJ, et al",
 		"title": "Upper Extremity Stress Fractures.",
@@ -3670,6 +4272,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true
 	},
+	"39703833": {
+		"authors": "Schneider KN, et al",
+		"title": "Systematic video analysis of shoulder dislocations in professional male football (soccer): Injury mechanisms, situational and kinematic patterns.",
+		"journal": "J Exp Orthop",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1002/jeo2.70121",
+		"pmcid": "PMC11656221"
+	},
 	"39716615": {
 		"authors": "Petersson AH, et al",
 		"title": "No need for subacromial decompression in responders to specific exercise treatment: a 10-year follow-up of a randomized controlled trial.",
@@ -3687,6 +4298,25 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1177/03635465241246122"
+	},
+	"39836468": {
+		"authors": "Goth AP, et al",
+		"title": "Traumatic Anterior Shoulder Dislocation: Epidemiology, Diagnosis, and Treatment.",
+		"journal": "Dtsch Arztebl Int",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.3238/arztebl.m2024.0254",
+		"pmcid": "PMC12439206"
+	},
+	"39968414": {
+		"authors": "Abdel Khalik H, et al",
+		"title": "Management of First-Time Anterior Shoulder Dislocation-A Systematic Review and Meta-analysis: Arthroscopy Association of Canada Position Statement.",
+		"journal": "Orthop J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671251316893",
+		"pmcid": "PMC11833906"
 	},
 	"39995611": {
 		"authors": "Flore Z, et al",
@@ -3789,6 +4419,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.1136/bmjsem-2025-002468",
 		"pmcid": "PMC11969615"
+	},
+	"40486656": {
+		"authors": "Hoveidaei AH, et al",
+		"title": "Stress fracture risk factors in soccer players: A systematic review.",
+		"journal": "Ann Med Surg (Lond)",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/MS9.0000000000003136",
+		"pmcid": "PMC12140768"
 	},
 	"40495722": {
 		"authors": "Marotta N, et al",
@@ -4003,6 +4642,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true
 	},
+	"41132197": {
+		"authors": "Ekstrand J, et al",
+		"title": "Return to play time for the 30 most common injuries in the UEFA Women's Elite Club Injury Study.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2025-002724",
+		"pmcid": "PMC12542716"
+	},
 	"41150491": {
 		"authors": "Ryman Augustsson S, et al",
 		"title": "Training Load, Injuries, and Well-Being in Youth Padel Players: A Cross-Sectional Study.",
@@ -4067,6 +4715,25 @@
 		"types": ["Case Reports", "Journal Article"],
 		"doi": "10.7759/cureus.97420",
 		"pmcid": "PMC12638039"
+	},
+	"41362474": {
+		"authors": "Degener BJ, et al",
+		"title": "Shoulder dislocations in professional male football (soccer) do not negatively affect long-term quantitative and qualitative performance parameters: A retrospective analysis of 30 in-match injuries of the German Bundesliga.",
+		"journal": "J Exp Orthop",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1002/jeo2.70589",
+		"pmcid": "PMC12682226"
+	},
+	"41382133": {
+		"authors": "Zhao W, et al",
+		"title": "Benefits of hip arthroscopy surgery for soccer players: a systematic review and meta-analysis.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
+		"doi": "10.1186/s12891-025-09401-5",
+		"pmcid": "PMC12817735"
 	},
 	"41401258": {
 		"authors": "Ross P, et al",
@@ -4133,6 +4800,15 @@
 		"doi": "10.1177/23259671251395329",
 		"pmcid": "PMC12804664"
 	},
+	"41654031": {
+		"authors": "Fontès D",
+		"title": "Is the \"Rugby Finger\" becoming the \"Soccer Finger\"?",
+		"journal": "Hand Surg Rehabil",
+		"year": "2026",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.hansur.2026.102590"
+	},
 	"41680115": {
 		"authors": "Challoumas D, et al",
 		"title": "Surgical management of internal impingement in overhead athletes: a systematic review.",
@@ -4141,6 +4817,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.5397/cise.2025.01123",
 		"pmcid": "PMC12982881"
+	},
+	"41702794": {
+		"authors": "Beddows TPA, et al",
+		"title": "Prevalence of femoroacetabular impingement syndrome and related hip morphologies, and its developmental dose-response relationship in professional female football players: a multicentre cohort study (PROFE).",
+		"journal": "J Sci Med Sport",
+		"year": "2026",
+		"types": ["Journal Article", "Multicenter Study"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2026.02.001"
 	},
 	"41770460": {
 		"authors": "Yılmaz YC, et al",
@@ -4184,6 +4869,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.1002/ksa.70404"
 	},
+	"42006992": {
+		"authors": "Morland N, et al",
+		"title": "Incidence and risk factors of spondylolysis in youth football: a longitudinal study among male Norwegian players.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2026-003222",
+		"pmcid": "PMC13084936"
+	},
 	"42010296": {
 		"authors": "Aiello F, et al",
 		"title": "Ocular injuries in padel: findings from a survey on frequency, risk factors, and perceptions toward protective eyewear.",
@@ -4222,6 +4916,15 @@
 		"doi": "10.1136/bmjsem-2026-003245",
 		"pmcid": "PMC13141215"
 	},
+	"42106965": {
+		"authors": "Khan HA, et al",
+		"title": "Achilles tendon rupture does not significantly reduce career longevity in professional soccer players compared with matched controls.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article", "Comparative Study"],
+		"medline": true,
+		"doi": "10.1002/ksa.70420"
+	},
 	"42115126": {
 		"authors": "Bloch H, et al",
 		"title": "Concussions in German professional football (soccer) - an epidemiological and etiological analysis over nine consecutive seasons.",
@@ -4239,6 +4942,15 @@
 		"types": ["Letter"],
 		"doi": "10.1016/j.jfo.2026.104898"
 	},
+	"42245381": {
+		"authors": "Boufadel P, et al",
+		"title": "Player Performance, Return-to-Play, and Recurrence Rates After Operative and Nonoperative Treatment for Anterior Shoulder Dislocation in Elite UEFA Professional Soccer Players: A Matched Cohort Analysis From 2010 to 2024.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261445911",
+		"pmcid": "PMC13231038"
+	},
 	"42258915": {
 		"authors": "Schwach M, et al",
 		"title": "Tennis leg: Diagnosis and management - A state-of-the-art review.",
@@ -4247,6 +4959,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1016/j.foot.2026.102267"
+	},
+	"42293039": {
+		"authors": "Uehara F, et al",
+		"title": "Incidence, Anatomic Distribution, and Return to Training After Stress Fractures in Okinawan Athletes.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261447186",
+		"pmcid": "PMC13254415"
 	},
 	"42319275": {
 		"authors": "Encinas R, et al",
@@ -4257,6 +4978,25 @@
 		"medline": true,
 		"doi": "10.5435/JAAOS-D-25-01516"
 	},
+	"42334772": {
+		"authors": "Mergoum AM, et al",
+		"title": "Injury Patterns in Soccer-Induced Maxillofacial Fractures and Ocular Trauma: A Narrative Review.",
+		"journal": "Sports Med Open",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1186/s40798-026-01049-2",
+		"pmcid": "PMC13291293"
+	},
+	"42373867": {
+		"authors": "Zhang H, et al",
+		"title": "Epidemiological Characteristics of Hospitalized Sports-Related Ocular Trauma in China: China Ocular Trauma Study (COTS).",
+		"journal": "J Epidemiol Glob Health",
+		"year": "2026",
+		"types": ["Journal Article", "Multicenter Study"],
+		"medline": true,
+		"doi": "10.1007/s44197-026-00596-x",
+		"pmcid": "PMC13582670"
+	},
 	"42469843": {
 		"authors": "Fernández-Cortiñas AB, et al",
 		"title": "Postoperative outcomes after arthroscopic repair of isolated subscapularis tears: a systematic review and meta-analysis.",
@@ -4266,6 +5006,14 @@
 		"medline": true,
 		"doi": "10.1186/s13018-026-07088-5",
 		"pmcid": "PMC13660073"
+	},
+	"42476509": {
+		"authors": "Mikhail D, et al",
+		"title": "Epidemiology of sports-related retinal injuries in emergency departments.",
+		"journal": "Can J Ophthalmol",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.jcjo.2026.06.022"
 	},
 	"42476539": {
 		"authors": "Balius R, et al",
@@ -4310,6 +5058,16 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1007/s00264-026-06978-x"
 	},
+	"42573533": {
+		"authors": "Van Gastel ML, et al",
+		"title": "Clinical practice on treatment of primary traumatic anterior shoulder dislocation: a multidisciplinary guideline.",
+		"journal": "Acta Orthop",
+		"year": "2026",
+		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
+		"doi": "10.2340/17453674.2026.46434",
+		"pmcid": "PMC13455169"
+	},
 	"42577126": {
 		"authors": "Alanazi F, et al",
 		"title": "Functional outcomes and rehabilitation behaviors following ankle sprain in amateur padel players: a cross-sectional study.",
@@ -4318,6 +5076,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.3389/fmed.2026.1887372",
 		"pmcid": "PMC13453756"
+	},
+	"42582697": {
+		"authors": "Forsythe B, et al",
+		"title": "Achilles Tendon Injuries in Major League Soccer: A 10-year Analysis of Injury Rate, Return to Play, and Performance Metrics.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261449641",
+		"pmcid": "PMC13458101"
 	},
 	"42609059": {
 		"authors": "Tena-Portilla A, et al",

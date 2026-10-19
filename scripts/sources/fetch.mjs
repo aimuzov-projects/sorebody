@@ -9,6 +9,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { format, resolveConfig } from 'prettier'
 import { parse } from 'yaml'
 
 const content = fileURLToPath(new URL('../../src/frontend/content/', import.meta.url))
@@ -69,5 +70,10 @@ for (let i = 0; i < pmids.length; i += BATCH) {
 	await new Promise((resolve) => setTimeout(resolve, PAUSE))
 }
 
-fs.writeFileSync(out, `${JSON.stringify(meta, null, '\t')}\n`)
+// Через prettier, иначе format:check в CI не пропустит файл
+fs.writeFileSync(
+	out,
+	await format(JSON.stringify(meta), { ...(await resolveConfig(out, { editorconfig: true })), filepath: out }),
+)
+
 console.log(`${pmids.length} PMID → ${path.relative(process.cwd(), out)}`)

@@ -7,6 +7,7 @@
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
+	import { recalledSport, rememberSport } from '#frontend/lib/sport-memory.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { attachTip } from '#frontend/lib/tip.ts'
 	import { plural } from '#frontend/lib/plural.ts'
@@ -523,6 +524,7 @@
 		resetFilters()
 		data = next
 		applySportHead(document, next.sport)
+		rememberSport(next.sport.slug)
 
 		// Цвет акцента перетекает сам (global.css), подсветка модели -- тут. Модели ещё нет --
 		// её подсветку поставит onMount по текущему спорту
@@ -545,7 +547,7 @@
 	 * плана -- общий план нового спорта: зоны, которые уже закрыли, сами не открываются. Данные не
 	 * пришли -- обычный переход, тоже без нового шага.
 	 */
-	async function switchSport(target: { slug: string }, section?: string) {
+	async function switchSport(target: { slug: string; href: string }, section?: string) {
 		const home = sport.sports.find((s) => s.slug === target.slug)?.href
 
 		if (!home) return
@@ -557,7 +559,8 @@
 			next = await fetchSport(target.slug)
 		} catch (error) {
 			console.error(error)
-			location.replace(reading ? `/${target.slug}/${reading.slug}/${section ? `#${section}` : ''}` : home)
+			// Из статьи `target.href` -- её страница в выбранном спорте, из заголовка -- его главная
+			location.replace(reading ? `${target.href}${section ? `#${section}` : ''}` : home)
 
 			return
 		}
@@ -593,9 +596,33 @@
 		sportRequests.cancel()
 		sportLoading = false
 
-		if (slug && slug !== sport.slug)
+		if (slug && slug !== sport.slug) {
 			history.replaceState(history.state, '', `${sport.home}${location.search}${location.hash}`)
 
+			// Зоны или статьи из хеша у этого спорта нет: шаг без хеша, а не мёртвая запись
+			if (parseHash().level === 0 && location.hash && !location.hash.startsWith('#tgWebApp'))
+				history.replaceState(history.state, '', `${sport.home}${location.search}`)
+		}
+
+		sync()
+	}
+
+	/**
+	 * Страница вернулась из кеша «Назад» (bfcache) такой, какой её оставили, а спорт с тех пор
+	 * могли выбрать другой, на другой странице: переключаемся на него на месте, без нового шага.
+	 */
+	async function onPageShow(event: PageTransitionEvent) {
+		const chosen = event.persisted && !movementPage ? recalledSport() : null
+		const home = chosen && chosen !== sport.slug ? sport.sports.find((s) => s.slug === chosen)?.href : undefined
+
+		if (!home) return
+
+		const next = await fetchSport(chosen!).catch(() => null)
+
+		if (!next) return
+
+		applySport(next, !!article)
+		history.replaceState(history.state, '', `${home}${location.search}${location.hash}`)
 		sync()
 	}
 
@@ -663,6 +690,7 @@
 
 		sync()
 		window.addEventListener('popstate', onHistory)
+		window.addEventListener('pageshow', onPageShow)
 		// Кнопка «назад» Telegram в Mini App поднимает на шаг так же, как своя «Назад»
 		window.addEventListener(BACK_EVENT, up)
 
@@ -754,6 +782,7 @@
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
 			window.removeEventListener('popstate', onHistory)
+			window.removeEventListener('pageshow', onPageShow)
 			window.removeEventListener(BACK_EVENT, up)
 			clearTimeout(sleepTimer)
 			disposed = true
@@ -1425,7 +1454,7 @@
 		instant={!mounted}
 		{reduceMotion}
 		onback={up}
-		onsport={switchSport}
+		onsport={movementPage ? undefined : switchSport}
 		{footer}
 	/>
 {/if}

@@ -34,6 +34,13 @@
 
 		const section = currentSection(document)
 
+		// Адрес заменяется, и у новой страницы referrer -- свой сайт: стрелка «Назад» (back-link)
+		// решила бы, что пришли с сайта, и ушла бы в поисковик. Пришли извне -- referrer не отдаём
+		if (!document.referrer || new URL(document.referrer).origin !== location.origin)
+			document.head.append(
+				Object.assign(document.createElement('meta'), { name: 'referrer', content: 'no-referrer' }),
+			)
+
 		location.replace(section ? `${target.href}#${section}` : target.href)
 	}
 </script>

@@ -23,8 +23,11 @@
 		instant: boolean
 		reduceMotion: boolean
 		onback: () => void
-		/** «Разбор ‹в …›»: другой спорт выбран прямо в статье, сцена меняет его на месте. */
-		onsport: (sport: { slug: string }, section?: string) => void
+		/**
+		 * «Разбор ‹в …›»: другой спорт выбран прямо в статье, сцена меняет его на месте. Без него
+		 * (страница элемента) -- обычный переход на статью спорта.
+		 */
+		onsport?: (sport: { slug: string; href: string }, section?: string) => void
 		footer?: Snippet
 	}
 
@@ -57,7 +60,9 @@
 			target.replaceChildren()
 
 			// Как выбор спорта в заголовке главной: сцена остаётся, разбор -- с того же раздела
-			const onchoose = (choice: { slug: string }) => onsport(choice, reader && currentSection(reader))
+			const onchoose =
+				onsport &&
+				((choice: { slug: string; href: string }) => onsport(choice, reader && currentSection(reader)))
 
 			return mount(SportSwitch, { target, props: { ...props, onchoose } })
 		})

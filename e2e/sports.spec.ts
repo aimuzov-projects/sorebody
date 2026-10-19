@@ -407,9 +407,12 @@ test('на странице спорта видны только зоны с е�
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 })
 
-test('«Разбор в …» ведёт на статью другого спорта к тому же разделу', async ({ page }) => {
+test('«Разбор в …» ведёт на статью другого спорта к тому же разделу без нового шага', async ({ page }) => {
 	await page.goto('/crossfit/ankle-sprain/')
 	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+
+	const steps = await page.evaluate(() => history.length)
+
 	await page.evaluate(() => document.querySelector('#treatment')?.scrollIntoView())
 	// Фокус без прокрутки: читатель остаётся в разделе «Лечение»
 	await sportButton(page, 'Кроссфит').evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
@@ -418,6 +421,82 @@ test('«Разбор в …» ведёт на статью другого спо
 	await page.keyboard.press('Enter')
 	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/#treatment$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	expect(await page.evaluate(() => history.length)).toBe(steps)
+})
+
+// Из поисковика на статью и смена спорта: адрес заменяется, но стрелка «Назад» всё равно ведёт
+// на главную, а не обратно в поисковик
+test('из поисковика после смены спорта в статье «Назад» ведёт на главную', async ({ page }) => {
+	await page.goto('about:blank')
+	await page.goto('/football/orofacial-trauma/', { referer: 'https://www.google.com/' })
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Футбол').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+	await page.locator('[data-back]').click()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('.index__title--home')).toBeVisible()
+})
+
+// На странице элемента своей сцены спорта нет: «Разбор» в её статье -- обычный переход на статью
+// спорта, а «Назад» возвращает к элементу его спорта
+test('«Разбор в …» в статье на странице элемента ведёт на статью спорта', async ({ page }) => {
+	await page.goto('/crossfit/elements/box-jump/')
+	await page.locator('.zone__item, .index__item', { hasText: 'Растяжение связок голеностопа' }).first().click()
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Падел' }).click()
+	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/crossfit\/elements\/box-jump\/$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+})
+
+// Выбор спорта переживает уход на другую страницу: «Назад» к шагам главной, сделанным до смены
+// спорта, открывает их в выбранном, даже если браузер грузит главную заново, а не из кеша
+// Главная футбола -> статья футбола обычным переходом -> «Разбор» в кроссфите -> «Назад»: главная
+// грузится заново (unload отключает bfcache), и скрипт в head сразу уводит на главную кроссфита
+test('«Назад» на главную после смены спорта на другой странице открывает выбранный спорт', async ({ page }) => {
+	await page.goto('/football/')
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/football/orofacial-trauma/')
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Футбол').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
+})
+
+test('после ухода на другую страницу «Назад» открывает прошлые шаги в выбранном спорте', async ({ page }) => {
+	await page.goto('/football/')
+	await page.locator('.index__zone', { hasText: 'Голова' }).click()
+	await page.locator('.zone .zone__item', { hasText: 'Травмы лица' }).click()
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	// Обработчик unload отключает bfcache: главная при «Назад» грузится заново
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/about/')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#zone=head:\d$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('.zone__title')).toHaveText('Голова')
 })
 
 test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {

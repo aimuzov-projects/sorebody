@@ -9,11 +9,10 @@
  * шаг тем же путём, что и своя кнопка «Назад», которую в Mini App прячет атрибут `data-telegram`.
  * Со сцены движения шаг вверх -- главная.
  *
- * Акцент на странице спорта остаётся цветом спорта: он знак спорта на всём сайте, цвет ссылок
- * Telegram его не заменяет. Без спорта акцент -- цвет текста из темы Telegram, а градиента бренда
- * в ссылках и значках нет (styles/global.css): её контраст проверен на фонах сайта, не клиента.
+ * Какие цвета берутся из темы Telegram -- lib/telegram-theme.ts.
  */
 import { BACK_EVENT, STEP_EVENT } from './telegram-events.ts'
+import { telegramThemeVars } from './telegram-theme.ts'
 
 type WebApp = {
 	initData: string
@@ -31,14 +30,7 @@ function init(app: WebApp | undefined) {
 	if (!app?.initData) return
 
 	const root = document.documentElement
-	const theme = app.themeParams
-	const vars: Record<string, string | undefined> = {
-		'--bg': theme.bg_color,
-		'--fg': theme.text_color,
-		'--muted': theme.hint_color,
-		'--accent': root.dataset.sport === undefined ? theme.text_color : undefined,
-		'--surface': theme.secondary_bg_color,
-	}
+	const vars = telegramThemeVars(app.themeParams, root.dataset.sport !== undefined)
 
 	for (const [name, value] of Object.entries(vars)) if (value) root.style.setProperty(name, value)
 

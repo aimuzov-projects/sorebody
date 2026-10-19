@@ -1,7 +1,9 @@
 ---
 import { createHash } from 'node:crypto'
 
-import ChangelogLink from '#frontend/components/changelog-link.astro'
+import { History, Info } from 'lucide-static'
+
+import CornerLink from '#frontend/components/corner-link.astro'
 import Footer from '#frontend/components/footer.astro'
 import ThemeToggle from '#frontend/components/theme-toggle.astro'
 import '#frontend/styles/global.css'
@@ -113,14 +115,17 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 				</defs>
 			</svg>
 		)}
-		<ChangelogLink />
+		<CornerLink href="/about/" label="О справочнике" icon={Info} place={2} />
+		<CornerLink href="/changelog" label="Что нового" icon={History} place={1} />
 		<ThemeToggle />
 		<slot />
 		{!bare && <Footer />}
 		<script>
 			import '#frontend/lib/telegram.ts'
+			import { initCornerLinks } from '#frontend/lib/corner-tip.ts'
 			import { initThemeToggle } from '#frontend/lib/theme.ts'
 
+			initCornerLinks()
 			initThemeToggle()
 		</script>
 	</body>

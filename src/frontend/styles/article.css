@@ -605,6 +605,75 @@
 		color: var(--accent);
 	}
 
+	/* Источники свёрнуты: в заголовке число и из чего список состоит, шеврон справа */
+	&__sources {
+		scroll-margin-top: var(--header-clear);
+	}
+
+	&__sources-summary {
+		cursor: pointer;
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		border-radius: 12px;
+		list-style: none;
+
+		&::-webkit-details-marker {
+			display: none;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 6px;
+		}
+	}
+
+	&__sources-head {
+		display: grid;
+		gap: 2px;
+	}
+
+	&__sources-title {
+		margin: 0;
+		transition: color 0.3s var(--article-ease);
+	}
+
+	&__sources-summary:hover &__sources-title {
+		color: var(--accent);
+	}
+
+	&__sources-count {
+		font-weight: 500;
+		color: var(--muted);
+	}
+
+	&__sources-note {
+		font-size: 14px;
+		color: var(--muted);
+	}
+
+	&__sources-chevron {
+		display: inline-flex;
+		flex: none;
+		width: 24px;
+		height: 24px;
+		color: var(--muted);
+		transition: rotate 0.3s var(--article-ease);
+
+		@media (--reduced-motion) {
+			transition: none;
+		}
+	}
+
+	&__sources[open] &__sources-chevron {
+		rotate: 180deg;
+	}
+
+	&__sources[open] &__source-list {
+		margin-top: 20px;
+	}
+
 	&__source-list {
 		display: grid;
 		gap: 14px;
@@ -968,10 +1037,31 @@
 	}
 }
 
-/* Маленький заголовок в шапке: одна строка, остальное -- многоточием */
-.article-bar__title {
-	overflow: hidden;
+/* За стрелкой одна ячейка на двоих: вверху страницы в ней логотип, по мере прокрутки он гаснет,
+   а маленький заголовок проявляется на его месте. Слои друг над другом, поэтому смена ничего
+   не сдвигает */
+.article-bar__lead {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	flex: 1;
+	align-items: center;
+	min-width: 0;
+
+	& > * {
+		grid-area: 1 / 1;
+	}
+}
+
+.article-bar__logo {
+	display: flex;
+	justify-self: start;
+}
+
+/* Маленький заголовок в шапке: одна строка, остальное -- многоточием. Он лежит поверх логотипа
+   и даже прозрачным перехватывал бы клики по нему */
+.article-bar__title {
+	pointer-events: none;
+	overflow: hidden;
 	min-width: 0;
 	margin: 0;
 	font-size: 17px;
@@ -1011,6 +1101,23 @@
 	}
 }
 
+/* Логотип уходит чуть раньше, чем проявляется заголовок, и в конце прячется совсем: погасшая
+   ссылка не ловит ни клик, ни Tab */
+@keyframes article-logo-out {
+	to {
+		transform: translateY(-6px);
+		visibility: hidden;
+		opacity: 0;
+	}
+}
+
+@keyframes article-logo-fade-out {
+	to {
+		visibility: hidden;
+		opacity: 0;
+	}
+}
+
 @supports (animation-timeline: scroll()) {
 	/* :root -- чтобы правило перебило основное, даже если минификатор поставит его выше */
 	@media (prefers-reduced-motion: reduce) {
@@ -1020,6 +1127,10 @@
 
 		:root .article-bar__title {
 			animation-name: article-title-fade-in;
+		}
+
+		:root .article-bar__logo {
+			animation-name: article-logo-fade-out;
 		}
 	}
 	.article__title {
@@ -1040,14 +1151,30 @@
 		animation-timeline: scroll(nearest);
 		animation-range: 80px 160px;
 	}
+
+	.article-bar__logo {
+		/* Тоже только отдельные свойства, причина выше у .article__title */
+		animation-name: article-logo-out;
+		animation-timing-function: linear;
+		animation-fill-mode: both;
+		animation-timeline: scroll(nearest);
+		animation-range: 40px 100px;
+	}
 }
 
 @supports not (animation-timeline: scroll()) {
 	@media (prefers-reduced-motion: reduce) {
 		:root .article__title,
-		:root .article-bar__title {
+		:root .article-bar__title,
+		:root .article-bar__logo {
 			transform: none;
 		}
+	}
+
+	.article-bar__logo {
+		transform: translateY(calc(var(--logo-out, 0) * -6px));
+		visibility: var(--logo-visibility, visible);
+		opacity: calc(1 - var(--logo-out, 0));
 	}
 	.article__title {
 		transform: translateY(calc(var(--title-out, 0) * -24px));
@@ -1088,5 +1215,22 @@
 	from {
 		transform: translate(-50%, 4px);
 		opacity: 0;
+	}
+}
+
+/* На печати источники открыты, даже если beforeprint не сработал (печать из меню без JS):
+   содержимое свёрнутого details показываем через ::details-content, где он есть */
+@media print {
+	.article__sources::details-content {
+		content-visibility: visible;
+		display: contents;
+	}
+
+	.article__source-list {
+		margin-top: 20px;
+	}
+
+	.article__sources-chevron {
+		display: none;
 	}
 }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
 import { injurySchema } from './injury-schema.ts'
-import { citeKey, footnotes, guidelineSite, sourceHref, sourceSite } from './sources.ts'
+import { citeKey, footnotes, guidelineSite, sourceHref, sourceSite, sourcesSummary } from './sources.ts'
 
 const MINZDRAV = 'https://cr.minzdrav.gov.ru/preview-cr/667_1'
 
@@ -59,4 +59,21 @@ test('schema rejects a source with both pmid and url', () => {
 	const sources = [{ pmid: '35278328', url: MINZDRAV, label: 'Смесь' }]
 
 	assert.equal(injurySchema.safeParse({ ...article, sources }).success, false)
+})
+
+test('sourcesSummary counts PubMed papers and guidelines with Russian plural forms', () => {
+	const papers = (n: number) => Array.from({ length: n }, (_, i) => ({ pmid: String(10000000 + i), label: 'x' }))
+	const guide = { url: MINZDRAV, label: 'КР' }
+
+	assert.equal(sourcesSummary(papers(1)), '1 работа из PubMed')
+	assert.equal(sourcesSummary(papers(3)), '3 работы из PubMed')
+	assert.equal(sourcesSummary(papers(11)), '11 работ из PubMed')
+	assert.equal(sourcesSummary(papers(21)), '21 работа из PubMed')
+	assert.equal(sourcesSummary([...papers(12), guide]), '12 работ из PubMed и 1 клиническая рекомендация')
+	assert.equal(sourcesSummary([guide, guide]), '2 клинические рекомендации')
+
+	assert.equal(
+		sourcesSummary([...papers(5), guide, guide, guide, guide, guide]),
+		'5 работ из PubMed и 5 клинических рекомендаций',
+	)
 })

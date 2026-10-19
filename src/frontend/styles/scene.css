@@ -32,6 +32,7 @@
 	--fg: var(--a-fg);
 	--muted: var(--a-fg2);
 	--accent: var(--a-blue);
+	--on-accent: var(--a-on-blue);
 	--surface: var(--a-fill);
 	--danger: var(--a-red);
 

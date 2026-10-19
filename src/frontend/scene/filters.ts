@@ -57,3 +57,12 @@ export function activeFilterChips(
 export function zoneEntries(zones: Zone[], match: (injury: Injury) => boolean) {
 	return zones.flatMap((zone) => zone.injuries.filter(match).map((injury) => ({ zone, injury })))
 }
+
+/**
+ * Зона, которую можно подсветить на модели: под фильтры в ней осталась хотя бы одна травма.
+ * Пустую зону не выделяем ни с её строки, ни с точки: иначе модель показывает место, где
+ * смотреть нечего.
+ */
+export function litZone<Z>(zone: Z | null, counts: ReadonlyMap<Z, number>): Z | null {
+	return zone && (counts.get(zone) ?? 0) > 0 ? zone : null
+}

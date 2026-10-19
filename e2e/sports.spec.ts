@@ -499,6 +499,24 @@ test('после ухода на другую страницу «Назад» о
 	await expect(page.locator('.zone__title')).toHaveText('Голова')
 })
 
+// Шаг главной падела с голенью, а у кроссфита её нет: скрипт в head уводит на главную кроссфита
+// с этим хешем, та отбрасывает его и показывает общий план с постером
+test('«Назад» на шаг с зоной, которой нет у выбранного спорта, открывает его общий план', async ({ page }) => {
+	await page.goto('/padel/#zone=shin:0')
+	await expect(page.locator('.zone__title')).toHaveText('Голень')
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/padel/ankle-sprain/')
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Падел').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/ankle-sprain\/$/)
+
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('.body3d__poster-image')).toBeVisible()
+})
+
 test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {
 	await page.goto('/crossfit/distal-biceps-rupture/')
 	await expect(page.locator('.article__sport')).toHaveText('Разбор в кроссфите')

@@ -6,12 +6,12 @@
  * - не в Telegram Mini App (флаг ставит base.astro раньше): в `#tgWebAppData` id, имя
  *   и подпись, а вебвизор пишет адрес целиком. Хеш не трогаем, его читает SDK Telegram;
  * - не на главной, которая из `<head>` уходит на главную выбранного спорта (lib/sport-memory.ts):
- *   иначе один визит дал бы два хита.
+ *   иначе один визит дал бы два хита. Уход не случился -- счётчик включается по SPORT_STAY.
  * Появится в kit условие запуска -- вернуться на его компонент.
  */
 import { createHash } from 'node:crypto'
 
-import { SPORT_LEAVING } from '#frontend/lib/sport-memory.ts'
+import { SPORT_LEAVING, SPORT_STAY } from '#frontend/lib/sport-memory.ts'
 
 type Props = {
 	/** Номер счётчика в Яндекс Метрике. */
@@ -74,14 +74,18 @@ const options = {
 const where = [
 	host && `location.hostname === ${JSON.stringify(host)}`,
 	"!document.documentElement.hasAttribute('data-telegram')",
-	`!document.documentElement.hasAttribute(${JSON.stringify(SPORT_LEAVING)})`,
 ]
 	.filter(Boolean)
 	.join(' && ')
 const code = [
 	`if (${where}) {`,
+	'var start = function () {',
 	`;(${loader})(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=${id}', 'ym')`,
 	`ym(${id}, 'init', Object.assign(${JSON.stringify(options)}, { referrer: document.referrer, url: location.href }))`,
+	'}',
+	`if (document.documentElement.hasAttribute(${JSON.stringify(SPORT_LEAVING)}))`,
+	`document.addEventListener(${JSON.stringify(SPORT_STAY)}, start, { once: true })`,
+	'else start()',
 	'}',
 ].join('\n')
 

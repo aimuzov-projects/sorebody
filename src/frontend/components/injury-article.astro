@@ -24,7 +24,7 @@ import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from
 import { lensSports, type Injury, type Lens } from '#frontend/lib/catalog.ts'
 import { injuryPage } from '#frontend/lib/injury-page.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
-import { sourceHref, sourceSite } from '#frontend/lib/sources.ts'
+import { sourceDetails } from '#frontend/lib/source-details.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
@@ -284,15 +284,33 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 					Источники
 				</h2>
 				<ol class="article__source-list">
-					{sources.map((s) => (
-						<li class="article__source">
-							{s.label} ·{' '}
-							<a class="article__source-link" href={sourceHref(s)}>
-								{sourceSite(s)}
-								<span class="article__source-icon" aria-hidden="true" set:html={ExternalLink} />
-							</a>
-						</li>
-					))}
+					{sources.map((s) => {
+						const { citation, type, links } = sourceDetails(s)
+
+						return (
+							<li class="article__source">
+								<span class="article__source-label">{s.label}</span>
+								{citation && (
+									<span class="article__source-citation" lang="en">
+										{citation}
+									</span>
+								)}
+								<span class="article__source-links">
+									{type && <span class="article__source-type">{type}</span>}
+									{links.map((link) => (
+										<a class="article__source-link" href={link.href}>
+											{link.label}
+											<span
+												class="article__source-icon"
+												aria-hidden="true"
+												set:html={ExternalLink}
+											/>
+										</a>
+									))}
+								</span>
+							</li>
+						)
+					})}
 				</ol>
 			</section>
 		</footer>

@@ -1,0 +1,4072 @@
+{
+	"10434080": {
+		"authors": "Noonan TJ, et al",
+		"title": "Muscle strain injury: diagnosis and treatment.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "1999",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5435/00124635-199907000-00006"
+	},
+	"10959926": {
+		"authors": "Fredericson M, et al",
+		"title": "Hip abductor weakness in distance runners with iliotibial band syndrome.",
+		"journal": "Clin J Sport Med",
+		"year": "2000",
+		"types": ["Journal Article"],
+		"doi": "10.1097/00042752-200007000-00004"
+	},
+	"11476532": {
+		"authors": "Beiner JM, et al",
+		"title": "Muscle contusion injuries: current treatment options.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2001",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5435/00124635-200107000-00002"
+	},
+	"12091669": {
+		"authors": "Delgado GJ, et al",
+		"title": "Tennis leg: clinical US study of 141 patients and anatomic investigation of four cadavers with MR imaging and US.",
+		"journal": "Radiology",
+		"year": "2002",
+		"types": ["Journal Article"],
+		"doi": "10.1148/radiol.2241011067"
+	},
+	"12394459": {
+		"authors": "Beiner JM, et al",
+		"title": "Muscle contusion injury and myositis ossificans traumatica.",
+		"journal": "Clin Orthop Relat Res",
+		"year": "2002",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/00003086-200210001-00013"
+	},
+	"12535413": {
+		"authors": "McCormack K, et al",
+		"title": "Laparoscopic techniques versus open techniques for inguinal hernia repair.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2003",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1002/14651858.CD001785",
+		"pmcid": "PMC8407507"
+	},
+	"12688829": {
+		"authors": "Petrigliano FA, et al",
+		"title": "Orbital fractures in sport: a review.",
+		"journal": "Sports Med",
+		"year": "2003",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2165/00007256-200333040-00005"
+	},
+	"12907487": {
+		"authors": "Pengel LH, et al",
+		"title": "Acute low back pain: systematic review of its prognosis.",
+		"journal": "BMJ",
+		"year": "2003",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.1136/bmj.327.7410.323",
+		"pmcid": "PMC169642"
+	},
+	"15508543": {
+		"authors": "Kucik CJ, et al",
+		"title": "Management of acute nasal fractures.",
+		"journal": "Am Fam Physician",
+		"year": "2004",
+		"types": ["Journal Article", "Review"]
+	},
+	"15562161": {
+		"authors": "Andersen TE, et al",
+		"title": "Mechanisms of head injuries in elite football.",
+		"journal": "Br J Sports Med",
+		"year": "2004",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsm.2003.009357",
+		"pmcid": "PMC1724962"
+	},
+	"15851777": {
+		"authors": "Järvinen TA, et al",
+		"title": "Muscle injuries: biology and treatment.",
+		"journal": "Am J Sports Med",
+		"year": "2005",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"doi": "10.1177/0363546505274714"
+	},
+	"16882889": {
+		"authors": "Bahr R, et al",
+		"title": "Surgical treatment compared with eccentric training for patellar tendinopathy (Jumper's Knee). A randomized, controlled trial.",
+		"journal": "J Bone Joint Surg Am",
+		"year": "2006",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Randomized Controlled Trial",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"doi": "10.2106/JBJS.E.01181"
+	},
+	"17012266": {
+		"authors": "Bisset L, et al",
+		"title": "Mobilisation with movement and exercise, corticosteroid injection, or wait and see for tennis elbow: randomised trial.",
+		"journal": "BMJ",
+		"year": "2006",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Randomized Controlled Trial",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"doi": "10.1136/bmj.38961.584653.AE",
+		"pmcid": "PMC1633771"
+	},
+	"17016112": {
+		"authors": "Aronen JG, et al",
+		"title": "Quadriceps contusions: clinical results of immediate immobilization in 120 degrees of knee flexion.",
+		"journal": "Clin J Sport Med",
+		"year": "2006",
+		"types": ["Journal Article"],
+		"doi": "10.1097/01.jsm.0000244605.34283.94"
+	},
+	"17135950": {
+		"authors": "Giannotti BF, et al",
+		"title": "The non-surgical management of isolated medial collateral ligament injuries of the knee.",
+		"journal": "Sports Med Arthrosc Rev",
+		"year": "2006",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/01.jsa.0000212307.54947.e4"
+	},
+	"17307888": {
+		"authors": "Silbernagel KG, et al",
+		"title": "Continued sports activity, using a pain-monitoring model, during rehabilitation in patients with Achilles tendinopathy: a randomized controlled study.",
+		"journal": "Am J Sports Med",
+		"year": "2007",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1177/0363546506298279"
+	},
+	"17414993": {
+		"authors": "Fredericson M, et al",
+		"title": "Stress fractures in athletes.",
+		"journal": "Top Magn Reson Imaging",
+		"year": "2006",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/RMR.0b013e3180421c8c"
+	},
+	"17443501": {
+		"authors": "Kerkhoffs GM, et al",
+		"title": "Surgical versus conservative treatment for acute injuries of the lateral ligament complex of the ankle in adults.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2007",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1002/14651858.CD000380.pub2"
+	},
+	"17538084": {
+		"authors": "Peul WC, et al",
+		"title": "Surgery versus prolonged conservative treatment for sciatica.",
+		"journal": "N Engl J Med",
+		"year": "2007",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Multicenter Study",
+			"Randomized Controlled Trial",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"doi": "10.1056/NEJMoa064039"
+	},
+	"18059999": {
+		"authors": "Beam JW",
+		"title": "Management of superficial to partial-thickness wounds.",
+		"journal": "J Athl Train",
+		"year": "2007",
+		"types": ["Journal Article"],
+		"pmcid": "PMC1978464"
+	},
+	"19005354": {
+		"authors": "O'Connor FG, et al",
+		"title": "Return to physical activity after exertional rhabdomyolysis.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2008",
+		"types": ["Case Reports", "Journal Article", "Review"],
+		"doi": "10.1249/JSR.0b013e31818f0317"
+	},
+	"19030138": {
+		"authors": "Beam JW",
+		"title": "Occlusive dressings and the healing of standardized abrasions.",
+		"journal": "J Athl Train",
+		"year": "2008",
+		"types": ["Comparative Study", "Journal Article"],
+		"doi": "10.4085/1062-6050-43.6.600",
+		"pmcid": "PMC2582552"
+	},
+	"19589822": {
+		"authors": "Hupperets MD, et al",
+		"title": "Effect of unsupervised home based proprioceptive training on recurrences of ankle sprain: randomised controlled trial.",
+		"journal": "BMJ",
+		"year": "2009",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bmj.b2684",
+		"pmcid": "PMC2714677"
+	},
+	"19945984": {
+		"authors": "Werner J, et al",
+		"title": "UEFA injury study: a prospective study of hip and groin injuries in professional football over seven consecutive seasons.",
+		"journal": "Br J Sports Med",
+		"year": "2009",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsm.2009.066944"
+	},
+	"20071918": {
+		"authors": "Reehal P",
+		"title": "Facial injury in sport.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2010",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1249/JSR.0b013e3181cd2c04"
+	},
+	"20439679": {
+		"authors": "Wijdicks CA, et al",
+		"title": "Injuries to the medial collateral ligament and associated medial structures of the knee.",
+		"journal": "J Bone Joint Surg Am",
+		"year": "2010",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"doi": "10.2106/JBJS.I.01229"
+	},
+	"20532869": {
+		"authors": "Waldén M, et al",
+		"title": "Anterior cruciate ligament injury in elite football: a prospective three-cohort study.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2011",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1007/s00167-010-1170-9"
+	},
+	"20556780": {
+		"authors": "Dahm KT, et al",
+		"title": "Advice to rest in bed versus advice to stay active for acute low-back pain and sciatica.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2010",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1002/14651858.CD007612.pub2",
+		"pmcid": "PMC12161166"
+	},
+	"20675643": {
+		"authors": "Chiodo CP, et al",
+		"title": "Diagnosis and treatment of acute Achilles tendon rupture.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2010",
+		"types": ["Comment", "Journal Article", "Practice Guideline"],
+		"doi": "10.5435/00124635-201008000-00007"
+	},
+	"20730874": {
+		"authors": "Alpers JP, et al",
+		"title": "Natural history of exertional rhabdomyolysis: a population-based analysis.",
+		"journal": "Muscle Nerve",
+		"year": "2010",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Research Support, N.I.H., Extramural",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"doi": "10.1002/mus.21740"
+	},
+	"20807388": {
+		"authors": "Ekstrand J, et al",
+		"title": "Stress fractures in elite male football players.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2012",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1111/j.1600-0838.2010.01171.x"
+	},
+	"21084657": {
+		"authors": "Silbernagel KG, et al",
+		"title": "The majority of patients with Achilles tendinopathy recover fully when treated with exercise alone: a 5-year follow-up.",
+		"journal": "Am J Sports Med",
+		"year": "2011",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1177/0363546510384789"
+	},
+	"21335353": {
+		"authors": "Ekstrand J, et al",
+		"title": "Epidemiology of muscle injuries in professional football (soccer).",
+		"journal": "Am J Sports Med",
+		"year": "2011",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1177/0363546510395879"
+	},
+	"21435164": {
+		"authors": "Patijn J, et al",
+		"title": "Meralgia Paresthetica.",
+		"journal": "Pain Pract",
+		"year": "2011",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1111/j.1533-2500.2011.00458.x"
+	},
+	"21571657": {
+		"authors": "Nakata W, et al",
+		"title": "Biceps pulley: normal anatomy and associated lesions at MR arthrography.",
+		"journal": "Radiographics",
+		"year": "2011",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1148/rg.313105507"
+	},
+	"21825112": {
+		"authors": "Petersen J, et al",
+		"title": "Preventive effect of eccentric training on acute hamstring injuries in men's soccer: a cluster-randomized controlled trial.",
+		"journal": "Am J Sports Med",
+		"year": "2011",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1177/0363546511419277"
+	},
+	"21926076": {
+		"authors": "de Jonge S, et al",
+		"title": "Incidence of midportion Achilles tendinopathy in the general population.",
+		"journal": "Br J Sports Med",
+		"year": "2011",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2011-090342"
+	},
+	"22035890": {
+		"authors": "Tsai WC, et al",
+		"title": "Fluoroquinolone-associated tendinopathy.",
+		"journal": "Chang Gung Med J",
+		"year": "2011",
+		"types": ["Journal Article", "Review"]
+	},
+	"22134205": {
+		"authors": "Strauss EJ, et al",
+		"title": "Iliotibial band syndrome: evaluation and management.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2011",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5435/00124635-201112000-00003"
+	},
+	"22144005": {
+		"authors": "Ekstrand J, et al",
+		"title": "Hamstring muscle injuries in professional football: the correlation of MRI findings with return to play.",
+		"journal": "Br J Sports Med",
+		"year": "2012",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2011-090155"
+	},
+	"22349588": {
+		"authors": "Holmgren T, et al",
+		"title": "Effect of specific exercise strategy on need for surgery in patients with subacromial impingement syndrome: randomised controlled study.",
+		"journal": "BMJ",
+		"year": "2012",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bmj.e787",
+		"pmcid": "PMC3282676"
+	},
+	"22956165": {
+		"authors": "Roche AJ, et al",
+		"title": "Treatment and return to sport following a Jones fracture of the fifth metatarsal: a systematic review.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2013",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s00167-012-2138-8"
+	},
+	"22994651": {
+		"authors": "van der Worp MP, et al",
+		"title": "Iliotibial band syndrome in runners: a systematic review.",
+		"journal": "Sports Med",
+		"year": "2012",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.2165/11635400-000000000-00000"
+	},
+	"23220802": {
+		"authors": "Scaia V, et al",
+		"title": "The pain provocation-based straight leg raise test for diagnosis of lumbar disc herniation, lumbar radiculopathy, and/or sciatica: a systematic review of clinical utility.",
+		"journal": "J Back Musculoskelet Rehabil",
+		"year": "2012",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3233/BMR-2012-0339"
+	},
+	"23232069": {
+		"authors": "Nunes GS, et al",
+		"title": "Clinical test for diagnosis of patellofemoral pain syndrome: Systematic review with meta-analysis.",
+		"journal": "Phys Ther Sport",
+		"year": "2013",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1016/j.ptsp.2012.11.003"
+	},
+	"23235604": {
+		"authors": "Khalil N, et al",
+		"title": "Treatment for meralgia paraesthetica.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2012",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1002/14651858.CD004159.pub3",
+		"pmcid": "PMC7197425"
+	},
+	"23348605": {
+		"authors": "Nilsson M, et al",
+		"title": "Head and neck injuries in professional soccer.",
+		"journal": "Clin J Sport Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1097/JSM.0b013e31827ee6f8"
+	},
+	"23385272": {
+		"authors": "Coombes BK, et al",
+		"title": "Effect of corticosteroid injection, physiotherapy, or both on clinical outcomes in patients with unilateral lateral epicondylalgia: a randomized controlled trial.",
+		"journal": "JAMA",
+		"year": "2013",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1001/jama.2013.129"
+	},
+	"23396898": {
+		"authors": "Flecca D, et al",
+		"title": "US evaluation and diagnosis of rupture of the medial head of the gastrocnemius (tennis leg).",
+		"journal": "J Ultrasound",
+		"year": "2007",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.jus.2007.09.007",
+		"pmcid": "PMC3553076"
+	},
+	"23467966": {
+		"authors": "Ekstrand J, et al",
+		"title": "Fifth metatarsal fractures among male professional footballers: a potential career-ending disease.",
+		"journal": "Br J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2012-092096"
+	},
+	"23522512": {
+		"authors": "Trojian TH",
+		"title": "Muscle contusion (thigh).",
+		"journal": "Clin Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.csm.2012.12.009"
+	},
+	"23548453": {
+		"authors": "Hutchison AM, et al",
+		"title": "What is the best clinical test for Achilles tendinopathy?",
+		"journal": "Foot Ankle Surg",
+		"year": "2013",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.fas.2012.12.006"
+	},
+	"23624324": {
+		"authors": "Lundblad M, et al",
+		"title": "The UEFA injury study: 11-year data concerning 346 MCL injuries and time to return to play.",
+		"journal": "Br J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2013-092305"
+	},
+	"23628788": {
+		"authors": "Snoeker BA, et al",
+		"title": "Risk factors for meniscal tears: a systematic review including meta-analysis.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2013",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.2519/jospt.2013.4295"
+	},
+	"23770660": {
+		"authors": "Gajhede-Knudsen M, et al",
+		"title": "Recurrence of Achilles tendon injuries in elite male football players is more common after early return to play: an 11-year follow-up of the UEFA Champions League injury study.",
+		"journal": "Br J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2013-092271"
+	},
+	"23813486": {
+		"authors": "Waldén M, et al",
+		"title": "Time-trends and circumstances surrounding ankle injuries in men's professional football: an 11-year follow-up of the UEFA Champions League injury study.",
+		"journal": "Br J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2013-092223"
+	},
+	"23851296": {
+		"authors": "Bengtsson H, et al",
+		"title": "Muscle injury rates in professional football increase with fixture congestion: an 11-year follow-up of the UEFA Champions League injury study.",
+		"journal": "Br J Sports Med",
+		"year": "2013",
+		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2013-092383"
+	},
+	"24065456": {
+		"authors": "Lenza M, et al",
+		"title": "Magnetic resonance imaging, magnetic resonance arthrography and ultrasonography for assessing rotator cuff tears in people with shoulder pain for whom surgery is being considered.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2013",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Meta-Analysis",
+			"Research Support, Non-U.S. Gov't",
+			"Systematic Review"
+		],
+		"doi": "10.1002/14651858.CD009020.pub2",
+		"pmcid": "PMC6464715"
+	},
+	"24276294": {
+		"authors": "Hak PT, et al",
+		"title": "The nature and prevalence of injury during CrossFit training.",
+		"journal": "J Strength Cond Res",
+		"year": "2013",
+		"types": ["Journal Article"],
+		"doi": "10.1519/JSC.0000000000000318"
+	},
+	"24570615": {
+		"authors": "Tatar Y, et al",
+		"title": "The effectiveness of shin guards used by football players.",
+		"journal": "J Sports Sci Med",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"pmcid": "PMC3918547"
+	},
+	"24614420": {
+		"authors": "Farrar TA, et al",
+		"title": "Venous thoracic outlet syndrome: approach to diagnosis and treatment with focus on affected athletes.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2014",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1249/JSR.0000000000000035"
+	},
+	"24673666": {
+		"authors": "Carpenter CR, et al",
+		"title": "Adult scaphoid fracture.",
+		"journal": "Acad Emerg Med",
+		"year": "2014",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1111/acem.12317"
+	},
+	"24700135": {
+		"authors": "Huisstede BM, et al",
+		"title": "Consensus on a multidisciplinary treatment guideline for de Quervain disease: results from the European HANDGUIDE study.",
+		"journal": "Phys Ther",
+		"year": "2014",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.2522/ptj.20130069"
+	},
+	"24768732": {
+		"authors": "Fardon DF, et al",
+		"title": "Lumbar disc nomenclature: version 2.0: Recommendations of the combined task forces of the North American Spine Society, the American Society of Spine Radiology and the American Society of Neuroradiology.",
+		"journal": "Spine J",
+		"year": "2014",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.spinee.2014.04.022"
+	},
+	"24784885": {
+		"authors": "Hallén A, et al",
+		"title": "Return to play following muscle injuries in professional footballers.",
+		"journal": "J Sports Sci",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"doi": "10.1080/02640414.2014.905695"
+	},
+	"24847788": {
+		"authors": "Diercks R, et al",
+		"title": "Guideline for diagnosis and treatment of subacromial pain syndrome: a multidisciplinary review by the Dutch Orthopaedic Association.",
+		"journal": "Acta Orthop",
+		"year": "2014",
+		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't", "Review"],
+		"doi": "10.3109/17453674.2014.920991",
+		"pmcid": "PMC4062801"
+	},
+	"24982707": {
+		"authors": "Tietze DC, et al",
+		"title": "Exertional rhabdomyolysis in the athlete: a clinical review.",
+		"journal": "Sports Health",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1941738114523544",
+		"pmcid": "PMC4065559"
+	},
+	"25035175": {
+		"authors": "Nawabi DH, et al",
+		"title": "Return to play after lateral meniscectomy compared with medial meniscectomy in elite professional soccer players.",
+		"journal": "Am J Sports Med",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"doi": "10.1177/0363546514540271"
+	},
+	"25157180": {
+		"authors": "Ardern CL, et al",
+		"title": "Fifty-five per cent return to competitive sport following anterior cruciate ligament reconstruction surgery: an updated systematic review and meta-analysis including aspects of physical functioning and contextual factors.",
+		"journal": "Br J Sports Med",
+		"year": "2014",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2013-093398"
+	},
+	"25280620": {
+		"authors": "Haley CA, et al",
+		"title": "Pectoralis major injuries: evaluation and treatment.",
+		"journal": "Clin Sports Med",
+		"year": "2014",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.csm.2014.06.005"
+	},
+	"25289361": {
+		"authors": "Goldenberg DC, et al",
+		"title": "Soccer-related Facial Trauma: Multicenter Experience in 2 Brazilian University Hospitals.",
+		"journal": "Plast Reconstr Surg Glob Open",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"doi": "10.1097/GOX.0000000000000129",
+		"pmcid": "PMC4174240"
+	},
+	"25384502": {
+		"authors": "van der Made AD, et al",
+		"title": "Outcome After Surgical Repair of Proximal Hamstring Avulsions: A Systematic Review.",
+		"journal": "Am J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/0363546514555327"
+	},
+	"25430861": {
+		"authors": "Brinjikji W, et al",
+		"title": "Systematic literature review of imaging features of spinal degeneration in asymptomatic populations.",
+		"journal": "AJNR Am J Neuroradiol",
+		"year": "2015",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural", "Systematic Review"],
+		"doi": "10.3174/ajnr.A4173",
+		"pmcid": "PMC4464797"
+	},
+	"25588823": {
+		"authors": "Leivo T, et al",
+		"title": "Sports-related eye injuries: the current picture.",
+		"journal": "Acta Ophthalmol",
+		"year": "2015",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1111/aos.12633"
+	},
+	"25636988": {
+		"authors": "Frank JM, et al",
+		"title": "Prevalence of Femoroacetabular Impingement Imaging Findings in Asymptomatic Volunteers: A Systematic Review.",
+		"journal": "Arthroscopy",
+		"year": "2015",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.arthro.2014.11.042"
+	},
+	"25724195": {
+		"authors": "Smith BE, et al",
+		"title": "Special tests for assessing meniscal tears within the knee: a systematic review and meta-analysis.",
+		"journal": "Evid Based Med",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.1136/ebmed-2014-110160"
+	},
+	"25755277": {
+		"authors": "Ueblacker P, et al",
+		"title": "Epidemiological and clinical outcome comparison of indirect ('strain') versus direct ('contusion') anterior and posterior thigh muscle injuries in male elite football players: UEFA Elite League study of 2287 thigh injuries (2001-2013).",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2014-094285"
+	},
+	"25794868": {
+		"authors": "van der Horst N, et al",
+		"title": "The preventive effect of the nordic hamstring exercise on hamstring injuries in amateur soccer players: a randomized controlled trial.",
+		"journal": "Am J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1177/0363546515574057"
+	},
+	"25841163": {
+		"authors": "Casartelli NC, et al",
+		"title": "Return to sport after hip surgery for femoroacetabular impingement: a systematic review.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1136/bjsports-2014-094414"
+	},
+	"25907183": {
+		"authors": "Waldén M, et al",
+		"title": "Three distinct mechanisms predominate in non-contact anterior cruciate ligament injuries in male professional football players: a systematic video analysis of 39 cases.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2014-094573",
+		"pmcid": "PMC4680158"
+	},
+	"25917634": {
+		"authors": "Lu A, et al",
+		"title": "CrossFit-related cervical internal carotid artery dissection.",
+		"journal": "Emerg Radiol",
+		"year": "2015",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1007/s10140-015-1318-5"
+	},
+	"25932875": {
+		"authors": "Roth J, et al",
+		"title": "Management of acute isolated medial and posteromedial instability of the knee.",
+		"journal": "Sports Med Arthrosc Rev",
+		"year": "2015",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/JSA.0000000000000065"
+	},
+	"26018970": {
+		"authors": "Beyer R, et al",
+		"title": "Heavy Slow Resistance Versus Eccentric Training as Treatment for Achilles Tendinopathy: A Randomized Controlled Trial.",
+		"journal": "Am J Sports Med",
+		"year": "2015",
+		"types": ["Comparative Study", "Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1177/0363546515584760"
+	},
+	"26031643": {
+		"authors": "Weir A, et al",
+		"title": "Doha agreement meeting on terminology and definitions in groin pain in athletes.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Consensus Statement", "Journal Article"],
+		"doi": "10.1136/bjsports-2015-094869",
+		"pmcid": "PMC4484366"
+	},
+	"26058528": {
+		"authors": "Andreasen FM, et al",
+		"title": "Diagnosis of acute dental trauma: the importance of standardized documentation: a review.",
+		"journal": "Dent Traumatol",
+		"year": "2015",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1111/edt.12187"
+	},
+	"26316611": {
+		"authors": "Klouche S, et al",
+		"title": "Return to Sport After Rotator Cuff Tear Repair: A Systematic Review and Meta-analysis.",
+		"journal": "Am J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1177/0363546515598995"
+	},
+	"26463119": {
+		"authors": "Lankhorst NE, et al",
+		"title": "Factors that predict a poor outcome 5-8 years after the diagnosis of patellofemoral pain: a multicentre observational analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Multicenter Study", "Observational Study"],
+		"doi": "10.1136/bjsports-2015-094664"
+	},
+	"26464876": {
+		"authors": "Beals C, et al",
+		"title": "A Review of Treatments for Iliotibial Band Syndrome in the Athletic Population.",
+		"journal": "J Sports Med (Hindawi Publ Corp)",
+		"year": "2013",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1155/2013/367169",
+		"pmcid": "PMC4590904"
+	},
+	"26502450": {
+		"authors": "Friedman MV, et al",
+		"title": "Traumatic Tear of the Latissimus Dorsi Myotendinous Junction: Case Report of a CrossFit-Related Injury.",
+		"journal": "Sports Health",
+		"year": "2015",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1177/1941738115595975",
+		"pmcid": "PMC4622375"
+	},
+	"26535325": {
+		"authors": "Weisenthal BM, et al",
+		"title": "Injury Rate and Patterns Among CrossFit Athletes.",
+		"journal": "Orthop J Sports Med",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967114531177",
+		"pmcid": "PMC4555591"
+	},
+	"26573859": {
+		"authors": "Aderem J, et al",
+		"title": "Biomechanical risk factors associated with iliotibial band syndrome in runners: a systematic review.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s12891-015-0808-7",
+		"pmcid": "PMC4647699"
+	},
+	"26614466": {
+		"authors": "Martetschläger F, et al",
+		"title": "Injuries to the Biceps Pulley.",
+		"journal": "Clin Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.csm.2015.08.003"
+	},
+	"26644427": {
+		"authors": "van Leeuwen KD, et al",
+		"title": "Higher body mass index is associated with plantar fasciopathy/'plantar fasciitis': systematic review and meta-analysis of various clinical and imaging risk factors.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2015-094695"
+	},
+	"26672025": {
+		"authors": "Fournier-Farley C, et al",
+		"title": "Determinants of Return to Play After the Nonoperative Management of Hamstring Injuries in Athletes: A Systematic Review.",
+		"journal": "Am J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/0363546515617472"
+	},
+	"26746908": {
+		"authors": "Ekstrand J, et al",
+		"title": "Hamstring injuries have increased by 4% annually in men's professional football, since 2001: a 13-year longitudinal analysis of the UEFA Elite Club injury study.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2015-095359"
+	},
+	"26752509": {
+		"authors": "Steffens D, et al",
+		"title": "Prevention of Low Back Pain: A Systematic Review and Meta-analysis.",
+		"journal": "JAMA Intern Med",
+		"year": "2016",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1001/jamainternmed.2015.7431"
+	},
+	"26779556": {
+		"authors": "Schwartzberg R, et al",
+		"title": "High Prevalence of Superior Labral Tears Diagnosed by MRI in Middle-Aged Patients With Asymptomatic Shoulders.",
+		"journal": "Orthop J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967115623212",
+		"pmcid": "PMC4710128"
+	},
+	"26888072": {
+		"authors": "Pollock N, et al",
+		"title": "Time to return to full training is delayed and recurrence rate is higher in intratendinous ('c') acute hamstring injury in elite track and field athletes: clinical application of the British Athletics Muscle Injury Classification.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2015-094657"
+	},
+	"26954572": {
+		"authors": "Castillo-Lozano R, et al",
+		"title": "Incidence of musculoskeletal sport injuries in a sample of male and female recreational paddle-tennis players.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.16.06240-X"
+	},
+	"26957411": {
+		"authors": "Sjöstedt S, et al",
+		"title": "[Nasal fractures in adults].",
+		"journal": "Ugeskr Laeger",
+		"year": "2016",
+		"types": ["Journal Article", "Review"]
+	},
+	"26991565": {
+		"authors": "McNamara AR, et al",
+		"title": "Hand Blisters in Major League Baseball Pitchers: Current Concepts and Management.",
+		"journal": "Am J Orthop (Belle Mead NJ)",
+		"year": "2016",
+		"types": ["Journal Article", "Review"]
+	},
+	"26991570": {
+		"authors": "Mehdi SK, et al",
+		"title": "Latissimus Dorsi and Teres Major Injuries in Major League Baseball Pitchers: A Systematic Review.",
+		"journal": "Am J Orthop (Belle Mead NJ)",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"]
+	},
+	"27034129": {
+		"authors": "Waldén M, et al",
+		"title": "ACL injuries in men's professional football: a 15-year prospective study on time trends and return-to-play rates reveals only 65% of players still play at the top level 3 years after ACL rupture.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2015-095952"
+	},
+	"27039329": {
+		"authors": "Monk AP, et al",
+		"title": "Surgical versus conservative interventions for treating anterior cruciate ligament injuries.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1002/14651858.CD011166.pub2",
+		"pmcid": "PMC6464826"
+	},
+	"27059966": {
+		"authors": "Tolver MA, et al",
+		"title": "Convalescence after laparoscopic inguinal hernia repair: a qualitative systematic review.",
+		"journal": "Surg Endosc",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s00464-016-4863-4"
+	},
+	"27162233": {
+		"authors": "Grindem H, et al",
+		"title": "Simple decision rules can reduce reinjury risk by 84% after ACL reconstruction: the Delaware-Oslo ACL cohort study.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2016-096031",
+		"pmcid": "PMC4912389"
+	},
+	"27186919": {
+		"authors": "Schleich K, et al",
+		"title": "Return to Play After Exertional Rhabdomyolysis.",
+		"journal": "J Athl Train",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.4085/1062-6050-51.5.12",
+		"pmcid": "PMC5013704"
+	},
+	"27259751": {
+		"authors": "Zellers JA, et al",
+		"title": "Return to play post-Achilles tendon rupture: a systematic review and meta-analysis of rate and measures of return to play.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2016-096106",
+		"pmcid": "PMC5136353"
+	},
+	"27301374": {
+		"authors": "Chavez LO, et al",
+		"title": "Beyond muscle destruction: a systematic review of rhabdomyolysis for clinical practice.",
+		"journal": "Crit Care",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1186/s13054-016-1314-5",
+		"pmcid": "PMC4908773"
+	},
+	"27328853": {
+		"authors": "Keogh JW, et al",
+		"title": "The Epidemiology of Injuries Across the Weight-Training Sports.",
+		"journal": "Sports Med",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s40279-016-0575-0"
+	},
+	"27578854": {
+		"authors": "Summitt RJ, et al",
+		"title": "Shoulder Injuries in Individuals Who Participate in CrossFit Training.",
+		"journal": "Sports Health",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1941738116666073",
+		"pmcid": "PMC5089356"
+	},
+	"27618240": {
+		"authors": "Fields KB, et al",
+		"title": "Muscular Calf Injuries in Runners.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2016",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1249/JSR.0000000000000292"
+	},
+	"27627991": {
+		"authors": "Priego Quesada JI, et al",
+		"title": "Examination of the risk factors associated with injured recreational padel players in Spain.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.16.06729-3"
+	},
+	"27629403": {
+		"authors": "Griffin DR, et al",
+		"title": "The Warwick Agreement on femoroacetabular impingement syndrome (FAI syndrome): an international consensus statement.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.1136/bjsports-2016-096743"
+	},
+	"27714843": {
+		"authors": "Fisker FY, et al",
+		"title": "Acute tendon changes in intense CrossFit workout: an observational cohort study.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2017",
+		"types": ["Journal Article", "Observational Study"],
+		"doi": "10.1111/sms.12781"
+	},
+	"27722115": {
+		"authors": "Lollo L, et al",
+		"title": "Clinical and functional outcomes of acute lower extremity compartment syndrome at a Major Trauma Hospital.",
+		"journal": "Int J Crit Illn Inj Sci",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.4103/2229-5151.190648",
+		"pmcid": "PMC5051056"
+	},
+	"27847979": {
+		"authors": "Godenèche A, et al",
+		"title": "Relationship between subscapularis tears and injuries to the biceps pulley.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s00167-016-4374-9",
+		"pmcid": "PMC5489655"
+	},
+	"27922985": {
+		"authors": "Carlson VR, et al",
+		"title": "Video Analysis of Anterior Cruciate Ligament (ACL) Injuries: A Systematic Review.",
+		"journal": "JBJS Rev",
+		"year": "2016",
+		"types": [
+			"Journal Article",
+			"Research Support, N.I.H., Intramural",
+			"Research Support, Non-U.S. Gov't",
+			"Systematic Review"
+		],
+		"doi": "10.2106/JBJS.RVW.15.00116",
+		"pmcid": "PMC5865503"
+	},
+	"28087568": {
+		"authors": "Thorborg K, et al",
+		"title": "Effect of specific exercise-based football injury prevention programmes on the overall injury rate in football: a systematic review and meta-analysis of the FIFA 11 and 11+ programmes.",
+		"journal": "Br J Sports Med",
+		"year": "2017",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2016-097066"
+	},
+	"28122541": {
+		"authors": "Gismervik SØ, et al",
+		"title": "Physical examination tests of the shoulder: a systematic review and meta-analysis of diagnostic test performance.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2017",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s12891-017-1400-0",
+		"pmcid": "PMC5267375"
+	},
+	"28125914": {
+		"authors": "Donohue BF, et al",
+		"title": "Sports Injuries to the Latissimus Dorsi and Teres Major.",
+		"journal": "Am J Sports Med",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/0363546516676062"
+	},
+	"28192789": {
+		"authors": "Qaseem A, et al",
+		"title": "Noninvasive Treatments for Acute, Subacute, and Chronic Low Back Pain: A Clinical Practice Guideline From the American College of Physicians.",
+		"journal": "Ann Intern Med",
+		"year": "2017",
+		"types": ["Journal Article", "Practice Guideline"],
+		"doi": "10.7326/M16-2367"
+	},
+	"28207979": {
+		"authors": "Larruskain J, et al",
+		"title": "A comparison of injuries in elite male and female football players: A five-season prospective study.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2018",
+		"types": ["Comparative Study", "Journal Article"],
+		"doi": "10.1111/sms.12860"
+	},
+	"28223305": {
+		"authors": "Lai CCH, et al",
+		"title": "Eighty-three per cent of elite athletes return to preinjury sport after anterior cruciate ligament reconstruction: a systematic review with meta-analysis of return to sport rates, graft rupture rates and performance outcomes.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2016-096836"
+	},
+	"28246265": {
+		"authors": "Maund E, et al",
+		"title": "Considering benefits and harms of duloxetine for treatment of stress urinary incontinence: a meta-analysis of clinical study reports.",
+		"journal": "CMAJ",
+		"year": "2017",
+		"types": ["Journal Article", "Meta-Analysis"],
+		"doi": "10.1503/cmaj.151104",
+		"pmcid": "PMC5289870"
+	},
+	"28314419": {
+		"authors": "Micieli JA, et al",
+		"title": "Eye and Orbital Injuries in Sports.",
+		"journal": "Clin Sports Med",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.csm.2016.11.006"
+	},
+	"28360143": {
+		"authors": "van der Horst N, et al",
+		"title": "Return to play after hamstring injuries in football (soccer): a worldwide Delphi procedure regarding definition, medical criteria and decision-making.",
+		"journal": "Br J Sports Med",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2016-097206"
+	},
+	"28389398": {
+		"authors": "Esser S, et al",
+		"title": "\"Numb-Leg\" in a CrossFit Athlete: A Case Presentation.",
+		"journal": "PM R",
+		"year": "2017",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1016/j.pmrj.2017.03.007"
+	},
+	"28389864": {
+		"authors": "Silvers-Granelli HJ, et al",
+		"title": "Does the FIFA 11+ Injury Prevention Program Reduce the Incidence of ACL Injury in Male Soccer Players?",
+		"journal": "Clin Orthop Relat Res",
+		"year": "2017",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1007/s11999-017-5342-5",
+		"pmcid": "PMC5599387"
+	},
+	"28490431": {
+		"authors": "Siemieniuk RAC, et al",
+		"title": "Arthroscopic surgery for degenerative knee arthritis and meniscal tears: a clinical practice guideline.",
+		"journal": "BMJ",
+		"year": "2017",
+		"types": ["Journal Article", "Practice Guideline"],
+		"doi": "10.1136/bmj.j1982",
+		"pmcid": "PMC5426368"
+	},
+	"28602272": {
+		"authors": "Worthing RM, et al",
+		"title": "Prevention of Friction Blisters in Outdoor Pursuits: A Systematic Review.",
+		"journal": "Wilderness Environ Med",
+		"year": "2017",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.wem.2017.03.007"
+	},
+	"28646098": {
+		"authors": "Beaudouin F, et al",
+		"title": "Head injuries in professional male football (soccer) over 13 years: 29% lower incidence rates after a rule change (red card).",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2016-097217"
+	},
+	"28661826": {
+		"authors": "Bright JM, et al",
+		"title": "Ultrasound Diagnosis of Calf Injuries.",
+		"journal": "Sports Health",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/1941738117696019",
+		"pmcid": "PMC5496702"
+	},
+	"28666040": {
+		"authors": "Degen RM, et al",
+		"title": "Internal Carotid Artery Dissection After Indirect Blunt Cervical Trauma in an Ice Hockey Goaltender.",
+		"journal": "Am J Orthop (Belle Mead NJ)",
+		"year": "2017",
+		"types": ["Case Reports", "Journal Article"]
+	},
+	"28666981": {
+		"authors": "Mosler AB, et al",
+		"title": "Epidemiology of time loss groin injuries in a men's professional football league: a 2-year prospective study of 17 clubs and 606 players.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2016-097277"
+	},
+	"28671402": {
+		"authors": "Forsch RT, et al",
+		"title": "Laceration Repair: A Practical Approach.",
+		"journal": "Am Fam Physician",
+		"year": "2017",
+		"types": ["Journal Article", "Review"]
+	},
+	"28698804": {
+		"authors": "Beaufils P, et al",
+		"title": "The knee meniscus: management of traumatic tears and degenerative lesions.",
+		"journal": "EFORT Open Rev",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1302/2058-5241.2.160056",
+		"pmcid": "PMC5489759"
+	},
+	"28888723": {
+		"authors": "Vap AR, et al",
+		"title": "Isolated Biceps Reflection Pulley Tears Treated With Subpectoral Biceps Tenodesis: Minimum 2-Year Outcomes.",
+		"journal": "Arthroscopy",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.arthro.2017.04.021"
+	},
+	"29016194": {
+		"authors": "Bodendorfer BM, et al",
+		"title": "Outcomes After Operative and Nonoperative Treatment of Proximal Hamstring Avulsions: A Systematic Review and Meta-analysis.",
+		"journal": "Am J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1177/0363546517732526"
+	},
+	"29269487": {
+		"authors": "Lubberts B, et al",
+		"title": "Epidemiology and return to play following isolated syndesmotic injuries of the ankle: a prospective cohort study of 3677 male professional footballers in the UEFA Elite Club Injury Study.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2017-097710"
+	},
+	"29316189": {
+		"authors": "Alexander W, et al",
+		"title": "Acute lumbar paraspinal compartment syndrome: a systematic review.",
+		"journal": "ANZ J Surg",
+		"year": "2018",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1111/ans.14342"
+	},
+	"29319656": {
+		"authors": "Routman HD, et al",
+		"title": "Isolated Rhabdomyolysis of the Infraspinatus Muscle Following the CrossFit \"Sissy Test\": A Report of Two Cases.",
+		"journal": "JBJS Case Connect",
+		"year": "2018",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.2106/JBJS.CC.17.00020"
+	},
+	"29330835": {
+		"authors": "HerniaSurge Group",
+		"title": "International guidelines for groin hernia management.",
+		"journal": "Hernia",
+		"year": "2018",
+		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1007/s10029-017-1668-x",
+		"pmcid": "PMC5809582"
+	},
+	"29510653": {
+		"authors": "Thorborg K, et al",
+		"title": "Clinical Examination, Diagnostic Imaging, and Testing of Athletes With Groin Pain: An Evidence-Based Approach to Effective Management.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2018",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2519/jospt.2018.7850"
+	},
+	"29514819": {
+		"authors": "Vuurberg G, et al",
+		"title": "Diagnosis, treatment and prevention of ankle sprains: update of an evidence-based clinical guideline.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article", "Practice Guideline"],
+		"doi": "10.1136/bjsports-2017-098106"
+	},
+	"29599121": {
+		"authors": "Montalvo AM, et al",
+		"title": "'What's my risk of sustaining an ACL injury while playing football (soccer)?' A systematic review with meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2016-097261",
+		"pmcid": "PMC6642026"
+	},
+	"29624450": {
+		"authors": "Michener LA, et al",
+		"title": "National Athletic Trainers' Association Position Statement: Evaluation, Management, and Outcomes of and Return-to- Play Criteria for Overhead Athletes With Superior Labral Anterior-Posterior Injuries.",
+		"journal": "J Athl Train",
+		"year": "2018",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.4085/1062-6050-59-16",
+		"pmcid": "PMC5894372"
+	},
+	"29691289": {
+		"authors": "Werner J, et al",
+		"title": "Hip and groin time-loss injuries decreased slightly but injury burden remained constant in men's professional football: the 15-year prospective UEFA Elite Club Injury Study.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2017-097796"
+	},
+	"29734573": {
+		"authors": "Mendes AF Jr, et al",
+		"title": "Hyperbaric oxygen therapy as treatment for bilateral arm compartment syndrome after CrossFit: case report and literature review.",
+		"journal": "Undersea Hyperb Med",
+		"year": "2018",
+		"types": ["Case Reports", "Journal Article", "Review"]
+	},
+	"29737024": {
+		"authors": "Webster KE, et al",
+		"title": "Meta-analysis of meta-analyses of anterior cruciate ligament injury reduction training programs.",
+		"journal": "J Orthop Res",
+		"year": "2018",
+		"types": ["Journal Article", "Meta-Analysis"],
+		"doi": "10.1002/jor.24043"
+	},
+	"29869890": {
+		"authors": "Riff AJ, et al",
+		"title": "High Rate of Return to High-Intensity Interval Training After Arthroscopic Management of Femoroacetabular Impingement Syndrome.",
+		"journal": "Am J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1177/0363546518776638"
+	},
+	"29891614": {
+		"authors": "Harøy J, et al",
+		"title": "The Adductor Strengthening Programme prevents groin problems among male football players: a cluster-randomised controlled trial.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1136/bjsports-2017-098937"
+	},
+	"29954828": {
+		"authors": "Babatunde OO, et al",
+		"title": "Comparative effectiveness of treatment options for plantar heel pain: a systematic review with network meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Systematic Review", "Network Meta-Analysis"],
+		"doi": "10.1136/bjsports-2017-098998"
+	},
+	"29955378": {
+		"authors": "Thomson A, et al",
+		"title": "Fifth metatarsal stress fracture in elite male football players: an on-field analysis of plantar loading.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2018-000377",
+		"pmcid": "PMC6018868"
+	},
+	"29971708": {
+		"authors": "Oliveira CB, et al",
+		"title": "Clinical practice guidelines for the management of non-specific low back pain in primary care: an updated overview.",
+		"journal": "Eur Spine J",
+		"year": "2018",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"doi": "10.1007/s00586-018-5673-2"
+	},
+	"30006458": {
+		"authors": "Serner A, et al",
+		"title": "Mechanisms of acute adductor longus injuries in male football players: a systematic visual video analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2018-099246"
+	},
+	"30131332": {
+		"authors": "Lauersen JB, et al",
+		"title": "Strength training as superior, dose-dependent and safe prevention of acute and overuse sports injuries: a systematic review, qualitative analysis and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2018-099078"
+	},
+	"30193009": {
+		"authors": "Osmanovic A, et al",
+		"title": "Evaluation of periodontal ligament cell viability in different storage media based on human PDL cell culture experiments-A systematic review.",
+		"journal": "Dent Traumatol",
+		"year": "2018",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1111/edt.12437"
+	},
+	"30242107": {
+		"authors": "Neal BS, et al",
+		"title": "Risk factors for patellofemoral pain: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2017-098890"
+	},
+	"30288727": {
+		"authors": "Dumoulin C, et al",
+		"title": "Pelvic floor muscle training versus no treatment, or inactive control treatments, for urinary incontinence in women.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2018",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.1002/14651858.CD005654.pub4",
+		"pmcid": "PMC6516955"
+	},
+	"30356646": {
+		"authors": "Erickson LN, et al",
+		"title": "Rehabilitation and return to sport after hamstring strain injury.",
+		"journal": "J Sport Health Sci",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.jshs.2017.04.001",
+		"pmcid": "PMC6189266"
+	},
+	"30370310": {
+		"authors": "Feito Y, et al",
+		"title": "A 4-Year Analysis of the Incidence of Injuries Among CrossFit-Trained Participants.",
+		"journal": "Orthop J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967118803100",
+		"pmcid": "PMC6201188"
+	},
+	"30444732": {
+		"authors": "Coughlin RP, et al",
+		"title": "Return to Sport After Surgical Management of Proximal Hamstring Avulsions: A Systematic Review and Meta-analysis.",
+		"journal": "Clin J Sport Med",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1097/JSM.0000000000000688"
+	},
+	"30473454": {
+		"authors": "Rossi LA, et al",
+		"title": "Return to Sports After in Situ Arthroscopic Repair of Partial Rotator Cuff Tears.",
+		"journal": "Arthroscopy",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.arthro.2018.07.037"
+	},
+	"30543493": {
+		"authors": "Yu J, et al",
+		"title": "Outcomes and Return to Sport After Pectoralis Major Tendon Repair: A Systematic Review.",
+		"journal": "Sports Health",
+		"year": "2019",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/1941738118818060",
+		"pmcid": "PMC6391551"
+	},
+	"30630682": {
+		"authors": "Long B, et al",
+		"title": "An evidence-based narrative review of the emergency department evaluation and management of rhabdomyolysis.",
+		"journal": "Am J Emerg Med",
+		"year": "2019",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.ajem.2018.12.061"
+	},
+	"30657114": {
+		"authors": "Calderazzi F, et al",
+		"title": "Apophyseal avulsion fractures of the pelvis. A review.",
+		"journal": "Acta Biomed",
+		"year": "2018",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.23750/abm.v89i4.7632",
+		"pmcid": "PMC6502104"
+	},
+	"30675571": {
+		"authors": "Lee J, et al",
+		"title": "Subscapularis tears: hidden and forgotten no more.",
+		"journal": "JSES Open Access",
+		"year": "2018",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.jses.2017.11.006",
+		"pmcid": "PMC6334875"
+	},
+	"30688813": {
+		"authors": "Hada S, et al",
+		"title": "Accelerated Return to Play for Professional Rugby Players After Facial Fractures.",
+		"journal": "J Craniofac Surg",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1097/SCS.0000000000005138"
+	},
+	"30728120": {
+		"authors": "Vandvik PO, et al",
+		"title": "Subacromial decompression surgery for adults with shoulder pain: a clinical practice guideline.",
+		"journal": "BMJ",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmj.l294"
+	},
+	"30788227": {
+		"authors": "Goffin JS, et al",
+		"title": "Return to sport following scaphoid fractures: A systematic review and meta-analysis.",
+		"journal": "World J Orthop",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.5312/wjo.v10.i2.101",
+		"pmcid": "PMC6379737"
+	},
+	"30800687": {
+		"authors": "Gupton M, et al",
+		"title": "Surgical Treatment of Pectoralis Major Muscle Ruptures: A Systematic Review and Meta-analysis.",
+		"journal": "Orthop J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/2325967118824551",
+		"pmcid": "PMC6378447"
+	},
+	"30801621": {
+		"authors": "Markus HS, et al",
+		"title": "Antiplatelet Therapy vs Anticoagulation Therapy in Cervical Artery Dissection: The Cervical Artery Dissection in Stroke Study (CADISS) Randomized Clinical Trial Final Results.",
+		"journal": "JAMA Neurol",
+		"year": "2019",
+		"types": [
+			"Comparative Study",
+			"Journal Article",
+			"Randomized Controlled Trial",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"doi": "10.1001/jamaneurol.2019.0072",
+		"pmcid": "PMC6563567"
+	},
+	"30808663": {
+		"authors": "van Dyk N, et al",
+		"title": "Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: a systematic review and meta-analysis of 8459 athletes.",
+		"journal": "Br J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2018-100045"
+	},
+	"30846355": {
+		"authors": "Hopkins BS, et al",
+		"title": "CrossFit and rhabdomyolysis: A case series of 11 patients presenting at a single academic institution.",
+		"journal": "J Sci Med Sport",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.jsams.2019.01.019"
+	},
+	"30949749": {
+		"authors": "Lundblad M, et al",
+		"title": "Medial collateral ligament injuries of the knee in male professional football players: a prospective three-season study of 130 cases from the UEFA Elite Club Injury Study.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s00167-019-05491-6",
+		"pmcid": "PMC6800843"
+	},
+	"30961567": {
+		"authors": "Godoy IRB, et al",
+		"title": "Humeral stress fracture in a female CrossFit athlete: a case report.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2019",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1186/s12891-019-2532-1",
+		"pmcid": "PMC6454729"
+	},
+	"31171515": {
+		"authors": "López-Valenciano A, et al",
+		"title": "Epidemiology of injuries in professional football: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2018-099577",
+		"pmcid": "PMC9929604"
+	},
+	"31182429": {
+		"authors": "Ekstrand J, et al",
+		"title": "Time before return to play for the most common injuries in professional football: a 16-year follow-up of the UEFA Elite Club Injury Study.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2019-100666",
+		"pmcid": "PMC7146935"
+	},
+	"31194492": {
+		"authors": "Trojian T, et al",
+		"title": "Plantar Fasciitis.",
+		"journal": "Am Fam Physician",
+		"year": "2019",
+		"types": ["Journal Article"]
+	},
+	"31246519": {
+		"authors": "Thompson K, et al",
+		"title": "Everything pectoralis major: from repair to transfer.",
+		"journal": "Phys Sportsmed",
+		"year": "2020",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"doi": "10.1080/00913847.2019.1637301"
+	},
+	"31270563": {
+		"authors": "Alves C, et al",
+		"title": "Fluoroquinolones and the risk of tendon injury: a systematic review and meta-analysis.",
+		"journal": "Eur J Clin Pharmacol",
+		"year": "2019",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1007/s00228-019-02713-1"
+	},
+	"31278933": {
+		"authors": "Galliker G, et al",
+		"title": "Low Back Pain in the Emergency Department: Prevalence of Serious Spinal Pathologies and Diagnostic Accuracy of Red Flags.",
+		"journal": "Am J Med",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.amjmed.2019.06.005"
+	},
+	"31344463": {
+		"authors": "Gabriel SA, et al",
+		"title": "Bilateral Traumatic Internal Carotid Artery Dissection after CrossFit Training.",
+		"journal": "Ann Vasc Surg",
+		"year": "2019",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1016/j.avsg.2019.04.028"
+	},
+	"31377722": {
+		"authors": "Dubois B, et al",
+		"title": "Soft-tissue injuries simply need PEACE and LOVE.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Editorial"],
+		"doi": "10.1136/bjsports-2019-101253"
+	},
+	"31394009": {
+		"authors": "Al Attar WSA, et al",
+		"title": "A meta-analysis of meta-analyses of the effectiveness of FIFA injury prevention programs in soccer.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2019",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1111/sms.13535"
+	},
+	"31411962": {
+		"authors": "Salazar D, et al",
+		"title": "Acute Pectoralis Major Tears in Forward Deployed Active Duty U.S. Military Personnel: A Population at Risk?",
+		"journal": "J Surg Orthop Adv",
+		"year": "2019",
+		"types": ["Journal Article"]
+	},
+	"31421688": {
+		"authors": "Whittaker GA, et al",
+		"title": "Corticosteroid injection for plantar heel pain: a systematic review and meta-analysis.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2019",
+		"types": ["Comparative Study", "Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s12891-019-2749-z",
+		"pmcid": "PMC6698340"
+	},
+	"31524367": {
+		"authors": "Hu JS, et al",
+		"title": "Urinary Incontinence in Women: Evaluation and Management.",
+		"journal": "Am Fam Physician",
+		"year": "2019",
+		"types": ["Journal Article", "Review"]
+	},
+	"31531684": {
+		"authors": "Thermann H",
+		"title": "[Achilles tendon rupture-Part 1: etiology and diagnostics].",
+		"journal": "Chirurg",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s00104-019-01024-6"
+	},
+	"31566048": {
+		"authors": "Sanjaya A",
+		"title": "Meralgia paresthetica: finding an effective cure.",
+		"journal": "Postgrad Med",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1080/00325481.2019.1673582"
+	},
+	"31652234": {
+		"authors": "Luetmer MT, et al",
+		"title": "Exertional Rhabdomyolysis: A Retrospective Population-based Study.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2020",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"doi": "10.1249/MSS.0000000000002178",
+		"pmcid": "PMC8011646"
+	},
+	"31688179": {
+		"authors": "Hopkins BS, et al",
+		"title": "Impact of CrossFit-Related Spinal Injuries.",
+		"journal": "Clin J Sport Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1097/JSM.0000000000000553"
+	},
+	"31775556": {
+		"authors": "Saraceni N, et al",
+		"title": "To Flex or Not to Flex? Is There a Relationship Between Lumbar Spine Flexion During Lifting and Low Back Pain? A Systematic Review With Meta-analysis.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.2519/jospt.2020.9218"
+	},
+	"31813166": {
+		"authors": "Karjalainen TV, et al",
+		"title": "Surgery for rotator cuff tears.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2019",
+		"types": [
+			"Journal Article",
+			"Meta-Analysis",
+			"Research Support, N.I.H., Extramural",
+			"Research Support, Non-U.S. Gov't",
+			"Systematic Review"
+		],
+		"doi": "10.1002/14651858.CD013502",
+		"pmcid": "PMC6900168"
+	},
+	"32007452": {
+		"authors": "Doiron-Cadrin P, et al",
+		"title": "Shoulder Rotator Cuff Disorders: A Systematic Review of Clinical Practice Guidelines and Semantic Analyses of Recommendations.",
+		"journal": "Arch Phys Med Rehabil",
+		"year": "2020",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.1016/j.apmr.2019.12.017"
+	},
+	"32100894": {
+		"authors": "Vedung F, et al",
+		"title": "Concussion incidence and recovery in Swedish elite soccer - Prolonged recovery in female players.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1111/sms.13644"
+	},
+	"32115083": {
+		"authors": "Patrick NC, et al",
+		"title": "Hand and Wrist Tendinopathies.",
+		"journal": "Clin Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.csm.2019.10.004"
+	},
+	"32147339": {
+		"authors": "Rubinger L, et al",
+		"title": "Return to work following a distal biceps repair: a systematic review of the literature.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.jse.2019.12.006"
+	},
+	"32182099": {
+		"authors": "Serner A, et al",
+		"title": "Associations Between Initial Clinical Examination and Imaging Findings and Return-to-Sport in Male Athletes With Acute Adductor Injuries: A Prospective Cohort Study.",
+		"journal": "Am J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/0363546520908610"
+	},
+	"32185452": {
+		"authors": "Cassidy JT, et al",
+		"title": "The majority of patients return to athletic activity following biceps tenodesis.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s00167-020-05930-9"
+	},
+	"32253193": {
+		"authors": "Crossley KM, et al",
+		"title": "Making football safer for women: a systematic review and meta-analysis of injury prevention programmes in 11 773 female football (soccer) players.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2019-101587",
+		"pmcid": "PMC7497572"
+	},
+	"32284938": {
+		"authors": "Szeles PRQ, et al",
+		"title": "CrossFit and the Epidemiology of Musculoskeletal Injuries: A Prospective 12-Week Cohort Study.",
+		"journal": "Orthop J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967120908884",
+		"pmcid": "PMC7137139"
+	},
+	"32284944": {
+		"authors": "Carbone S, et al",
+		"title": "High Rate of Return to CrossFit Training After Arthroscopic Management of Rotator Cuff Tear.",
+		"journal": "Orthop J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967120911039",
+		"pmcid": "PMC7139188"
+	},
+	"32299793": {
+		"authors": "Green B, et al",
+		"title": "Recalibrating the risk of hamstring strain injury (HSI): A 2020 systematic review and meta-analysis of risk factors for index and recurrent hamstring strain injury in sport.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2019-100983"
+	},
+	"32376673": {
+		"authors": "Kemp JL, et al",
+		"title": "Improving function in people with hip-related pain: a systematic review and meta-analysis of physiotherapist-led interventions for hip-related pain.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2019-101690",
+		"pmcid": "PMC7677471"
+	},
+	"32378735": {
+		"authors": "Woodley SJ, et al",
+		"title": "Pelvic floor muscle training for preventing and treating urinary and faecal incontinence in antenatal and postnatal women.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2020",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"doi": "10.1002/14651858.CD007471.pub4",
+		"pmcid": "PMC7203602"
+	},
+	"32382437": {
+		"authors": "Everhart JS, et al",
+		"title": "CrossFit-related hip and groin injuries: a case series.",
+		"journal": "J Hip Preserv Surg",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1093/jhps/hnz072",
+		"pmcid": "PMC7195938"
+	},
+	"32399153": {
+		"authors": "Pardiwala DN, et al",
+		"title": "Latissimus Dorsi Tear in an Olympics-Level Tennis Player: Case Report and Review of Literature.",
+		"journal": "Indian J Orthop",
+		"year": "2020",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1007/s43465-020-00055-0",
+		"pmcid": "PMC7205911"
+	},
+	"32405754": {
+		"authors": "Mascarenhas VV, et al",
+		"title": "The Lisbon Agreement on Femoroacetabular Impingement Imaging-part 1: overview.",
+		"journal": "Eur Radiol",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s00330-020-06822-9"
+	},
+	"32460393": {
+		"authors": "Fouad AF, et al",
+		"title": "International Association of Dental Traumatology guidelines for the management of traumatic dental injuries: 2. Avulsion of permanent teeth.",
+		"journal": "Dent Traumatol",
+		"year": "2020",
+		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"doi": "10.1111/edt.12573"
+	},
+	"32472740": {
+		"authors": "Levin L, et al",
+		"title": "International Association of Dental Traumatology guidelines for the management of traumatic dental injuries: General introduction.",
+		"journal": "Dent Traumatol",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1111/edt.12574"
+	},
+	"32475015": {
+		"authors": "Bourguignon C, et al",
+		"title": "International Association of Dental Traumatology guidelines for the management of traumatic dental injuries: 1. Fractures and luxations.",
+		"journal": "Dent Traumatol",
+		"year": "2020",
+		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"doi": "10.1111/edt.12578"
+	},
+	"32487983": {
+		"authors": "Lima PO, et al",
+		"title": "Epidemiology and associated factors for CrossFit-related musculoskeletal injuries: a cross-sectional study.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.20.10364-5"
+	},
+	"32548012": {
+		"authors": "Holschen M, et al",
+		"title": "Traumatic Tear of the Latissimus Dorsi Tendon in a CrossFit Athlete: Surgical Management.",
+		"journal": "J Orthop Case Rep",
+		"year": "2019",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.13107/jocr.2250-0685.1546",
+		"pmcid": "PMC7276628"
+	},
+	"32561515": {
+		"authors": "Della Villa F, et al",
+		"title": "Systematic video analysis of ACL injuries in professional male football (soccer): injury mechanisms, situational patterns and biomechanics study on 134 consecutive cases.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2019-101247"
+	},
+	"32788933": {
+		"authors": "Luokkala T, et al",
+		"title": "Distal biceps hook test - Sensitivity in acute and chronic tears and ability to predict the need for graft reconstruction.",
+		"journal": "Shoulder Elbow",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1758573219847146",
+		"pmcid": "PMC7400716"
+	},
+	"32854168": {
+		"authors": "Pedret C, et al",
+		"title": "Ultrasound classification of medial gastrocnemious injuries.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1111/sms.13812"
+	},
+	"32868012": {
+		"authors": "Keller RE, et al",
+		"title": "Paget-Schroetter syndrome in athletes: a comprehensive and systematic review.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.jse.2020.05.015"
+	},
+	"32875305": {
+		"authors": "Bolia IK, et al",
+		"title": "Operative Versus Nonoperative Management of Distal Iliotibial Band Syndrome-Where Do We Stand? A Systematic Review.",
+		"journal": "Arthrosc Sports Med Rehabil",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.asmr.2020.04.001",
+		"pmcid": "PMC7451906"
+	},
+	"33038045": {
+		"authors": "Cassoudesalle H, et al",
+		"title": "Video analysis of concussion mechanisms and immediate management in French men's professional football (soccer) from 2015 to 2019.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2021",
+		"types": ["Journal Article", "Observational Study"],
+		"doi": "10.1111/sms.13852"
+	},
+	"33064426": {
+		"authors": "Shakil A, et al",
+		"title": "Inguinal Hernias: Diagnosis and Management.",
+		"journal": "Am Fam Physician",
+		"year": "2020",
+		"types": ["Journal Article", "Review"]
+	},
+	"33069905": {
+		"authors": "Björnsson Hallgren HC, et al",
+		"title": "Good outcome after repair of trauma-related anterosuperior rotator cuff tears-a prospective cohort study.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.jse.2020.09.020"
+	},
+	"33088241": {
+		"authors": "Lehman JD, et al",
+		"title": "Prevalence and Treatment Outcomes of Hand and Wrist Injuries in Professional Athletes: A Systematic Review.",
+		"journal": "HSS J",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s11420-020-09760-w",
+		"pmcid": "PMC7534880"
+	},
+	"33123709": {
+		"authors": "Johns N, et al",
+		"title": "Lateral epicondylitis: Current concepts.",
+		"journal": "Aust J Gen Pract",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.31128/AJGP-07-20-5519"
+	},
+	"33148599": {
+		"authors": "Karanasios S, et al",
+		"title": "Exercise interventions in lateral elbow tendinopathy have better outcomes than passive interventions, but the effects are small: a systematic review and meta-analysis of 2123 subjects in 30 trials.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2020-102525"
+	},
+	"33159531": {
+		"authors": "Carbone S, et al",
+		"title": "Supraspinatus repair and biceps tenodesis in competitive CrossFit athletes allow for a 100% of return to sport.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s00167-020-06345-2"
+	},
+	"33188561": {
+		"authors": "de Souza BC, et al",
+		"title": "Occurrence and patterns of orofacial injury in CrossFit practitioners.",
+		"journal": "Dent Traumatol",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1111/edt.12625"
+	},
+	"33197591": {
+		"authors": "Doarn MC, et al",
+		"title": "Exercise-induced bilateral upper-arm anterior and posterior compartment syndrome with rhabdomyolysis.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2021",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1016/j.jse.2020.10.005"
+	},
+	"33210041": {
+		"authors": "Patel SD, et al",
+		"title": "Recanalization of cervicocephalic artery dissection.",
+		"journal": "Brain Circ",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.4103/bc.bc_19_20",
+		"pmcid": "PMC7646389"
+	},
+	"33218267": {
+		"authors": "Johns W, et al",
+		"title": "Career Outlook and Performance of Professional Athletes After Achilles Tendon Rupture: A Systematic Review.",
+		"journal": "Foot Ankle Int",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/1071100720969633"
+	},
+	"33322981": {
+		"authors": "Ángel Rodríguez M, et al",
+		"title": "Injury in CrossFit®: A Systematic Review of Epidemiology and Risk Factors.",
+		"journal": "Phys Sportsmed",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1080/00913847.2020.1864675"
+	},
+	"33355180": {
+		"authors": "Thornton JS, et al",
+		"title": "Treating low back pain in athletes: a systematic review with meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1136/bjsports-2020-102723"
+	},
+	"33362991": {
+		"authors": "Halabchi F, et al",
+		"title": "Acute ankle sprain in athletes: Clinical aspects and algorithmic approach.",
+		"journal": "World J Orthop",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5312/wjo.v11.i12.534",
+		"pmcid": "PMC7745493"
+	},
+	"33414454": {
+		"authors": "Millar NL, et al",
+		"title": "Tendinopathy.",
+		"journal": "Nat Rev Dis Primers",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1038/s41572-020-00234-1"
+	},
+	"33428552": {
+		"authors": "Lamplot JD, et al",
+		"title": "Lower Extremity Compartment Syndrome in National Football League Athletes.",
+		"journal": "Sports Health",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1941738120973674",
+		"pmcid": "PMC8167353"
+	},
+	"33450741": {
+		"authors": "Lu VM, et al",
+		"title": "Meralgia paresthetica treated by injection, decompression, and neurectomy: a systematic review and meta-analysis of pain and operative outcomes.",
+		"journal": "J Neurosurg",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.3171/2020.7.JNS202191"
+	},
+	"33487640": {
+		"authors": "Lalji R, et al",
+		"title": "The 2015 U.S. Soccer Federation header ban and its effect on emergency room concussion rates in soccer players aged 10-13.",
+		"journal": "J Can Chiropr Assoc",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"pmcid": "PMC7815172"
+	},
+	"33502133": {
+		"authors": "Rodrigues C, et al",
+		"title": "Unusual Stress Fracture in a CrossFit Athlete: A Case Report.",
+		"journal": "JBJS Case Connect",
+		"year": "2021",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.2106/JBJS.CC.20.00135"
+	},
+	"33530860": {
+		"authors": "Hamstra-Wright KL, et al",
+		"title": "Risk Factors for Plantar Fasciitis in Physically Active Individuals: A Systematic Review and Meta-analysis.",
+		"journal": "Sports Health",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1177/1941738120970976",
+		"pmcid": "PMC8083151"
+	},
+	"33543727": {
+		"authors": "Coleman MM, et al",
+		"title": "Jones Fracture in the Nonathletic Population.",
+		"journal": "Foot Ankle Clin",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.fcl.2020.08.012"
+	},
+	"33563131": {
+		"authors": "Sedrak P, et al",
+		"title": "Return to Play After Symptomatic Lumbar Disc Herniation in Elite Athletes: A Systematic Review and Meta-analysis of Operative Versus Nonoperative Treatment.",
+		"journal": "Sports Health",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1177/1941738121991782",
+		"pmcid": "PMC8404721"
+	},
+	"33606579": {
+		"authors": "Toledo R, et al",
+		"title": "Joint and muscle injuries in men and women CrossFit® training participants.",
+		"journal": "Phys Sportsmed",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1080/00913847.2021.1892468"
+	},
+	"33646025": {
+		"authors": "Biggs A, et al",
+		"title": "Achilles tendon rupture: what you need to know.",
+		"journal": "Br J Hosp Med (Lond)",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.12968/hmed.2020.0593"
+	},
+	"33654033": {
+		"authors": "Secanho MS, et al",
+		"title": "Facial Fractures Related to Soccer.",
+		"journal": "J Craniofac Surg",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1097/SCS.0000000000007575"
+	},
+	"33655999": {
+		"authors": "Nye NS, et al",
+		"title": "Clinical Practice Guidelines for Exertional Rhabdomyolysis: A Military Medicine Perspective.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2021",
+		"types": ["Journal Article", "Practice Guideline"],
+		"doi": "10.1249/JSR.0000000000000822"
+	},
+	"33687926": {
+		"authors": "Reijman M, et al",
+		"title": "Early surgical reconstruction versus rehabilitation with elective delayed reconstruction for patients with anterior cruciate ligament rupture: COMPARE randomised controlled trial.",
+		"journal": "BMJ",
+		"year": "2021",
+		"types": ["Comparative Study", "Journal Article", "Multicenter Study", "Randomized Controlled Trial"],
+		"doi": "10.1136/bmj.n375",
+		"pmcid": "PMC7941216"
+	},
+	"33718592": {
+		"authors": "Beaudouin F, et al",
+		"title": "Head Impact Situations in Professional Football (Soccer).",
+		"journal": "Sports Med Int Open",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1055/a-1338-1402",
+		"pmcid": "PMC7946547"
+	},
+	"33720786": {
+		"authors": "Hoenig T, et al",
+		"title": "Does Magnetic Resonance Imaging Grading Correlate With Return to Sports After Bone Stress Injuries? A Systematic Review and Meta-analysis.",
+		"journal": "Am J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1177/0363546521993807"
+	},
+	"33741878": {
+		"authors": "Ohana O, et al",
+		"title": "Ocular Related Sports Injuries.",
+		"journal": "J Craniofac Surg",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1097/SCS.0000000000007618",
+		"pmcid": "PMC8192440"
+	},
+	"33749370": {
+		"authors": "Sangani V, et al",
+		"title": "Paget-Schroetter Syndrome in a Young Female.",
+		"journal": "J Investig Med High Impact Case Rep",
+		"year": "2021",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1177/23247096211003263",
+		"pmcid": "PMC7983469"
+	},
+	"33785535": {
+		"authors": "Morrissey D, et al",
+		"title": "Management of plantar heel pain: a best practice guide informed by a systematic review, expert clinical reasoning and patient values.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1136/bjsports-2019-101970",
+		"pmcid": "PMC8458083"
+	},
+	"33814224": {
+		"authors": "Karanasios S, et al",
+		"title": "Diagnostic accuracy of examination tests for lateral elbow tendinopathy (LET) - A systematic review.",
+		"journal": "J Hand Ther",
+		"year": "2022",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1016/j.jht.2021.02.002"
+	},
+	"33846157": {
+		"authors": "Della Villa F, et al",
+		"title": "High rate of second ACL injury following ACL reconstruction in male professional footballers: an updated longitudinal analysis from 118 players in the UEFA Elite Club Injury Study.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2020-103555",
+		"pmcid": "PMC8606446"
+	},
+	"33859886": {
+		"authors": "Tawfik A, et al",
+		"title": "A Study on the Incidence of Hand or Wrist Injuries in CrossFit Athletes.",
+		"journal": "Cureus",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.7759/cureus.13818",
+		"pmcid": "PMC8038891"
+	},
+	"33904911": {
+		"authors": "Bretzin AC, et al",
+		"title": "Association of Sex With Adolescent Soccer Concussion Incidence and Characteristics.",
+		"journal": "JAMA Netw Open",
+		"year": "2021",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1001/jamanetworkopen.2021.8191",
+		"pmcid": "PMC8080231"
+	},
+	"33989090": {
+		"authors": "Lucarno S, et al",
+		"title": "Systematic Video Analysis of Anterior Cruciate Ligament Injuries in Professional Female Soccer Players.",
+		"journal": "Am J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/03635465211008169"
+	},
+	"34006577": {
+		"authors": "Meredith SJ, et al",
+		"title": "Return to sport after anterior cruciate ligament injury: Panther Symposium ACL Injury Return to Sport Consensus Group.",
+		"journal": "J ISAKOS",
+		"year": "2021",
+		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"doi": "10.1136/jisakos-2020-000495"
+	},
+	"34050059": {
+		"authors": "Geiss Santos RC, et al",
+		"title": "Association Between Injury Mechanisms and Magnetic Resonance Imaging Findings in Rectus Femoris Injuries in 105 Professional Football Players.",
+		"journal": "Clin J Sport Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1097/JSM.0000000000000935"
+	},
+	"34156668": {
+		"authors": "Thörnland C, et al",
+		"title": "[Eye injuries related to padel].",
+		"journal": "Lakartidningen",
+		"year": "2021",
+		"types": ["Journal Article"]
+	},
+	"34158354": {
+		"authors": "Smith MD, et al",
+		"title": "Return to sport decisions after an acute lateral ankle sprain injury: introducing the PAASS framework-an international multidisciplinary consensus.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.1136/bjsports-2021-104087"
+	},
+	"34161743": {
+		"authors": "Serner A, et al",
+		"title": "One-Year Clinical and Imaging Follow-up After Exercise-Based Treatment for Acute Complete Adductor Longus Tendon Avulsions in Athletes: A Prospective Case Series.",
+		"journal": "Am J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/03635465211015996"
+	},
+	"34187784": {
+		"authors": "de Vos RJ, et al",
+		"title": "Dutch multidisciplinary guideline on Achilles tendinopathy.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2020-103867",
+		"pmcid": "PMC8479731"
+	},
+	"34239952": {
+		"authors": "Vosoughi F, et al",
+		"title": "Medial Collateral Ligament Injury of the Knee: A Review on Current Concept and Management.",
+		"journal": "Arch Bone Jt Surg",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.22038/abjs.2021.48458.2401",
+		"pmcid": "PMC8221433"
+	},
+	"34272296": {
+		"authors": "LeVasseur MR, et al",
+		"title": "SLAP tears and return to sport and work: current concepts.",
+		"journal": "J ISAKOS",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1136/jisakos-2020-000537"
+	},
+	"34397403": {
+		"authors": "Landesa-Piñeiro L, et al",
+		"title": "Physiotherapy treatment of lateral epicondylitis: A systematic review.",
+		"journal": "J Back Musculoskelet Rehabil",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3233/BMR-210053"
+	},
+	"34400990": {
+		"authors": "Ficek K, et al",
+		"title": "The Fifth Metatarsal Bone Fracture in Athletes - Modalities of Treatment Related to Agility in Soccer Players.",
+		"journal": "J Hum Kinet",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.2478/hukin-2020-0059",
+		"pmcid": "PMC8336555"
+	},
+	"34497463": {
+		"authors": "Alekseyev K, et al",
+		"title": "Identifying the Most Common CrossFit Injuries in a Variety of Athletes.",
+		"journal": "Rehabil Process Outcome",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1179572719897069",
+		"pmcid": "PMC8282166"
+	},
+	"34534982": {
+		"authors": "Fernandes DA, et al",
+		"title": "Diagnostic Accuracy of Clinical Tests and Imaging Exams for Femoroacetabular Impingement: An Umbrella Review of Systematic Reviews.",
+		"journal": "Clin J Sport Med",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1097/JSM.0000000000000978"
+	},
+	"34591697": {
+		"authors": "Davey MS, et al",
+		"title": "Criteria for Return to Play After Hip Arthroscopy in the Treatment of Femoroacetabular Impingement: A Systematic Review.",
+		"journal": "Am J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/03635465211038959"
+	},
+	"34631448": {
+		"authors": "Albloushi M, et al",
+		"title": "Jones type fifth metatarsal fracture fixation in athletes: A review and current concept.",
+		"journal": "World J Orthop",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5312/wjo.v12.i9.640",
+		"pmcid": "PMC8472442"
+	},
+	"34719066": {
+		"authors": "Horan D, et al",
+		"title": "Injuries in elite-level women's football-a two-year prospective study in the Irish Women's National League.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1111/sms.14062"
+	},
+	"34732996": {
+		"authors": "Guinn KJ, et al",
+		"title": "Vertebral artery dissection and high-intensity workouts.",
+		"journal": "Proc (Bayl Univ Med Cent)",
+		"year": "2021",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.1080/08998280.2021.1935139",
+		"pmcid": "PMC8545160"
+	},
+	"34734095": {
+		"authors": "Cuzzolin M, et al",
+		"title": "Operative Versus Nonoperative Management for Distal Biceps Brachii Tendon Lesions: A Systematic Review and Meta-analysis.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671211037311",
+		"pmcid": "PMC8558817"
+	},
+	"34746432": {
+		"authors": "Debette S, et al",
+		"title": "ESO guideline for the management of extracranial and intracranial artery dissection.",
+		"journal": "Eur Stroke J",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23969873211046475",
+		"pmcid": "PMC8564160"
+	},
+	"34789369": {
+		"authors": "Herterich V, et al",
+		"title": "Fifth Metatarsal Fracture–A Systematic Review of the Treatment of Fractures of the Base of the Fifth Metatarsal Bone.",
+		"journal": "Dtsch Arztebl Int",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3238/arztebl.m2021.0231",
+		"pmcid": "PMC8647295"
+	},
+	"34801318": {
+		"authors": "Aminlari A, et al",
+		"title": "Diagnosing Achilles Tendon Rupture with Ultrasound in Patients Treated Surgically: A Systematic Review and Meta-Analysis.",
+		"journal": "J Emerg Med",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1016/j.jemermed.2021.09.008"
+	},
+	"34809886": {
+		"authors": "Jones CM, et al",
+		"title": "Zygomaticomaxillary Fractures.",
+		"journal": "Facial Plast Surg Clin North Am",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.fsc.2021.08.004"
+	},
+	"34876406": {
+		"authors": "Gronwald T, et al",
+		"title": "Hamstring injury patterns in professional male football (soccer): a systematic video analysis of 52 cases.",
+		"journal": "Br J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2021-104769"
+	},
+	"34888392": {
+		"authors": "Rudisill SS, et al",
+		"title": "Evidence-Based Management and Factors Associated With Return to Play After Acute Hamstring Injury in Athletes: A Systematic Review.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671211053833",
+		"pmcid": "PMC8649106"
+	},
+	"34911509": {
+		"authors": "Bahns C, et al",
+		"title": "Occupational risk factors for meniscal lesions: a systematic review and meta-analysis.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2021",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s12891-021-04900-7",
+		"pmcid": "PMC8672613"
+	},
+	"34935262": {
+		"authors": "Kodikara P, et al",
+		"title": "Renal physiology and kidney injury during intense (CrossFit®) exercise.",
+		"journal": "Intern Med J",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1111/imj.15667"
+	},
+	"35022509": {
+		"authors": "Mayer-Suess L, et al",
+		"title": "Sex-differences in psychosocial sequelae after spontaneous cervical artery dissection.",
+		"journal": "Sci Rep",
+		"year": "2022",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1038/s41598-021-04686-7",
+		"pmcid": "PMC8755839"
+	},
+	"35025841": {
+		"authors": "Kowalczuk M, et al",
+		"title": "Pectoralis Major Rupture: Evaluation and Management.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.5435/JAAOS-D-21-00541"
+	},
+	"35033136": {
+		"authors": "Silva ER, et al",
+		"title": "Function, strength, and muscle activation of the shoulder complex in Crossfit practitioners with and without pain: a cross-sectional observational study.",
+		"journal": "J Orthop Surg Res",
+		"year": "2022",
+		"types": ["Comparative Study", "Journal Article", "Observational Study"],
+		"doi": "10.1186/s13018-022-02915-x",
+		"pmcid": "PMC8760714"
+	},
+	"35047646": {
+		"authors": "Lavoie-Gagne OZ, et al",
+		"title": "Return to Play and Player Performance After Meniscal Tear Among Elite-Level European Soccer Players: A Matched Cohort Analysis of Injuries From 2006 to 2016.",
+		"journal": "Orthop J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671211059541",
+		"pmcid": "PMC8761888"
+	},
+	"35063641": {
+		"authors": "Steinmetz RG, et al",
+		"title": "Return to play following nonsurgical management of superior labrum anterior-posterior tears: a systematic review.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.jse.2021.12.022"
+	},
+	"35065676": {
+		"authors": "Drake C, et al",
+		"title": "Medical imaging for plantar heel pain: a systematic review and meta-analysis.",
+		"journal": "J Foot Ankle Res",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s13047-021-00507-2",
+		"pmcid": "PMC8783477"
+	},
+	"35146034": {
+		"authors": "Lädermann A, et al",
+		"title": "Diagnostic Accuracy of Clinical Tests for Subscapularis Tears: A Systematic Review and Meta-analysis.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671211042011",
+		"pmcid": "PMC8822023"
+	},
+	"35150292": {
+		"authors": "Sokal PA, et al",
+		"title": "The diagnostic accuracy of clinical tests for anterior cruciate ligament tears are comparable but the Lachman test has been previously overestimated: a systematic review and meta-analysis.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1007/s00167-022-06898-4",
+		"pmcid": "PMC9464183"
+	},
+	"35173077": {
+		"authors": "Álvarez-García C, et al",
+		"title": "The prevalence of urinary incontinence in female CrossFit practitioners: A systematic review and meta-analysis.",
+		"journal": "Arch Esp Urol",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"]
+	},
+	"35195925": {
+		"authors": "Heo J, et al",
+		"title": "Paget-Schroetter syndrome from manual handling at work: Case report and review of the literature.",
+		"journal": "Am J Ind Med",
+		"year": "2022",
+		"types": ["Case Reports", "Review", "Journal Article"],
+		"doi": "10.1002/ajim.23337"
+	},
+	"35278328": {
+		"authors": "Knapik JJ",
+		"title": "Injuries During High-Intensity Functional Training: Systematic Review and Meta-Analysis.",
+		"journal": "J Spec Oper Med",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.55460/G29P-I0AU"
+	},
+	"35332596": {
+		"authors": "McAleer S, et al",
+		"title": "Time to return to full training and recurrence of rectus femoris injuries in elite track and field athletes 2010-2019; a 9-year study using the British Athletics Muscle Injury Classification.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1111/sms.14160"
+	},
+	"35338036": {
+		"authors": "Vermeulen R, et al",
+		"title": "Early versus delayed lengthening exercises for acute hamstring injury in male athletes: a randomised controlled clinical trial.",
+		"journal": "Br J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Equivalence Trial"],
+		"doi": "10.1136/bjsports-2020-103405",
+		"pmcid": "PMC9252858"
+	},
+	"35367620": {
+		"authors": "Pitsilos C, et al",
+		"title": "Systematic review of distal biceps tendon rupture in athletes: treatment and rehabilitation.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1016/j.jse.2022.02.027"
+	},
+	"35409836": {
+		"authors": "Demeco A, et al",
+		"title": "Match Analysis, Physical Training, Risk of Injury and Rehabilitation in Padel: Overview of the Literature.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/ijerph19074153",
+		"pmcid": "PMC8998509"
+	},
+	"35494495": {
+		"authors": "Arnold MT, et al",
+		"title": "Thoracic Outlet Syndrome in Major League Baseball Pitchers: Return to Sport and Performance Metrics After Rib Resection.",
+		"journal": "Orthop J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671221079835",
+		"pmcid": "PMC9047814"
+	},
+	"35512167": {
+		"authors": "Deschrijver M, et al",
+		"title": "Distal biceps tendon ruptures: more efficient diagnostics for a better outcome.",
+		"journal": "Acta Orthop Belg",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.52628/88.1.20"
+	},
+	"35549447": {
+		"authors": "Hillier-Smith R, et al",
+		"title": "Outcomes following surgical management of proximal hamstring tendon avulsions : a systematic review and meta-analysis.",
+		"journal": "Bone Jt Open",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1302/2633-1462.35.BJO-2021-0196.R1",
+		"pmcid": "PMC9134830"
+	},
+	"35622311": {
+		"authors": "Solomons JNT, et al",
+		"title": "Meralgia Paresthetica.",
+		"journal": "Curr Pain Headache Rep",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s11916-022-01053-7"
+	},
+	"35635565": {
+		"authors": "Dominguez-Antuña E, et al",
+		"title": "Prevalence of urinary incontinence in female CrossFit athletes: a systematic review with meta-analysis.",
+		"journal": "Int Urogynecol J",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1007/s00192-022-05244-z",
+		"pmcid": "PMC9150382"
+	},
+	"35693859": {
+		"authors": "da Silva LG, et al",
+		"title": "Rehabilitation After Surgical Treatment of Pectoralis Major Rupture in a CrossFit® Practitioner: A Case Report.",
+		"journal": "Int J Sports Phys Ther",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.26603/001c.35720",
+		"pmcid": "PMC9159717"
+	},
+	"35753965": {
+		"authors": "Al Attar WSA, et al",
+		"title": "Injury prevention programs that include balance training exercises reduce ankle injury rates among soccer players: a systematic review.",
+		"journal": "J Physiother",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1016/j.jphys.2022.05.019"
+	},
+	"35804260": {
+		"authors": "Mansfield K, et al",
+		"title": "Achilles Tendon Ruptures and Repair in Athletes-a Review of Sports-Related Achilles Injuries and Return to Play.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12178-022-09774-3",
+		"pmcid": "PMC9463425"
+	},
+	"35834724": {
+		"authors": "Thorborg K",
+		"title": "Current Clinical Concepts: Exercise and Load Management of Adductor Strains, Adductor Ruptures, and Long-Standing Adductor-Related Groin Pain.",
+		"journal": "J Athl Train",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.4085/1062-6050-0496.21",
+		"pmcid": "PMC10569248"
+	},
+	"35867271": {
+		"authors": "Nicolay RW, et al",
+		"title": "Upper Extremity Injuries in CrossFit Athletes-a Review of the Current Literature.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12178-022-09781-4",
+		"pmcid": "PMC9463423"
+	},
+	"35954598": {
+		"authors": "Pereira PM, et al",
+		"title": "Patellofemoral Pain Syndrome Risk Associated with Squats: A Systematic Review.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.3390/ijerph19159241",
+		"pmcid": "PMC9367913"
+	},
+	"35971013": {
+		"authors": "Hoppe MW, et al",
+		"title": "Risk factors and prevention strategies for shoulder injuries in overhead sports: an updated systematic review.",
+		"journal": "J Exp Orthop",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1186/s40634-022-00493-9",
+		"pmcid": "PMC9378805"
+	},
+	"36151550": {
+		"authors": "Gomes YE, et al",
+		"title": "Diagnostic accuracy of the Ottawa ankle rule to exclude fractures in acute ankle injuries in adults: a systematic review and meta-analysis.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2022",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s12891-022-05831-7",
+		"pmcid": "PMC9502997"
+	},
+	"36172398": {
+		"authors": "Della Villa F, et al",
+		"title": "Video analysis of Achilles tendon rupture in male professional football (soccer) players: injury mechanisms, patterns and biomechanics.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2022-001419",
+		"pmcid": "PMC9511658"
+	},
+	"36243942": {
+		"authors": "Jukes C, et al",
+		"title": "Challenging the mechanism of distal biceps tendon rupture using a video analysis study.",
+		"journal": "Bone Jt Open",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1302/2633-1462.310.BJO-2022-0123.R1",
+		"pmcid": "PMC9626872"
+	},
+	"36261251": {
+		"authors": "Liaghat B, et al",
+		"title": "Diagnosis, prevention and treatment of common shoulder injuries in sport: grading the evidence - a statement paper commissioned by the Danish Society of Sports Physical Therapy (DSSF).",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1136/bjsports-2022-105674",
+		"pmcid": "PMC10086287"
+	},
+	"36281183": {
+		"authors": "Ruiz-Sánchez FJ, et al",
+		"title": "Management and treatment of ankle sprain according to clinical practice guidelines: A PRISMA systematic review.",
+		"journal": "Medicine (Baltimore)",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1097/MD.0000000000031087",
+		"pmcid": "PMC9592509"
+	},
+	"36319751": {
+		"authors": "D'Ambrosi R, et al",
+		"title": "In elite athletes with meniscal injuries, always repair the lateral, think about the medial! A systematic review.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1007/s00167-022-07208-8",
+		"pmcid": "PMC10183423"
+	},
+	"36416276": {
+		"authors": "Tagliafico AS, et al",
+		"title": "Injuries in non-professional padel tennis players. Results of a survey of the Italian Federation of Tennis in Liguria, Italy.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.22.14280-5"
+	},
+	"36462776": {
+		"authors": "Fortier LM, et al",
+		"title": "SLAP Tears: Treatment Algorithm.",
+		"journal": "Arthroscopy",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.arthro.2022.08.005"
+	},
+	"36509105": {
+		"authors": "Kozlowski KM, et al",
+		"title": "A Thirteen-Year Analysis of Facial Fractures among Professional Soccer Players.",
+		"journal": "Facial Plast Surg",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1055/a-1996-7595"
+	},
+	"36554736": {
+		"authors": "Muñoz D, et al",
+		"title": "Incidence of Upper Body Injuries in Amateur Padel Players.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2022",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.3390/ijerph192416858",
+		"pmcid": "PMC9779620"
+	},
+	"36588400": {
+		"authors": "Ekstrand J, et al",
+		"title": "Hamstring injury rates have increased during recent seasons and now constitute 24% of all injuries in men's professional football: the UEFA Elite Club Injury Study from 2001/02 to 2021/22.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2021-105407",
+		"pmcid": "PMC9985757"
+	},
+	"36589511": {
+		"authors": "Long MK, et al",
+		"title": "Injuries of the Pectoralis Major: Diagnosis and Management.",
+		"journal": "Orthop Rev (Pavia)",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.52965/001c.36984",
+		"pmcid": "PMC9797018"
+	},
+	"36617848": {
+		"authors": "Lagas IF, et al",
+		"title": "One fifth of patients with Achilles tendinopathy have symptoms after 10 years: A prospective cohort study.",
+		"journal": "J Sports Sci",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1080/02640414.2022.2163537"
+	},
+	"36650032": {
+		"authors": "Paton BM, et al",
+		"title": "London International Consensus and Delphi study on hamstring injuries part 3: rehabilitation, running and return to sport.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.1136/bjsports-2021-105384"
+	},
+	"36661128": {
+		"authors": "Farrell SG, et al",
+		"title": "Acute Adductor Muscle Injury: A Systematic Review on Diagnostic Imaging, Treatment, and Prevention.",
+		"journal": "Am J Sports Med",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1177/03635465221140923"
+	},
+	"36728770": {
+		"authors": "Silber ZS, et al",
+		"title": "Return to Activity After Arthroscopically Assisted Triangular Fibrocartilage Complex Repair: A Systematic Review.",
+		"journal": "Clin J Sport Med",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1097/JSM.0000000000001114"
+	},
+	"36758425": {
+		"authors": "Foch E, et al",
+		"title": "Lower extremity kinematics during running and hip abductor strength in iliotibial band syndrome: A systematic review and meta-analysis.",
+		"journal": "Gait Posture",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1016/j.gaitpost.2023.02.001"
+	},
+	"36767904": {
+		"authors": "Vassis K, et al",
+		"title": "Epidemiological Profile among Greek CrossFit Practitioners.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.3390/ijerph20032538",
+		"pmcid": "PMC9915453"
+	},
+	"36853900": {
+		"authors": "Jokela A, et al",
+		"title": "Indirect Rectus Femoris Injury Mechanisms in Professional Soccer Players: Video Analysis and Magnetic Resonance Imaging Findings.",
+		"journal": "Clin J Sport Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1097/JSM.0000000000001131",
+		"pmcid": "PMC10467807"
+	},
+	"36867257": {
+		"authors": "Aus der Fünten K, et al",
+		"title": "Epidemiology of Football Injuries of the German Bundesliga: A Media-Based, Prospective Analysis over 7 Consecutive Seasons.",
+		"journal": "Sports Med Open",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s40798-023-00563-x",
+		"pmcid": "PMC9982794"
+	},
+	"36877581": {
+		"authors": "Bäcker HC, et al",
+		"title": "Exertional Rhabdomyolysis in Athletes: Systematic Review and Current Perspectives.",
+		"journal": "Clin J Sport Med",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1097/JSM.0000000000001082"
+	},
+	"36896067": {
+		"authors": "Catalfamo LM, et al",
+		"title": "Maxillofacial Injuries in Padel Game.",
+		"journal": "J Maxillofac Oral Surg",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s12663-022-01725-2",
+		"pmcid": "PMC9989071"
+	},
+	"36912744": {
+		"authors": "Woreta FA, et al",
+		"title": "Medical interventions for traumatic hyphema.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2023",
+		"types": [
+			"Journal Article",
+			"Meta-Analysis",
+			"Review",
+			"Research Support, U.S. Gov't, Non-P.H.S.",
+			"Research Support, N.I.H., Extramural"
+		],
+		"doi": "10.1002/14651858.CD005431.pub5",
+		"pmcid": "PMC10010597"
+	},
+	"36948224": {
+		"authors": "Deen R, et al",
+		"title": "Review article: Non-penetrating neck artery dissection in young adults: Not to be missed!",
+		"journal": "Emerg Med Australas",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1111/1742-6723.14202"
+	},
+	"36988238": {
+		"authors": "Hong IS, et al",
+		"title": "Clinical Outcomes After ACL Reconstruction in Soccer (Football, Futbol) Players: A Systematic Review and Meta-Analysis.",
+		"journal": "Sports Health",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1177/19417381231160167",
+		"pmcid": "PMC10606974"
+	},
+	"37009599": {
+		"authors": "Saremi H, et al",
+		"title": "Subscapularis tendon tear classification and diagnosis: A systemic review and meta-analysis.",
+		"journal": "Front Surg",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3389/fsurg.2023.916694",
+		"pmcid": "PMC10050355"
+	},
+	"37039409": {
+		"authors": "Salehi Omran S",
+		"title": "Cervical Artery Dissection.",
+		"journal": "Continuum (Minneap Minn)",
+		"year": "2023",
+		"types": ["Review", "Journal Article"],
+		"doi": "10.1212/CON.0000000000001233"
+	},
+	"37070274": {
+		"authors": "Mazarelo JFD, et al",
+		"title": "A Systematic Review on the Effectiveness of Eyewear in Reducing the Incidence and Severity of Eye Injuries in Racket Sports.",
+		"journal": "Phys Sportsmed",
+		"year": "2024",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1080/00913847.2023.2196934"
+	},
+	"37141425": {
+		"authors": "Tzeuton S, et al",
+		"title": "Outcomes and Patient Satisfaction of Delayed Distal Biceps Repairs without Graft Augmentation: A Systematic Review.",
+		"journal": "JBJS Rev",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.2106/JBJS.RVW.22.00185"
+	},
+	"37155727": {
+		"authors": "Shim SS, et al",
+		"title": "Common Orthopaedic Injuries in CrossFit Athletes.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2023",
+		"types": ["Review", "Journal Article"],
+		"doi": "10.5435/JAAOS-D-22-01219"
+	},
+	"37158377": {
+		"authors": "Kasiga T, et al",
+		"title": "Padel an increasing cause of sport-related eye injuries in Sweden.",
+		"journal": "Acta Ophthalmol",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1111/aos.15685"
+	},
+	"37173686": {
+		"authors": "Gulle H, et al",
+		"title": "Predicting the outcome of plantar heel pain in adults: a systematic review of prognostic factors.",
+		"journal": "J Foot Ankle Res",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1186/s13047-023-00626-y",
+		"pmcid": "PMC10176769"
+	},
+	"37230128": {
+		"authors": "Jungmann PM, et al",
+		"title": "Bone Stress Injuries at the Ankle and Foot.",
+		"journal": "Semin Musculoskelet Radiol",
+		"year": "2023",
+		"types": ["Review", "Journal Article"],
+		"doi": "10.1055/s-0043-1766098"
+	},
+	"37316183": {
+		"authors": "Putukian M, et al",
+		"title": "Clinical recovery from concussion-return to school and sport: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1136/bjsports-2022-106682"
+	},
+	"37316185": {
+		"authors": "Leddy JJ, et al",
+		"title": "Rest and exercise early after sport-related concussion: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1136/bjsports-2022-106676"
+	},
+	"37316210": {
+		"authors": "Patricios JS, et al",
+		"title": "Consensus statement on concussion in sport: the 6th International Conference on Concussion in Sport-Amsterdam, October 2022.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Consensus Statement", "Journal Article"],
+		"doi": "10.1136/bjsports-2023-106898"
+	},
+	"37337550": {
+		"authors": "Dahmen J, et al",
+		"title": "Incidence, prevalence and nature of injuries in padel: a systematic review.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1136/bmjsem-2023-001607",
+		"pmcid": "PMC10277135"
+	},
+	"37398834": {
+		"authors": "Costa D, et al",
+		"title": "Humeral Fracture in a Young CrossFit Practitioner.",
+		"journal": "Cureus",
+		"year": "2023",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.7759/cureus.39781",
+		"pmcid": "PMC10313087"
+	},
+	"37486886": {
+		"authors": "Rashed S, et al",
+		"title": "Systematic review and meta-analysis of predictive factors for spontaneous regression in lumbar disc herniation.",
+		"journal": "J Neurosurg Spine",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.3171/2023.6.SPINE23367"
+	},
+	"37525773": {
+		"authors": "Buckley KC, et al",
+		"title": "A Workout to Remember: CrossFit-Induced Vertebral Artery Dissection.",
+		"journal": "Cureus",
+		"year": "2023",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.7759/cureus.41211",
+		"pmcid": "PMC10387331"
+	},
+	"37615643": {
+		"authors": "Han CS, et al",
+		"title": "Red flags to screen for vertebral fracture in people presenting with low back pain.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2023",
+		"types": [
+			"Journal Article",
+			"Review",
+			"Research Support, Non-U.S. Gov't",
+			"Research Support, N.I.H., Extramural"
+		],
+		"doi": "10.1002/14651858.CD014461.pub2",
+		"pmcid": "PMC10448864"
+	},
+	"37678659": {
+		"authors": "Hoexum F, et al",
+		"title": "Management of Paget-Schroetter Syndrome: a Systematic Review and Meta-Analysis.",
+		"journal": "Eur J Vasc Endovasc Surg",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"doi": "10.1016/j.ejvs.2023.08.065"
+	},
+	"37720893": {
+		"authors": "Recker AJ, et al",
+		"title": "Baseball Pitchers who Suffer Latissimus Dorsi and Teres Major Tendon Injuries Have a High Return to Play Rate After Either Operative or Nonoperative Treatment.",
+		"journal": "Arthrosc Sports Med Rehabil",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.asmr.2023.100787",
+		"pmcid": "PMC10500456"
+	},
+	"37752011": {
+		"authors": "Mountjoy M, et al",
+		"title": "2023 International Olympic Committee's (IOC) consensus statement on Relative Energy Deficiency in Sport (REDs).",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.1136/bjsports-2023-106994"
+	},
+	"37791828": {
+		"authors": "Thomas E, et al",
+		"title": "Incidence of injuries and associated risk factors in a sample of Italian recreational padel players.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.23.15221-2"
+	},
+	"37802688": {
+		"authors": "Cordella M, et al",
+		"title": "Evidence for exercise therapy in patients with hand and wrist tendinopathy is limited: A systematic review.",
+		"journal": "J Hand Ther",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1016/j.jht.2023.08.016"
+	},
+	"37832814": {
+		"authors": "Lowry V, et al",
+		"title": "A Systematic Review of Clinical Practice Guidelines on the Diagnosis and Management of Various Shoulder Disorders.",
+		"journal": "Arch Phys Med Rehabil",
+		"year": "2024",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1016/j.apmr.2023.09.022"
+	},
+	"37834937": {
+		"authors": "Gurau TV, et al",
+		"title": "Epidemiology of Injuries in Professional and Amateur Football Men (Part II).",
+		"journal": "J Clin Med",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm12196293",
+		"pmcid": "PMC10573283"
+	},
+	"37898508": {
+		"authors": "Della Villa F, et al",
+		"title": "Injury mechanisms and situational patterns of severe lower limb muscle injuries in male professional football (soccer) players: a systematic video analysis study on 103 cases.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2023-106850"
+	},
+	"37908151": {
+		"authors": "Abbott PV",
+		"title": "Indications for root canal treatment following traumatic dental injuries to permanent teeth.",
+		"journal": "Aust Dent J",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1111/adj.12989"
+	},
+	"37909692": {
+		"authors": "Jaschke M, et al",
+		"title": "Distal biceps tendon rupture: a comprehensive overview.",
+		"journal": "EFORT Open Rev",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1530/EOR-23-0035",
+		"pmcid": "PMC10646517"
+	},
+	"37955931": {
+		"authors": "de Sire A, et al",
+		"title": "Risk of injury and kinematic assessment of the shoulder biomechanics during strokes in padel players: a cross-sectional study.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.23.15418-1"
+	},
+	"38147700": {
+		"authors": "Mehta P, et al",
+		"title": "High risk and low prevalence diseases: Flexor tenosynovitis.",
+		"journal": "Am J Emerg Med",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.ajem.2023.12.023"
+	},
+	"38155995": {
+		"authors": "Pejkova S, et al",
+		"title": "Paget-Schroetter syndrome: the importance of early detection and effective surgical intervention.",
+		"journal": "Arch Clin Cases",
+		"year": "2023",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.22551/2023.41.1004.10275",
+		"pmcid": "PMC10754040"
+	},
+	"38182274": {
+		"authors": "Hallén A, et al",
+		"title": "UEFA Women's Elite Club Injury Study: a prospective study on 1527 injuries over four consecutive seasons 2018/2019 to 2021/2022 reveals thigh muscle injuries to be most common and ACL injuries most burdensome.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2023-107133",
+		"pmcid": "PMC10894819"
+	},
+	"38191239": {
+		"authors": "Deering RE, et al",
+		"title": "Clinical and exercise professional opinion on designing a postpartum return-to-running training programme: an international Delphi study and consensus statement.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Consensus Statement"],
+		"doi": "10.1136/bjsports-2023-107490"
+	},
+	"38395699": {
+		"authors": "Magaña-Ramírez M, et al",
+		"title": "What exercise programme is the most appropriate to mitigate anterior cruciate ligament injury risk in football (soccer) players? A systematic review and network meta-analysis.",
+		"journal": "J Sci Med Sport",
+		"year": "2024",
+		"types": ["Systematic Review", "Journal Article", "Network Meta-Analysis"],
+		"doi": "10.1016/j.jsams.2024.02.001"
+	},
+	"38413133": {
+		"authors": "Skaug KL, et al",
+		"title": "Pelvic floor muscle training in female functional fitness exercisers: an assessor-blinded randomised controlled trial.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1136/bjsports-2023-107365",
+		"pmcid": "PMC11103308"
+	},
+	"38445843": {
+		"authors": "Bernstorff MA, et al",
+		"title": "Shoulder pathologies in CrossFit: a magnetic resonance imaging study of 51 cases.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.24.15071-2"
+	},
+	"38497039": {
+		"authors": "Zhong Z, et al",
+		"title": "Effect of scapular stabilization exercises on subacromial pain (impingement) syndrome: a systematic review and meta-analysis of randomized controlled trials.",
+		"journal": "Front Neurol",
+		"year": "2024",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.3389/fneur.2024.1357763",
+		"pmcid": "PMC10940535"
+	},
+	"38503470": {
+		"authors": "Pedret C, et al",
+		"title": "Calf injury in a padel player.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Case Reports"],
+		"doi": "10.1136/bjsports-2024-108064"
+	},
+	"38510627": {
+		"authors": "Demetriades AK, et al",
+		"title": "Sport-related concussion in soccer -a scoping review of available guidelines and a call for action to FIFA & soccer governing bodies.",
+		"journal": "Brain Spine",
+		"year": "2024",
+		"types": ["Journal Article", "Scoping Review"],
+		"doi": "10.1016/j.bas.2024.102763",
+		"pmcid": "PMC10951760"
+	},
+	"38531745": {
+		"authors": "Meng J, et al",
+		"title": "Long-term effects of exercise therapy versus arthroscopic partial meniscectomy for degenerative meniscal tear: A meta-analysis of randomized controlled trials.",
+		"journal": "Asian J Surg",
+		"year": "2024",
+		"types": ["Journal Article", "Meta-Analysis", "Comparative Study", "Review"],
+		"doi": "10.1016/j.asjsur.2024.03.091"
+	},
+	"38641923": {
+		"authors": "de Lima LGH, et al",
+		"title": "Comparative analysis of dental trauma in contact and non-contact sports: A systematic review.",
+		"journal": "Dent Traumatol",
+		"year": "2024",
+		"types": ["Systematic Review", "Journal Article", "Comparative Study"],
+		"doi": "10.1111/edt.12959"
+	},
+	"38684328": {
+		"authors": "Achenbach L, et al",
+		"title": "Four distinct patterns of anterior cruciate ligament injury in women's professional football (soccer): a systematic video analysis of 37 match injuries.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bjsports-2023-107113",
+		"pmcid": "PMC11228206"
+	},
+	"38697741": {
+		"authors": "Chalk C, et al",
+		"title": "Meralgia paresthetica.",
+		"journal": "Handb Clin Neurol",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/B978-0-323-90108-6.00013-2"
+	},
+	"38704182": {
+		"authors": "Fisher AT, et al",
+		"title": "Diagnosis and management of thoracic outlet syndrome in athletes.",
+		"journal": "Semin Vasc Surg",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1053/j.semvascsurg.2024.01.007"
+	},
+	"38708680": {
+		"authors": "Soler A, et al",
+		"title": "Influence of the External Workload on Calf Muscle Strain Injuries in Professional Football Players: A Pilot Study.",
+		"journal": "Sports Health",
+		"year": "2025",
+		"types": ["Journal Article", "Observational Study"],
+		"doi": "10.1177/19417381241247754",
+		"pmcid": "PMC11569535"
+	},
+	"38710914": {
+		"authors": "Manojlovic M, et al",
+		"title": "Return to Play and Performance After Anterior Cruciate Ligament Reconstruction in Soccer Players: A Systematic Review of Recent Evidence.",
+		"journal": "Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Systematic Review", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1007/s40279-024-02035-y",
+		"pmcid": "PMC11329701"
+	},
+	"38790493": {
+		"authors": "Nakayama H, et al",
+		"title": "A Perspective on the 6th International Conference on Sports Concussion.",
+		"journal": "Brain Sci",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.3390/brainsci14050515",
+		"pmcid": "PMC11119671"
+	},
+	"38817761": {
+		"authors": "Zhou JY, et al",
+		"title": "Scapholunate Ligament Injuries.",
+		"journal": "J Hand Surg Glob Online",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.jhsg.2024.01.015",
+		"pmcid": "PMC11133945"
+	},
+	"38909253": {
+		"authors": "LaGreca M, et al",
+		"title": "Paralumbar compartment syndrome, a rare sequela of deadlifting: a case report and review of current literature.",
+		"journal": "J Orthop Surg Res",
+		"year": "2024",
+		"types": ["Case Reports", "Journal Article", "Systematic Review"],
+		"doi": "10.1186/s13018-024-04860-3",
+		"pmcid": "PMC11193892"
+	},
+	"39015942": {
+		"authors": "Zerman N",
+		"title": "Replantation After Dental Avulsion: A Scoping Review and Proposal of a Flow Chart.",
+		"journal": "Eur J Paediatr Dent",
+		"year": "2024",
+		"types": ["Journal Article", "Scoping Review"],
+		"doi": "10.23804/ejpd.2024.25.03.02"
+	},
+	"39023393": {
+		"authors": "Pihl E, et al",
+		"title": "Operative versus Nonoperative Treatment of Proximal Hamstring Avulsions.",
+		"journal": "NEJM Evid",
+		"year": "2024",
+		"types": [
+			"Journal Article",
+			"Randomized Controlled Trial",
+			"Observational Study",
+			"Multicenter Study",
+			"Comparative Study",
+			"Equivalence Trial"
+		],
+		"doi": "10.1056/EVIDoa2400056"
+	},
+	"39136944": {
+		"authors": "Sabouri AH, et al",
+		"title": "Acute Kidney Injury in Hospitalized Patients With Exertional Rhabdomyolysis.",
+		"journal": "JAMA Netw Open",
+		"year": "2024",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.1001/jamanetworkopen.2024.27464",
+		"pmcid": "PMC11322840"
+	},
+	"39139214": {
+		"authors": "Lenz JE, et al",
+		"title": "From Sweat to Strain: An Epidemiological Analysis of Training-Related Injuries in CrossFit(®).",
+		"journal": "Open Access J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.2147/OAJSM.S469411",
+		"pmcid": "PMC11321354"
+	},
+	"39247485": {
+		"authors": "Sanchez-Alvarado A, et al",
+		"title": "Effects of conservative treatment strategies for iliotibial band syndrome on pain and function in runners: a systematic review.",
+		"journal": "Front Sports Act Living",
+		"year": "2024",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3389/fspor.2024.1386456",
+		"pmcid": "PMC11377285"
+	},
+	"39274432": {
+		"authors": "Lucenti L, et al",
+		"title": "Return to Sport Following Arthroscopic Management of Femoroacetabular Impingement: A Systematic Review.",
+		"journal": "J Clin Med",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm13175219",
+		"pmcid": "PMC11395971"
+	},
+	"39327396": {
+		"authors": "Koslosky EJ, et al",
+		"title": "Upper Extremity Stress Fractures.",
+		"journal": "Sports Med Open",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1186/s40798-024-00769-7",
+		"pmcid": "PMC11427649"
+	},
+	"39401870": {
+		"authors": "Neal BS, et al",
+		"title": "Best practice guide for patellofemoral pain based on synthesis of a systematic review, the patient voice and expert clinical reasoning.",
+		"journal": "Br J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1136/bjsports-2024-108110"
+	},
+	"39425468": {
+		"authors": "Ortiz-Lango LA, et al",
+		"title": "An overview of the risk factors for producing fifth metatarsal fracture in sports activities: A systematic review.",
+		"journal": "J Foot Ankle Res",
+		"year": "2024",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1002/jfa2.70012",
+		"pmcid": "PMC11489280"
+	},
+	"39530845": {
+		"authors": "Jaschke M, et al",
+		"title": "Which risk factors are involved in a distal biceps tendon injury? A systematic review.",
+		"journal": "Adv Clin Exp Med",
+		"year": "2025",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.17219/acem/187891"
+	},
+	"39640199": {
+		"authors": "Fan L, et al",
+		"title": "Surgical vs. nonoperative treatment for acute Achilles' tendon rupture: a meta-analysis of randomized controlled trials.",
+		"journal": "Front Surg",
+		"year": "2024",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3389/fsurg.2024.1483584",
+		"pmcid": "PMC11617549"
+	},
+	"39650568": {
+		"authors": "Tung MJ, et al",
+		"title": "Injuries in weightlifting and powerlifting: an updated systematic review.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2023-001884",
+		"pmcid": "PMC11624822"
+	},
+	"39700362": {
+		"authors": "Schroeder JD, et al",
+		"title": "Bone Stress Injuries: Diagnosis and Management.",
+		"journal": "Am Fam Physician",
+		"year": "2024",
+		"types": ["Journal Article", "Review"]
+	},
+	"39716615": {
+		"authors": "Petersson AH, et al",
+		"title": "No need for subacromial decompression in responders to specific exercise treatment: a 10-year follow-up of a randomized controlled trial.",
+		"journal": "J Shoulder Elbow Surg",
+		"year": "2025",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1016/j.jse.2024.10.027"
+	},
+	"39751378": {
+		"authors": "Rowe DG, et al",
+		"title": "Return to Play After Arthroscopic Superior Labral Repair: A Systematic Review.",
+		"journal": "Am J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1177/03635465241246122"
+	},
+	"39995611": {
+		"authors": "Flore Z, et al",
+		"title": "Time-loss and recurrence rate of lateral ankle sprains in male professional football players depending on the severity grade: do we trivialise LAS?",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2024-002271",
+		"pmcid": "PMC11848657"
+	},
+	"40000448": {
+		"authors": "Hennessy O, et al",
+		"title": "Assessment and early investigation of cauda equina syndrome- a systematic review of existing international guidelines and summary of the current evidence.",
+		"journal": "Eur Spine J",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s00586-025-08732-0"
+	},
+	"40016533": {
+		"authors": "Finerty JT, et al",
+		"title": "Diagnostic criteria utilized for selection of patients for meralgia paresthetica surgery: a systemic review.",
+		"journal": "Neurosurg Rev",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s10143-025-03411-6"
+	},
+	"40041538": {
+		"authors": "Salamh P, et al",
+		"title": "Risk Factors Associated with New Onset of Shoulder Pain and Injury Among the Athletic Population: A Systematic Review of the Literature.",
+		"journal": "Int J Sports Phys Ther",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.26603/001c.129462",
+		"pmcid": "PMC11872537"
+	},
+	"40044717": {
+		"authors": "Lamo-Espinosa JM, et al",
+		"title": "Efficacy and safety of arthroscopy in femoroacetabular impingement syndrome: a systematic review and meta-analysis of randomized clinical trials.",
+		"journal": "Sci Rep",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1038/s41598-025-91788-1",
+		"pmcid": "PMC11882802"
+	},
+	"40051003": {
+		"authors": "Su W, et al",
+		"title": "Injury risk reduction programs including balance training reduce the incidence of anterior cruciate ligament injuries in soccer players: a systematic review and meta-analysis.",
+		"journal": "J Orthop Surg Res",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1186/s13018-025-05639-w",
+		"pmcid": "PMC11887387"
+	},
+	"40105744": {
+		"authors": "Alvarez P, et al",
+		"title": "Activity Restrictions After Midurethral Sling: A Randomized Controlled Trial.",
+		"journal": "Urogynecology (Phila)",
+		"year": "2026",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"doi": "10.1097/SPV.0000000000001679",
+		"pmcid": "PMC12708032"
+	},
+	"40152143": {
+		"authors": "Dalskov S, et al",
+		"title": "[Acute paraspinal compartment syndrome].",
+		"journal": "Ugeskr Laeger",
+		"year": "2025",
+		"types": ["Journal Article", "Case Reports", "English Abstract"],
+		"doi": "10.61409/V10240692"
+	},
+	"40165544": {
+		"authors": "Desmeules F, et al",
+		"title": "Rotator Cuff Tendinopathy Diagnosis, Nonsurgical Medical Care, and Rehabilitation: A Clinical Practice Guideline.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2025",
+		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't"],
+		"doi": "10.2519/jospt.2025.13182"
+	},
+	"40182566": {
+		"authors": "Lappen S, et al",
+		"title": "Distal Biceps Tendon Repair in Competitive Strength Athletes: A Retrospective Series of 183 Athletes.",
+		"journal": "Orthop J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671251322700",
+		"pmcid": "PMC11967228"
+	},
+	"40191842": {
+		"authors": "Lauf K, et al",
+		"title": "Successful rapid return to performance following non-operative treatment of proximal hamstring tendon avulsion in elite athletes.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2025-002468",
+		"pmcid": "PMC11969615"
+	},
+	"40495722": {
+		"authors": "Marotta N, et al",
+		"title": "Predictive role of surface electromyography and shoulder kinematic analysis on injury risk in padel players: A proof-of-concept study.",
+		"journal": "J Back Musculoskelet Rehabil",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/10538127251344494"
+	},
+	"40501314": {
+		"authors": "Prill R, et al",
+		"title": "The formal EU-US Meniscus Rehabilitation 2024 Consensus: An ESSKA-AOSSM-AASPT initiative. Part II-Prevention, non-operative treatment and return to sport.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2025",
+		"types": ["Journal Article", "Consensus Statement", "Practice Guideline"],
+		"doi": "10.1002/ksa.12689",
+		"pmcid": "PMC12310080"
+	},
+	"40549271": {
+		"authors": "Nguyen A, et al",
+		"title": "Ethnicity Risk and Exertional Rhabdomyolysis: A Narrative Review.",
+		"journal": "Adv Ther",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12325-025-03271-y"
+	},
+	"40550362": {
+		"authors": "Bineshfar N, et al",
+		"title": "The Epidemiology of Sports-Related Orbital Fractures in the United States.",
+		"journal": "Ophthalmology",
+		"year": "2025",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"doi": "10.1016/j.ophtha.2025.06.016",
+		"pmcid": "PMC12335833"
+	},
+	"40584248": {
+		"authors": "Rohowetz LJ, et al",
+		"title": "Vitreoretinal Injury Associated with Sports Ball Ocular Trauma.",
+		"journal": "Clin Ophthalmol",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2147/OPTH.S507399",
+		"pmcid": "PMC12204862"
+	},
+	"40604888": {
+		"authors": "Belmar-Arriagada H, et al",
+		"title": "Padel related injuries: prevalence and characteristics in chilean amateur players - a cross sectional analytic study.",
+		"journal": "BMC Sports Sci Med Rehabil",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s13102-025-01141-2",
+		"pmcid": "PMC12220762"
+	},
+	"40610521": {
+		"authors": "Rosenberg J, et al",
+		"title": "Groin hernia.",
+		"journal": "Nat Rev Dis Primers",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1038/s41572-025-00631-4"
+	},
+	"40655246": {
+		"authors": "Thamrongskulsiri N, et al",
+		"title": "No difference in patient-reported outcomes between operative and non-operative management of proximal hamstring injuries, but return to sports is higher in operative treatment: A systematic review and meta-analysis.",
+		"journal": "J Exp Orthop",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1002/jeo2.70327",
+		"pmcid": "PMC12255933"
+	},
+	"40677135": {
+		"authors": "Meyer HL, et al",
+		"title": "Injuries and overuse injuries in padel tennis: a retrospective epidemiological cross-sectional study of a level 1 trauma center in Germany.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.23736/S0022-4707.25.16884-9"
+	},
+	"40684222": {
+		"authors": "Silva-Sousa AC, et al",
+		"title": "Management strategies for sport-related traumatic dental injuries: a systematic review based on case reports.",
+		"journal": "BMC Sports Sci Med Rehabil",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s13102-025-01188-1",
+		"pmcid": "PMC12275362"
+	},
+	"40711113": {
+		"authors": "Rocamora-López G, et al",
+		"title": "Analysis of Differences in Injuries in Padel Players According to Sport-Specific Factors, Level of Physical Activity, Adherence to the Mediterranean Diet, and Psychological Status.",
+		"journal": "Sports (Basel)",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.3390/sports13070228",
+		"pmcid": "PMC12297936"
+	},
+	"40731933": {
+		"authors": "Guerineau F, et al",
+		"title": "Ultrasound-Based Morphological and Functional Assessment in Male CrossFit Athletes with Unilateral Subacromial Shoulder Pain: An Observational Study.",
+		"journal": "Medicina (Kaunas)",
+		"year": "2025",
+		"types": ["Journal Article", "Observational Study"],
+		"doi": "10.3390/medicina61071304",
+		"pmcid": "PMC12299071"
+	},
+	"40756797": {
+		"authors": "Freund B, et al",
+		"title": "Elite Figure Skaters Return to Sport Strategy Following Sports-Related Concussion: A Clinical Commentary.",
+		"journal": "Int J Sports Phys Ther",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.26603/001c.142486",
+		"pmcid": "PMC12317793"
+	},
+	"40806982": {
+		"authors": "Agostini F, et al",
+		"title": "Rehabilitative Good Practices in the Treatment of Patients with Muscle Injuries.",
+		"journal": "J Clin Med",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm14155355",
+		"pmcid": "PMC12347294"
+	},
+	"40807174": {
+		"authors": "Baur A, et al",
+		"title": "Early Rotator Cuff Repair Yields Lower Retear Rates and Superior Functional Outcomes: A Systematic Review and Meta-Analysis.",
+		"journal": "J Clin Med",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm14155552",
+		"pmcid": "PMC12347289"
+	},
+	"40862020": {
+		"authors": "Hewitt MA, et al",
+		"title": "Association of Surgical Timing With Complications and Patient-Reported Outcomes After Achilles Tendon Repair.",
+		"journal": "Orthop J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671251365622",
+		"pmcid": "PMC12374104"
+	},
+	"40866078": {
+		"authors": "Jacobs W, et al",
+		"title": "Risk factors for cervical artery dissection: a systematic review with meta-analysis.",
+		"journal": "Stroke Vasc Neurol",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1136/svn-2025-004186",
+		"pmcid": "PMC13359515"
+	},
+	"40923438": {
+		"authors": "Buckthorpe M, et al",
+		"title": "Systematic video analysis of ankle sprain injuries in elite male football (soccer): Injury mechanisms, situational patterns, biomechanics and neurocognitive errors study: A study on 140 consecutive players.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1002/ksa.70049",
+		"pmcid": "PMC12582226"
+	},
+	"40926771": {
+		"authors": "Falotico GG, et al",
+		"title": "Surgical Repair of Proximal Hamstring Tendon Avulsion.",
+		"journal": "Rev Bras Ortop (Sao Paulo)",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1055/s-0045-1810038",
+		"pmcid": "PMC12417027"
+	},
+	"40973466": {
+		"authors": "Shill IJ, et al",
+		"title": "Prevention strategies and modifiable risk factors for concussion: a systematic review and meta-analysis for the Female, woman and girl/or Athlete Injury pRevention (FAIR) consensus.",
+		"journal": "Br J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1136/bjsports-2025-109915",
+		"pmcid": "PMC12703316"
+	},
+	"40989935": {
+		"authors": "Jaber A, et al",
+		"title": "High return to sport after rotator cuff repair in racket sport players.",
+		"journal": "J Exp Orthop",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1002/jeo2.70396",
+		"pmcid": "PMC12451472"
+	},
+	"41011098": {
+		"authors": "Ferreira RM, et al",
+		"title": "Sport-Related Injuries in Portuguese Padel Practitioners and Their Characteristics.",
+		"journal": "Medicina (Kaunas)",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.3390/medicina61091707",
+		"pmcid": "PMC12471779"
+	},
+	"41118186": {
+		"authors": "Webb CW, et al",
+		"title": "Slipped Capital Femoral Epiphysis: Rapid Evidence Review.",
+		"journal": "Am Fam Physician",
+		"year": "2025",
+		"types": ["Journal Article", "Review"]
+	},
+	"41150491": {
+		"authors": "Ryman Augustsson S, et al",
+		"title": "Training Load, Injuries, and Well-Being in Youth Padel Players: A Cross-Sectional Study.",
+		"journal": "Sports (Basel)",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.3390/sports13100356",
+		"pmcid": "PMC12567576"
+	},
+	"41165416": {
+		"authors": "Barton AT, et al",
+		"title": "Return to Sport Among Professional Athletes After Orbital Fracture.",
+		"journal": "J Craniofac Surg",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1097/SCS.0000000000012112"
+	},
+	"41173558": {
+		"authors": "Bouklouch Y, et al",
+		"title": "Diagnosis of acute compartment syndrome: current diagnostic parameters.",
+		"journal": "Injury",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.injury.2025.112773"
+	},
+	"41179423": {
+		"authors": "Lehane KM Jr, et al",
+		"title": "Approach to diagnosing and treating tears of the latissimus dorsi and teres major.",
+		"journal": "JSES Rev Rep Tech",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.xrrt.2025.05.015",
+		"pmcid": "PMC12573627"
+	},
+	"41210089": {
+		"authors": "Schlegel P, et al",
+		"title": "Epidemiology and Risk Factors of CrossFit(®)-Related Injuries: A Cross-Sectional Study Among Athletes in the Czech Republic.",
+		"journal": "J Sports Sci Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.52082/jssm.2025.739",
+		"pmcid": "PMC12590215"
+	},
+	"41276811": {
+		"authors": "Zhang W, et al",
+		"title": "Effects of seven types of exercise in the treatment of rotator cuff-related shoulder pain (RCRSP): a systematic review and Bayesian network meta-analysis.",
+		"journal": "J Orthop Surg Res",
+		"year": "2025",
+		"types": ["Journal Article", "Network Meta-Analysis", "Systematic Review"],
+		"doi": "10.1186/s13018-025-06514-4",
+		"pmcid": "PMC12715924"
+	},
+	"41278057": {
+		"authors": "Cho MO, et al",
+		"title": "Vertebral Artery Dissection and Lateral Medullary Syndrome Following a High-Intensity CrossFit Workout.",
+		"journal": "Cureus",
+		"year": "2025",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.7759/cureus.97420",
+		"pmcid": "PMC12638039"
+	},
+	"41401258": {
+		"authors": "Ross P, et al",
+		"title": "Bucket-Handle Meniscus Tears: Epidemiology, Diagnosis, Management, and Outcomes.",
+		"journal": "JBJS Rev",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2106/JBJS.RVW.25.00144"
+	},
+	"41441439": {
+		"authors": "Graham I, et al",
+		"title": "\"All Hands on Deck\": A Systematic Review of Concussion Guidelines Across All Sailing Sports and a Call to Action.",
+		"journal": "Sports (Basel)",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/sports13120455",
+		"pmcid": "PMC12737527"
+	},
+	"41451757": {
+		"authors": "Balboni JM, et al",
+		"title": "Jones fractures in elite athletes-2025 International Foot and Ankle Sports Consensus and systematic review.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review", "Consensus Statement"],
+		"doi": "10.1002/ksa.70241",
+		"pmcid": "PMC13502410"
+	},
+	"41458779": {
+		"authors": "Owusu Otoo K, et al",
+		"title": "A Review of Sideline Assessment Measurements for Identifying Sports-Related Concussions and Their Appropriate Management Techniques.",
+		"journal": "Cureus",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.7759/cureus.97710",
+		"pmcid": "PMC12738976"
+	},
+	"41476226": {
+		"authors": "Li R, et al",
+		"title": "Return-to-sport rate and time in elite athletes after ankle syndesmosis injuries: a systematic review and meta-analysis.",
+		"journal": "J Orthop Surg Res",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1186/s13018-025-06566-6",
+		"pmcid": "PMC12866152"
+	},
+	"41544646": {
+		"authors": "Ergönül Ö, et al",
+		"title": "Tetanus.",
+		"journal": "Lancet",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/S0140-6736(25)01579-X"
+	},
+	"41552624": {
+		"authors": "DiLeo SDF, et al",
+		"title": "Epidemiology and Risk Factors of Wrist Pain and Injury in Adolescent Artistic Gymnasts: A Systematic Review and Meta-analysis.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671251395329",
+		"pmcid": "PMC12804664"
+	},
+	"41680115": {
+		"authors": "Challoumas D, et al",
+		"title": "Surgical management of internal impingement in overhead athletes: a systematic review.",
+		"journal": "Clin Shoulder Elb",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5397/cise.2025.01123",
+		"pmcid": "PMC12982881"
+	},
+	"41770460": {
+		"authors": "Yılmaz YC, et al",
+		"title": "Visual outcomes after blunt ocular trauma: clinical findings, management, and prognostic factors.",
+		"journal": "Int Ophthalmol",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s10792-026-04022-w"
+	},
+	"41970099": {
+		"authors": "Moushon B, et al",
+		"title": "Acute Exercise-Induced Compartment Syndrome Following High-Load Resistance Training in a Powerlifter: A Case Report.",
+		"journal": "Cureus",
+		"year": "2026",
+		"types": ["Case Reports", "Journal Article"],
+		"doi": "10.7759/cureus.105008",
+		"pmcid": "PMC13065432"
+	},
+	"41979385": {
+		"authors": "D'Ambrosi R, et al",
+		"title": "Mechanisms of anterior cruciate ligament injury across sports: A systematic review and meta-analysis of video-based studies.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1002/ksa.70408"
+	},
+	"41981329": {
+		"authors": "Godoy IRB, et al",
+		"title": "Imaging in the diagnosis and characterization of tennis leg.",
+		"journal": "Skeletal Radiol",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s00256-026-05212-4"
+	},
+	"42003662": {
+		"authors": "Bensa A, et al",
+		"title": "Return to sport after meniscectomy, meniscal repair, and meniscal allograft transplantation for meniscal lesions in athletes: A systematic review and meta-analysis.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1002/ksa.70404"
+	},
+	"42010296": {
+		"authors": "Aiello F, et al",
+		"title": "Ocular injuries in padel: findings from a survey on frequency, risk factors, and perceptions toward protective eyewear.",
+		"journal": "Eye (Lond)",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1038/s41433-026-04447-8",
+		"pmcid": "PMC13341748"
+	},
+	"42063301": {
+		"authors": "Korakakis V, et al",
+		"title": "Shockwave Therapy for Midportion and Insertional Achilles Tendinopathy: A Nail in the Coffin? A Systematic Review With Meta-Analysis.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.2519/jospt.2026.13985"
+	},
+	"42067876": {
+		"authors": "Nilsson N, et al",
+		"title": "Incidence, reason for treatment delay and patient-reported outcome of patients affected by a chronic Achilles tendon rupture in a Swedish population.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s12891-026-09890-y",
+		"pmcid": "PMC13134120"
+	},
+	"42093763": {
+		"authors": "Wagemans J, et al",
+		"title": "Time to return to sports in football players recovering from lower limb soft tissue injuries: a systematic review with meta-analysis.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2026-003245",
+		"pmcid": "PMC13141215"
+	},
+	"42115126": {
+		"authors": "Bloch H, et al",
+		"title": "Concussions in German professional football (soccer) - an epidemiological and etiological analysis over nine consecutive seasons.",
+		"journal": "J Sci Med Sport",
+		"year": "2026",
+		"types": ["Journal Article", "Observational Study"],
+		"doi": "10.1016/j.jsams.2026.04.014"
+	},
+	"42150363": {
+		"authors": "Hmid M, et al",
+		"title": "[Central retinal artery occlusion secondary to carotid artery dissection brought about by CrossFit burpees in a young woman].",
+		"journal": "J Fr Ophtalmol",
+		"year": "2026",
+		"types": ["Letter"],
+		"doi": "10.1016/j.jfo.2026.104898"
+	},
+	"42258915": {
+		"authors": "Schwach M, et al",
+		"title": "Tennis leg: Diagnosis and management - A state-of-the-art review.",
+		"journal": "Foot (Edinb)",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1016/j.foot.2026.102267"
+	},
+	"42319275": {
+		"authors": "Encinas R, et al",
+		"title": "Clinical Outcomes and Complications of Surgical and Conservative Treatment for Jones Fractures: A Systematic Review.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.5435/JAAOS-D-25-01516"
+	},
+	"42469843": {
+		"authors": "Fernández-Cortiñas AB, et al",
+		"title": "Postoperative outcomes after arthroscopic repair of isolated subscapularis tears: a systematic review and meta-analysis.",
+		"journal": "J Orthop Surg Res",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"doi": "10.1186/s13018-026-07088-5",
+		"pmcid": "PMC13660073"
+	},
+	"42476539": {
+		"authors": "Balius R, et al",
+		"title": "Triceps surae muscle injuries-a clinical challenge more complex than you think.",
+		"journal": "Br Med Bull",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1093/bmb/ldag021"
+	},
+	"42506584": {
+		"authors": "Burke OC Jr, et al",
+		"title": "Epidemiology of Achilles tendon ruptures in the United States: 2019 to 2024.",
+		"journal": "Phys Sportsmed",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1080/00913847.2026.2710601"
+	},
+	"42543029": {
+		"authors": "Escudero-Tena A, et al",
+		"title": "Upper-body injury epidemiology in women's padel: Impact of playing level, side of play, and racquet characteristics.",
+		"journal": "J Sports Sci",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1080/02640414.2026.2711552"
+	},
+	"42558293": {
+		"authors": "Xiang H, et al",
+		"title": "Neuromuscular training for preventing ankle joint injuries in athletes: a systematic review and meta-analysis.",
+		"journal": "Front Physiol",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.3389/fphys.2026.1854319",
+		"pmcid": "PMC13437404"
+	},
+	"42570081": {
+		"authors": "Bojovic M, et al",
+		"title": "Bone stress fractures and injuries of the upper limb in athletes.",
+		"journal": "Int Orthop",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s00264-026-06978-x"
+	},
+	"42577126": {
+		"authors": "Alanazi F, et al",
+		"title": "Functional outcomes and rehabilitation behaviors following ankle sprain in amateur padel players: a cross-sectional study.",
+		"journal": "Front Med (Lausanne)",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.3389/fmed.2026.1887372",
+		"pmcid": "PMC13453756"
+	},
+	"42609059": {
+		"authors": "Tena-Portilla A, et al",
+		"title": "Effectiveness of exercise in rotator cuff-related shoulder pain: a systematic review with meta-analysis.",
+		"journal": "Physiother Theory Pract",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1080/09593985.2026.2717392"
+	},
+	"42623244": {
+		"authors": "Feller D, et al",
+		"title": "Red flags for extracranial vertebral artery dissections in patients with neck pain: a scoping review.",
+		"journal": "J Man Manip Ther",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1080/10669817.2026.2720218"
+	},
+	"42646895": {
+		"authors": "Morales-Rodríguez-Parets L, et al",
+		"title": "Clinical, Functional, and Ultrasonographic Assessment of the Shoulder-Elbow Complex in Padel Players with Lateral Elbow Tendinopathy: A Pilot Observational Study.",
+		"journal": "Sports (Basel)",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.3390/sports14080357",
+		"pmcid": "PMC13517780"
+	},
+	"42704783": {
+		"authors": "Stahel PF, et al",
+		"title": "Extremity compartment syndrome: What you need to know.",
+		"journal": "J Trauma Acute Care Surg",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1097/TA.0000000000005169"
+	},
+	"42716511": {
+		"authors": "Maffulli N, et al",
+		"title": "Current concepts and management of insertional Achilles tendinopathy and calcific insertional Achilles tendinopathy.",
+		"journal": "Br Med Bull",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1093/bmb/ldag031"
+	},
+	"42748362": {
+		"authors": "Runer A, et al",
+		"title": "Current concepts in isolated and combined injuries of the medial collateral ligament complex-Part I: Anatomy, biomechanics, clinical and radiological examination of the medial collateral ligament of the knee.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1002/ksa.70588"
+	},
+	"42770238": {
+		"authors": "Vadalà G, et al",
+		"title": "AO Spine Clinical Practice Recommendations: When to Operate in Lumbar Disc Herniation.",
+		"journal": "Global Spine J",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/21925682261492223",
+		"pmcid": "PMC13597961"
+	},
+	"42783641": {
+		"authors": "Bruna-Mejias A, et al",
+		"title": "Exercise Loading Strategies for Patellar Tendinopathy: A Systematic Review and Meta-Analysis of Clinical Outcomes.",
+		"journal": "J Funct Morphol Kinesiol",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jfmk11030348",
+		"pmcid": "PMC13608764"
+	},
+	"42789756": {
+		"authors": "Runer A, et al",
+		"title": "Current concepts in isolated and combined injuries of the medial collateral ligament complex, part II: The anteromedial knee instability classification.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1002/ksa.70630"
+	},
+	"42799963": {
+		"authors": "Pedret C, et al",
+		"title": "Calf Injuries: An Anatomy-Based Approach to Diagnosis, Management and Return to Sport.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12178-026-10059-2",
+		"pmcid": "PMC13615943"
+	},
+	"42814196": {
+		"authors": "Xia Y, et al",
+		"title": "Operative treatment of high-grade medial collateral ligament injury and chronic medial knee instability: a systematic review.",
+		"journal": "Arch Orthop Trauma Surg",
+		"year": "2026",
+		"types": ["Journal Article", "Systematic Review"],
+		"doi": "10.1007/s00402-026-06517-8",
+		"pmcid": "PMC13627243"
+	},
+	"42841071": {
+		"authors": "Ferrero A, et al",
+		"title": "Extreme Diagnostic and Therapeutic Heterogeneity Limits Treatment Conclusions in Iliotibial Band Syndrome: A Systematic Review with Level-of-Evidence Stratification.",
+		"journal": "Orthop Res Rev",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2147/ORR.S629195",
+		"pmcid": "PMC13641109"
+	},
+	"42886539": {
+		"authors": "Hauer TM, et al",
+		"title": "Calf Injuries: Anatomy, Pathology, and Treatment.",
+		"journal": "J Am Acad Orthop Surg",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.5435/JAAOS-D-25-01090"
+	}
+}

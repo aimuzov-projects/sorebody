@@ -1078,12 +1078,14 @@
 	white-space: nowrap;
 }
 
-/* Большой заголовок по мере прокрутки гаснет и уходит вверх, маленький в шапке
-   проявляется. Переход привязан к самой прокрутке, обратный скролл всё возвращает.
-   Где нет scroll-driven animations, долю прокрутки пишет lib/reading.ts */
+/* Большой заголовок, заходя под шапку, гаснет и уходит вверх быстрее прокрутки, а в шапке на
+   месте логотипа проявляется маленький. Отсчёт не от верха страницы, а от момента, когда верх
+   заголовка коснулся низа строки шапки (exit 0px): над заголовком то чипы, то ничего. Дальше
+   -- пиксели, а не проценты exit, чтобы однострочный заголовок не сменялся рывком. Обратный
+   скролл всё возвращает. Где таких таймлайнов нет, тот же путь считает lib/reading.ts */
 @keyframes article-title-out {
 	to {
-		transform: translateY(-24px);
+		transform: translateY(-48px);
 		opacity: 0;
 	}
 }
@@ -1124,7 +1126,7 @@
 	}
 }
 
-@supports (animation-timeline: scroll()) {
+@supports (timeline-scope: none) and (animation-timeline: view()) {
 	/* :root -- чтобы правило перебило основное, даже если минификатор поставит его выше */
 	@media (prefers-reduced-motion: reduce) {
 		:root .article__title {
@@ -1139,14 +1141,26 @@
 			animation-name: article-logo-fade-out;
 		}
 	}
+
+	/* Логотип и маленький заголовок -- не потомки большого: имя таймлайна им видно через общего
+	   предка. У копии страницы в круге подсмотра темы свой заголовок и своя область, иначе два
+	   одноимённых таймлайна гасили бы друг друга */
+	body,
+	.theme-peek {
+		timeline-scope: --article-title;
+	}
+
 	.article__title {
 		/* Только отдельные свойства: краткую запись animation минификатор склеивает
 		   с animation-timeline, которой в ней быть не может, и браузер выкидывает правило */
 		animation-name: article-title-out;
 		animation-timing-function: linear;
 		animation-fill-mode: both;
-		animation-timeline: scroll(nearest);
-		animation-range: 0 140px;
+		animation-timeline: --article-title;
+		animation-range: exit 0px exit 60px;
+		view-timeline: --article-title block;
+		/* Верх области таймлайна -- низ строки шапки, а не край окна */
+		view-timeline-inset: calc(var(--theme-toggle-top) + var(--header-row)) 0px;
 	}
 
 	.article-bar__title {
@@ -1154,8 +1168,8 @@
 		animation-name: article-title-in;
 		animation-timing-function: linear;
 		animation-fill-mode: both;
-		animation-timeline: scroll(nearest);
-		animation-range: 80px 160px;
+		animation-timeline: --article-title;
+		animation-range: exit 12px exit 48px;
 	}
 
 	.article-bar__logo {
@@ -1163,12 +1177,12 @@
 		animation-name: article-logo-out;
 		animation-timing-function: linear;
 		animation-fill-mode: both;
-		animation-timeline: scroll(nearest);
-		animation-range: 40px 100px;
+		animation-timeline: --article-title;
+		animation-range: exit 0px exit 24px;
 	}
 }
 
-@supports not (animation-timeline: scroll()) {
+@supports not ((timeline-scope: none) and (animation-timeline: view())) {
 	@media (prefers-reduced-motion: reduce) {
 		:root .article__title,
 		:root .article-bar__title,
@@ -1183,7 +1197,7 @@
 		opacity: calc(1 - var(--logo-out, 0));
 	}
 	.article__title {
-		transform: translateY(calc(var(--title-out, 0) * -24px));
+		transform: translateY(calc(var(--title-out, 0) * -48px));
 		opacity: calc(1 - var(--title-out, 0));
 	}
 

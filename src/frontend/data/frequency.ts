@@ -5,7 +5,7 @@ import { Circle, Diamond, Triangle } from 'lucide-static'
  * задаёт линза спорта, порядок внутри уровня -- `frequencyOrder` спорта (data/sports.ts).
  */
 export const FREQUENCIES = [
-	{ slug: 'common', label: 'Частые', pill: 'Частая травма', icon: Circle },
+	{ slug: 'common', label: 'Частые', pill: 'Частая боль', icon: Circle },
 	{ slug: 'uncommon', label: 'Нечастые', pill: 'Встречается нечасто', icon: Triangle },
 	{ slug: 'rare', label: 'Редкие', pill: 'Редко, но опасно', icon: Diamond },
 ] as const

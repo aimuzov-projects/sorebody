@@ -30,7 +30,7 @@ export async function sceneData(sport: Sport) {
 		scene: {
 			slug: sport.slug,
 			home: sportHome(sport.slug),
-			heading: `Травмы ${sport.phrase}`,
+			heading: `Боль ${sport.phrase}`,
 			description: sport.description,
 			phrase: sport.phrase,
 			elementLabel: sport.elementLabel,

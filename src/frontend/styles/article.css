@@ -607,12 +607,37 @@
 
 	&__source-list {
 		display: grid;
-		gap: 10px;
+		gap: 14px;
 		margin: 0;
 		padding-left: 1.4em;
 		font-size: 14px;
 		line-height: 1.5;
 		color: var(--muted);
+	}
+
+	/* Источник: наша подпись по-русски, под ней библиография из PubMed мельче, ниже -- тип
+	   работы и ссылки в одну строку с переносом */
+	&__source-label {
+		display: block;
+		color: var(--fg);
+	}
+
+	&__source-citation {
+		display: block;
+		font-size: 13px;
+		overflow-wrap: anywhere;
+	}
+
+	&__source-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px 12px;
+		align-items: baseline;
+		margin-top: 2px;
+	}
+
+	&__source-type {
+		font-size: 13px;
 	}
 
 	&__source-link {

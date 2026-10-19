@@ -13,12 +13,16 @@ const { href, label, icon, place } = Astro.props
 const current = Astro.url.pathname.replace(/\/$/, '') === href.replace(/\/$/, '')
 ---
 
+<!-- На своей странице без href: Enter не перезагружает её, а Tab проходит мимо. Роль ссылки
+     оставляем, чтобы скринридер прочёл «текущая страница» в том же ряду -->
 <a
 	class="corner-link"
 	data-place={place}
-	{href}
+	href={current ? undefined : href}
+	role={current ? 'link' : undefined}
 	aria-label={label}
 	aria-current={current ? 'page' : undefined}
+	aria-disabled={current ? 'true' : undefined}
 	data-corner-link
 >
 	<span class="corner-link__icon" aria-hidden="true" set:html={icon} />
@@ -33,7 +37,6 @@ const current = Astro.url.pathname.replace(/\/$/, '') === href.replace(/\/$/, ''
 	   приглушена. В Mini App переключателя нет, и ряд сдвигается в угол на его место.
 	   Место в ряду -- через data-place, а не style: CSP сайта режет inline-стили */
 	.corner-link {
-		--corner-step: calc(40px + var(--header-gap));
 		--corner-place: 1;
 
 		position: fixed;

@@ -33,15 +33,14 @@ test('значки в углу стоят в ряд слева от темы: (i
 	expect(changelog.x + changelog.width).toBeLessThanOrEqual(theme.x)
 })
 
-test('подсказки значков в углу открываются с клавиатуры и повторяют подпись', async ({ page }) => {
-	await page.goto('/changelog/')
+test('подсказки значков в углу открываются с клавиатуры, повторяют подпись и закрываются по Esc', async ({ page }) => {
+	await page.goto('/nope/')
 
 	for (const name of ['О справочнике', 'Что нового']) {
 		const link = page.getByRole('link', { name, exact: true })
 		const tip = link.locator('xpath=following-sibling::*[1]')
 
 		await expect(tip).toBeHidden()
-		await page.keyboard.press('Tab')
 
 		// Табом до нужного значка: перед ним на странице могут быть другие ссылки
 		for (let i = 0; i < 20 && !(await link.evaluate((el) => el === document.activeElement)); i++)
@@ -49,7 +48,31 @@ test('подсказки значков в углу открываются с к
 
 		await expect(tip).toBeVisible()
 		await expect(tip).toHaveText(name)
+		await page.keyboard.press('Escape')
+		await expect(tip).toBeHidden()
 	}
+})
+
+test('значок своей страницы не ведёт никуда и пропускается табом', async ({ page }) => {
+	await page.goto('/about/')
+
+	const about = page.getByRole('link', { name: 'О справочнике', exact: true })
+
+	await expect(about).not.toHaveAttribute('href')
+	await expect(about).toHaveAttribute('aria-disabled', 'true')
+
+	for (let i = 0; i < 20; i++) {
+		await page.keyboard.press('Tab')
+		expect(await about.evaluate((el) => el === document.activeElement)).toBe(false)
+	}
+})
+
+test('логотип на главной -- просто знак, на about ведёт значок (i)', async ({ page }) => {
+	await page.goto('/')
+
+	await expect(page.getByRole('img', { name: 'Sorebody' })).toBeVisible()
+	await expect(page.locator('a', { has: page.getByRole('img', { name: 'Sorebody' }) })).toHaveCount(0)
+	await expect(page.getByRole('link', { name: 'О справочнике', exact: true })).toHaveAttribute('href', '/about/')
 })
 
 test('в Mini App ссылка встаёт в угол на место скрытого переключателя темы', async ({ page }) => {

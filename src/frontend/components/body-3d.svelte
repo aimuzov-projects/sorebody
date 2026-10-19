@@ -1297,17 +1297,12 @@
 		</span>
 	{/each}
 
-	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип, ссылка на about. Справа в той же
-	     строке значки из base.astro, среди них и «О справочнике» с подсказкой -->
+	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип, просто знак без ссылки.
+	     На about ведёт (i) справа, из base.astro -->
 	<SiteHeader floating>
-		<a
-			class="index__brand-row logo-host"
-			class:index__brand-row--away={open?.side === 'bottom'}
-			href="/about/"
-			aria-label="Sorebody, о справочнике"
-		>
+		<div class="index__brand-row" class:index__brand-row--away={open?.side === 'bottom'}>
 			<Logo />
-		</a>
+		</div>
 	</SiteHeader>
 
 	<!-- Индекс: на странице движения -- его травмы, на главной -- поиск, фильтры и зоны.
@@ -2039,7 +2034,6 @@
 			gap: 2px;
 		}
 
-		/* Логотип -- ссылка на «О справочнике» */
 		&__brand-row {
 			isolation: isolate;
 			position: relative;
@@ -2047,7 +2041,6 @@
 			gap: 8px;
 			align-items: center;
 			justify-self: start;
-			text-decoration: none;
 
 			/* Под логотипом фигура: светлое лицо съедало серое «care». Под строкой лёгкая дымка
 			   фона с размытием, плашкой с полукруглыми торцами */
@@ -2065,12 +2058,6 @@
 				@media (prefers-reduced-transparency: reduce) {
 					backdrop-filter: none;
 				}
-			}
-
-			&:focus-visible {
-				border-radius: 6px;
-				outline: 2px solid var(--a-blue);
-				outline-offset: 4px;
 			}
 
 			/* В раскрытой зоне на телефоне строку шапки занимает стрелка назад с названием зоны */

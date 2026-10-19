@@ -28,6 +28,8 @@ export function attachCornerTip(target: HTMLElement, tip: HTMLElement) {
 	target.addEventListener('pointerleave', hide)
 	target.addEventListener('focus', () => target.matches(':focus-visible') && show())
 	target.addEventListener('blur', hide)
+	// Esc прячет и подсказку от мыши, где бы ни был фокус: popover="manual" сам на него не закрывается
+	addEventListener('keydown', (event) => event.key === 'Escape' && hide())
 	addEventListener('scroll', place, { capture: true, passive: true })
 	addEventListener('resize', place)
 

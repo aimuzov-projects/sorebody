@@ -606,6 +606,10 @@
 	}
 
 	/* Источники свёрнуты: в заголовке число и из чего список состоит, шеврон справа */
+	&__sources {
+		scroll-margin-top: var(--header-clear);
+	}
+
 	&__sources-summary {
 		cursor: pointer;
 		display: flex;
@@ -1136,6 +1140,10 @@
 	.article__sources::details-content {
 		content-visibility: visible;
 		display: contents;
+	}
+
+	.article__source-list {
+		margin-top: 20px;
 	}
 
 	.article__sources-chevron {

@@ -1,3 +1,4 @@
+import { plural } from './plural.ts'
 import { citedPmids, pubmedUrl } from './pubmed.ts'
 
 /**
@@ -25,16 +26,6 @@ export function guidelineSite(url: string) {
 	return protocol === 'https:' ? GUIDELINE_SITES[host] : undefined
 }
 
-/** Форма слова после числа: [1 работа, 3 работы, 11 работ]. */
-function countWord(n: number, [one, few, many]: [string, string, string]) {
-	const mod10 = n % 10
-	const mod100 = n % 100
-
-	if (mod10 === 1 && mod100 !== 11) return `${n} ${one}`
-
-	return `${n} ${mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? few : many}`
-}
-
 /**
  * Из чего состоит список источников -- строка под свёрнутым заголовком: "18 работ из PubMed
  * и 2 клинические рекомендации".
@@ -44,9 +35,9 @@ export function sourcesSummary(sources: Source[]) {
 	const guidelines = sources.length - papers
 
 	return [
-		papers && `${countWord(papers, ['работа', 'работы', 'работ'])} из PubMed`,
+		papers && `${papers} ${plural(papers, ['работа', 'работы', 'работ'])} из PubMed`,
 		guidelines &&
-			countWord(guidelines, ['клиническая рекомендация', 'клинические рекомендации', 'клинических рекомендаций']),
+			`${guidelines} ${plural(guidelines, ['клиническая рекомендация', 'клинические рекомендации', 'клинических рекомендаций'])}`,
 	]
 		.filter(Boolean)
 		.join(' и ')

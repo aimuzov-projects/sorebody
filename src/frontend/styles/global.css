@@ -78,6 +78,9 @@
 	--fg: #1d1d1f;
 	--muted: #6e6e73;
 	--accent: var(--accent-light);
+	/* Заливка цветом спорта (кнопка меню разделов): отдельным токеном, чтобы без спорта её можно
+	   было заменить градиентом, не трогая --accent у текста и рамок */
+	--accent-fill: var(--accent);
 	--on-accent: var(--on-accent-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;

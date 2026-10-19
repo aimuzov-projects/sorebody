@@ -2,6 +2,7 @@ import {
 	ArrowBigDownDash,
 	ArrowBigUp,
 	ArrowBigUpDash,
+	ArrowDownToDot,
 	ArrowDownToLine,
 	ArrowUpFromDot,
 	ArrowUpFromLine,
@@ -91,6 +92,7 @@ export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballEle
 	heading: ArrowUpFromDot,
 	collision: Merge,
 	goalkeeping: Shield,
+	fall: ArrowDownToDot,
 }
 
 export type ElementIcon = keyof typeof MOVEMENT_ICONS

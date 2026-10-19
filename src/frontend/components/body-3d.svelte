@@ -598,13 +598,19 @@
 
 		if (slug && slug !== sport.slug) {
 			history.replaceState(history.state, '', `${sport.home}${location.search}${location.hash}`)
-
-			// Зоны или статьи из хеша у этого спорта нет: шаг без хеша, а не мёртвая запись
-			if (parseHash().level === 0 && location.hash && !location.hash.startsWith('#tgWebApp'))
-				history.replaceState(history.state, '', `${sport.home}${location.search}`)
+			dropDeadHash()
 		}
 
 		sync()
+	}
+
+	/**
+	 * Зоны или статьи из хеша у этого спорта нет: шаг без хеша, а не мёртвая запись. Такой хеш
+	 * приходит, когда спорт сменили после шага, а с ним общий план остался бы без постера.
+	 */
+	function dropDeadHash() {
+		if (parseHash().level === 0 && location.hash && !location.hash.startsWith('#tgWebApp'))
+			history.replaceState(history.state, '', `${location.pathname}${location.search}`)
 	}
 
 	/**
@@ -621,9 +627,13 @@
 
 		if (!next) return
 
+		const from = location.href
+
 		applySport(next, !!article)
 		history.replaceState(history.state, '', `${home}${location.search}${location.hash}`)
+		dropDeadHash()
 		sync()
+		metrikaHit(from)
 	}
 
 	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны: адрес -- сразу хеш зоны. */
@@ -637,6 +647,9 @@
 	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
 	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал
 	openRegion()
+	// Главная, на которую ушли из `<head>` за выбранным спортом (lib/sport-memory.ts), получает
+	// хеш прежнего спорта как есть
+	dropDeadHash()
 	sync()
 
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */

@@ -69,10 +69,12 @@ test('подсказка значка в углу прижата к его пр�
 
 	for (const path of ['/', '/about/']) {
 		await page.goto(path)
-		const link = page.locator('.corner-link').first()
+		const link = page.getByRole('link', { name: 'Что нового', exact: true })
+		const tip = link.locator('xpath=following-sibling::*[1]')
 
-		await link.hover()
-		const tip = page.locator('[data-corner-tip]:popover-open')
+		// Табом, как в changelog.spec.ts: с клавиатуры подсказка открывается без наведения
+		for (let i = 0; i < 30 && !(await link.evaluate((el) => el === document.activeElement)); i++)
+			await page.keyboard.press('Tab')
 
 		await expect(tip).toBeVisible()
 		const [linkRight, tipRight] = await Promise.all(
@@ -80,6 +82,5 @@ test('подсказка значка в углу прижата к его пр�
 		)
 
 		expect(tipRight, path).toBe(linkRight)
-		await page.mouse.move(0, 400)
 	}
 })

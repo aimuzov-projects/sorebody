@@ -78,7 +78,10 @@
 	}
 
 	$effect(() => {
-		void load(injury.slug)
+		const slug = injury.slug
+
+		// Только от травмы: load читает status, и без untrack ошибка загрузки перезапускала её по кругу
+		untrack(() => void load(slug))
 	})
 
 	// Компонент уходит, когда статья догаснет: переключатели и чтение снимаем тогда же

@@ -3,7 +3,7 @@
 	Сцену прячет и будит родитель (body-3d.svelte), здесь -- загрузка, чтение и "Назад".
 -->
 <script lang="ts">
-	import { mount, onDestroy, tick, unmount, type Snippet } from 'svelte'
+	import { mount, onDestroy, tick, unmount, untrack, type Snippet } from 'svelte'
 
 	import { ChevronLeft, TextQuote } from 'lucide-static'
 
@@ -11,19 +11,27 @@
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { currentSection } from '#frontend/lib/sport-switch.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 
 	type Props = {
 		injury: { slug: string; title: string; summary: string }
 		sport: string
+		/** Раздел, на котором открыть статью после загрузки: его читали, когда сменили спорт. */
+		section?: string
 		/** Статья из адреса стоит на месте с первого кадра, открытая потом -- проявляется. */
 		instant: boolean
 		reduceMotion: boolean
 		onback: () => void
+		/**
+		 * «Разбор ‹в …›»: другой спорт выбран прямо в статье, сцена меняет его на месте. Без него
+		 * (страница элемента) -- обычный переход на статью спорта.
+		 */
+		onsport?: (sport: { slug: string; href: string }, section?: string) => void
 		footer?: Snippet
 	}
 
-	let { injury, sport, instant, reduceMotion, onback, footer }: Props = $props()
+	let { injury, sport, section, instant, reduceMotion, onback, onsport, footer }: Props = $props()
 
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
 	let body = $state<HTMLDivElement>()
@@ -51,7 +59,12 @@
 
 			target.replaceChildren()
 
-			return mount(SportSwitch, { target, props })
+			// Как выбор спорта в заголовке главной: сцена остаётся, разбор -- с того же раздела
+			const onchoose =
+				onsport &&
+				((choice: { slug: string; href: string }) => onsport(choice, reader && currentSection(reader)))
+
+			return mount(SportSwitch, { target, props: { ...props, onchoose } })
 		})
 	}
 
@@ -108,6 +121,13 @@
 			stopReading = initReading(root, reader, progressBar ?? null)
 			status = 'ready'
 			await tick()
+
+			// К разделу -- когда статья уже показана: пока она грузится, тело скрыто и прокрутке
+			// не за что зацепиться. Раздел читаем без подписки, перезагружать статью из-за него не нужно
+			const anchor = untrack(() => section)
+
+			if (anchor) root.querySelector(`#${CSS.escape(anchor)}`)?.scrollIntoView({ block: 'start' })
+
 			// Фокус -- на статью, а не на стрелку: скринридер начинает с неё, а у кнопки нет
 			// рамки фокуса, которую браузер рисовал при программном переводе
 			reader.focus({ preventScroll: true })

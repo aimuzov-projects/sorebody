@@ -11,6 +11,7 @@ import Metrika from '#frontend/components/metrika.astro'
 import MetrikaPixel from '@aimuzov-projects/infra-site-kit/metrika-pixel.astro'
 import { site } from '#frontend/data/site.ts'
 import type { SportSlug } from '#frontend/data/sports.ts'
+import { SPORT_RETURN } from '#frontend/lib/sport-memory.ts'
 import { THEME_KEY } from '#frontend/lib/theme.ts'
 import { pageTitle, siteTitle } from '#frontend/lib/title.ts'
 
@@ -29,9 +30,11 @@ type Props = {
 	sport?: SportSlug
 	/** Адрес canonical, если страница -- копия другой, по умолчанию своя. */
 	canonical?: string
+	/** Главные спортов у сцены: «Назад» на неё открывает выбранный спорт (lib/sport-memory.ts). */
+	sportHomes?: Record<string, string>
 }
 
-const { title, description = site.description, index = true, bare = false, bodyClass, sport } = Astro.props
+const { title, description = site.description, index = true, bare = false, bodyClass, sport, sportHomes } = Astro.props
 
 /**
  * Mini App Telegram помечаем на `<html>` до отрисовки, чтобы свои кнопки «Назад» не мигали.
@@ -44,6 +47,7 @@ const TELEGRAM_FLAG =
 	"document.documentElement.dataset.telegram=''}"
 
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(SPORT_RETURN).digest('base64')}`)
 
 /**
  * Метрика только в продовой сборке и только на продовом домене (components/metrika.astro).
@@ -58,7 +62,7 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 ---
 
 <!doctype html>
-<html lang="ru" data-sport={sport}>
+<html lang="ru" data-sport={sport} data-sport-homes={sportHomes && JSON.stringify(sportHomes)}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -79,6 +83,7 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<script is:inline set:html={TELEGRAM_FLAG} />
+		{sport && <script is:inline set:html={SPORT_RETURN} />}
 		<ThemeBoot key={THEME_KEY} />
 		{metrika && <Metrika id={site.metrikaId} host={metrikaHost} />}
 		<slot name="head" />

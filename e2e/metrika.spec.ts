@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 // В сборке для e2e счётчика нет (METRIKA=off), поэтому ym подменяем: смена спорта без
 // перезагрузки должна отправить хит, иначе Метрика её не увидит
-test('смена спорта без перезагрузки отправляет хит в Метрику, «Назад» -- тоже', async ({ page }) => {
+test('смена спорта без перезагрузки отправляет хит в Метрику, в статье -- тоже', async ({ page }) => {
 	await page.addInitScript(() => {
 		const hits: unknown[][] = []
 
@@ -29,14 +29,21 @@ test('смена спорта без перезагрузки отправляе
 
 	expect(options).toEqual({ title: expect.stringMatching(/^Травмы в паделе/), referer: `${origin}/` })
 
-	await page.goBack()
-	await expect.poll(hits).toHaveLength(2)
-	expect((await hits())[1][3]).toMatchObject({ referer: `${origin}/padel/` })
-
 	// Хеш в том же спорте -- не новая страница: зона открылась, хитов не прибавилось
 	await page.evaluate(() => (location.hash = '#zone=knee:0'))
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
-	expect(await hits()).toHaveLength(2)
+	expect(await hits()).toHaveLength(1)
+
+	// Список выбора спорта в заголовке гаснет после выбора: ждём, чтобы не спутать его со статейным
+	await expect(page.getByRole('listbox')).toHaveCount(0)
+
+	// «Разбор ‹в …›» в открытой статье -- та же смена спорта и тот же хит
+	await page.evaluate(() => (location.hash = '#ankle-sprain'))
+	await page.locator('.reader:not(.theme-peek *) [data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(`${origin}/#ankle-sprain`)
+	await expect.poll(hits).toHaveLength(2)
+	expect((await hits())[1][3]).toMatchObject({ referer: `${origin}/padel/#ankle-sprain` })
 })
 
 // Ссылка «/?region=knee» со статьи: страница сразу меняет адрес на хеш зоны, «Назад» -- на

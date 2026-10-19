@@ -2,17 +2,40 @@
 import InjuryArticle from '#frontend/components/injury-article.astro'
 import { SPORTS } from '#frontend/data/sports.ts'
 import { sportInjuries, sportsOf } from '#frontend/lib/catalog.ts'
+import { sceneData } from '#frontend/scene/scene-data.ts'
 
 export async function getStaticPaths() {
+	// "Разбор в ..." на главной меняет спорт на месте и ищет статью в сцене нового спорта: спорт
+	// селекта без этой травмы в сцене закрыл бы статью. Такую сборку не выпускаем
+	const inScene = new Map(
+		await Promise.all(
+			SPORTS.map(async (sport) => {
+				const { zones, whole } = await sceneData(sport)
+
+				return [
+					sport.slug,
+					new Set([...zones, whole].flatMap((zone) => zone.injuries.map((i) => i.slug))),
+				] as const
+			}),
+		),
+	)
 	const paths = await Promise.all(
 		SPORTS.map(async (sport) => {
 			const entries = await sportInjuries(sport)
 
 			return Promise.all(
-				entries.map(async ({ slug, injury, lens }) => ({
-					params: { sport: sport.slug, injury: slug },
-					props: { injury, lens: { sport, entry: lens }, sports: await sportsOf(slug) },
-				})),
+				entries.map(async ({ slug, injury, lens }) => {
+					const sports = await sportsOf(slug)
+					const missing = sports.filter((other) => !inScene.get(other)?.has(slug))
+
+					if (missing.length)
+						throw new Error(`${slug}: в селекте спорта, но нет в сцене: ${missing.join(', ')}`)
+
+					return {
+						params: { sport: sport.slug, injury: slug },
+						props: { injury, lens: { sport, entry: lens }, sports },
+					}
+				}),
 			)
 		}),
 	)

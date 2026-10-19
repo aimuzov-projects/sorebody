@@ -88,7 +88,7 @@ async function highlight(page: Page, from: SportSlug, to: SportSlug) {
 	await expect(list).toHaveAttribute('aria-activedescendant', target!)
 }
 
-test('падел красит акцент лаймом, а выбор спорта в заголовке переносит зону', async ({ page }) => {
+test('падел красит акцент лаймом, а выбор спорта с общего плана открывает общий план', async ({ page }) => {
 	await page.goto('/padel/#zone=shoulder:1')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	await expect(page.locator('h1')).toHaveText('Травмы в паделе')
@@ -100,7 +100,9 @@ test('падел красит акцент лаймом, а выбор спор�
 	// click() упадёт, если кнопку нельзя нажать: под inert-панелью, скрыта или прозрачна
 	await button.click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
-	await expect(page).toHaveURL(/\/#zone=shoulder:1$/)
+	// Закрытая зона сама не открывается: смена спорта оставляет общий план
+	await expect(page).toHaveURL(/\/\/[^/]+\/$/)
+	await expect(page.locator('.zone')).toHaveCount(0)
 })
 
 test('выбор спорта с клавиатуры: стрелка двигает подсветку, Enter переходит, Escape закрывает', async ({ page }) => {
@@ -123,15 +125,19 @@ test('выбор спорта с клавиатуры: стрелка двига
 	await expect(page).toHaveURL(/\/padel\/$/)
 })
 
-test('после «Назад» список закрыт и показывает свой спорт', async ({ page }) => {
+// Спорт -- настройка, а не шаг: смена не добавляет запись в историю, список после выбора закрыт
+test('смена спорта не добавляет шаг в историю', async ({ page }) => {
 	await page.goto('/padel/')
+
+	const steps = () => page.evaluate(() => history.length)
+	const before = await steps()
+
 	await sportButton(page, 'Падел').click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
 	await expect(page).toHaveURL(/\/$/)
-	await page.goBack()
-	await expect(page).toHaveURL(/\/padel\/$/)
-	await expect(sportButton(page, 'Падел')).toHaveAttribute('aria-expanded', 'false')
+	await expect(sportButton(page, 'Кроссфит')).toHaveAttribute('aria-expanded', 'false')
 	await expect(page.getByRole('listbox')).toHaveCount(0)
+	expect(await steps()).toBe(before)
 })
 
 // Смена спорта на главной -- на месте: страница и сцена с моделью остаются, меняются данные спорта,
@@ -173,7 +179,7 @@ test('из падела в футбол -- на месте, со своим цв
 // Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит
 const HOME = /\/\/[^/]+\/$/
 
-test('смена спорта на главной не перезагружает страницу, «Назад» и «Вперёд» тоже', async ({ page }) => {
+test('смена спорта на главной не перезагружает страницу и не добавляет шаг', async ({ page }) => {
 	await page.goto('/')
 	await markPage(page)
 	await chooseSport(page, 'Кроссфит', 'Падел')
@@ -188,15 +194,10 @@ test('смена спорта на главной не перезагружае�
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(1)
 	expect(await samePage(page)).toBe(true)
 
+	// Шаг в зону и обратно -- в паделе, браузерный «Назад» к кроссфиту не возвращает
+	await page.locator('.index__zone', { hasText: 'Колено' }).click()
+	await expect(page).toHaveURL(/\/padel\/#zone=knee:\d$/)
 	await page.goBack()
-	await expect(page).toHaveURL(HOME)
-	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
-	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
-	await expect(sportButton(page, 'Кроссфит')).toHaveCSS('color', rgb(CROSSFIT.accent.light))
-	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
-	expect(await samePage(page)).toBe(true)
-
-	await page.goForward()
 	await expect(page).toHaveURL(/\/padel\/$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
 	expect(await samePage(page)).toBe(true)
@@ -208,28 +209,89 @@ test('смена спорта на главной не перезагружае�
 	expect(await samePage(page)).toBe(false)
 })
 
-test('смена спорта на месте переносит зону со стороной тела', async ({ page }) => {
-	await page.goto('/#zone=shoulder:1')
+// Статья -> «Разбор» в другом спорте -> «Назад» до общего плана -> выбор спорта в заголовке:
+// остаёмся на общем плане, а не в зоне статьи, которую уже закрыли
+test('после «Назад» из статьи выбор спорта в заголовке не открывает закрытую зону', async ({ page }) => {
+	await page.goto('/')
 	await markPage(page)
+	await page.locator('.index__zone', { hasText: 'Голова' }).click()
+	await page.locator('.zone .zone__item', { hasText: 'Травмы лица' }).click()
 
-	// Сторона тела -- в классе раскрытой зоны: список встаёт снаружи от неё
-	const side = await page.locator('section.zone').getAttribute('class')
+	const reader = page.locator('.reader:not(.theme-peek *)')
 
-	await page.locator('.zone__back').click()
-	await chooseSport(page, 'Кроссфит', 'Падел')
-
-	await expect(page).toHaveURL(/\/padel\/#zone=shoulder:1$/)
-	await expect(page.locator('.zone__title')).toHaveText('Плечо')
-	await expect(page.locator('section.zone')).toHaveAttribute('class', side!)
-	expect(await samePage(page)).toBe(true)
-
-	// «Назад» в зоне закрывает её и остаётся в паделе, браузерный «Назад» -- к кроссфиту
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Падел' }).click()
+	await expect(page).toHaveURL(/\/padel\/#orofacial-trauma$/)
+	await reader.locator('.reader__back').click()
 	await page.locator('.zone__back').click()
 	await expect(page).toHaveURL(/\/padel\/$/)
+	// Статья гаснет полсекунды: её «Разбор» тоже кнопка «Вид спорта», ждём, пока уйдёт
+	await expect(reader).toHaveCount(0)
+
+	await chooseSport(page, 'Падел', 'Кроссфит')
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('.zone')).toHaveCount(0)
+	expect(await samePage(page)).toBe(true)
+})
+
+// «Разбор ‹в …›» в статье поверх модели -- та же смена спорта, что в заголовке: сцена остаётся,
+// статья -- с разбором нового спорта, а все прошлые шаги («Назад» на странице и в браузере)
+// открываются уже в нём
+test('«Разбор в …» в статье на главной меняет спорт на месте, «Назад» ведёт в зону нового спорта', async ({ page }) => {
+	await page.goto('/football/')
+	await markPage(page)
+	await page.locator('.index__zone', { hasText: 'Голова' }).click()
+	await expect(page).toHaveURL(/\/football\/#zone=head:\d$/)
+	await page.locator('.zone .zone__item', { hasText: 'Травмы лица' }).click()
+	await expect(page).toHaveURL(/\/football\/#orofacial-trauma$/)
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(reader.locator('.article__sport')).toHaveText(/в\sкроссфите/)
+	expect(await samePage(page)).toBe(true)
+
+	await reader.locator('.reader__back').click()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#zone=head:\d$/)
+	await expect(page.locator('.zone__title')).toHaveText('Голова')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+
 	await page.goBack()
 	await expect(page).toHaveURL(HOME)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+
+	await page.goForward()
+	await page.goForward()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(reader.locator('.article__sport')).toHaveText(/в\sкроссфите/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 	expect(await samePage(page)).toBe(true)
+})
+
+test('«Разбор в …» в статье на главной открывает новый разбор на том же разделе', async ({ page }) => {
+	await page.goto('/#ankle-sprain')
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+	const section = reader.locator('#treatment')
+
+	await section.evaluate((el) => el.scrollIntoView({ block: 'start' }))
+	// Фокус без прокрутки, выбор с клавиатуры: клик мышью сначала прокрутил бы к кнопке
+	await reader.locator('[data-sport-switch] button').evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
+	await page.keyboard.press('Enter')
+	await highlight(page, 'crossfit', 'padel')
+	await page.keyboard.press('Enter')
+
+	await expect(page).toHaveURL(/\/padel\/#ankle-sprain$/)
+	await expect(reader.locator('.article__sport')).toHaveText(/в\sпаделе/)
+
+	await expect
+		.poll(() => section.evaluate((el) => Math.round(el.getBoundingClientRect().top)))
+		.toBeLessThan(await page.evaluate(() => innerHeight / 3))
 })
 
 for (const reducedMotion of ['no-preference', 'reduce'] as const)
@@ -330,7 +392,7 @@ test('подсветка модели -- цвет спорта, даже есл�
 	await page.waitForFunction(() => 'bodyScene' in window, null, { timeout: 60_000 })
 	expect(await glow()).toBe(PADEL.accent.glow)
 
-	await page.goBack()
+	await chooseSport(page, 'Падел', 'Кроссфит')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 	expect(await glow()).toBe(CROSSFIT.accent.glow)
 })
@@ -347,9 +409,12 @@ test('на странице спорта видны только зоны с е�
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 })
 
-test('«Разбор в …» ведёт на статью другого спорта к тому же разделу', async ({ page }) => {
+test('«Разбор в …» ведёт на статью другого спорта к тому же разделу без нового шага', async ({ page }) => {
 	await page.goto('/crossfit/ankle-sprain/')
 	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+
+	const steps = await page.evaluate(() => history.length)
+
 	await page.evaluate(() => document.querySelector('#treatment')?.scrollIntoView())
 	// Фокус без прокрутки: читатель остаётся в разделе «Лечение»
 	await sportButton(page, 'Кроссфит').evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
@@ -358,6 +423,100 @@ test('«Разбор в …» ведёт на статью другого спо
 	await page.keyboard.press('Enter')
 	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/#treatment$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+	expect(await page.evaluate(() => history.length)).toBe(steps)
+})
+
+// Из поисковика на статью и смена спорта: адрес заменяется, но стрелка «Назад» всё равно ведёт
+// на главную, а не обратно в поисковик
+test('из поисковика после смены спорта в статье «Назад» ведёт на главную', async ({ page }) => {
+	await page.goto('about:blank')
+	await page.goto('/football/orofacial-trauma/', { referer: 'https://www.google.com/' })
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Футбол').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+	await page.locator('[data-back]').click()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('.index__title--home')).toBeVisible()
+})
+
+// На странице элемента своей сцены спорта нет: «Разбор» в её статье -- обычный переход на статью
+// спорта, а «Назад» возвращает к элементу его спорта
+test('«Разбор в …» в статье на странице элемента ведёт на статью спорта', async ({ page }) => {
+	await page.goto('/crossfit/elements/box-jump/')
+	await page.locator('.zone__item, .index__item', { hasText: 'Растяжение связок голеностопа' }).first().click()
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Падел' }).click()
+	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'padel')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/crossfit\/elements\/box-jump\/$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+})
+
+// Выбор спорта переживает уход на другую страницу: «Назад» к шагам главной, сделанным до смены
+// спорта, открывает их в выбранном, даже если браузер грузит главную заново, а не из кеша
+// Главная футбола -> статья футбола обычным переходом -> «Разбор» в кроссфите -> «Назад»: главная
+// грузится заново (unload отключает bfcache), и скрипт в head сразу уводит на главную кроссфита
+test('«Назад» на главную после смены спорта на другой странице открывает выбранный спорт', async ({ page }) => {
+	await page.goto('/football/')
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/football/orofacial-trauma/')
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Футбол').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('h1')).toHaveText('Травмы в кроссфите')
+})
+
+test('после ухода на другую страницу «Назад» открывает прошлые шаги в выбранном спорте', async ({ page }) => {
+	await page.goto('/football/')
+	await page.locator('.index__zone', { hasText: 'Голова' }).click()
+	await page.locator('.zone .zone__item', { hasText: 'Травмы лица' }).click()
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+
+	await reader.locator('[data-sport-switch] button').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	// Обработчик unload отключает bfcache: главная при «Назад» грузится заново
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/about/')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+
+	await page.goBack()
+	await expect(page).toHaveURL(/\/\/[^/]+\/#zone=head:\d$/)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('.zone__title')).toHaveText('Голова')
+})
+
+// Шаг главной падела с голенью, а у кроссфита её нет: скрипт в head уводит на главную кроссфита
+// с этим хешем, та отбрасывает его и показывает общий план с постером
+test('«Назад» на шаг с зоной, которой нет у выбранного спорта, открывает его общий план', async ({ page }) => {
+	await page.goto('/padel/#zone=shin:0')
+	await expect(page.locator('.zone__title')).toHaveText('Голень')
+	await page.evaluate(() => addEventListener('unload', () => {}))
+	await page.goto('/padel/ankle-sprain/')
+	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
+	await sportButton(page, 'Падел').click()
+	await page.getByRole('option', { name: 'Кроссфит' }).click()
+	await expect(page).toHaveURL(/\/crossfit\/ankle-sprain\/$/)
+
+	await page.goBack()
+	await expect(page).toHaveURL(HOME)
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
+	await expect(page.locator('.body3d__poster-image')).toBeVisible()
 })
 
 test('у травмы одного спорта вместо селекта -- текст', async ({ page }) => {

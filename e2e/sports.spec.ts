@@ -294,6 +294,79 @@ test('«Разбор в …» в статье на главной открыва
 		.toBeLessThan(await page.evaluate(() => innerHeight / 3))
 })
 
+// Разбор другого спорта грузится поверх показанной статьи: строка «Разбор» не пропадает на время
+// загрузки, название и она стоят на месте, прокрученная статья не уезжает в начало. Ответ задержан:
+// на локальном сервере статья приходит раньше, чем заготовка успела бы мелькнуть
+for (const scrolled of [false, true])
+	test(`смена спорта в статье на главной не сдвигает страницу (${scrolled ? 'в середине статьи' : 'в начале'})`, async ({
+		page,
+	}) => {
+		await page.goto('/#ankle-sprain')
+
+		const reader = page.locator('.reader:not(.theme-peek *)')
+		const button = reader.locator('[data-sport-switch] button')
+
+		await button.waitFor()
+
+		if (scrolled) await reader.locator('#treatment').evaluate((el) => el.scrollIntoView({ block: 'start' }))
+
+		await page.route(/\/padel\/ankle-sprain\/$/, async (route) => {
+			await new Promise((resolve) => setTimeout(resolve, 400))
+			await route.continue()
+		})
+
+		const place = () =>
+			reader.evaluate((root) => {
+				const top = (selector: string) => Math.round(root.querySelector(selector)!.getBoundingClientRect().top)
+
+				return {
+					title: top('.article__title'),
+					sport: top('.article__sport'),
+					scroll: Math.round(root.scrollTop),
+				}
+			})
+		const before = await place()
+
+		// Кадр за кадром до подмены: строка «Разбор» видна и не двигается
+		await reader.evaluate((root) => {
+			const frames: number[][] = []
+
+			Object.assign(window, { lensFrames: frames })
+
+			const tick = () => {
+				const line = root.querySelector('.article__sport')!.getBoundingClientRect()
+
+				frames.push([Math.round(line.top), Math.round(line.height)])
+
+				if (!root.querySelector('.article__sport')?.textContent?.includes('паделе')) requestAnimationFrame(tick)
+			}
+
+			tick()
+		})
+
+		await button.evaluate((el: HTMLElement) => el.focus({ preventScroll: true }))
+		await page.keyboard.press('Enter')
+		await highlight(page, 'crossfit', 'padel')
+		await page.keyboard.press('Enter')
+		await expect(reader.locator('.article__sport')).toHaveText(/в\sпаделе/)
+
+		const frames = await page.evaluate(() => (window as unknown as { lensFrames: number[][] }).lensFrames)
+
+		expect(frames.length).toBeGreaterThan(5)
+
+		for (const [top, height] of frames.slice(0, -1)) {
+			expect(height).toBeGreaterThan(0)
+			expect(top).toBe(before.sport)
+		}
+
+		// Начало статьи -- на месте; из середины -- снова в «Лечении», а не в начале
+		if (scrolled)
+			await expect
+				.poll(() => reader.locator('#treatment').evaluate((el) => Math.round(el.getBoundingClientRect().top)))
+				.toBeLessThan(await page.evaluate(() => innerHeight / 3))
+		else expect(await place()).toEqual(before)
+	})
+
 for (const reducedMotion of ['no-preference', 'reduce'] as const)
 	test(`цвет спорта при смене ${reducedMotion === 'reduce' ? 'меняется сразу' : 'перетекает'} (${reducedMotion})`, async ({
 		page,

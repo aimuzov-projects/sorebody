@@ -23,7 +23,7 @@
 
 <style>
 	/* Цвета -- токены сцены из styles/scene.css: --a-fg для "sore", --a-logo для "body" и знака
-	   (цвет спорта, на странице без спорта -- серый). Шрифт скруглённый системный, без веб-шрифтов */
+	   (цвет спорта, на странице без спорта -- градиент бренда). Шрифт скруглённый системный, без веб-шрифтов */
 	.logo {
 		display: inline-flex;
 		gap: 6px;
@@ -70,6 +70,42 @@
 	.logo__body {
 		color: var(--a-logo);
 		transition: color 0.4s var(--a-ease);
+	}
+
+	/* Без спорта знак и "body" -- градиентом бренда (lib/brand-gradient.ts): знак градиентом из
+	   <svg class="brand-paint"> в base.astro, слово -- фоном под текстом. Логотип -- знак, а не
+	   текст для чтения, поэтому градиент остаётся и в Telegram */
+	:global(:root:not([data-sport])) .logo__dot {
+		fill: url('#brand-logo') currentcolor;
+	}
+
+	:global(:root:not([data-sport])) .logo__ring {
+		stroke: url('#brand-logo') currentcolor;
+	}
+
+	@supports (background-clip: text) or (-webkit-background-clip: text) {
+		:global(:root:not([data-sport])) .logo__body {
+			color: transparent;
+			background-image: var(--brand-gradient);
+			-webkit-background-clip: text;
+			background-clip: text;
+		}
+	}
+
+	/* В режиме высокого контраста -- системный цвет, на печати фон под текстом не печатается */
+	@media (forced-colors: active), print {
+		:global(:root:not([data-sport])) .logo__dot {
+			fill: currentcolor;
+		}
+
+		:global(:root:not([data-sport])) .logo__ring {
+			stroke: currentcolor;
+		}
+
+		:global(:root:not([data-sport])) .logo__body {
+			color: currentcolor;
+			background: none;
+		}
 	}
 
 	/* Наведение на сам логотип-ссылку или на ссылку, в которую он вложен: кольцо пульсирует,

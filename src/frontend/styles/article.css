@@ -746,6 +746,32 @@
 		}
 	}
 
+	/* Ссылка на другую статью или раздел сайта -- плашкой, как чипы статей, а не подчёркиванием:
+	   так её не спутать с источником. Заливка 8% цвета (LINK_TINT в lib/brand-gradient.ts, гуще
+	   текст теряет AA), при наведении цвета меняются местами: заливка цветом спорта, текст --
+	   цветом цифр на ней (--on-accent). На переносе каждая строка -- своя плашка. Заливка --
+	   картинкой, а не background-color: только так axe засчитывает ссылку отличной от текста
+	   не одним цветом (link-in-text-block) */
+	& a[href^='/'] {
+		padding: 0 0.4em;
+		border-radius: 0.3em;
+		text-decoration: none;
+		background-image: linear-gradient(
+			color-mix(in srgb, var(--accent) 8%, transparent),
+			color-mix(in srgb, var(--accent) 8%, transparent)
+		);
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+		transition:
+			color 0.2s var(--article-ease),
+			background-color 0.2s var(--article-ease);
+
+		&:hover {
+			color: var(--on-accent);
+			background-color: var(--accent);
+		}
+	}
+
 	& strong {
 		font-weight: 650;
 	}

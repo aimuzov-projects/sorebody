@@ -5,6 +5,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "1999",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.5435/00124635-199907000-00006"
 	},
 	"10959926": {
@@ -13,6 +14,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2000",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/00042752-200007000-00004"
 	},
 	"11476532": {
@@ -21,6 +23,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2001",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.5435/00124635-200107000-00002"
 	},
 	"12091669": {
@@ -29,6 +32,7 @@
 		"journal": "Radiology",
 		"year": "2002",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1148/radiol.2241011067"
 	},
 	"12394459": {
@@ -37,6 +41,7 @@
 		"journal": "Clin Orthop Relat Res",
 		"year": "2002",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1097/00003086-200210001-00013"
 	},
 	"12535413": {
@@ -45,6 +50,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2003",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD001785",
 		"pmcid": "PMC8407507"
 	},
@@ -54,6 +60,7 @@
 		"journal": "Sports Med",
 		"year": "2003",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.2165/00007256-200333040-00005"
 	},
 	"12907487": {
@@ -62,6 +69,7 @@
 		"journal": "BMJ",
 		"year": "2003",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bmj.327.7410.323",
 		"pmcid": "PMC169642"
 	},
@@ -70,7 +78,8 @@
 		"title": "Management of acute nasal fractures.",
 		"journal": "Am Fam Physician",
 		"year": "2004",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"15562161": {
 		"authors": "Andersen TE, et al",
@@ -78,6 +87,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2004",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsm.2003.009357",
 		"pmcid": "PMC1724962"
 	},
@@ -87,6 +97,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2005",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
 		"doi": "10.1177/0363546505274714"
 	},
 	"16882889": {
@@ -100,6 +111,7 @@
 			"Randomized Controlled Trial",
 			"Research Support, Non-U.S. Gov't"
 		],
+		"medline": true,
 		"doi": "10.2106/JBJS.E.01181"
 	},
 	"17012266": {
@@ -113,6 +125,7 @@
 			"Randomized Controlled Trial",
 			"Research Support, Non-U.S. Gov't"
 		],
+		"medline": true,
 		"doi": "10.1136/bmj.38961.584653.AE",
 		"pmcid": "PMC1633771"
 	},
@@ -122,6 +135,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2006",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/01.jsm.0000244605.34283.94"
 	},
 	"17135950": {
@@ -130,6 +144,7 @@
 		"journal": "Sports Med Arthrosc Rev",
 		"year": "2006",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1097/01.jsa.0000212307.54947.e4"
 	},
 	"17307888": {
@@ -138,6 +153,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2007",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1177/0363546506298279"
 	},
 	"17414993": {
@@ -146,6 +162,7 @@
 		"journal": "Top Magn Reson Imaging",
 		"year": "2006",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1097/RMR.0b013e3180421c8c"
 	},
 	"17443501": {
@@ -154,6 +171,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2007",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD000380.pub2"
 	},
 	"17538084": {
@@ -168,6 +186,7 @@
 			"Randomized Controlled Trial",
 			"Research Support, Non-U.S. Gov't"
 		],
+		"medline": true,
 		"doi": "10.1056/NEJMoa064039"
 	},
 	"18059999": {
@@ -184,6 +203,7 @@
 		"journal": "Curr Sports Med Rep",
 		"year": "2008",
 		"types": ["Case Reports", "Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1249/JSR.0b013e31818f0317"
 	},
 	"19030138": {
@@ -192,6 +212,7 @@
 		"journal": "J Athl Train",
 		"year": "2008",
 		"types": ["Comparative Study", "Journal Article"],
+		"medline": true,
 		"doi": "10.4085/1062-6050-43.6.600",
 		"pmcid": "PMC2582552"
 	},
@@ -201,6 +222,7 @@
 		"journal": "BMJ",
 		"year": "2009",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bmj.b2684",
 		"pmcid": "PMC2714677"
 	},
@@ -210,6 +232,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2009",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsm.2009.066944"
 	},
 	"20071918": {
@@ -218,6 +241,7 @@
 		"journal": "Curr Sports Med Rep",
 		"year": "2010",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1249/JSR.0b013e3181cd2c04"
 	},
 	"20439679": {
@@ -226,6 +250,7 @@
 		"journal": "J Bone Joint Surg Am",
 		"year": "2010",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
 		"doi": "10.2106/JBJS.I.01229"
 	},
 	"20532869": {
@@ -234,6 +259,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2011",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1007/s00167-010-1170-9"
 	},
 	"20556780": {
@@ -242,6 +268,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2010",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD007612.pub2",
 		"pmcid": "PMC12161166"
 	},
@@ -251,6 +278,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2010",
 		"types": ["Comment", "Journal Article", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.5435/00124635-201008000-00007"
 	},
 	"20730874": {
@@ -264,6 +292,7 @@
 			"Research Support, N.I.H., Extramural",
 			"Research Support, Non-U.S. Gov't"
 		],
+		"medline": true,
 		"doi": "10.1002/mus.21740"
 	},
 	"20807388": {
@@ -272,6 +301,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2012",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1111/j.1600-0838.2010.01171.x"
 	},
 	"21084657": {
@@ -280,6 +310,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2011",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1177/0363546510384789"
 	},
 	"21335353": {
@@ -288,6 +319,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2011",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1177/0363546510395879"
 	},
 	"21435164": {
@@ -296,6 +328,7 @@
 		"journal": "Pain Pract",
 		"year": "2011",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1111/j.1533-2500.2011.00458.x"
 	},
 	"21571657": {
@@ -304,6 +337,7 @@
 		"journal": "Radiographics",
 		"year": "2011",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1148/rg.313105507"
 	},
 	"21825112": {
@@ -312,6 +346,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2011",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1177/0363546511419277"
 	},
 	"21926076": {
@@ -320,6 +355,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2011",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2011-090342"
 	},
 	"22035890": {
@@ -327,7 +363,8 @@
 		"title": "Fluoroquinolone-associated tendinopathy.",
 		"journal": "Chang Gung Med J",
 		"year": "2011",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"22134205": {
 		"authors": "Strauss EJ, et al",
@@ -335,6 +372,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2011",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.5435/00124635-201112000-00003"
 	},
 	"22144005": {
@@ -343,6 +381,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2012",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2011-090155"
 	},
 	"22349588": {
@@ -351,6 +390,7 @@
 		"journal": "BMJ",
 		"year": "2012",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bmj.e787",
 		"pmcid": "PMC3282676"
 	},
@@ -360,6 +400,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2013",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00167-012-2138-8"
 	},
 	"22994651": {
@@ -368,6 +409,7 @@
 		"journal": "Sports Med",
 		"year": "2012",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.2165/11635400-000000000-00000"
 	},
 	"23220802": {
@@ -376,6 +418,7 @@
 		"journal": "J Back Musculoskelet Rehabil",
 		"year": "2012",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.3233/BMR-2012-0339"
 	},
 	"23232069": {
@@ -384,6 +427,7 @@
 		"journal": "Phys Ther Sport",
 		"year": "2013",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.ptsp.2012.11.003"
 	},
 	"23235604": {
@@ -392,6 +436,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2012",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD004159.pub3",
 		"pmcid": "PMC7197425"
 	},
@@ -401,6 +446,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2013",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1097/JSM.0b013e31827ee6f8"
 	},
 	"23385272": {
@@ -409,6 +455,7 @@
 		"journal": "JAMA",
 		"year": "2013",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1001/jama.2013.129"
 	},
 	"23396898": {
@@ -426,6 +473,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2013",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2012-092096"
 	},
 	"23522512": {
@@ -434,6 +482,7 @@
 		"journal": "Clin Sports Med",
 		"year": "2013",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.csm.2012.12.009"
 	},
 	"23548453": {
@@ -442,6 +491,7 @@
 		"journal": "Foot Ankle Surg",
 		"year": "2013",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.fas.2012.12.006"
 	},
 	"23624324": {
@@ -450,6 +500,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2013",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2013-092305"
 	},
 	"23628788": {
@@ -458,6 +509,7 @@
 		"journal": "J Orthop Sports Phys Ther",
 		"year": "2013",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.2519/jospt.2013.4295"
 	},
 	"23770660": {
@@ -466,6 +518,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2013",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2013-092271"
 	},
 	"23813486": {
@@ -474,6 +527,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2013",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2013-092223"
 	},
 	"23851296": {
@@ -482,6 +536,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2013",
 		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2013-092383"
 	},
 	"24065456": {
@@ -496,6 +551,7 @@
 			"Research Support, Non-U.S. Gov't",
 			"Systematic Review"
 		],
+		"medline": true,
 		"doi": "10.1002/14651858.CD009020.pub2",
 		"pmcid": "PMC6464715"
 	},
@@ -521,6 +577,7 @@
 		"journal": "Curr Sports Med Rep",
 		"year": "2014",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1249/JSR.0000000000000035"
 	},
 	"24673666": {
@@ -529,6 +586,7 @@
 		"journal": "Acad Emerg Med",
 		"year": "2014",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1111/acem.12317"
 	},
 	"24700135": {
@@ -537,6 +595,7 @@
 		"journal": "Phys Ther",
 		"year": "2014",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.2522/ptj.20130069"
 	},
 	"24768732": {
@@ -545,6 +604,7 @@
 		"journal": "Spine J",
 		"year": "2014",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.spinee.2014.04.022"
 	},
 	"24784885": {
@@ -553,6 +613,7 @@
 		"journal": "J Sports Sci",
 		"year": "2014",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1080/02640414.2014.905695"
 	},
 	"24847788": {
@@ -561,6 +622,7 @@
 		"journal": "Acta Orthop",
 		"year": "2014",
 		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
 		"doi": "10.3109/17453674.2014.920991",
 		"pmcid": "PMC4062801"
 	},
@@ -579,6 +641,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2014",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/0363546514540271"
 	},
 	"25157180": {
@@ -587,6 +650,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2014",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2013-093398"
 	},
 	"25280620": {
@@ -595,6 +659,7 @@
 		"journal": "Clin Sports Med",
 		"year": "2014",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.csm.2014.06.005"
 	},
 	"25289361": {
@@ -612,6 +677,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2015",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/0363546514555327"
 	},
 	"25430861": {
@@ -620,6 +686,7 @@
 		"journal": "AJNR Am J Neuroradiol",
 		"year": "2015",
 		"types": ["Journal Article", "Research Support, N.I.H., Extramural", "Systematic Review"],
+		"medline": true,
 		"doi": "10.3174/ajnr.A4173",
 		"pmcid": "PMC4464797"
 	},
@@ -629,6 +696,7 @@
 		"journal": "Acta Ophthalmol",
 		"year": "2015",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1111/aos.12633"
 	},
 	"25636988": {
@@ -637,6 +705,7 @@
 		"journal": "Arthroscopy",
 		"year": "2015",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.arthro.2014.11.042"
 	},
 	"25724195": {
@@ -645,6 +714,7 @@
 		"journal": "Evid Based Med",
 		"year": "2015",
 		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/ebmed-2014-110160"
 	},
 	"25755277": {
@@ -653,6 +723,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2015",
 		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2014-094285"
 	},
 	"25794868": {
@@ -661,6 +732,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2015",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1177/0363546515574057"
 	},
 	"25841163": {
@@ -669,6 +741,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2015",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2014-094414"
 	},
 	"25907183": {
@@ -677,6 +750,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2015",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2014-094573",
 		"pmcid": "PMC4680158"
 	},
@@ -686,6 +760,7 @@
 		"journal": "Emerg Radiol",
 		"year": "2015",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s10140-015-1318-5"
 	},
 	"25932875": {
@@ -694,6 +769,7 @@
 		"journal": "Sports Med Arthrosc Rev",
 		"year": "2015",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1097/JSA.0000000000000065"
 	},
 	"26018970": {
@@ -702,6 +778,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2015",
 		"types": ["Comparative Study", "Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1177/0363546515584760"
 	},
 	"26031643": {
@@ -710,6 +787,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2015",
 		"types": ["Consensus Statement", "Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-094869",
 		"pmcid": "PMC4484366"
 	},
@@ -719,6 +797,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2015",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1111/edt.12187"
 	},
 	"26316611": {
@@ -727,6 +806,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/0363546515598995"
 	},
 	"26463119": {
@@ -735,6 +815,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Multicenter Study", "Observational Study"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-094664"
 	},
 	"26464876": {
@@ -752,6 +833,7 @@
 		"journal": "Sports Health",
 		"year": "2015",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1177/1941738115595975",
 		"pmcid": "PMC4622375"
 	},
@@ -770,6 +852,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2015",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s12891-015-0808-7",
 		"pmcid": "PMC4647699"
 	},
@@ -779,6 +862,7 @@
 		"journal": "Clin Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.csm.2015.08.003"
 	},
 	"26644427": {
@@ -787,6 +871,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-094695"
 	},
 	"26672025": {
@@ -795,6 +880,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/0363546515617472"
 	},
 	"26746908": {
@@ -803,6 +889,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-095359"
 	},
 	"26752509": {
@@ -811,6 +898,7 @@
 		"journal": "JAMA Intern Med",
 		"year": "2016",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1001/jamainternmed.2015.7431"
 	},
 	"26779556": {
@@ -828,6 +916,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-094657"
 	},
 	"26954572": {
@@ -836,6 +925,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2017",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.16.06240-X"
 	},
 	"26957411": {
@@ -843,21 +933,24 @@
 		"title": "[Nasal fractures in adults].",
 		"journal": "Ugeskr Laeger",
 		"year": "2016",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"26991565": {
 		"authors": "McNamara AR, et al",
 		"title": "Hand Blisters in Major League Baseball Pitchers: Current Concepts and Management.",
 		"journal": "Am J Orthop (Belle Mead NJ)",
 		"year": "2016",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"26991570": {
 		"authors": "Mehdi SK, et al",
 		"title": "Latissimus Dorsi and Teres Major Injuries in Major League Baseball Pitchers: A Systematic Review.",
 		"journal": "Am J Orthop (Belle Mead NJ)",
 		"year": "2016",
-		"types": ["Journal Article", "Systematic Review"]
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true
 	},
 	"27034129": {
 		"authors": "Waldén M, et al",
@@ -865,6 +958,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2015-095952"
 	},
 	"27039329": {
@@ -873,6 +967,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2016",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD011166.pub2",
 		"pmcid": "PMC6464826"
 	},
@@ -882,6 +977,7 @@
 		"journal": "Surg Endosc",
 		"year": "2016",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00464-016-4863-4"
 	},
 	"27162233": {
@@ -890,6 +986,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-096031",
 		"pmcid": "PMC4912389"
 	},
@@ -899,6 +996,7 @@
 		"journal": "J Athl Train",
 		"year": "2016",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.4085/1062-6050-51.5.12",
 		"pmcid": "PMC5013704"
 	},
@@ -917,6 +1015,7 @@
 		"journal": "Crit Care",
 		"year": "2016",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s13054-016-1314-5",
 		"pmcid": "PMC4908773"
 	},
@@ -926,6 +1025,7 @@
 		"journal": "Sports Med",
 		"year": "2017",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1007/s40279-016-0575-0"
 	},
 	"27578854": {
@@ -934,6 +1034,7 @@
 		"journal": "Sports Health",
 		"year": "2016",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/1941738116666073",
 		"pmcid": "PMC5089356"
 	},
@@ -943,6 +1044,7 @@
 		"journal": "Curr Sports Med Rep",
 		"year": "2016",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1249/JSR.0000000000000292"
 	},
 	"27627991": {
@@ -951,6 +1053,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2018",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.16.06729-3"
 	},
 	"27629403": {
@@ -959,6 +1062,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2016",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-096743"
 	},
 	"27714843": {
@@ -967,6 +1071,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2017",
 		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.1111/sms.12781"
 	},
 	"27722115": {
@@ -984,6 +1089,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2017",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00167-016-4374-9",
 		"pmcid": "PMC5489655"
 	},
@@ -998,6 +1104,7 @@
 			"Research Support, Non-U.S. Gov't",
 			"Systematic Review"
 		],
+		"medline": true,
 		"doi": "10.2106/JBJS.RVW.15.00116",
 		"pmcid": "PMC5865503"
 	},
@@ -1007,6 +1114,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2017",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-097066"
 	},
 	"28122541": {
@@ -1015,6 +1123,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2017",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s12891-017-1400-0",
 		"pmcid": "PMC5267375"
 	},
@@ -1024,6 +1133,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2017",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1177/0363546516676062"
 	},
 	"28192789": {
@@ -1032,6 +1142,7 @@
 		"journal": "Ann Intern Med",
 		"year": "2017",
 		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.7326/M16-2367"
 	},
 	"28207979": {
@@ -1040,6 +1151,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2018",
 		"types": ["Comparative Study", "Journal Article"],
+		"medline": true,
 		"doi": "10.1111/sms.12860"
 	},
 	"28223305": {
@@ -1048,6 +1160,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-096836"
 	},
 	"28246265": {
@@ -1056,6 +1169,7 @@
 		"journal": "CMAJ",
 		"year": "2017",
 		"types": ["Journal Article", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1503/cmaj.151104",
 		"pmcid": "PMC5289870"
 	},
@@ -1065,6 +1179,7 @@
 		"journal": "Clin Sports Med",
 		"year": "2017",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.csm.2016.11.006"
 	},
 	"28360143": {
@@ -1073,6 +1188,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2017",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-097206"
 	},
 	"28389398": {
@@ -1081,6 +1197,7 @@
 		"journal": "PM R",
 		"year": "2017",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.pmrj.2017.03.007"
 	},
 	"28389864": {
@@ -1089,6 +1206,7 @@
 		"journal": "Clin Orthop Relat Res",
 		"year": "2017",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1007/s11999-017-5342-5",
 		"pmcid": "PMC5599387"
 	},
@@ -1098,6 +1216,7 @@
 		"journal": "BMJ",
 		"year": "2017",
 		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.1136/bmj.j1982",
 		"pmcid": "PMC5426368"
 	},
@@ -1107,6 +1226,7 @@
 		"journal": "Wilderness Environ Med",
 		"year": "2017",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.wem.2017.03.007"
 	},
 	"28646098": {
@@ -1115,6 +1235,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-097217"
 	},
 	"28661826": {
@@ -1123,6 +1244,7 @@
 		"journal": "Sports Health",
 		"year": "2017",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1177/1941738117696019",
 		"pmcid": "PMC5496702"
 	},
@@ -1131,7 +1253,8 @@
 		"title": "Internal Carotid Artery Dissection After Indirect Blunt Cervical Trauma in an Ice Hockey Goaltender.",
 		"journal": "Am J Orthop (Belle Mead NJ)",
 		"year": "2017",
-		"types": ["Case Reports", "Journal Article"]
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true
 	},
 	"28666981": {
 		"authors": "Mosler AB, et al",
@@ -1139,6 +1262,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-097277"
 	},
 	"28671402": {
@@ -1146,7 +1270,8 @@
 		"title": "Laceration Repair: A Practical Approach.",
 		"journal": "Am Fam Physician",
 		"year": "2017",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"28698804": {
 		"authors": "Beaufils P, et al",
@@ -1163,6 +1288,7 @@
 		"journal": "Arthroscopy",
 		"year": "2017",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.arthro.2017.04.021"
 	},
 	"29016194": {
@@ -1171,6 +1297,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/0363546517732526"
 	},
 	"29269487": {
@@ -1179,6 +1306,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-097710"
 	},
 	"29316189": {
@@ -1187,6 +1315,7 @@
 		"journal": "ANZ J Surg",
 		"year": "2018",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1111/ans.14342"
 	},
 	"29319656": {
@@ -1195,6 +1324,7 @@
 		"journal": "JBJS Case Connect",
 		"year": "2018",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.2106/JBJS.CC.17.00020"
 	},
 	"29330835": {
@@ -1203,6 +1333,7 @@
 		"journal": "Hernia",
 		"year": "2018",
 		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1007/s10029-017-1668-x",
 		"pmcid": "PMC5809582"
 	},
@@ -1212,6 +1343,7 @@
 		"journal": "J Orthop Sports Phys Ther",
 		"year": "2018",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.2519/jospt.2018.7850"
 	},
 	"29514819": {
@@ -1220,6 +1352,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-098106"
 	},
 	"29599121": {
@@ -1228,6 +1361,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2016-097261",
 		"pmcid": "PMC6642026"
 	},
@@ -1237,6 +1371,7 @@
 		"journal": "J Athl Train",
 		"year": "2018",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.4085/1062-6050-59-16",
 		"pmcid": "PMC5894372"
 	},
@@ -1246,6 +1381,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-097796"
 	},
 	"29734573": {
@@ -1253,7 +1389,8 @@
 		"title": "Hyperbaric oxygen therapy as treatment for bilateral arm compartment syndrome after CrossFit: case report and literature review.",
 		"journal": "Undersea Hyperb Med",
 		"year": "2018",
-		"types": ["Case Reports", "Journal Article", "Review"]
+		"types": ["Case Reports", "Journal Article", "Review"],
+		"medline": true
 	},
 	"29737024": {
 		"authors": "Webster KE, et al",
@@ -1261,6 +1398,7 @@
 		"journal": "J Orthop Res",
 		"year": "2018",
 		"types": ["Journal Article", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1002/jor.24043"
 	},
 	"29869890": {
@@ -1269,6 +1407,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/0363546518776638"
 	},
 	"29891614": {
@@ -1277,6 +1416,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-098937"
 	},
 	"29954828": {
@@ -1285,6 +1425,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article", "Systematic Review", "Network Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-098998"
 	},
 	"29955378": {
@@ -1302,6 +1443,7 @@
 		"journal": "Eur Spine J",
 		"year": "2018",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
 		"doi": "10.1007/s00586-018-5673-2"
 	},
 	"30006458": {
@@ -1310,6 +1452,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2018-099246"
 	},
 	"30131332": {
@@ -1318,6 +1461,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2018",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2018-099078"
 	},
 	"30193009": {
@@ -1326,6 +1470,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2018",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1111/edt.12437"
 	},
 	"30242107": {
@@ -1334,6 +1479,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2017-098890"
 	},
 	"30288727": {
@@ -1342,6 +1488,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2018",
 		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD005654.pub4",
 		"pmcid": "PMC6516955"
 	},
@@ -1369,6 +1516,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000000688"
 	},
 	"30473454": {
@@ -1377,6 +1525,7 @@
 		"journal": "Arthroscopy",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.arthro.2018.07.037"
 	},
 	"30543493": {
@@ -1385,6 +1534,7 @@
 		"journal": "Sports Health",
 		"year": "2019",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/1941738118818060",
 		"pmcid": "PMC6391551"
 	},
@@ -1394,6 +1544,7 @@
 		"journal": "Am J Emerg Med",
 		"year": "2019",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.ajem.2018.12.061"
 	},
 	"30657114": {
@@ -1402,6 +1553,7 @@
 		"journal": "Acta Biomed",
 		"year": "2018",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.23750/abm.v89i4.7632",
 		"pmcid": "PMC6502104"
 	},
@@ -1420,6 +1572,7 @@
 		"journal": "J Craniofac Surg",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/SCS.0000000000005138"
 	},
 	"30728120": {
@@ -1428,6 +1581,7 @@
 		"journal": "BMJ",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bmj.l294"
 	},
 	"30788227": {
@@ -1459,6 +1613,7 @@
 			"Randomized Controlled Trial",
 			"Research Support, Non-U.S. Gov't"
 		],
+		"medline": true,
 		"doi": "10.1001/jamaneurol.2019.0072",
 		"pmcid": "PMC6563567"
 	},
@@ -1468,6 +1623,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2019",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2018-100045"
 	},
 	"30846355": {
@@ -1476,6 +1632,7 @@
 		"journal": "J Sci Med Sport",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.jsams.2019.01.019"
 	},
 	"30949749": {
@@ -1484,6 +1641,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00167-019-05491-6",
 		"pmcid": "PMC6800843"
 	},
@@ -1493,6 +1651,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2019",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1186/s12891-019-2532-1",
 		"pmcid": "PMC6454729"
 	},
@@ -1502,6 +1661,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2018-099577",
 		"pmcid": "PMC9929604"
 	},
@@ -1511,6 +1671,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-100666",
 		"pmcid": "PMC7146935"
 	},
@@ -1519,7 +1680,8 @@
 		"title": "Plantar Fasciitis.",
 		"journal": "Am Fam Physician",
 		"year": "2019",
-		"types": ["Journal Article"]
+		"types": ["Journal Article"],
+		"medline": true
 	},
 	"31246519": {
 		"authors": "Thompson K, et al",
@@ -1527,6 +1689,7 @@
 		"journal": "Phys Sportsmed",
 		"year": "2020",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
 		"doi": "10.1080/00913847.2019.1637301"
 	},
 	"31270563": {
@@ -1535,6 +1698,7 @@
 		"journal": "Eur J Clin Pharmacol",
 		"year": "2019",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00228-019-02713-1"
 	},
 	"31278933": {
@@ -1543,6 +1707,7 @@
 		"journal": "Am J Med",
 		"year": "2020",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.amjmed.2019.06.005"
 	},
 	"31344463": {
@@ -1551,6 +1716,7 @@
 		"journal": "Ann Vasc Surg",
 		"year": "2019",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.avsg.2019.04.028"
 	},
 	"31377722": {
@@ -1559,6 +1725,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Editorial"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-101253"
 	},
 	"31394009": {
@@ -1567,6 +1734,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2019",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1111/sms.13535"
 	},
 	"31411962": {
@@ -1574,7 +1742,8 @@
 		"title": "Acute Pectoralis Major Tears in Forward Deployed Active Duty U.S. Military Personnel: A Population at Risk?",
 		"journal": "J Surg Orthop Adv",
 		"year": "2019",
-		"types": ["Journal Article"]
+		"types": ["Journal Article"],
+		"medline": true
 	},
 	"31421688": {
 		"authors": "Whittaker GA, et al",
@@ -1582,6 +1751,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2019",
 		"types": ["Comparative Study", "Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s12891-019-2749-z",
 		"pmcid": "PMC6698340"
 	},
@@ -1590,7 +1760,8 @@
 		"title": "Urinary Incontinence in Women: Evaluation and Management.",
 		"journal": "Am Fam Physician",
 		"year": "2019",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"31531684": {
 		"authors": "Thermann H",
@@ -1598,6 +1769,7 @@
 		"journal": "Chirurg",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00104-019-01024-6"
 	},
 	"31566048": {
@@ -1606,6 +1778,7 @@
 		"journal": "Postgrad Med",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1080/00325481.2019.1673582"
 	},
 	"31652234": {
@@ -1614,6 +1787,7 @@
 		"journal": "Med Sci Sports Exerc",
 		"year": "2020",
 		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"medline": true,
 		"doi": "10.1249/MSS.0000000000002178",
 		"pmcid": "PMC8011646"
 	},
@@ -1623,6 +1797,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2019",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000000553"
 	},
 	"31775556": {
@@ -1631,6 +1806,7 @@
 		"journal": "J Orthop Sports Phys Ther",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.2519/jospt.2020.9218"
 	},
 	"31813166": {
@@ -1645,6 +1821,7 @@
 			"Research Support, Non-U.S. Gov't",
 			"Systematic Review"
 		],
+		"medline": true,
 		"doi": "10.1002/14651858.CD013502",
 		"pmcid": "PMC6900168"
 	},
@@ -1654,6 +1831,7 @@
 		"journal": "Arch Phys Med Rehabil",
 		"year": "2020",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.apmr.2019.12.017"
 	},
 	"32100894": {
@@ -1662,6 +1840,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/sms.13644"
 	},
 	"32115083": {
@@ -1670,6 +1849,7 @@
 		"journal": "Clin Sports Med",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.csm.2019.10.004"
 	},
 	"32147339": {
@@ -1678,6 +1858,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2020",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2019.12.006"
 	},
 	"32182099": {
@@ -1686,6 +1867,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/0363546520908610"
 	},
 	"32185452": {
@@ -1694,6 +1876,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2021",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00167-020-05930-9"
 	},
 	"32253193": {
@@ -1702,6 +1885,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-101587",
 		"pmcid": "PMC7497572"
 	},
@@ -1729,6 +1913,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-100983"
 	},
 	"32376673": {
@@ -1737,6 +1922,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-101690",
 		"pmcid": "PMC7677471"
 	},
@@ -1746,6 +1932,7 @@
 		"journal": "Cochrane Database Syst Rev",
 		"year": "2020",
 		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1002/14651858.CD007471.pub4",
 		"pmcid": "PMC7203602"
 	},
@@ -1773,6 +1960,7 @@
 		"journal": "Eur Radiol",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1007/s00330-020-06822-9"
 	},
 	"32460393": {
@@ -1781,6 +1969,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2020",
 		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1111/edt.12573"
 	},
 	"32472740": {
@@ -1789,6 +1978,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1111/edt.12574"
 	},
 	"32475015": {
@@ -1797,6 +1987,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2020",
 		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1111/edt.12578"
 	},
 	"32487983": {
@@ -1805,6 +1996,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.20.10364-5"
 	},
 	"32548012": {
@@ -1822,6 +2014,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-101247"
 	},
 	"32788933": {
@@ -1839,6 +2032,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2020",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/sms.13812"
 	},
 	"32868012": {
@@ -1847,6 +2041,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2020",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2020.05.015"
 	},
 	"32875305": {
@@ -1864,6 +2059,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2021",
 		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.1111/sms.13852"
 	},
 	"33064426": {
@@ -1871,7 +2067,8 @@
 		"title": "Inguinal Hernias: Diagnosis and Management.",
 		"journal": "Am Fam Physician",
 		"year": "2020",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"33069905": {
 		"authors": "Björnsson Hallgren HC, et al",
@@ -1879,6 +2076,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2020.09.020"
 	},
 	"33088241": {
@@ -1896,6 +2094,7 @@
 		"journal": "Aust J Gen Pract",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.31128/AJGP-07-20-5519"
 	},
 	"33148599": {
@@ -1904,6 +2103,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2020-102525"
 	},
 	"33159531": {
@@ -1912,6 +2112,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00167-020-06345-2"
 	},
 	"33188561": {
@@ -1920,6 +2121,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/edt.12625"
 	},
 	"33197591": {
@@ -1945,6 +2147,7 @@
 		"journal": "Foot Ankle Int",
 		"year": "2021",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/1071100720969633"
 	},
 	"33322981": {
@@ -1953,6 +2156,7 @@
 		"journal": "Phys Sportsmed",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1080/00913847.2020.1864675"
 	},
 	"33355180": {
@@ -1961,6 +2165,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2020-102723"
 	},
 	"33362991": {
@@ -1978,6 +2183,7 @@
 		"journal": "Nat Rev Dis Primers",
 		"year": "2021",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1038/s41572-020-00234-1"
 	},
 	"33428552": {
@@ -1986,6 +2192,7 @@
 		"journal": "Sports Health",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/1941738120973674",
 		"pmcid": "PMC8167353"
 	},
@@ -2011,6 +2218,7 @@
 		"journal": "JBJS Case Connect",
 		"year": "2021",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.2106/JBJS.CC.20.00135"
 	},
 	"33530860": {
@@ -2019,6 +2227,7 @@
 		"journal": "Sports Health",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/1941738120970976",
 		"pmcid": "PMC8083151"
 	},
@@ -2028,6 +2237,7 @@
 		"journal": "Foot Ankle Clin",
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.fcl.2020.08.012"
 	},
 	"33563131": {
@@ -2036,6 +2246,7 @@
 		"journal": "Sports Health",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/1941738121991782",
 		"pmcid": "PMC8404721"
 	},
@@ -2045,6 +2256,7 @@
 		"journal": "Phys Sportsmed",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1080/00913847.2021.1892468"
 	},
 	"33646025": {
@@ -2053,6 +2265,7 @@
 		"journal": "Br J Hosp Med (Lond)",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.12968/hmed.2020.0593"
 	},
 	"33654033": {
@@ -2061,6 +2274,7 @@
 		"journal": "J Craniofac Surg",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/SCS.0000000000007575"
 	},
 	"33655999": {
@@ -2069,6 +2283,7 @@
 		"journal": "Curr Sports Med Rep",
 		"year": "2021",
 		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.1249/JSR.0000000000000822"
 	},
 	"33687926": {
@@ -2077,6 +2292,7 @@
 		"journal": "BMJ",
 		"year": "2021",
 		"types": ["Comparative Study", "Journal Article", "Multicenter Study", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1136/bmj.n375",
 		"pmcid": "PMC7941216"
 	},
@@ -2095,6 +2311,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/0363546521993807"
 	},
 	"33741878": {
@@ -2103,6 +2320,7 @@
 		"journal": "J Craniofac Surg",
 		"year": "2021",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1097/SCS.0000000000007618",
 		"pmcid": "PMC8192440"
 	},
@@ -2112,6 +2330,7 @@
 		"journal": "J Investig Med High Impact Case Rep",
 		"year": "2021",
 		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
 		"doi": "10.1177/23247096211003263",
 		"pmcid": "PMC7983469"
 	},
@@ -2121,6 +2340,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2019-101970",
 		"pmcid": "PMC8458083"
 	},
@@ -2130,6 +2350,7 @@
 		"journal": "J Hand Ther",
 		"year": "2022",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.jht.2021.02.002"
 	},
 	"33846157": {
@@ -2138,6 +2359,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2020-103555",
 		"pmcid": "PMC8606446"
 	},
@@ -2156,6 +2378,7 @@
 		"journal": "JAMA Netw Open",
 		"year": "2021",
 		"types": ["Journal Article", "Research Support, N.I.H., Extramural", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1001/jamanetworkopen.2021.8191",
 		"pmcid": "PMC8080231"
 	},
@@ -2165,6 +2388,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/03635465211008169"
 	},
 	"34006577": {
@@ -2173,6 +2397,7 @@
 		"journal": "J ISAKOS",
 		"year": "2021",
 		"types": ["Journal Article", "Review", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/jisakos-2020-000495"
 	},
 	"34050059": {
@@ -2181,6 +2406,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000000935"
 	},
 	"34156668": {
@@ -2188,7 +2414,8 @@
 		"title": "[Eye injuries related to padel].",
 		"journal": "Lakartidningen",
 		"year": "2021",
-		"types": ["Journal Article"]
+		"types": ["Journal Article"],
+		"medline": true
 	},
 	"34158354": {
 		"authors": "Smith MD, et al",
@@ -2196,6 +2423,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2021-104087"
 	},
 	"34161743": {
@@ -2204,6 +2432,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/03635465211015996"
 	},
 	"34187784": {
@@ -2212,6 +2441,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2021",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2020-103867",
 		"pmcid": "PMC8479731"
 	},
@@ -2230,6 +2460,7 @@
 		"journal": "J ISAKOS",
 		"year": "2021",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1136/jisakos-2020-000537"
 	},
 	"34397403": {
@@ -2238,6 +2469,7 @@
 		"journal": "J Back Musculoskelet Rehabil",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.3233/BMR-210053"
 	},
 	"34400990": {
@@ -2264,6 +2496,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000000978"
 	},
 	"34591697": {
@@ -2272,6 +2505,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/03635465211038959"
 	},
 	"34631448": {
@@ -2289,6 +2523,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/sms.14062"
 	},
 	"34732996": {
@@ -2324,6 +2559,7 @@
 		"journal": "Dtsch Arztebl Int",
 		"year": "2021",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.3238/arztebl.m2021.0231",
 		"pmcid": "PMC8647295"
 	},
@@ -2333,6 +2569,7 @@
 		"journal": "J Emerg Med",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jemermed.2021.09.008"
 	},
 	"34809886": {
@@ -2341,6 +2578,7 @@
 		"journal": "Facial Plast Surg Clin North Am",
 		"year": "2022",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.fsc.2021.08.004"
 	},
 	"34876406": {
@@ -2349,6 +2587,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2021-104769"
 	},
 	"34888392": {
@@ -2366,6 +2605,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2021",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s12891-021-04900-7",
 		"pmcid": "PMC8672613"
 	},
@@ -2375,6 +2615,7 @@
 		"journal": "Intern Med J",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/imj.15667"
 	},
 	"35022509": {
@@ -2383,6 +2624,7 @@
 		"journal": "Sci Rep",
 		"year": "2022",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1038/s41598-021-04686-7",
 		"pmcid": "PMC8755839"
 	},
@@ -2392,6 +2634,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.5435/JAAOS-D-21-00541"
 	},
 	"35033136": {
@@ -2400,6 +2643,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2022",
 		"types": ["Comparative Study", "Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.1186/s13018-022-02915-x",
 		"pmcid": "PMC8760714"
 	},
@@ -2418,6 +2662,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2021.12.022"
 	},
 	"35065676": {
@@ -2426,6 +2671,7 @@
 		"journal": "J Foot Ankle Res",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s13047-021-00507-2",
 		"pmcid": "PMC8783477"
 	},
@@ -2444,6 +2690,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00167-022-06898-4",
 		"pmcid": "PMC9464183"
 	},
@@ -2452,7 +2699,8 @@
 		"title": "The prevalence of urinary incontinence in female CrossFit practitioners: A systematic review and meta-analysis.",
 		"journal": "Arch Esp Urol",
 		"year": "2022",
-		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"]
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true
 	},
 	"35195925": {
 		"authors": "Heo J, et al",
@@ -2460,6 +2708,7 @@
 		"journal": "Am J Ind Med",
 		"year": "2022",
 		"types": ["Case Reports", "Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1002/ajim.23337"
 	},
 	"35278328": {
@@ -2468,6 +2717,7 @@
 		"journal": "J Spec Oper Med",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.55460/G29P-I0AU"
 	},
 	"35332596": {
@@ -2476,6 +2726,7 @@
 		"journal": "Scand J Med Sci Sports",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/sms.14160"
 	},
 	"35338036": {
@@ -2484,6 +2735,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2022",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Equivalence Trial"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2020-103405",
 		"pmcid": "PMC9252858"
 	},
@@ -2493,6 +2745,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2022.02.027"
 	},
 	"35409836": {
@@ -2501,6 +2754,7 @@
 		"journal": "Int J Environ Res Public Health",
 		"year": "2022",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.3390/ijerph19074153",
 		"pmcid": "PMC8998509"
 	},
@@ -2519,6 +2773,7 @@
 		"journal": "Acta Orthop Belg",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.52628/88.1.20"
 	},
 	"35549447": {
@@ -2536,6 +2791,7 @@
 		"journal": "Curr Pain Headache Rep",
 		"year": "2022",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1007/s11916-022-01053-7"
 	},
 	"35635565": {
@@ -2544,6 +2800,7 @@
 		"journal": "Int Urogynecol J",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00192-022-05244-z",
 		"pmcid": "PMC9150382"
 	},
@@ -2562,6 +2819,7 @@
 		"journal": "J Physiother",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1016/j.jphys.2022.05.019"
 	},
 	"35804260": {
@@ -2579,6 +2837,7 @@
 		"journal": "J Athl Train",
 		"year": "2023",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.4085/1062-6050-0496.21",
 		"pmcid": "PMC10569248"
 	},
@@ -2597,6 +2856,7 @@
 		"journal": "Int J Environ Res Public Health",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.3390/ijerph19159241",
 		"pmcid": "PMC9367913"
 	},
@@ -2615,6 +2875,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2022",
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s12891-022-05831-7",
 		"pmcid": "PMC9502997"
 	},
@@ -2642,6 +2903,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2022-105674",
 		"pmcid": "PMC10086287"
 	},
@@ -2651,6 +2913,7 @@
 		"journal": "Medicine (Baltimore)",
 		"year": "2022",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1097/MD.0000000000031087",
 		"pmcid": "PMC9592509"
 	},
@@ -2660,6 +2923,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s00167-022-07208-8",
 		"pmcid": "PMC10183423"
 	},
@@ -2669,6 +2933,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.22.14280-5"
 	},
 	"36462776": {
@@ -2677,6 +2942,7 @@
 		"journal": "Arthroscopy",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.arthro.2022.08.005"
 	},
 	"36509105": {
@@ -2685,6 +2951,7 @@
 		"journal": "Facial Plast Surg",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1055/a-1996-7595"
 	},
 	"36554736": {
@@ -2693,6 +2960,7 @@
 		"journal": "Int J Environ Res Public Health",
 		"year": "2022",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.3390/ijerph192416858",
 		"pmcid": "PMC9779620"
 	},
@@ -2720,6 +2988,7 @@
 		"journal": "J Sports Sci",
 		"year": "2022",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1080/02640414.2022.2163537"
 	},
 	"36650032": {
@@ -2728,6 +2997,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2021-105384"
 	},
 	"36661128": {
@@ -2736,6 +3006,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1177/03635465221140923"
 	},
 	"36728770": {
@@ -2744,6 +3015,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000001114"
 	},
 	"36758425": {
@@ -2752,6 +3024,7 @@
 		"journal": "Gait Posture",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.gaitpost.2023.02.001"
 	},
 	"36767904": {
@@ -2760,6 +3033,7 @@
 		"journal": "Int J Environ Res Public Health",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.3390/ijerph20032538",
 		"pmcid": "PMC9915453"
 	},
@@ -2769,6 +3043,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000001131",
 		"pmcid": "PMC10467807"
 	},
@@ -2787,6 +3062,7 @@
 		"journal": "Clin J Sport Med",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1097/JSM.0000000000001082"
 	},
 	"36896067": {
@@ -2810,6 +3086,7 @@
 			"Research Support, U.S. Gov't, Non-P.H.S.",
 			"Research Support, N.I.H., Extramural"
 		],
+		"medline": true,
 		"doi": "10.1002/14651858.CD005431.pub5",
 		"pmcid": "PMC10010597"
 	},
@@ -2819,6 +3096,7 @@
 		"journal": "Emerg Med Australas",
 		"year": "2023",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1111/1742-6723.14202"
 	},
 	"36988238": {
@@ -2827,6 +3105,7 @@
 		"journal": "Sports Health",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1177/19417381231160167",
 		"pmcid": "PMC10606974"
 	},
@@ -2845,6 +3124,7 @@
 		"journal": "Continuum (Minneap Minn)",
 		"year": "2023",
 		"types": ["Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1212/CON.0000000000001233"
 	},
 	"37070274": {
@@ -2853,6 +3133,7 @@
 		"journal": "Phys Sportsmed",
 		"year": "2024",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1080/00913847.2023.2196934"
 	},
 	"37141425": {
@@ -2861,6 +3142,7 @@
 		"journal": "JBJS Rev",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.2106/JBJS.RVW.22.00185"
 	},
 	"37155727": {
@@ -2869,6 +3151,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2023",
 		"types": ["Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.5435/JAAOS-D-22-01219"
 	},
 	"37158377": {
@@ -2877,6 +3160,7 @@
 		"journal": "Acta Ophthalmol",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1111/aos.15685"
 	},
 	"37173686": {
@@ -2885,6 +3169,7 @@
 		"journal": "J Foot Ankle Res",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1186/s13047-023-00626-y",
 		"pmcid": "PMC10176769"
 	},
@@ -2894,6 +3179,7 @@
 		"journal": "Semin Musculoskelet Radiol",
 		"year": "2023",
 		"types": ["Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1055/s-0043-1766098"
 	},
 	"37316183": {
@@ -2902,6 +3188,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2022-106682"
 	},
 	"37316185": {
@@ -2910,6 +3197,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2022-106676"
 	},
 	"37316210": {
@@ -2918,6 +3206,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Consensus Statement", "Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-106898"
 	},
 	"37337550": {
@@ -2944,6 +3233,7 @@
 		"journal": "J Neurosurg Spine",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.3171/2023.6.SPINE23367"
 	},
 	"37525773": {
@@ -2966,6 +3256,7 @@
 			"Research Support, Non-U.S. Gov't",
 			"Research Support, N.I.H., Extramural"
 		],
+		"medline": true,
 		"doi": "10.1002/14651858.CD014461.pub2",
 		"pmcid": "PMC10448864"
 	},
@@ -2975,6 +3266,7 @@
 		"journal": "Eur J Vasc Endovasc Surg",
 		"year": "2023",
 		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.ejvs.2023.08.065"
 	},
 	"37720893": {
@@ -2992,6 +3284,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-106994"
 	},
 	"37791828": {
@@ -3000,6 +3293,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.23.15221-2"
 	},
 	"37802688": {
@@ -3008,6 +3302,7 @@
 		"journal": "J Hand Ther",
 		"year": "2023",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.jht.2023.08.016"
 	},
 	"37832814": {
@@ -3016,6 +3311,7 @@
 		"journal": "Arch Phys Med Rehabil",
 		"year": "2024",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1016/j.apmr.2023.09.022"
 	},
 	"37834937": {
@@ -3033,6 +3329,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2023",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-106850"
 	},
 	"37908151": {
@@ -3041,6 +3338,7 @@
 		"journal": "Aust Dent J",
 		"year": "2023",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1111/adj.12989"
 	},
 	"37909692": {
@@ -3058,6 +3356,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.23.15418-1"
 	},
 	"38147700": {
@@ -3066,6 +3365,7 @@
 		"journal": "Am J Emerg Med",
 		"year": "2024",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.ajem.2023.12.023"
 	},
 	"38155995": {
@@ -3083,6 +3383,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-107133",
 		"pmcid": "PMC10894819"
 	},
@@ -3092,6 +3393,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-107490"
 	},
 	"38395699": {
@@ -3100,6 +3402,7 @@
 		"journal": "J Sci Med Sport",
 		"year": "2024",
 		"types": ["Systematic Review", "Journal Article", "Network Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1016/j.jsams.2024.02.001"
 	},
 	"38413133": {
@@ -3108,6 +3411,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-107365",
 		"pmcid": "PMC11103308"
 	},
@@ -3117,6 +3421,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.24.15071-2"
 	},
 	"38497039": {
@@ -3134,6 +3439,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article", "Case Reports"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2024-108064"
 	},
 	"38510627": {
@@ -3151,6 +3457,7 @@
 		"journal": "Asian J Surg",
 		"year": "2024",
 		"types": ["Journal Article", "Meta-Analysis", "Comparative Study", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.asjsur.2024.03.091"
 	},
 	"38641923": {
@@ -3159,6 +3466,7 @@
 		"journal": "Dent Traumatol",
 		"year": "2024",
 		"types": ["Systematic Review", "Journal Article", "Comparative Study"],
+		"medline": true,
 		"doi": "10.1111/edt.12959"
 	},
 	"38684328": {
@@ -3167,6 +3475,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2023-107113",
 		"pmcid": "PMC11228206"
 	},
@@ -3176,6 +3485,7 @@
 		"journal": "Handb Clin Neurol",
 		"year": "2024",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/B978-0-323-90108-6.00013-2"
 	},
 	"38704182": {
@@ -3184,6 +3494,7 @@
 		"journal": "Semin Vasc Surg",
 		"year": "2024",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1053/j.semvascsurg.2024.01.007"
 	},
 	"38708680": {
@@ -3192,6 +3503,7 @@
 		"journal": "Sports Health",
 		"year": "2025",
 		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.1177/19417381241247754",
 		"pmcid": "PMC11569535"
 	},
@@ -3201,6 +3513,7 @@
 		"journal": "Sports Med",
 		"year": "2024",
 		"types": ["Journal Article", "Systematic Review", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1007/s40279-024-02035-y",
 		"pmcid": "PMC11329701"
 	},
@@ -3228,6 +3541,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2024",
 		"types": ["Case Reports", "Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s13018-024-04860-3",
 		"pmcid": "PMC11193892"
 	},
@@ -3237,6 +3551,7 @@
 		"journal": "Eur J Paediatr Dent",
 		"year": "2024",
 		"types": ["Journal Article", "Scoping Review"],
+		"medline": true,
 		"doi": "10.23804/ejpd.2024.25.03.02"
 	},
 	"39023393": {
@@ -3252,6 +3567,7 @@
 			"Comparative Study",
 			"Equivalence Trial"
 		],
+		"medline": true,
 		"doi": "10.1056/EVIDoa2400056"
 	},
 	"39136944": {
@@ -3260,6 +3576,7 @@
 		"journal": "JAMA Netw Open",
 		"year": "2024",
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.1001/jamanetworkopen.2024.27464",
 		"pmcid": "PMC11322840"
 	},
@@ -3305,6 +3622,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2024",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2024-108110"
 	},
 	"39425468": {
@@ -3313,6 +3631,7 @@
 		"journal": "J Foot Ankle Res",
 		"year": "2024",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.1002/jfa2.70012",
 		"pmcid": "PMC11489280"
 	},
@@ -3322,6 +3641,7 @@
 		"journal": "Adv Clin Exp Med",
 		"year": "2025",
 		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
 		"doi": "10.17219/acem/187891"
 	},
 	"39640199": {
@@ -3347,7 +3667,8 @@
 		"title": "Bone Stress Injuries: Diagnosis and Management.",
 		"journal": "Am Fam Physician",
 		"year": "2024",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"39716615": {
 		"authors": "Petersson AH, et al",
@@ -3355,6 +3676,7 @@
 		"journal": "J Shoulder Elbow Surg",
 		"year": "2025",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1016/j.jse.2024.10.027"
 	},
 	"39751378": {
@@ -3363,6 +3685,7 @@
 		"journal": "Am J Sports Med",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1177/03635465241246122"
 	},
 	"39995611": {
@@ -3380,6 +3703,7 @@
 		"journal": "Eur Spine J",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00586-025-08732-0"
 	},
 	"40016533": {
@@ -3388,6 +3712,7 @@
 		"journal": "Neurosurg Rev",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s10143-025-03411-6"
 	},
 	"40041538": {
@@ -3405,6 +3730,7 @@
 		"journal": "Sci Rep",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1038/s41598-025-91788-1",
 		"pmcid": "PMC11882802"
 	},
@@ -3414,6 +3740,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1186/s13018-025-05639-w",
 		"pmcid": "PMC11887387"
 	},
@@ -3423,6 +3750,7 @@
 		"journal": "Urogynecology (Phila)",
 		"year": "2026",
 		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
 		"doi": "10.1097/SPV.0000000000001679",
 		"pmcid": "PMC12708032"
 	},
@@ -3432,6 +3760,7 @@
 		"journal": "Ugeskr Laeger",
 		"year": "2025",
 		"types": ["Journal Article", "Case Reports", "English Abstract"],
+		"medline": true,
 		"doi": "10.61409/V10240692"
 	},
 	"40165544": {
@@ -3440,6 +3769,7 @@
 		"journal": "J Orthop Sports Phys Ther",
 		"year": "2025",
 		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
 		"doi": "10.2519/jospt.2025.13182"
 	},
 	"40182566": {
@@ -3466,6 +3796,7 @@
 		"journal": "J Back Musculoskelet Rehabil",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1177/10538127251344494"
 	},
 	"40501314": {
@@ -3474,6 +3805,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2025",
 		"types": ["Journal Article", "Consensus Statement", "Practice Guideline"],
+		"medline": true,
 		"doi": "10.1002/ksa.12689",
 		"pmcid": "PMC12310080"
 	},
@@ -3483,6 +3815,7 @@
 		"journal": "Adv Ther",
 		"year": "2025",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1007/s12325-025-03271-y"
 	},
 	"40550362": {
@@ -3491,6 +3824,7 @@
 		"journal": "Ophthalmology",
 		"year": "2025",
 		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"medline": true,
 		"doi": "10.1016/j.ophtha.2025.06.016",
 		"pmcid": "PMC12335833"
 	},
@@ -3518,6 +3852,7 @@
 		"journal": "Nat Rev Dis Primers",
 		"year": "2025",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1038/s41572-025-00631-4"
 	},
 	"40655246": {
@@ -3535,6 +3870,7 @@
 		"journal": "J Sports Med Phys Fitness",
 		"year": "2025",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.23736/S0022-4707.25.16884-9"
 	},
 	"40684222": {
@@ -3561,6 +3897,7 @@
 		"journal": "Medicina (Kaunas)",
 		"year": "2025",
 		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.3390/medicina61071304",
 		"pmcid": "PMC12299071"
 	},
@@ -3606,6 +3943,7 @@
 		"journal": "Stroke Vasc Neurol",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1136/svn-2025-004186",
 		"pmcid": "PMC13359515"
 	},
@@ -3615,6 +3953,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2025",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1002/ksa.70049",
 		"pmcid": "PMC12582226"
 	},
@@ -3633,6 +3972,7 @@
 		"journal": "Br J Sports Med",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1136/bjsports-2025-109915",
 		"pmcid": "PMC12703316"
 	},
@@ -3651,6 +3991,7 @@
 		"journal": "Medicina (Kaunas)",
 		"year": "2025",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.3390/medicina61091707",
 		"pmcid": "PMC12471779"
 	},
@@ -3659,7 +4000,8 @@
 		"title": "Slipped Capital Femoral Epiphysis: Rapid Evidence Review.",
 		"journal": "Am Fam Physician",
 		"year": "2025",
-		"types": ["Journal Article", "Review"]
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"41150491": {
 		"authors": "Ryman Augustsson S, et al",
@@ -3676,6 +4018,7 @@
 		"journal": "J Craniofac Surg",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1097/SCS.0000000000012112"
 	},
 	"41173558": {
@@ -3684,6 +4027,7 @@
 		"journal": "Injury",
 		"year": "2025",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.injury.2025.112773"
 	},
 	"41179423": {
@@ -3701,6 +4045,7 @@
 		"journal": "J Sports Sci Med",
 		"year": "2025",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.52082/jssm.2025.739",
 		"pmcid": "PMC12590215"
 	},
@@ -3710,6 +4055,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2025",
 		"types": ["Journal Article", "Network Meta-Analysis", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1186/s13018-025-06514-4",
 		"pmcid": "PMC12715924"
 	},
@@ -3728,6 +4074,7 @@
 		"journal": "JBJS Rev",
 		"year": "2025",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.2106/JBJS.RVW.25.00144"
 	},
 	"41441439": {
@@ -3745,6 +4092,7 @@
 		"journal": "Knee Surg Sports Traumatol Arthrosc",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review", "Consensus Statement"],
+		"medline": true,
 		"doi": "10.1002/ksa.70241",
 		"pmcid": "PMC13502410"
 	},
@@ -3763,6 +4111,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2025",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1186/s13018-025-06566-6",
 		"pmcid": "PMC12866152"
 	},
@@ -3772,6 +4121,7 @@
 		"journal": "Lancet",
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/S0140-6736(25)01579-X"
 	},
 	"41552624": {
@@ -3798,6 +4148,7 @@
 		"journal": "Int Ophthalmol",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1007/s10792-026-04022-w"
 	},
 	"41970099": {
@@ -3839,6 +4190,7 @@
 		"journal": "Eye (Lond)",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1038/s41433-026-04447-8",
 		"pmcid": "PMC13341748"
 	},
@@ -3848,6 +4200,7 @@
 		"journal": "J Orthop Sports Phys Ther",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.2519/jospt.2026.13985"
 	},
 	"42067876": {
@@ -3856,6 +4209,7 @@
 		"journal": "BMC Musculoskelet Disord",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1186/s12891-026-09890-y",
 		"pmcid": "PMC13134120"
 	},
@@ -3874,6 +4228,7 @@
 		"journal": "J Sci Med Sport",
 		"year": "2026",
 		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
 		"doi": "10.1016/j.jsams.2026.04.014"
 	},
 	"42150363": {
@@ -3890,6 +4245,7 @@
 		"journal": "Foot (Edinb)",
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1016/j.foot.2026.102267"
 	},
 	"42319275": {
@@ -3898,6 +4254,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.5435/JAAOS-D-25-01516"
 	},
 	"42469843": {
@@ -3906,6 +4263,7 @@
 		"journal": "J Orthop Surg Res",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
 		"doi": "10.1186/s13018-026-07088-5",
 		"pmcid": "PMC13660073"
 	},
@@ -3915,6 +4273,7 @@
 		"journal": "Br Med Bull",
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1093/bmb/ldag021"
 	},
 	"42506584": {
@@ -3931,6 +4290,7 @@
 		"journal": "J Sports Sci",
 		"year": "2026",
 		"types": ["Journal Article"],
+		"medline": true,
 		"doi": "10.1080/02640414.2026.2711552"
 	},
 	"42558293": {
@@ -3998,6 +4358,7 @@
 		"journal": "Br Med Bull",
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.1093/bmb/ldag031"
 	},
 	"42748362": {
@@ -4049,6 +4410,7 @@
 		"journal": "Arch Orthop Trauma Surg",
 		"year": "2026",
 		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
 		"doi": "10.1007/s00402-026-06517-8",
 		"pmcid": "PMC13627243"
 	},
@@ -4067,6 +4429,7 @@
 		"journal": "J Am Acad Orthop Surg",
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
+		"medline": true,
 		"doi": "10.5435/JAAOS-D-25-01090"
 	}
 }

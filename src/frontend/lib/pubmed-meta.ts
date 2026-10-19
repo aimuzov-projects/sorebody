@@ -12,6 +12,8 @@ export type PubmedMeta = {
 	year: string
 	/** Типы публикации из PubMed, например `Meta-Analysis`, `Journal Article`. */
 	types: string[]
+	/** Запись проиндексирована в MEDLINE: только тогда `types` полные и тип работы можно показать. */
+	medline?: boolean
 	doi?: string
 	/** PMC id, только если полный текст уже открыт (эмбарго прошло на момент выгрузки). */
 	pmcid?: string
@@ -51,7 +53,8 @@ export const doiUrl = (doi: string) => `https://doi.org/${doi}`
 
 /** "Dahmen J, et al. Название. BMJ Open Sport Exerc Med, 2023" */
 export function citation(meta: PubmedMeta) {
-	const title = meta.title.replace(/\.$/, '')
+	// Название-вопрос или восклицание оставляем со своим знаком, точку ставим только после обычного
+	const title = /[.?!]$/.test(meta.title) ? meta.title : `${meta.title}.`
 
-	return `${meta.authors}. ${title}. ${meta.journal}, ${meta.year}`
+	return `${meta.authors}. ${title} ${meta.journal}, ${meta.year}`
 }

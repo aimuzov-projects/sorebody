@@ -298,7 +298,7 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 								<span class="article__source-links">
 									{type && <span class="article__source-type">{type}</span>}
 									{links.map((link) => (
-										<a class="article__source-link" href={link.href}>
+										<a class="article__source-link" href={link.href} aria-label={link.ariaLabel}>
 											{link.label}
 											<span
 												class="article__source-icon"

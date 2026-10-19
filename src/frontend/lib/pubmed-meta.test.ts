@@ -23,6 +23,23 @@ test('citation joins authors, title, journal and year without a doubled full sto
 		}),
 		'Dahmen J, et al. Incidence of injuries in padel: a systematic review. BMJ Open Sport Exerc Med, 2023',
 	)
+
+	// Название-вопрос: точку после знака вопроса не дописываем
+	assert.equal(
+		citation({
+			authors: 'Hutchison AM, et al',
+			title: 'What is the best clinical test for Achilles tendinopathy?',
+			journal: 'Foot Ankle Surg',
+			year: '2013',
+			types: [],
+		}),
+		'Hutchison AM, et al. What is the best clinical test for Achilles tendinopathy? Foot Ankle Surg, 2013',
+	)
+
+	assert.equal(
+		citation({ authors: 'Smith J', title: 'Plain title', journal: 'J', year: '2020', types: [] }),
+		'Smith J. Plain title. J, 2020',
+	)
 })
 
 test('full text and DOI links', () => {
@@ -32,15 +49,25 @@ test('full text and DOI links', () => {
 
 test('a PubMed source links to PubMed, the open full text and the DOI', () => {
 	// Dahmen 2023 лежит в data/pubmed.json: открытый полный текст и DOI у него есть
-	const details = sourceDetails({ pmid: '37337550', label: 'Dahmen 2023' })
+	const details = sourceDetails({ pmid: '37337550', label: 'Dahmen 2023, систематический обзор' })
 
-	assert.equal(details.type, 'систематический обзор')
 	assert.match(details.citation ?? '', /^Dahmen J, et al\. .+\. BMJ Open Sport Exerc Med, 2023$/)
 
 	assert.deepEqual(
-		details.links.map((l) => l.label),
-		['PMID 37337550', 'Полный текст', 'DOI'],
+		details.links.map((l) => [l.label, l.ariaLabel]),
+		[
+			['PMID 37337550', undefined],
+			['Полный текст', 'Полный текст, Dahmen 2023'],
+			['DOI', 'DOI, Dahmen 2023'],
+		],
 	)
+})
+
+test('work type is shown only for records indexed in MEDLINE', () => {
+	// Knapik 2022 проиндексирован: метаанализ
+	assert.equal(sourceDetails({ pmid: '35278328', label: 'Knapik 2022' }).type, 'метаанализ')
+	// Baur 2025 ещё не проиндексирован: PubMed пока зовёт его Review, хотя это метаанализ
+	assert.equal(sourceDetails({ pmid: '40807174', label: 'Baur 2025' }).type, undefined)
 })
 
 test('a guideline source links only to its site', () => {

@@ -9,6 +9,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parse } from 'yaml'
 
 const content = fileURLToPath(new URL('../../src/frontend/content/', import.meta.url))
 const out = fileURLToPath(new URL('../../src/frontend/data/pubmed.json', import.meta.url))
@@ -18,13 +19,12 @@ const PAUSE = 400
 const BATCH = 200
 
 const files = fs.readdirSync(content, { recursive: true }).filter((file) => file.endsWith('.md'))
-const pmids = [
-	...new Set(
-		files.flatMap((file) =>
-			[...fs.readFileSync(path.join(content, file), 'utf8').matchAll(/^\s+- pmid: '(\d+)'$/gm)].map((m) => m[1]),
-		),
-	),
-].sort((a, b) => Number(a) - Number(b))
+const pmidsOf = (file) => {
+	const front = fs.readFileSync(path.join(content, file), 'utf8').match(/^---\n([\s\S]*?)\n---\n/)?.[1]
+
+	return (parse(front ?? '')?.sources ?? []).flatMap((s) => (s.pmid ? [String(s.pmid)] : []))
+}
+const pmids = [...new Set(files.flatMap(pmidsOf))].sort((a, b) => Number(a) - Number(b))
 
 const today = new Date().toISOString().slice(0, 10).replaceAll('-', '/')
 const meta = {}
@@ -58,6 +58,9 @@ for (let i = 0; i < pmids.length; i += BATCH) {
 			journal: doc.source,
 			year: doc.pubdate.slice(0, 4),
 			types: doc.pubtype,
+			// Тип работы надёжен только после индексации в MEDLINE: у свежих записей "as supplied by
+			// publisher" и "in process" он неполный, метаанализ там бывает просто Review
+			...(doc.recordstatus === 'PubMed - indexed for MEDLINE' && { medline: true }),
 			...(idOf('doi') && { doi: idOf('doi') }),
 			...(pmcid && { pmcid }),
 		}

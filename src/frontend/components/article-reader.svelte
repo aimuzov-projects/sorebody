@@ -155,39 +155,42 @@
 	<div class="reader__progress" aria-hidden="true">
 		<span class="reader__progress-bar" bind:this={progressBar}></span>
 	</div>
-	<SiteHeader>
-		<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
-			><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
-		>
-		<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
-		     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
-		<p class="article-bar__title" aria-hidden="true" style:visibility={status === 'ready' ? null : 'hidden'}>
-			{splitTitle(injury.title).name}
-		</p>
-	</SiteHeader>
-	{#if status === 'loading'}
-		<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
-		     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
-		<div class="reader__body" aria-hidden="true">
-			<div class="article">
-				<header class="article__hero">
-					<h1 class="article__title">{splitTitle(injury.title).name}</h1>
-					<div class="article__summary">
-						<p class="article__summary-label">
-							<span class="article__summary-icon">{@html TextQuote}</span>Коротко
-						</p>
-						<p class="article__summary-text">{injury.summary}</p>
-					</div>
-				</header>
+	<!-- Шире прокрутки на место под полосу окна: см. .reader__page -->
+	<div class="reader__page">
+		<SiteHeader>
+			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
+				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+			>
+			<!-- Маленький заголовок проявляется по мере прокрутки, стили в styles/article.css. Пока
+			     статья грузится, прокручивать нечего, и без visibility он стоял над тем же названием -->
+			<p class="article-bar__title" aria-hidden="true" style:visibility={status === 'ready' ? null : 'hidden'}>
+				{splitTitle(injury.title).name}
+			</p>
+		</SiteHeader>
+		{#if status === 'loading'}
+			<!-- Пока статья грузится -- её начало из тех же классов: название и "Коротко" уже известны
+			     из списка и сразу стоят на своих местах. Подмена на загруженную статью их не сдвигает -->
+			<div class="reader__body" aria-hidden="true">
+				<div class="article">
+					<header class="article__hero">
+						<h1 class="article__title">{splitTitle(injury.title).name}</h1>
+						<div class="article__summary">
+							<p class="article__summary-label">
+								<span class="article__summary-icon">{@html TextQuote}</span>Коротко
+							</p>
+							<p class="article__summary-text">{injury.summary}</p>
+						</div>
+					</header>
+				</div>
 			</div>
-		</div>
-	{:else if status === 'error'}
-		<p class="reader__status">
-			Не получилось загрузить статью. <a href="/{sport}/{injury.slug}/">Открыть отдельно</a>
-		</p>
-	{/if}
-	<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
-	{#if footer && status === 'ready'}{@render footer()}{/if}
+		{:else if status === 'error'}
+			<p class="reader__status">
+				Не получилось загрузить статью. <a href="/{sport}/{injury.slug}/">Открыть отдельно</a>
+			</p>
+		{/if}
+		<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
+		{#if footer && status === 'ready'}{@render footer()}{/if}
+	</div>
 </article>
 
 <style>
@@ -198,6 +201,7 @@
 		position: fixed;
 		z-index: 2;
 		inset: 0;
+		overflow-x: hidden;
 		overflow-y: auto;
 
 		overscroll-behavior: contain;
@@ -294,6 +298,15 @@
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой
 		   (у неё z-index 10): под ней полосу размывал backdrop-filter */
+		/* На главной у окна нет своей прокрутки, но место под его полосу держится
+		   (scrollbar-gutter в styles/global.css), а у статьи ещё и своя полоса. Без поправки
+		   колонка текста считалась бы от ширины без двух полос и стояла бы левее, чем на
+		   отдельной странице статьи. Содержимое заходит под свою полосу на ширину полосы окна
+		   (lib/page-gutter.ts): там только поля, а раскладка та же, что у отдельной страницы */
+		&__page {
+			margin-right: calc(-1 * var(--page-gutter, 0px));
+		}
+
 		&__progress {
 			pointer-events: none;
 			position: fixed;

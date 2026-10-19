@@ -144,6 +144,12 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'pectoralis-major-rupture': { offset: [-0.07, -0.05, 0.08], normal: [0, 0, 1], view: { azimuth: 10, polar: 74 } },
 	'paget-schroetter-syndrome': { offset: [-0.07, 0.02, 0.06], normal: [0, 0.3, 1], view: { azimuth: 8, polar: 70 } },
 	'latissimus-dorsi-tear': { offset: [-0.03, -0.12, -0.06], normal: [0.5, 0, -1], view: { azimuth: 125, polar: 76 } },
+	// Передний вывих: головка плечевой уходит вперёд, вниз и внутрь, под клювовидный отросток
+	'shoulder-dislocation': {
+		offset: [-0.02, -0.035, 0.04],
+		normal: [0.4, -0.2, 1],
+		view: { azimuth: 25, polar: 76 },
+	},
 	'upper-limb-stress-fractures': {
 		offset: [-0.06, -0.03, -0.09],
 		normal: [0, 0, -1],
@@ -174,6 +180,8 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Кисть: запястье в центре зоны, мозоли -- на ладони у пальцев
 	'wrist-sprain': { offset: [0, 0, 0] },
 	'hand-rips': { offset: [0, -0.07, 0.015], normal: [0, 0, 1], view: { azimuth: 20, polar: 80 } },
+	// Переломы и вывихи -- пястные кости и пальцы, ниже ладонных мозолей
+	'hand-finger-injuries': { offset: [0.01, -0.1, 0.01], normal: [0.3, 0, 1], view: { azimuth: 20, polar: 80 } },
 	// Таз: импинджмент -- перед тазобедренного сустава, отрыв хамстрингов -- седалищный бугор сзади
 	'femoroacetabular-impingement': { offset: [0, 0, 0.06], normal: [0, 0, 1], view: { azimuth: 20, polar: 76 } },
 	'proximal-hamstring-avulsion': {
@@ -194,8 +202,12 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Разрыв на том же сухожилии, но маркер ниже, к пятке: если у падела появится его линза,
 	// оба ахилла окажутся в одной зоне и не должны делить место
 	'achilles-tendon-rupture': { offset: [0, 0.01, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
-	// Голень: медиальная головка икроножной сзади и изнутри
+	// Голень: медиальная головка икроножной сзади и изнутри. Переломы -- снаружи, по малоберцовой: зона
+	// смотрит на голень сзади и сбоку, и спереди изнутри метку было бы не видно. Перелом -- посередине
+	// голени, стрессовый -- ниже, в нижней трети малоберцовой, как на иллюстрации статьи
 	'tennis-leg': { offset: [-0.02, 0.03, -0.075], normal: [-0.3, 0, -1], view: { azimuth: 175, polar: 78 } },
+	'lower-leg-fracture': { offset: [0.04, 0, 0], normal: [1, 0, -0.3] },
+	'lower-limb-stress-fractures': { offset: [0.035, -0.08, -0.005], normal: [1, 0, -0.2] },
 	// Всё тело: шея
 	'cervical-artery-dissection': {
 		offset: [0, 0.2, -0.01],
@@ -261,6 +273,10 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 		muscles: ['extensor carpi radialis brevis', 'extensor digitorum', 'flexor carpi radialis', 'pronator teres'],
 	},
 	'wrist-sprain': { depth: 'deep' },
+	'hand-finger-injuries': { depth: 'deep' },
+	'shoulder-dislocation': { depth: 'deep' },
+	'lower-leg-fracture': { depth: 'deep' },
+	'lower-limb-stress-fractures': { depth: 'deep' },
 	'ankle-sprain': { depth: 'deep' },
 	// Глазного яблока в BodyParts3D нет: глазницу показывают прямые мышцы глаза вокруг него
 	'eye-injury': {

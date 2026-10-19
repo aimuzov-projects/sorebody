@@ -56,7 +56,8 @@ export type PadelElement = (typeof PADEL_ELEMENTS)[number]['slug']
 
 /**
  * Игровые действия и ситуации футбола по docs/research/football-injuries-pubmed.md, раздел 4.
- * Отбор и подкат -- один элемент с двумя сторонами: атакуешь сам или атакуют тебя.
+ * Отбор и подкат -- один элемент с двумя сторонами: атакуешь сам или атакуют тебя. Падение на руку
+ * отдельно от них: игрок часто падает после отбора, но вывих плеча или перелом кисти даёт опора на руку.
  */
 const FOOTBALL_ELEMENTS = [
 	{ slug: 'kicking', title: 'Удар по мячу', titleEn: 'Kicking' },
@@ -69,6 +70,7 @@ const FOOTBALL_ELEMENTS = [
 	{ slug: 'collision', title: 'Столкновение', titleEn: 'Collision' },
 	{ slug: 'ball-impact', title: 'Попадание мячом', titleEn: 'Ball impact' },
 	{ slug: 'goalkeeping', title: 'Вратарские действия', titleEn: 'Goalkeeping' },
+	{ slug: 'fall', title: 'Падение на руку', titleEn: 'Fall on an outstretched arm' },
 ] as const
 
 export type FootballElement = (typeof FOOTBALL_ELEMENTS)[number]['slug']
@@ -140,8 +142,10 @@ const PADEL_FREQUENCY_ORDER = [
 ]
 
 /**
- * Травмы футбола от частых к редким, уровни -- из таблицы диагнозов (раздел 3) и пилота (раздел 5)
- * в docs/research/football-injuries-pubmed.md, внутри уровня -- по доле в таблице диагнозов Ekstrand 2020 (62% травм -- UEFA ECIS).
+ * Травмы футбола от частых к редким, уровни -- из таблицы диагнозов (раздел 3), пилота (раздел 5)
+ * и второй волны (раздел 5а) в docs/research/football-injuries-pubmed.md. Внутри уровня -- по доле
+ * в таблице диагнозов Ekstrand 2020 (62% травм -- UEFA ECIS), диагнозы ниже её порога -- по доле
+ * от всех травм в когортах с медицинской регистрацией.
  */
 const FOOTBALL_FREQUENCY_ORDER = [
 	// Частые
@@ -152,13 +156,23 @@ const FOOTBALL_FREQUENCY_ORDER = [
 	'muscle-strains',
 	'mcl-sprain',
 	// Нечастые
+	'low-back-strain',
 	'achilles-tendinopathy',
 	'concussion',
+	'patellofemoral-pain',
 	'acl-tear',
 	'meniscus-tear',
+	'shoulder-dislocation',
+	'hand-finger-injuries',
 	'fifth-metatarsal-fracture',
+	'lower-leg-fracture',
+	'achilles-tendon-rupture',
+	'lower-limb-stress-fractures',
 	// Редкие
 	'orofacial-trauma',
+	'eye-injury',
+	'femoroacetabular-impingement',
+	'proximal-hamstring-avulsion',
 ]
 
 type SportElement = { slug: string; title: string; titleEn: string }

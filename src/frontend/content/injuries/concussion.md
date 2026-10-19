@@ -50,7 +50,7 @@ draft: true
 - Сознание ухудшается: человек всё сонливее, ему трудно держать глаза открытыми ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Потеря сознания, даже короткая ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Судороги ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
-- Рвота, особенно повторная ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
+- Повторная рвота ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Сильная или нарастающая головная боль ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Двоение в глазах ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Слабость, онемение, покалывание или жжение в руке или ноге ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
@@ -66,7 +66,7 @@ draft: true
 
 **В приёмное отделение в тот же день**, даже без красных флагов, если ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations)):
 
-- Головная боль не проходит или была рвота
+- Головная боль не проходит или была однократная рвота
 - Человек принимает препараты, разжижающие кровь, или у него нарушена свёртываемость крови
 - Раньше была операция на головном мозге
 - Человек пьян, или дома некому за ним присмотреть

@@ -1,7 +1,15 @@
 ---
 import { createHash } from 'node:crypto'
 
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
+import {
+	ArrowRight,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ExternalLink,
+	TextQuote,
+	TriangleAlert,
+} from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -25,6 +33,7 @@ import { lensSports, type Injury, type Lens } from '#frontend/lib/catalog.ts'
 import { injuryPage } from '#frontend/lib/injury-page.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceDetails } from '#frontend/lib/source-details.ts'
+import { sourcesSummary } from '#frontend/lib/sources.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
@@ -279,10 +288,18 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 				</section>
 			)}
 
-			<section class="article__sources" aria-labelledby="sources-title">
-				<h2 class="article__end-title" id="sources-title">
-					Источники
-				</h2>
+			{/* Список длинный, а нужен не всем: свёрнут. Раскрывают его ссылка #sources, поиск по
+			    странице и печать (lib/reading.ts) */}
+			<details class="article__sources" id="sources" data-sources>
+				<summary class="article__sources-summary">
+					<span class="article__sources-head">
+						<h2 class="article__end-title article__sources-title" id="sources-title">
+							Источники <span class="article__sources-count">{sources.length}</span>
+						</h2>
+						<span class="article__sources-note">{sourcesSummary(sources)}</span>
+					</span>
+					<span class="article__sources-chevron" aria-hidden="true" set:html={ChevronDown} />
+				</summary>
 				<ol class="article__source-list">
 					{sources.map((s) => {
 						const { citation, type, links } = sourceDetails(s)
@@ -312,7 +329,7 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 						)
 					})}
 				</ol>
-			</section>
+			</details>
 		</footer>
 
 		<TocMenu {sections} />

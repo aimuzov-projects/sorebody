@@ -1,3 +1,4 @@
+import { plural } from './plural.ts'
 import { citedPmids, pubmedUrl } from './pubmed.ts'
 
 /**
@@ -23,6 +24,23 @@ export function guidelineSite(url: string) {
 	const { protocol, host } = new URL(url)
 
 	return protocol === 'https:' ? GUIDELINE_SITES[host] : undefined
+}
+
+/**
+ * Из чего состоит список источников -- строка под свёрнутым заголовком: "18 работ из PubMed
+ * и 2 клинические рекомендации".
+ */
+export function sourcesSummary(sources: Source[]) {
+	const papers = sources.filter((s) => 'pmid' in s).length
+	const guidelines = sources.length - papers
+
+	return [
+		papers && `${papers} ${plural(papers, ['работа', 'работы', 'работ'])} из PubMed`,
+		guidelines &&
+			`${guidelines} ${plural(guidelines, ['клиническая рекомендация', 'клинические рекомендации', 'клинических рекомендаций'])}`,
+	]
+		.filter(Boolean)
+		.join(' и ')
 }
 
 export const sourceHref = (source: Source) => ('pmid' in source ? pubmedUrl(source.pmid) : source.url)

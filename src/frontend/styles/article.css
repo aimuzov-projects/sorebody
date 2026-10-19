@@ -605,6 +605,75 @@
 		color: var(--accent);
 	}
 
+	/* Источники свёрнуты: в заголовке число и из чего список состоит, шеврон справа */
+	&__sources {
+		scroll-margin-top: var(--header-clear);
+	}
+
+	&__sources-summary {
+		cursor: pointer;
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		border-radius: 12px;
+		list-style: none;
+
+		&::-webkit-details-marker {
+			display: none;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 6px;
+		}
+	}
+
+	&__sources-head {
+		display: grid;
+		gap: 2px;
+	}
+
+	&__sources-title {
+		margin: 0;
+		transition: color 0.3s var(--article-ease);
+	}
+
+	&__sources-summary:hover &__sources-title {
+		color: var(--accent);
+	}
+
+	&__sources-count {
+		font-weight: 500;
+		color: var(--muted);
+	}
+
+	&__sources-note {
+		font-size: 14px;
+		color: var(--muted);
+	}
+
+	&__sources-chevron {
+		display: inline-flex;
+		flex: none;
+		width: 24px;
+		height: 24px;
+		color: var(--muted);
+		transition: rotate 0.3s var(--article-ease);
+
+		@media (--reduced-motion) {
+			transition: none;
+		}
+	}
+
+	&__sources[open] &__sources-chevron {
+		rotate: 180deg;
+	}
+
+	&__sources[open] &__source-list {
+		margin-top: 20px;
+	}
+
 	&__source-list {
 		display: grid;
 		gap: 14px;
@@ -1062,5 +1131,22 @@
 	from {
 		transform: translate(-50%, 4px);
 		opacity: 0;
+	}
+}
+
+/* На печати источники открыты, даже если beforeprint не сработал (печать из меню без JS):
+   содержимое свёрнутого details показываем через ::details-content, где он есть */
+@media print {
+	.article__sources::details-content {
+		content-visibility: visible;
+		display: contents;
+	}
+
+	.article__source-list {
+		margin-top: 20px;
+	}
+
+	.article__sources-chevron {
+		display: none;
 	}
 }

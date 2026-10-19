@@ -172,7 +172,7 @@
 			font-size: 20px;
 			font-weight: 600;
 			line-height: 1.25;
-			letter-spacing: -0.02em;
+			letter-spacing: 0.01em;
 		}
 
 		/* Зона травмы в списке движения: там травмы разных зон идут подряд */
@@ -205,10 +205,10 @@
 
 		/* Описание целиком, без многоточия: строка и так ссылка, это видно по стрелке */
 		&__summary {
-			font-size: 15px;
+			font-size: 16px;
 			line-height: 1.45;
 			color: var(--a-fg2);
-			letter-spacing: -0.01em;
+			letter-spacing: 0.01em;
 		}
 	}
 

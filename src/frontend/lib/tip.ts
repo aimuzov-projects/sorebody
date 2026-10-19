@@ -17,7 +17,7 @@ type TipOptions = {
  * клавиатура открывает фокусом. Встаёт над значком, без места до шапки -- под ним,
  * не шире колонки и экрана. Возвращает функцию снятия.
  */
-export function attachTip(
+function attachTip(
 	button: HTMLElement,
 	tip: HTMLElement,
 	{ column, bar = null, scroller = window, pinOnClick = false, side }: TipOptions,

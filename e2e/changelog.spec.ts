@@ -9,6 +9,72 @@ test('ссылка рядом с темой ведёт на страницу «�
 	await expect(page.getByRole('link', { name: 'Что нового' })).toHaveAttribute('aria-current', 'page')
 })
 
+test('значок (i) в углу ведёт на страницу «О справочнике» и на ней горит', async ({ page }) => {
+	await page.goto('/changelog/')
+	await page.getByRole('link', { name: 'О справочнике', exact: true }).click()
+
+	await expect(page).toHaveURL(/\/about\/?$/)
+
+	await expect(page.getByRole('link', { name: 'О справочнике', exact: true })).toHaveAttribute('aria-current', 'page')
+
+	await expect(page.getByRole('link', { name: 'Что нового' })).not.toHaveAttribute('aria-current')
+})
+
+test('значки в углу стоят в ряд слева от темы: (i), «Что нового», тема', async ({ page }) => {
+	await page.goto('/changelog/')
+
+	const about = (await page.getByRole('link', { name: 'О справочнике', exact: true }).boundingBox())!
+	const changelog = (await page.getByRole('link', { name: 'Что нового' }).boundingBox())!
+	const theme = (await page.getByRole('button', { name: /^Тема:/ }).boundingBox())!
+
+	expect(about.y).toBe(theme.y)
+	expect(changelog.y).toBe(theme.y)
+	expect(about.x + about.width).toBeLessThanOrEqual(changelog.x)
+	expect(changelog.x + changelog.width).toBeLessThanOrEqual(theme.x)
+})
+
+test('подсказки значков в углу открываются с клавиатуры, повторяют подпись и закрываются по Esc', async ({ page }) => {
+	await page.goto('/nope/')
+
+	for (const name of ['О справочнике', 'Что нового']) {
+		const link = page.getByRole('link', { name, exact: true })
+		const tip = link.locator('xpath=following-sibling::*[1]')
+
+		await expect(tip).toBeHidden()
+
+		// Табом до нужного значка: перед ним на странице могут быть другие ссылки
+		for (let i = 0; i < 20 && !(await link.evaluate((el) => el === document.activeElement)); i++)
+			await page.keyboard.press('Tab')
+
+		await expect(tip).toBeVisible()
+		await expect(tip).toHaveText(name)
+		await page.keyboard.press('Escape')
+		await expect(tip).toBeHidden()
+	}
+})
+
+test('значок своей страницы не ведёт никуда и пропускается табом', async ({ page }) => {
+	await page.goto('/about/')
+
+	const about = page.getByRole('link', { name: 'О справочнике', exact: true })
+
+	await expect(about).not.toHaveAttribute('href')
+	await expect(about).toHaveAttribute('aria-disabled', 'true')
+
+	for (let i = 0; i < 20; i++) {
+		await page.keyboard.press('Tab')
+		expect(await about.evaluate((el) => el === document.activeElement)).toBe(false)
+	}
+})
+
+test('логотип на главной -- просто знак, на about ведёт значок (i)', async ({ page }) => {
+	await page.goto('/')
+
+	await expect(page.getByRole('img', { name: 'Sorebody' })).toBeVisible()
+	await expect(page.locator('a', { has: page.getByRole('img', { name: 'Sorebody' }) })).toHaveCount(0)
+	await expect(page.getByRole('link', { name: 'О справочнике', exact: true })).toHaveAttribute('href', '/about/')
+})
+
 test('в Mini App ссылка встаёт в угол на место скрытого переключателя темы', async ({ page }) => {
 	const link = page.getByRole('link', { name: 'Что нового' })
 	const theme = page.getByRole('button', { name: /^Тема:/ })

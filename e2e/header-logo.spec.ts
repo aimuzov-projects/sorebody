@@ -44,21 +44,29 @@ test('в ридере на главной логотип прячется при
 	await expect(page).not.toHaveURL(new RegExp(`#${SLUG}$`))
 })
 
-test.describe('на телефоне', () => {
-	test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })
+test.describe('на узком телефоне', () => {
+	test.use({ viewport: { width: 320, height: 640 }, hasTouch: true, isMobile: true })
 
-	test('длинный заголовок в шапке обрезается многоточием и не раздвигает страницу', async ({ page }) => {
-		await page.goto('/padel/elbow-tendinopathy/')
+	test('логотип и длинный заголовок не заходят под значки в углу и не раздвигают страницу', async ({ page }) => {
+		await page.goto(`/crossfit/${SLUG}/`)
+
+		// Самый левый значок ряда в углу. У .site-header справа отступ под эти значки, и
+		// наложение на них сравнение с краем шапки не поймало бы
+		const corner = (await page.getByRole('link', { name: 'О справочнике' }).boundingBox())!
+		const logo = (await page.locator('.article-bar__logo').boundingBox())!
+
+		expect(logo.x + logo.width).toBeLessThanOrEqual(corner.x)
+
 		await page.evaluate(() => scrollTo(0, 400))
 
 		const title = page.locator('.article-bar__title')
 
 		await expect.poll(() => opacity(title)).toBe(1)
+		expect(await title.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true)
 		expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 
-		const header = (await page.locator('.site-header').boundingBox())!
 		const box = (await title.boundingBox())!
 
-		expect(box.x + box.width).toBeLessThanOrEqual(header.x + header.width)
+		expect(box.x + box.width).toBeLessThanOrEqual(corner.x)
 	})
 })

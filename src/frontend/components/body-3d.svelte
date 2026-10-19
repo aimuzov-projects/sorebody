@@ -355,6 +355,8 @@
 	let open = $state.raw<{ zone: Zone; index: number; side: 'left' | 'right' | 'bottom' } | null>(null)
 	/** Статья поверх модели (components/article-reader.svelte). */
 	let article = $state.raw<Injury | null>(null)
+	/** Раздел, который читали, когда в статье сменили спорт: ридер откроет разбор на нём. */
+	let articleSection = $state<string>()
 	let sceneHidden = $state(false)
 	let sleepTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -385,8 +387,6 @@
 
 	/** Привести экран к адресу: открыть или закрыть зону и статью. */
 	function sync() {
-		shownHref = location.href
-
 		const place = parseHash()
 
 		if (place.level === 0) {
@@ -412,13 +412,11 @@
 
 	function openZone(zone: Zone, index: number) {
 		history.pushState(null, '', zoneHash(zone, index))
-		shownHref = location.href
 		showZone(zone, index)
 	}
 
 	function openArticle(injury: Injury) {
 		history.pushState(null, '', `#${injury.slug}`)
-		shownHref = location.href
 		showArticle(injury)
 	}
 
@@ -515,10 +513,12 @@
 
 	/**
 	 * Сменить спорт на месте: данные, заголовки страницы, `data-sport` и цвет. Сцена и модель
-	 * остаются, фильтры и прокрутка списка зон сбрасываются, как при загрузке страницы.
+	 * остаются, фильтры и прокрутка списка зон сбрасываются, как при загрузке страницы. Открытая
+	 * статья может остаться: в ней сменится только разбор.
 	 */
-	function applySport(next: SportData) {
-		hideArticle()
+	function applySport(next: SportData, keepArticle = false) {
+		if (!keepArticle) hideArticle()
+
 		closeZone()
 		hovered = null
 		lead = null
@@ -539,11 +539,22 @@
 	}
 
 	/**
-	 * Выбран другой спорт в заголовке -- смена на месте, адрес -- его главная. Последняя зона едет
-	 * вместе со стороной: смотрел левое плечо в кроссфите -- видишь левое плечо в паделе. Нет у
-	 * спорта такой зоны -- открывается сцена целиком. Данные не пришли -- обычный переход.
+	 * Выбран другой спорт -- в заголовке («Травмы ‹в …›») или в открытой статье («Разбор ‹в …›»).
+	 * Спорт -- настройка, а не шаг: новой записи в истории нет, текущая переписывается на адрес
+	 * нового спорта, а прошлые шаги при возврате открываются в нём же (onHistory). Поэтому
+	 * «Назад» на странице и в браузере ведут в одно место.
+	 *
+	 * Статья остаётся открытой, сменяется разбор, раздел (`section`) -- тот, что читали. На общем
+	 * плане последняя зона едет вместе со стороной: смотрел левое плечо в кроссфите -- видишь
+	 * левое плечо в паделе, и она открывается шагом над общим планом. Данные не пришли -- обычный
+	 * переход, тоже без нового шага.
 	 */
-	async function switchSport(target: { slug: string; href: string }) {
+	async function switchSport(target: { slug: string }, section?: string) {
+		const home = sport.sports.find((s) => s.slug === target.slug)?.href
+
+		if (!home) return
+
+		const reading = article
 		let next: SportData | null
 
 		try {
@@ -553,12 +564,30 @@
 
 			const recent = open ?? lastZone
 
-			location.assign(recent ? `${target.href}?region=${recent.zone.slug}:${recent.index}` : target.href)
+			location.replace(
+				reading
+					? `/${target.slug}/${reading.slug}/${section ? `#${section}` : ''}`
+					: recent
+						? `${home}?region=${recent.zone.slug}:${recent.index}`
+						: home,
+			)
 
 			return
 		}
 
 		if (!next) return
+
+		const from = location.href
+
+		if (reading && article?.slug === reading.slug) {
+			applySport(next, true)
+			articleSection = section
+			history.replaceState(null, '', `${home}#${reading.slug}`)
+			sync()
+			metrikaHit(from)
+
+			return
+		}
 
 		// Зону берём после загрузки: она могла смениться, пока данные шли
 		const recent = open ?? lastZone
@@ -568,49 +597,30 @@
 		const zone = recent ? allZones.find((z) => z.slug === recent.zone.slug) : undefined
 		const index = recent && zone?.points[recent.index] ? recent.index : 0
 
-		const from = location.href
+		history.replaceState(null, '', home)
+		baseLevel = 0
 
-		// Как после перехода по ссылке: зона из адреса, «Назад» в ней закрывает её заменой адреса
-		history.pushState(null, '', zone ? `${target.href}${zoneHash(zone, index)}` : target.href)
-		baseLevel = parseHash().level
+		if (zone) history.pushState(null, '', `${home}${zoneHash(zone, index)}`)
+
 		sync()
 		metrikaHit(from)
 	}
 
 	/**
-	 * Адрес в строке, который видел посетитель: referer хита Метрики, когда «Назад» или
-	 * «Вперёд» уводят в другой спорт. В popstate адрес уже новый, поэтому помним прошлый
+	 * «Назад» и «Вперёд»: прошлые шаги -- в текущем спорте. Запись другого спорта осталась от
+	 * шагов до его смены (switchSport): переписываем её путь на главную текущего, хеш с зоной или
+	 * статьёй -- тот же. Зоны или статьи нет у этого спорта -- откроется общий план.
 	 */
-	let shownHref = location.href
-
-	/** «Назад» и «Вперёд»: адрес другого спорта -- сначала спорт, потом зона и статья из хеша. */
 	function onHistory() {
-		const from = shownHref
 		const slug = movementPage ? undefined : sportAt(location.pathname, sport.sports)
 
-		if (!slug || slug === sport.slug) {
-			sportRequests.cancel()
-			sportLoading = false
-			sync()
+		sportRequests.cancel()
+		sportLoading = false
 
-			return
-		}
+		if (slug && slug !== sport.slug)
+			history.replaceState(history.state, '', `${sport.home}${location.search}${location.hash}`)
 
-		fetchSport(slug).then(
-			(next) => {
-				if (!next) return
-
-				applySport(next)
-				baseLevel = parseHash().level
-				sync()
-				metrikaHit(from)
-			},
-			(error) => {
-				console.error(error)
-				// Без данных спорта страницу по этому адресу отдаст сервер
-				location.reload()
-			},
-		)
+		sync()
 	}
 
 	/** Ссылка «/?region=knee» со страницы статьи открывает список зоны: адрес -- сразу хеш зоны. */
@@ -1025,9 +1035,15 @@
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */
 	function showArticle(injury: Injury) {
-		if (article?.slug === injury.slug) return
+		// Та же травма из данных другого спорта: открыта, меняется только разбор
+		if (article?.slug === injury.slug) {
+			article = injury
+
+			return
+		}
 
 		article = injury
+		articleSection = undefined
 		toolsOpen = false
 		// Камера возвращается к кадру зоны, пока сцена скрыта: после статьи акцент начнётся заново
 		accent = null
@@ -1041,6 +1057,7 @@
 		if (!article) return
 
 		article = null
+		articleSection = undefined
 		sceneHidden = false
 		clearTimeout(sleepTimer)
 		body?.pause(false)
@@ -1426,7 +1443,16 @@
 </div>
 
 {#if article}
-	<ArticleReader injury={article} sport={sport.slug} instant={!mounted} {reduceMotion} onback={up} {footer} />
+	<ArticleReader
+		injury={article}
+		sport={sport.slug}
+		section={articleSection}
+		instant={!mounted}
+		{reduceMotion}
+		onback={up}
+		onsport={switchSport}
+		{footer}
+	/>
 {/if}
 
 <style>

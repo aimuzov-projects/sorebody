@@ -2,7 +2,8 @@
 	Выбор спорта во фразе заголовка: «Травмы ‹в паделе ▾›» на главной, «Разбор ‹в кроссфите ▾›»
 	в статье. Кнопка -- сама фраза спорта, список -- как у фильтра движения (popup-select).
 	Скринридер читает «Вид спорта, Падел». Переход -- только по явному выбору другого спорта.
-	Без `onchoose` (остров статьи) -- на статью спорта к разделу, который сейчас читают.
+	Без `onchoose` (остров отдельной страницы статьи) -- на статью спорта к разделу, который сейчас
+	читают. Спорт -- настройка, а не шаг: адрес заменяется, «Назад» ведёт туда, откуда пришли.
 -->
 <script lang="ts">
 	import PopupSelect from '#frontend/components/popup-select.svelte'
@@ -33,7 +34,7 @@
 
 		const section = currentSection(document)
 
-		location.assign(section ? `${target.href}#${section}` : target.href)
+		location.replace(section ? `${target.href}#${section}` : target.href)
 	}
 </script>
 

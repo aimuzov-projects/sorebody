@@ -1,4 +1,11 @@
 /**
+ * Ширина страницы без места под полосу прокрутки окна: по ней раскладываются fixed-слои и
+ * подсказки в верхнем слое. `clientWidth` у `<html>` её на главной не даёт: overflow: hidden
+ * у body уходит окну, и Chrome отдаёт ширину без вычета места под полосу.
+ */
+export const pageWidth = () => document.body.getBoundingClientRect().width
+
+/**
  * Ширина места под полосу прокрутки окна -- в `--page-gutter` на `<html>`. Место держит
  * `scrollbar-gutter: stable` (styles/global.css), а в CSS его ширины не узнать: `100vw`
  * его уже не включает. Нужна статье на главной: у неё своя прокрутка, и без поправки
@@ -10,12 +17,8 @@ export function initPageGutter() {
 	const root = document.documentElement
 
 	const measure = () => {
-		// По body, а не по clientWidth у <html>: на главной overflow: hidden у body уходит окну,
-		// и Chrome тогда отдаёт clientWidth без вычета места под полосу. При щипковом масштабе
-		// на телефоне innerWidth бывает меньше ширины body -- отсюда max
-		const width = document.body.getBoundingClientRect().width
-
-		root.style.setProperty('--page-gutter', `${Math.max(0, Math.round(innerWidth - width))}px`)
+		// При щипковом масштабе на телефоне innerWidth бывает меньше ширины страницы
+		root.style.setProperty('--page-gutter', `${Math.max(0, Math.round(innerWidth - pageWidth()))}px`)
 	}
 
 	measure()

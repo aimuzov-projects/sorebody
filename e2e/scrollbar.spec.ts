@@ -63,3 +63,23 @@ test('статья на главной: значки на месте, колон
 	expect(await corners(page)).toEqual(expected)
 	expect(await titleLeft(page, '.reader')).toBe(left)
 })
+
+test('подсказка значка в углу прижата к его правому краю и там, где прокрутки нет', async ({ page }) => {
+	await needClassicScrollbars(page)
+
+	for (const path of ['/', '/about/']) {
+		await page.goto(path)
+		const link = page.locator('.corner-link').first()
+
+		await link.hover()
+		const tip = page.locator('[data-corner-tip]:popover-open')
+
+		await expect(tip).toBeVisible()
+		const [linkRight, tipRight] = await Promise.all(
+			[link, tip].map((el) => el.evaluate((node) => Math.round(node.getBoundingClientRect().right))),
+		)
+
+		expect(tipRight, path).toBe(linkRight)
+		await page.mouse.move(0, 400)
+	}
+})

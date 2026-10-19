@@ -26,7 +26,9 @@ sources:
     - pmid: '37316210'
       label: Patricios 2023, консенсус Concussion in Sport Group, Амстердам 2022
     - url: https://cr.minzdrav.gov.ru/view-cr/734_2
-      label: 'Минздрав России 2025, клинические рекомендации «Сотрясение головного мозга»'
+      label: 'Минздрав России 2026, клинические рекомендации «Сотрясение головного мозга»'
+    - url: https://cr.minzdrav.gov.ru/view-cr/732_2
+      label: 'Минздрав России 2026, клинические рекомендации «Очаговая травма головного мозга»'
 draft: true
 ---
 
@@ -61,7 +63,7 @@ draft: true
 - Нарастающее беспокойство, возбуждение или агрессия ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/))
 - Видимая деформация черепа ([4](https://pubmed.ncbi.nlm.nih.gov/41441439/), [2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 - Прозрачная жидкость из носа или ушей, кровь из уха, синяк за ухом или вокруг глаза без удара по глазу — признаки перелома черепа ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
-- Зрачки разного размера ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
+- Зрачки разного размера ([11](https://cr.minzdrav.gov.ru/view-cr/732_2))
 - Удар был сильным: падение с высоты больше 1 м или больше чем с пяти ступенек, наезд машины на пешехода, столкновение на велосипеде. NICE относит такую травму к поводам срочно ехать в приёмное отделение, при необходимости на скорой ([2](https://www.nice.org.uk/guidance/ng232/chapter/Recommendations))
 
 До приезда скорой человека не оставляют одного.

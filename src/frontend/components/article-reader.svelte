@@ -262,9 +262,9 @@
 			position: relative;
 			display: inline-grid;
 			place-items: center;
-			width: 32px;
-			height: 32px;
-			margin: 0 8px 0 -12px;
+			width: var(--back-size);
+			height: var(--back-size);
+			margin: 0 var(--back-gap) 0 calc(-1 * var(--back-pull));
 			padding: 0;
 			border: 0;
 			border-radius: 50%;

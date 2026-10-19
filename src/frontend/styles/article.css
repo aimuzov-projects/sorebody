@@ -1005,9 +1005,9 @@
 	display: inline-grid;
 	flex: none;
 	place-items: center;
-	width: 32px;
-	height: 32px;
-	margin: 0 8px 0 -12px;
+	width: var(--back-size);
+	height: var(--back-size);
+	margin: 0 var(--back-gap) 0 calc(-1 * var(--back-pull));
 	border-radius: 50%;
 	color: var(--accent);
 	transition: background 0.3s ease;

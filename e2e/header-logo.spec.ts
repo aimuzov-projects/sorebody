@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 
 const SLUG = 'acl-tear'
 
@@ -70,3 +70,47 @@ test.describe('на узком телефоне', () => {
 		expect(box.x + box.width).toBeLessThanOrEqual(corner.x)
 	})
 })
+
+/** Левый край знака логотипа в шапке: на сцене, в ридере поверх неё и на странице статьи. */
+async function logoXs(page: Page) {
+	const mark = async (scope: string) => (await page.locator(`${scope} .logo__mark`).first().boundingBox())!.x
+	const reader = '.reader:not(.theme-peek *)'
+
+	await page.goto('/')
+	const home = await mark('.site-header--floating')
+
+	await page.goto(`/#${SLUG}`)
+	await expect(page.locator(`${reader} .article__title`)).toBeVisible()
+	const inReader = await mark(reader)
+
+	await page.goto(`/crossfit/${SLUG}/`)
+	const article = await mark('.site-header')
+
+	return { home, reader: inReader, article }
+}
+
+for (const width of [1280, 390]) {
+	test.describe(`на ширине ${width}`, () => {
+		test.use({ viewport: { width, height: 800 } })
+
+		test('логотип на главной стоит там же, где за «‹» у статьи, и при переходе не прыгает', async ({ page }) => {
+			const { home, reader, article } = await logoXs(page)
+
+			expect(Math.abs(home - article)).toBeLessThanOrEqual(1)
+			expect(Math.abs(reader - article)).toBeLessThanOrEqual(1)
+		})
+
+		test('в Mini App «‹» нет: логотип везде на краю колонки', async ({ page }) => {
+			await page.addInitScript(() => sessionStorage.setItem('wodcare:tg', '1'))
+
+			const { home, reader, article } = await logoXs(page)
+			const frame = await page
+				.locator('.site-header')
+				.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))
+
+			expect(Math.abs(home - article)).toBeLessThanOrEqual(1)
+			expect(Math.abs(reader - article)).toBeLessThanOrEqual(1)
+			expect(Math.abs(article - frame)).toBeLessThanOrEqual(1)
+		})
+	})
+}

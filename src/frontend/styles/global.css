@@ -116,6 +116,13 @@
 	--frame-right: max(var(--frame-pad), env(safe-area-inset-right, 0px), (100% - 1052px) / 2 + 24px);
 	/* Строка шапки: «‹» и заголовок или логотип, справа -- переключатель темы */
 	--header-row: 40px;
+	/* «‹» в строке шапки: подложка 32px выдвинута на 12px влево за край колонки и стоит в 8px от
+	   логотипа или заголовка. --back-room -- на сколько она сдвигает то, что за ней: на столько же
+	   отступает логотип сцены, где «‹» нет, и при переходе на статью он не прыгает */
+	--back-size: 32px;
+	--back-pull: 12px;
+	--back-gap: 8px;
+	--back-room: calc(var(--back-size) - var(--back-pull) + var(--back-gap));
 	/* Где под шапкой кончается её мягкий край (градиент и размытие): ниже ничего не прячется.
 	   От этой линии прилипает оглавление статьи и останавливаются переходы к разделам */
 	--header-clear: calc(var(--theme-toggle-top) + var(--header-row) + 28px);
@@ -379,6 +386,8 @@ img {
 	--tg-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
 	/* Переключателя темы в Mini App нет: в ряду два значка, а не три */
 	--theme-toggle-room: calc(var(--theme-toggle-right) + 40px + var(--corner-step) + 8px);
+	/* Своей «‹» в Mini App нет, логотип везде на краю колонки */
+	--back-room: 0px;
 }
 
 /* Полноэкранный Mini App Telegram: содержимое не уходит под системные кнопки сверху и снизу.

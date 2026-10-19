@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from '@playwright/test'
+import { chromium, expect, test, type LaunchOptions, type Locator, type Page } from '@playwright/test'
 
 const SLUG = 'acl-tear'
 
@@ -70,3 +70,63 @@ test.describe('на узком телефоне', () => {
 		expect(box.x + box.width).toBeLessThanOrEqual(corner.x)
 	})
 })
+
+/** Левый край знака логотипа в шапке: на сцене, в ридере поверх неё и на странице статьи. */
+async function logoXs(page: Page) {
+	const mark = async (scope: string) => (await page.locator(`${scope} .logo__mark`).first().boundingBox())!.x
+	const reader = '.reader:not(.theme-peek *)'
+
+	await page.goto('/')
+	const home = await mark('.site-header--floating')
+
+	await page.goto(`/#${SLUG}`)
+	await expect(page.locator(`${reader} .article__title`)).toBeVisible()
+	const inReader = await mark(reader)
+
+	await page.goto(`/crossfit/${SLUG}/`)
+	const article = await mark('.site-header')
+
+	return { home, reader: inReader, article }
+}
+
+// Полосы прокрутки: как у браузера по умолчанию, обычные (Windows) и скрытые, но с местом под
+// полосу окна (так их рисует headless Chromium в CI на Linux). У ридера своя полоса, и колонка
+// поверх сцены разъезжалась с отдельной страницей, когда её ширина не совпадала с местом у окна.
+// Флаг отключает полосы поверх контента на macOS, в Linux он ничего не меняет. Браузер свой на
+// каждый вариант: флаги запуска в test.use у группы не задать
+const CLASSIC = ['--disable-features=OverlayScrollbar,OverlayScrollbars,MacOverlayScrollbars']
+const SCROLLBARS: Record<string, LaunchOptions | undefined> = {
+	'по умолчанию': undefined,
+	обычные: { args: CLASSIC, ignoreDefaultArgs: ['--hide-scrollbars'] },
+	скрытые: { args: CLASSIC },
+}
+
+for (const [bars, launchOptions] of Object.entries(SCROLLBARS))
+	for (const width of [1280, 390])
+		for (const telegram of [false, true])
+			test(`полосы ${bars}, ${width}px${telegram ? ', Mini App' : ''}: логотип на главной, в ридере и у статьи в одной точке`, async ({
+				browser,
+				baseURL,
+			}) => {
+				const own = launchOptions && (await chromium.launch(launchOptions))
+				const page = await (own ?? browser).newPage({ viewport: { width, height: 800 }, baseURL })
+
+				// В Mini App своей «‹» нет: логотип везде на краю колонки, как поле шапки
+				if (telegram) await page.addInitScript(() => sessionStorage.setItem('wodcare:tg', '1'))
+
+				const { home, reader, article } = await logoXs(page)
+
+				expect(Math.abs(home - article)).toBeLessThanOrEqual(1)
+				expect(Math.abs(reader - article)).toBeLessThanOrEqual(1)
+
+				if (telegram) {
+					const frame = await page
+						.locator('.site-header')
+						.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))
+
+					expect(Math.abs(article - frame)).toBeLessThanOrEqual(1)
+				}
+
+				await page.close()
+				await own?.close()
+			})

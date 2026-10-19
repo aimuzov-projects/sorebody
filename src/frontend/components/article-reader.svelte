@@ -77,6 +77,25 @@
 		})
 	}
 
+	/**
+	 * Ширина своей полосы прокрутки ридера -- в `--reader-bar`, на неё страница статьи заходит
+	 * под полосу (стили `&__page`). Мерим саму полосу, а не место под полосу окна: их ширина
+	 * совпадает не всегда, при скрытых полосах место у окна остаётся, а полоса ридера нулевая.
+	 * Полоса появляется, когда статья догрузится, и меняется с масштабом: пересчёт по размеру.
+	 */
+	$effect(() => {
+		const el = reader
+
+		if (!el) return
+
+		const measure = () => el.style.setProperty('--reader-bar', `${el.offsetWidth - el.clientWidth}px`)
+		const observer = new ResizeObserver(measure)
+
+		observer.observe(el)
+
+		return () => observer.disconnect()
+	})
+
 	$effect(() => {
 		const slug = injury.slug
 
@@ -270,9 +289,9 @@
 			position: relative;
 			display: inline-grid;
 			place-items: center;
-			width: 32px;
-			height: 32px;
-			margin: 0 8px 0 -12px;
+			width: var(--back-size);
+			height: var(--back-size);
+			margin: 0 var(--back-gap) 0 calc(-1 * var(--back-pull));
 			padding: 0;
 			border: 0;
 			border-radius: 50%;
@@ -447,12 +466,12 @@
 		}
 
 		/* На главной у окна нет своей прокрутки, но место под его полосу держится
-		   (scrollbar-gutter в styles/global.css), а у статьи ещё и своя полоса. Без поправки
-		   колонка текста считалась бы от ширины без двух полос и стояла бы левее, чем на
-		   отдельной странице статьи. Содержимое заходит под свою полосу на ширину полосы окна
-		   (lib/page-gutter.ts): там только поля, а раскладка та же, что у отдельной страницы */
+		   (scrollbar-gutter в styles/global.css), так что ридер шириной с отдельную страницу.
+		   Своя полоса ридера отнимала бы у колонки ещё её ширину, и текст стоял бы левее, чем
+		   на отдельной странице. Содержимое заходит под эту полосу на её ширину (--reader-bar
+		   из скрипта выше): там только поля, а раскладка та же, что у отдельной страницы */
 		&__page {
-			margin-right: calc(-1 * var(--page-gutter, 0px));
+			margin-right: calc(-1 * var(--reader-bar, 0px));
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой

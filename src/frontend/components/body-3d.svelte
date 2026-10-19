@@ -733,6 +733,12 @@
 				// уходят под неё. Прячем до конца визита, но увиденной не отмечаем: покрутить
 				// модель не значит узнать про точки, в следующий раз подсказка всплывёт снова
 				scene.controls.addEventListener('start', () => (hintShown = false))
+
+				// Общий план телефона -- карта зон над шторкой: отпустили щипок -- фигура встаёт обратно
+				scene.controls.addEventListener('end', () => {
+					if (!open && wrap.clientWidth < 700) scene.settleZoom()
+				})
+
 				// Спорт могли сменить, пока модель грузилась: подсветка -- цветом текущего
 				scene.glowColor(sport.glow, true)
 				scene.resize()
@@ -963,7 +969,6 @@
 		body.showDetail(open.zone === whole ? null : open.zone.slug, point.position, open.zone.radius)
 		// Крутить и зумить можно и в раскрытой зоне: ракурс зоны -- лишь начальный кадр
 		body.controls.autoRotate = false
-		body.controls.enableZoom = true
 
 		// При reduced motion камера не ездит за строками: акцент только на маркере и проёме
 		const target = reduceMotion ? null : injury
@@ -1053,9 +1058,6 @@
 		const { x, y, s } = posterMode ? POSTER_SHIFT : startShift(wrap.clientWidth, wrap.clientHeight)
 
 		body.frame(x, y, s, instant)
-		// На телефоне общий план -- карта зон над панелью: щипок увеличивал фигуру под шапку и
-		// панель. Крупный план даёт раскрытая зона
-		body.controls.enableZoom = wrap.clientWidth >= 700
 	}
 
 	/** Статья на весь экран: сцена гаснет, потом рендер встаёт целиком, а не рисует под текстом. */

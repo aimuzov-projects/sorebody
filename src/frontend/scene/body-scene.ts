@@ -276,9 +276,12 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let restore: Shot | null = null
 	// Человек сам крутит или зумит: наезд не тянет камеру обратно, пока не придёт новый focus()
 	let manual = false
+	// Щипок на общем плане телефона отпустили: зум пружиной возвращается к кадру (settleZoom)
+	let zoomBack = false
 
 	controls.addEventListener('start', () => {
 		manual = true
+		zoomBack = false
 
 		// Схватил по пути к общему плану: наклон дотянет цикл, его не зажимаем
 		if (!focusTo && restore) return
@@ -362,6 +365,24 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		// Возврат к общему плану доезжает и под рукой человека: иначе камера застряла бы на высоте
 		// зоны с увеличенным зумом и зажатым наклоном. Азимут тогда его, остальное -- наше
 		const goal = focusTo ? (manual ? null : focusTo) : restore
+
+		if (zoomBack && !goal) {
+			const n = Math.ceil(dt * 120)
+			const h = dt / n
+
+			for (let i = 0; i < n; i++) {
+				velocity.zoom = springStep(1 - camera.zoom, velocity.zoom, h)
+				camera.zoom += velocity.zoom * h
+			}
+
+			if (Math.abs(1 - camera.zoom) < 1e-3 && Math.abs(velocity.zoom) < 1e-2) {
+				camera.zoom = 1
+				velocity.zoom = 0
+				zoomBack = false
+			}
+
+			camera.updateProjectionMatrix()
+		}
 
 		if (goal) {
 			const k = 1 - Math.exp(-dt * 6)
@@ -526,6 +547,13 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				applyFrame()
 			}
 		},
+		/** Вернуть зум к 1 пружиной: щипок увеличивает фигуру, только пока пальцы на экране. */
+		settleZoom() {
+			if (camera.zoom === 1 || focusTo || restore) return
+
+			velocity.zoom = 0
+			zoomBack = true
+		},
 		/** Синее свечение всей фигуры -- зона "Всё тело". */
 		glow(on: boolean) {
 			glowTo = on ? 0.16 : 0
@@ -609,6 +637,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			spring = false,
 		) {
 			manual = false
+
+			zoomBack = false
 
 			// Наклон освобождаем на время облёта: и к ракурсу зоны, и обратно к общему плану
 			;[controls.minPolarAngle, controls.maxPolarAngle] = POLAR_RANGE

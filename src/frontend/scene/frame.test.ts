@@ -41,10 +41,11 @@ test('the figure box projects right of the index on desktop and above the panel 
 	assert.ok(phone.top >= 0 && phone.top + phone.height < 812 * 0.6, JSON.stringify(phone))
 })
 
-test('on phones the figure fills the free band between the header and the sheet', () => {
+test('on phones the figure is FIT_FILL of the free band, but not above the unscaled frame', () => {
 	for (const [width, height, top, bottom] of [
 		[375, 812, 52, 480],
 		[375, 663, 52, 330],
+		[375, 553, 52, 243],
 		[430, 932, 64, 600],
 	]) {
 		const r = frame.projectBox(
@@ -54,9 +55,12 @@ test('on phones the figure fills the free band between the header and the sheet'
 			frame.fitShift(poster.box as never, width, height, top, bottom),
 		)
 		const free = bottom - top
+		const unscaled = frame.projectBox(poster.box as never, width, height, { x: 0, y: 0, s: 1 }).height
 
-		assert.ok(r.top >= top && r.top + r.height <= bottom, JSON.stringify({ width, height, r }))
-		assert.ok(r.height >= free * 0.85, JSON.stringify({ width, height, r }))
+		assert.ok(
+			Math.abs(r.height - Math.min(free * frame.FIT_FILL, unscaled)) < 1,
+			JSON.stringify({ width, height, r }),
+		)
 		assert.ok(Math.abs(r.top + r.height / 2 - (top + free / 2)) < 1, JSON.stringify({ width, height, r }))
 	}
 })
@@ -97,4 +101,13 @@ test('the first-visit hint stays under the feet on phones', () => {
 	assert.equal(hint.side, false)
 	assert.ok(Math.abs(hint.x - (body.left + body.width / 2)) < 1, 'по оси фигуры')
 	assert.equal(hint.room, 500 - hint.y)
+})
+
+test('on phones the hint stays above the sheet title when the feet go over it', () => {
+	const floor = 240
+	const hint = frame.placeHint(hintBoxes, 375, 553, frame.fitShift(poster.box as never, 375, 553, 52, 243), floor)
+
+	assert.equal(hint.side, false)
+	assert.equal(hint.y, floor - frame.HINT_HEIGHT)
+	assert.equal(hint.room, frame.HINT_HEIGHT)
 })

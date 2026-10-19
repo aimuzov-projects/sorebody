@@ -27,8 +27,9 @@ export function homeShift(width: number) {
 /**
  * Кадр главной на телефоне по свободной полосе между шапкой и шторкой (`top`, `bottom` --
  * пиксели от верха окна). С постоянным сдвигом фигура стояла мелкой на любом экране: на
- * высоком телефоне и под шторкой без поиска над ней оставалась пустота. Фигура заполняет
- * полосу по высоте, но не крупнее кадра без масштаба.
+ * высоком телефоне и под шторкой без поиска над ней оставалась пустота. Фигура по высоте
+ * больше полосы в `FIT_FILL` раз (голова заходит на шапку, ноги -- на шторку), но не крупнее
+ * кадра без масштаба: на высоком телефоне она бы иначе разрослась на весь экран.
  */
 export function fitShift(box: Box, width: number, height: number, top: number, bottom: number) {
 	const base = projectBox(box, width, height, { x: 0, y: 0, s: 1 })
@@ -41,8 +42,11 @@ export function fitShift(box: Box, width: number, height: number, top: number, b
 	return { x: 0, y, s }
 }
 
-/** Доля свободной полосы, которую занимает фигура: остальное -- поля под подписи у точек. */
-const FIT_FILL = 0.9
+/**
+ * Высота фигуры в долях свободной полосы. Больше 1 -- фигура крупнее полосы: на низком телефоне
+ * полоса узкая, а места по бокам и под прозрачными шапкой и шторкой хватает. Подбирается на глаз.
+ */
+export const FIT_FILL = 1.3
 
 /**
  * Кадр рендера постера: по центру и чуть мельче, чтобы коробка с тенью целиком влезла в окно.
@@ -135,7 +139,12 @@ export function placeHint(
 	const feet = body.top + body.height * 0.95
 	const axis = body.left + body.width / 2
 
-	if (width < 700) return { x: axis, y: feet, room: floor - feet, side: false }
+	// Ноги крупной фигуры заходят на шторку: подсказка не опускается ниже её заголовка
+	if (width < 700) {
+		const y = Math.min(feet, floor - HINT_HEIGHT)
+
+		return { x: axis, y, room: floor - y, side: false }
+	}
 
 	const top = projectBox(head, width, height, shift)
 	const left = top.left + top.width + 16

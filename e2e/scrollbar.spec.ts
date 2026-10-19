@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 
-// Полоса прокрутки окна не двигает шапку и значки в углу: место под неё держится и там, где
-// прокручивать нечего (главная со сценой, 404). Headless Chromium по умолчанию прячет полосы,
-// как overlay-полосы macOS; здесь они обычные, как в Windows
+// Полоса прокрутки окна не двигает значки в углу, даже где прокручивать нечего.
+// Полосы здесь обычные, как в Windows: headless Chromium их иначе прячет.
+// На macOS полосы бывают поверх контента, тогда тесты пропускаются, а в CI они обычные
 test.use({
 	viewport: { width: 1280, height: 800 },
 	launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] },
@@ -10,7 +10,7 @@ test.use({
 
 const SLUG = 'rotator-cuff-tendinopathy'
 
-/** Края значков в углу и правый край шапки: при сдвиге на ширину полосы они и уезжают. */
+/** Края значков в углу: при сдвиге на ширину полосы они и уезжают. */
 const corners = (page: Page) =>
 	page.evaluate(() => {
 		const edges = (selector: string) =>
@@ -25,14 +25,19 @@ const corners = (page: Page) =>
 		return { links: edges('.corner-link'), toggle: edges('.theme-toggle__button') }
 	})
 
+/** Пропускает тест, если полосы поверх контента: страница с прокруткой не уже окна. */
+async function needClassicScrollbars(page: Page) {
+	await page.goto('/about/')
+	const width = await page.evaluate(() => innerWidth - document.documentElement.clientWidth)
+
+	test.skip(width === 0, 'Полосы прокрутки поверх контента')
+}
+
 const titleLeft = (page: Page, scope: string) =>
 	page.locator(`${scope} .article__title`).evaluate((el) => Math.round(el.getBoundingClientRect().left))
 
 test('значки в углу стоят одинаково на страницах с прокруткой и без', async ({ page }) => {
-	await page.goto('/about/')
-	// Без обычных полос тест ничего не проверяет
-	expect(await page.evaluate(() => innerWidth - document.documentElement.clientWidth)).toBeGreaterThan(0)
-
+	await needClassicScrollbars(page)
 	const expected = await corners(page)
 
 	for (const path of ['/', '/crossfit/', `/crossfit/${SLUG}/`, `/injuries/${SLUG}/`, '/changelog/', '/nope/']) {
@@ -42,6 +47,7 @@ test('значки в углу стоят одинаково на страниц
 })
 
 test('статья на главной: значки на месте, колонка текста там же, где у отдельной страницы', async ({ page }) => {
+	await needClassicScrollbars(page)
 	await page.goto(`/crossfit/${SLUG}/`)
 	const left = await titleLeft(page, 'main')
 

@@ -264,8 +264,8 @@ function groupCites(parent: Element, sources: { label: string }[]) {
 						class: 'cite__link',
 						href: link.attributes.href!,
 						'aria-label': `Источник ${num}${label ? `: ${label}` : ''}`,
-						// Подпись источника -- тултипом при наведении (styles/article.css)
-						...(label ? { 'data-tip': label } : {}),
+						// Подпись источника -- подсказкой при наведении (lib/hint.ts)
+						...(label ? { 'data-hint': label } : {}),
 					},
 					[text(String(num))],
 				),

@@ -111,7 +111,14 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 		<span class="reading-progress__bar"></span>
 	</div>
 	<SiteHeader>
-		<a class="article-bar__back" href={home} aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
+		<a
+			class="article-bar__back"
+			href={home}
+			aria-label="Назад"
+			data-hint="Назад"
+			data-back
+			set:html={ChevronLeft}
+		/>
 		<BarLead title={name} {home} />
 	</SiteHeader>
 	<main class="article" data-article>
@@ -121,7 +128,7 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 				<a
 					class="article__pill article__pill--link"
 					href={`${home}?region=${data.region}`}
-					title={`Вся боль в зоне «${regionLabel(data.region)}»`}
+					data-hint={`Вся боль в зоне «${regionLabel(data.region)}»`}
 				>
 					<span class="article__pill-label">Зона</span>
 					{regionLabel(data.region)}

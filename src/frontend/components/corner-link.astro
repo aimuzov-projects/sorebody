@@ -1,7 +1,7 @@
 ---
 type Props = {
 	href: string
-	/** Подпись для скринридера, она же текст подсказки. */
+	/** Подпись для скринридера, она же текст подсказки (lib/hint.ts). */
 	label: string
 	/** SVG из lucide-static или `lib/icons.ts`. */
 	icon: string
@@ -23,14 +23,10 @@ const current = Astro.url.pathname.replace(/\/$/, '') === href.replace(/\/$/, ''
 	aria-label={label}
 	aria-current={current ? 'page' : undefined}
 	aria-disabled={current ? 'true' : undefined}
-	data-corner-link
+	data-hint={label}
 >
 	<span class="corner-link__icon" aria-hidden="true" set:html={icon} />
 </a>
-<!-- Подпись уже есть в aria-label ссылки: подсказка только для глаз -->
-<span class="corner-tip" aria-hidden="true" popover="manual" data-corner-tip>
-	{label}
-</span>
 
 <style>
 	/* В строке переключателя темы, слева от него, в том же языке: без подложки, в покое

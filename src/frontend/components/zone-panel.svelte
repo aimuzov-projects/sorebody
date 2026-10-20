@@ -48,7 +48,7 @@
 <section class="zone zone--{side}" aria-label={zone.label}>
 	<header class="zone__head">
 		<div class="zone__heading">
-			<button class="zone__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
+			<button class="zone__back" type="button" aria-label="Назад" data-hint="Назад" onclick={onback}
 				><span class="zone__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
 			<h2 class="zone__title" style:--chars={zone.label.length}>{zone.label}</h2>
@@ -59,7 +59,7 @@
 					class="zone__reset"
 					type="button"
 					aria-label="Сбросить фильтры"
-					title="Сбросить фильтры"
+					data-hint="Сбросить фильтры"
 					onclick={onreset}><span class="zone__reset-icon" aria-hidden="true">{@html FunnelX}</span></button
 				>
 				<p class="zone__filter">{injuries.length} из {total} {plural(total)}</p>

@@ -124,10 +124,10 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		{!bare && <Footer />}
 		<script>
 			import '#frontend/lib/telegram.ts'
-			import { initCornerLinks } from '#frontend/lib/corner-tip.ts'
+			import { initHints } from '#frontend/lib/hint.ts'
 			import { initThemeToggle } from '#frontend/lib/theme.ts'
 
-			initCornerLinks()
+			initHints()
 			initThemeToggle()
 		</script>
 	</body>

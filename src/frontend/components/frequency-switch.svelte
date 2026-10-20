@@ -98,7 +98,7 @@
 			class="index__chip index__chip--{chip}"
 			type="button"
 			aria-pressed={value === chip}
-			title={label}
+			data-hint={label}
 			onclick={() => (value = chip)}
 			><span class="index__chip-icon" aria-hidden="true">{@html icon}</span><span class="index__chip-label"
 				>{label}</span

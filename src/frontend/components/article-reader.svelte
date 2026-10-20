@@ -184,7 +184,7 @@
 	class="reader"
 	tabindex="-1"
 	bind:this={reader}
-	transition:fadeUp|global={{ instant, reduceMotion }}
+	transition:fadeUp|global={{ rise: 0, instant, reduceMotion }}
 	aria-label={injury.title}
 	aria-busy={status === 'loading' || reloading}
 >

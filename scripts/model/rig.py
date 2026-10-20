@@ -27,14 +27,18 @@ def bp3d(names):
 
 
 def za_files(patterns):
-    # Имена Z-Anatomy в манифесте выравнивания -- в стиле BP3D: "right glenoid labrum"
-    files = []
+    # Имена Z-Anatomy в манифесте выравнивания -- в стиле BP3D: "right glenoid labrum". У части структур
+    # по два варианта с одним именем (.er/.or у связки надколенника): берём подробный, иначе они
+    # легли бы друг на друга
+    best = {}
     for pattern in patterns:
-        hit = [o['file'] for o in za if re.search(pattern, o['name'])]
+        hit = [o for o in za if re.search(pattern, o['name'])]
         if not hit:
             sys.exit(f'no Z-Anatomy structures for: {pattern}')
-        files += hit
-    return sorted(set(files))
+        for o in hit:
+            if o['name'] not in best or o['tris'] > best[o['name']]['tris']:
+                best[o['name']] = o
+    return sorted(o['file'] for o in best.values())
 
 
 groups, meta = [], {}

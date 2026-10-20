@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray825.png
           caption: 'Кожные нервы правой ноги спереди'
+      model:
+          name: hip-thigh-right
+          highlight: [lateral femoral cutaneous nerve, inguinal ligament]
+          show: [nerves]
+          direction: [-0.4, 0.15, 1]
+          note: 'Нерв показан от таза до бедра; его ветвей в коже бедра в модели нет'
 sources:
     - pmid: '35622311'
       label: Solomons 2022, обзор парестетической мералгии

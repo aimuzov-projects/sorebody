@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray340.png
           caption: 'Тазобедренный сустав сзади'
+      model:
+          name: hip-thigh-right
+          highlight: [long head of biceps femoris, semitendinosus, semimembranosus, sciatic nerve]
+          show: [nerves]
+          hide: [gluteals]
+          direction: [-0.3, 0.1, -1]
+          note: 'Ягодичные мышцы спрятаны, чтобы было видно седалищный бугор и седалищный нерв рядом с ним; отрыва в модели нет'
 charts:
     - id: return-to-sport
       title: Отрыв сухожилий задней поверхности бедра

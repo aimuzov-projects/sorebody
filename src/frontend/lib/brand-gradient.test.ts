@@ -5,10 +5,12 @@ import { test } from 'node:test'
 import { SPORTS } from '#frontend/data/sports.ts'
 
 import {
+	BRAND_COLORS,
 	BRAND_GRADIENT_CSS,
-	BRAND_SPORTS,
+	BRAND_SKY,
 	BRAND_STOP_COUNT,
 	brandGradient,
+	brandLine,
 	brandStops,
 	brandTint,
 	LINK_TINT,
@@ -40,8 +42,8 @@ const BACKGROUNDS: Record<Theme, string[]> = { light: ['#ffffff', '#f5f5f7'], da
 const accentOf = (slug: string, theme: Theme) => SPORTS.find((s) => s.slug === slug)!.accent[theme]
 
 for (const theme of ['light', 'dark'] as const) {
-	test(`${theme}: the brand gradient runs through the accents of its sports`, () => {
-		const accents = BRAND_SPORTS.map((slug) => accentOf(slug, theme))
+	test(`${theme}: the brand gradient runs from the crossfit blue to the sky blue`, () => {
+		const accents = [accentOf('crossfit', theme), BRAND_SKY[theme]]
 
 		assert.deepEqual(brandStops(theme), accents)
 		assert.equal(brandGradient(theme), `linear-gradient(90deg, ${[...accents, accents[0]].join(', ')})`)
@@ -64,11 +66,9 @@ for (const theme of ['light', 'dark'] as const) {
 }
 
 test('every brand colour has an SVG gradient stop', () => {
-	assert.equal(BRAND_STOP_COUNT, BRAND_SPORTS.length)
+	assert.equal(BRAND_STOP_COUNT, BRAND_COLORS.length)
 
-	for (const [i, slug] of BRAND_SPORTS.entries()) {
-		const [light, dark] = [accentOf(slug, 'light'), accentOf(slug, 'dark')]
-
+	for (const [i, { light, dark }] of BRAND_COLORS.entries()) {
 		assert.ok(
 			BRAND_GRADIENT_CSS.includes(
 				`.brand-stop-${i}{stop-color:${light};stop-color:light-dark(${light},${dark})}`,
@@ -86,8 +86,18 @@ test('global.css takes the brand gradient of its theme and base.astro inserts it
 		'оба блока тёмной темы',
 	)
 
+	assert.match(GLOBAL_CSS, /--brand-line: var\(--brand-line-light\);/)
+	assert.equal(GLOBAL_CSS.match(/--brand-line: var\(--brand-line-dark\);/g)?.length, 2, 'оба блока тёмной темы')
+	assert.match(GLOBAL_CSS, /--accent-fill: var\(--brand-line\);/)
+
 	assert.match(BASE, /BRAND_GRADIENT_CSS/)
 })
+
+for (const theme of ['light', 'dark'] as const)
+	test(`${theme}: the menu button gradient goes left to right without coming back to blue`, () => {
+		assert.equal(brandLine(theme), `linear-gradient(90deg, ${brandStops(theme).join(', ')})`)
+		assert.ok(BRAND_GRADIENT_CSS.includes(`--brand-line-${theme}:${brandLine(theme)}`))
+	})
 
 /** Цвет `color` поверх фона `bg` с непрозрачностью `share`, как `color-mix(... transparent)`. */
 const over = (color: number[], bg: number[], share: number) => color.map((v, k) => v * share + bg[k]! * (1 - share))

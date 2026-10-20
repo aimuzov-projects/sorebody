@@ -44,6 +44,39 @@ test('в ридере на главной логотип прячется при
 	await expect(page).not.toHaveURL(new RegExp(`#${SLUG}$`))
 })
 
+test('заголовок в шапке статьи -- как «Назад»: с подсказкой и возвращает на страницу, откуда пришли', async ({
+	page,
+}) => {
+	await page.goto('/about/')
+	await page.getByRole('link', { name: 'Что нового' }).click()
+	await page.waitForURL('**/changelog')
+
+	const title = page.locator('.article-bar__title')
+
+	await expect(title).toHaveAttribute('title', 'Назад')
+	// Невидимый заголовок лежит поверх логотипа и не должен забирать его клики
+	await expect(title).toBeHidden()
+
+	await page.evaluate(() => scrollTo(0, 400))
+	await expect.poll(() => opacity(title)).toBe(1)
+	await title.click()
+	await expect(page).toHaveURL(/\/about\/$/)
+})
+
+test('в ридере на главной заголовок в шапке закрывает статью', async ({ page }) => {
+	await page.goto(`/#${SLUG}`)
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+	const title = reader.locator('.article-bar__title')
+
+	await expect(reader.locator('.article__title')).toBeVisible()
+	await reader.evaluate((el) => el.scrollTo(0, 400))
+	await expect.poll(() => opacity(title)).toBe(1)
+	await title.click()
+	await expect(reader).toHaveCount(0)
+	await expect(page).not.toHaveURL(new RegExp(`#${SLUG}$`))
+})
+
 test.describe('на узком телефоне', () => {
 	test.use({ viewport: { width: 320, height: 640 }, hasTouch: true, isMobile: true })
 

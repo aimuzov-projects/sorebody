@@ -1,6 +1,7 @@
 /**
- * Стрелка «Назад» в шапке лонгрида (`[data-back]`, ссылка на главную). Пришли со страницы
- * сайта -- возвращает туда же, с её прокруткой; иначе срабатывает как обычная ссылка.
+ * Стрелка «Назад» в шапке лонгрида (`[data-back]`, ссылка на главную) и маленький заголовок
+ * рядом с ней. Пришли со страницы сайта -- возвращают туда же, с её прокруткой; иначе
+ * срабатывают как обычная ссылка.
  *
  * Сноски и якоря меняют хеш и кладут записи в историю той же страницы: одного шага назад
  * мало, их пропускаем. Если за полторы секунды страница так и не ушла (истории сайта нет),
@@ -10,9 +11,12 @@
  * а в поле ввода не трогает.
  */
 export function initBackLink() {
-	const link = document.querySelector<HTMLAnchorElement>('[data-back]')
+	const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-back]')]
+	const [link] = links
 
-	link?.addEventListener('click', (event) => {
+	for (const back of links) back.addEventListener('click', (event) => goBack(event, back.href))
+
+	function goBack(event: MouseEvent, href: string) {
 		if (!document.referrer || new URL(document.referrer).origin !== location.origin || history.length < 2) return
 
 		event.preventDefault()
@@ -28,9 +32,9 @@ export function initBackLink() {
 		setTimeout(() => {
 			removeEventListener('popstate', skipOwn)
 
-			if (!left && location.pathname === path) location.assign(link.href)
+			if (!left && location.pathname === path) location.assign(href)
 		}, 1500)
-	})
+	}
 
 	addEventListener('keydown', (event) => {
 		if (event.key !== 'Escape' || event.defaultPrevented || !link) return

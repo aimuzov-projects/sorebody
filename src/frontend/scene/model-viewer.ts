@@ -73,10 +73,16 @@ varying float vTendon;`,
 /**
  * 3D-модель в статье по описателю из GLB (scripts/model/rigs/<name>.json): кости, мышцы, связки,
  * сосуды и нервы. Модель крутят мышью или пальцем, `setMotion()` двигает суставы (scene/rig.ts).
- * `highlight` -- названия структур травмы: они остаются цветными, остальные бледнеют.
+ * `highlight` -- названия структур травмы: они остаются цветными, остальные бледнеют. `direction` --
+ * откуда смотреть, если не так, как в описателе: с той же стороны, что иллюстрация статьи.
  * Кадр рисуется, только когда что-то сдвинулось.
  */
-export async function createModelViewer(canvas: HTMLCanvasElement, modelUrl: string, highlight: string[] = []) {
+export async function createModelViewer(
+	canvas: HTMLCanvasElement,
+	modelUrl: string,
+	highlight: string[] = [],
+	direction?: [number, number, number],
+) {
 	const renderer = createRenderer(canvas)
 	const scene = new Scene()
 	const camera = new PerspectiveCamera(FOV, 1, 0.01, 10)
@@ -189,7 +195,9 @@ export async function createModelViewer(canvas: HTMLCanvasElement, modelUrl: str
 
 	canvas.style.removeProperty('cursor')
 
-	camera.position.copy(target).add(new Vector3(...view.direction).normalize().multiplyScalar(size * view.distance))
+	camera.position
+		.copy(target)
+		.add(new Vector3(...(direction ?? view.direction)).normalize().multiplyScalar(size * view.distance))
 
 	controls.target.copy(target)
 	controls.enablePan = false

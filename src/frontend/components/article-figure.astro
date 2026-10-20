@@ -12,7 +12,14 @@ type Props = {
 		alt: string
 		caption: string
 		atlas?: Atlas
-		model?: { name: string; highlight: string[]; note?: string }
+		model?: {
+			name: string
+			highlight: string[]
+			show: string[]
+			hide: string[]
+			direction?: [number, number, number]
+			note?: string
+		}
 	}
 	/** Префикс id подсказок: на странице несколько иллюстраций. */
 	id: string
@@ -46,6 +53,9 @@ const caption = splitCaption(image.caption)
 				data-figure-3d={JSON.stringify({
 					url: rigUrl(image.model.name),
 					highlight: image.model.highlight,
+					show: image.model.show,
+					hide: image.model.hide,
+					direction: image.model.direction,
 					note: image.model.note,
 				})}
 			>

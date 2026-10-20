@@ -286,8 +286,12 @@ export function buildRig(joints, points) {
 /**
  * Вес подвижной кости по вершинам мышцы или связки: у неподвижной 0, у подвижной 1, между ними
  * плавно. `tendon` -- последние сантиметры у подвижной кости, шейдер красит их как сухожилие.
+ *
+ * `reach` -- для мышцы, которая лежит вдоль подвижной кости, но не прилегает к ней (двуглавая
+ * вдоль плечевой): вес растёт с расстоянием от неподвижной кости и становится 1 через `reach`
+ * метров, иначе брюшко с промежуточным весом растянулось бы листом.
  */
-export function muscleWeights(points, fixed, moving) {
+export function muscleWeights(points, fixed, moving, reach = 0) {
 	const toGirdle = createNearest(fixed)
 	const toHumerus = createNearest(moving)
 	const weight = new Float32Array(points.length / 3)
@@ -297,7 +301,7 @@ export function muscleWeights(points, fixed, moving) {
 		const dg = toGirdle(points[p], points[p + 1], points[p + 2])
 		const dh = toHumerus(points[p], points[p + 1], points[p + 2])
 
-		weight[i] = smoothstep((dg / (dg + dh + 1e-9) - 0.35) / 0.5)
+		weight[i] = reach ? smoothstep(dg / reach) : smoothstep((dg / (dg + dh + 1e-9) - 0.35) / 0.5)
 		// 3 мм -- запас на раздувание remesh.py
 		tendon[i] = Math.min(1, Math.max(0, 1 - (dh - 0.003) / 0.02)) ** 1.5
 	}

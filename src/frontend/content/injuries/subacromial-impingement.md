@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray326.png
           caption: 'Плечевой и акромиально-ключичный суставы, связки лопатки (левая сторона)'
+      model:
+          name: shoulder-right
+          highlight: [supraspinatus, coraco-acromial ligament]
+          show: [girdle-ligaments]
+          direction: [-0.6, 0.35, 1]
+          note: 'Субакромиальной сумки в модели нет: она лежала бы между сухожилием надостной и сводом из акромиона и клювовидно-акромиальной связки'
 sources:
     - pmid: '24847788'
       label: Diercks 2014, голландское руководство по диагностике и лечению SAPS

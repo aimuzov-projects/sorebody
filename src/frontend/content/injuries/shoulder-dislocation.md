@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray326.png
           caption: 'Плечевой и акромиально-ключичный суставы, связки лопатки (левая сторона)'
+      model:
+          name: shoulder-right
+          highlight: [glenoid labrum, articular capsule of glenohumeral joint, inferior glenohumeral ligament]
+          show: [girdle-ligaments, joint-ligaments]
+          hide: [muscles]
+          direction: [-0.45, 0.05, 1]
+          note: 'Сам вывих в модели не показан: головка плечевой кости остаётся во впадине'
 sources:
     - pmid: '39836468'
       label: 'Goth 2025, обзор травматического переднего вывиха плеча: эпидемиология, диагностика, лечение'

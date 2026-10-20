@@ -97,7 +97,7 @@
 		try {
 			const { createModelViewer } = await import('#frontend/scene/model-viewer.ts')
 
-			viewer = await createModelViewer(canvas, model.url, model.highlight)
+			viewer = await createModelViewer(canvas, model.url, model.highlight, model.direction)
 		} catch (error) {
 			console.error('3D-модель не загрузилась', error)
 			status = 'error'
@@ -108,7 +108,14 @@
 		const { title, about, motion, toggles } = viewer
 
 		info = { title, about, motion, toggles }
-		visible = Object.fromEntries(toggles.map((t) => [t.name, t.visible]))
+
+		// Статья может показать или спрятать группы сразу: связки у травмы губы, мышцы у перелома
+		visible = Object.fromEntries([
+			...toggles.map((t) => [t.name, t.visible] as const),
+			...model.show.map((name) => [name, true] as const),
+			...model.hide.map((name) => [name, false] as const),
+		])
+
 		resizeWatch = new ResizeObserver(() => viewer?.resize())
 		resizeWatch.observe(canvas)
 		status = 'ready'

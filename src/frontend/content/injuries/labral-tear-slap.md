@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray328.png
           caption: 'Суставная впадина правой лопатки'
+      model:
+          name: shoulder-right
+          highlight: [glenoid labrum, long head of biceps brachii]
+          show: [girdle-ligaments, biceps]
+          hide: [muscles, humerus]
+          direction: [-1, 0.15, 0.25]
+          note: 'Плечевая кость и мышцы манжеты спрятаны, чтобы была видна суставная впадина; надрыва губы в модели нет'
 sources:
     - pmid: '34272296'
       label: LeVasseur 2021, обзор SLAP-повреждений и возвращения в спорт

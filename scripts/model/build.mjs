@@ -267,7 +267,12 @@ if (cfg.rig) {
 
 		// Подвижная -- кости, которые идут за суставом; неподвижная -- те, от которых мышца начинается
 		const moving = Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
-		const { weight, tendon } = muscleWeights(points[name], merge(group.weighted.fixed), merge(moving))
+		const { weight, tendon } = muscleWeights(
+			points[name],
+			merge(group.weighted.fixed),
+			merge(moving),
+			group.weighted.reach,
+		)
 		const prim = prims[name]
 
 		prim.setAttribute('_WEIGHT', doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer))

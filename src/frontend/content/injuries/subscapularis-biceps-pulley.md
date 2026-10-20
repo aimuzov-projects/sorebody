@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray326.png
           caption: 'Плечевой и акромиально-ключичный суставы, связки лопатки (левая сторона)'
+      model:
+          name: shoulder-right
+          highlight:
+              [subscapularis, long head of biceps brachii, coracohumeral ligament, superior glenohumeral ligament]
+          show: [biceps, joint-ligaments]
+          direction: [-0.35, 0.05, 1]
+          note: 'Петли сухожилия бицепса отдельной структурой в модели нет: её образуют клювовидно-плечевая и верхняя суставно-плечевая связки'
 sources:
     - pmid: '30675571'
       label: Lee 2018, обзор разрывов подлопаточной мышцы

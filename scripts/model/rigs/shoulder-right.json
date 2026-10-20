@@ -111,6 +111,18 @@
 				"label": "Капсула",
 				"visible": false
 			}
+		},
+		{
+			"name": "bursa",
+			"za": ["^right subacromial bursa$"],
+			"ratio": 0.8,
+			"parts": true,
+			"layer": "cartilage",
+			"joint": "ac",
+			"toggle": {
+				"label": "Сумка",
+				"visible": false
+			}
 		}
 	],
 	"joints": [
@@ -167,5 +179,5 @@
 		"verb": "подъём руки",
 		"max": 150
 	},
-	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки, губа и капсула: Z-Anatomy, CC BY-SA 4.0. Движение упрощено: кости поворачиваются как жёсткие тела, лопатка идёт за рукой по лопаточно-плечевому ритму"
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки, губа, капсула и сумка: Z-Anatomy, CC BY-SA 4.0. Движение упрощено: кости поворачиваются как жёсткие тела, лопатка идёт за рукой по лопаточно-плечевому ритму"
 }

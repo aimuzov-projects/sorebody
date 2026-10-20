@@ -61,6 +61,7 @@ test('on phones the figure is FIT_FILL of the free band, but not above the unsca
 			Math.abs(r.height - Math.min(free * frame.FIT_FILL, unscaled)) < 1,
 			JSON.stringify({ width, height, r }),
 		)
+
 		assert.ok(Math.abs(r.top + r.height / 2 - (top + free / 2)) < 1, JSON.stringify({ width, height, r }))
 	}
 })

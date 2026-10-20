@@ -59,8 +59,34 @@ export type Box = { min: [number, number, number]; max: [number, number, number]
 /**
  * Прямоугольник на экране, куда ортокамера стартового кадра проецирует коробку `box`
  * (метры модели). По нему встаёт постер: он отрендерен ровно по проекции той же коробки.
+ * Центр орбиты стоит в `0.5 + x` ширины и `0.5 - y` высоты окна: сдвиг кадра двигает его.
+ * Без сдвига и масштаба та же формула -- в CSS серверного постера (scene/poster-css.ts).
  */
 export function projectBox(box: Box, width: number, height: number, shift = homeShift(width)) {
+	const extent = viewExtent(box)
+	const scale = frameScale(width, height, shift.s)
+
+	return {
+		left: width * (0.5 + shift.x) + extent.left * scale,
+		top: height * (0.5 - shift.y) - extent.top * scale,
+		width: (extent.right - extent.left) * scale,
+		height: (extent.top - extent.bottom) * scale,
+	}
+}
+
+/**
+ * Пикселей экрана на метр модели в стартовом кадре: по высоте кадр держит `FRAME` метров,
+ * а уже `NARROW` -- `FRAME * NARROW` по ширине. `s` -- масштаб из сдвига кадра.
+ */
+function frameScale(width: number, height: number, s: number) {
+	return Math.min(height / FRAME, width / (FRAME * NARROW)) / s
+}
+
+/**
+ * Коробка `box` (метры модели) на плоскости экрана стартового кадра: метры от центра орбиты
+ * вправо (`left`, `right`) и вверх (`bottom`, `top`). От размера окна не зависит.
+ */
+export function viewExtent(box: Box) {
 	const polar = (POLAR_DEG * Math.PI) / 180
 	const azimuth = (AZIMUTH_DEG * Math.PI) / 180
 	// Направление на камеру и оси экрана в мире: вправо -- горизонтально, вверх -- по наклону
@@ -75,12 +101,7 @@ export function projectBox(box: Box, width: number, height: number, shift = home
 		toCamera[2] * right[0] - toCamera[0] * right[2],
 		toCamera[0] * right[1] - toCamera[1] * right[0],
 	]
-	const half = (width / height < NARROW ? (FRAME * NARROW) / (width / height) : FRAME) / 2
-	const w = half * (width / height) * shift.s
-	const h = half * shift.s
-	const dx = shift.x * 2 * w
-	const dy = shift.y * 2 * h
-	let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity]
+	let [u0, v0, u1, v1] = [Infinity, Infinity, -Infinity, -Infinity]
 
 	for (const x of [box.min[0], box.max[0]])
 		for (const y of [box.min[1], box.max[1]])
@@ -88,16 +109,14 @@ export function projectBox(box: Box, width: number, height: number, shift = home
 				const p = [x, y - TARGET_Y, z]
 				const u = p[0] * right[0] + p[1] * right[1] + p[2] * right[2]
 				const v = p[0] * up[0] + p[1] * up[1] + p[2] * up[2]
-				const sx = ((u + w + dx) / (2 * w)) * width
-				const sy = ((h - dy - v) / (2 * h)) * height
 
-				x0 = Math.min(x0, sx)
-				x1 = Math.max(x1, sx)
-				y0 = Math.min(y0, sy)
-				y1 = Math.max(y1, sy)
+				u0 = Math.min(u0, u)
+				u1 = Math.max(u1, u)
+				v0 = Math.min(v0, v)
+				v1 = Math.max(v1, v)
 			}
 
-	return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 }
+	return { left: u0, right: u1, bottom: v0, top: v1 }
 }
 
 /** Уже стольких пикселей справа от головы подсказка рассыпалась бы на четыре-шесть строк. */

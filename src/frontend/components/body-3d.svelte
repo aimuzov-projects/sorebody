@@ -738,7 +738,9 @@
 		window.addEventListener(BACK_EVENT, up)
 
 		let disposed = false
-		let frames = 0
+		// Счётчик ?fps -- по нарисованным кадрам: стоящий кадр сцена не перерисовывает, и в открытой
+		// зоне без движения он показывает 0, а не частоту requestAnimationFrame
+		let rendersFrom = 0
 		let fpsFrom = performance.now()
 
 		loadScene = load
@@ -789,12 +791,11 @@
 					}
 
 					if (showFps) {
-						frames++
 						const now = performance.now()
 
 						if (now - fpsFrom > 500) {
-							fps = Math.round((frames * 1000) / (now - fpsFrom))
-							frames = 0
+							fps = Math.round(((scene.rendered - rendersFrom) * 1000) / (now - fpsFrom))
+							rendersFrom = scene.rendered
 							fpsFrom = now
 						}
 					}

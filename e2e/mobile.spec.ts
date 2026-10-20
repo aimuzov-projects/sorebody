@@ -20,7 +20,8 @@ test('поиск и фильтры прячутся в остров и раск�
 
 	await expect(page.locator('.search__input')).toBeHidden()
 	await island.tap()
-	await expect(page.locator('.search__input')).toBeFocused()
+	await expect(page.locator('.search__input')).toBeVisible()
+	await expect(page.locator('.search__input')).not.toBeFocused()
 
 	await page.locator('.index__chip', { hasText: 'Редкие' }).tap()
 	await page.getByRole('button', { name: 'Свернуть поиск' }).tap()

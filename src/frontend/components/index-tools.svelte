@@ -4,8 +4,6 @@
 	свёрнутым он показывает включённые фильтры, по нажатию раскрывается
 -->
 <script lang="ts">
-	import { flushSync } from 'svelte'
-
 	import { ChevronDown, Search, X } from 'lucide-static'
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
@@ -55,10 +53,9 @@
 	/** Высота клавиатуры над низом окна: iOS не сжимает под неё окно, и раскрытый остров уходил бы под неё. */
 	let keyboard = $state(0)
 
+	// Поиск не фокусируем: на телефоне это поднимало клавиатуру, даже если искать не собирались
 	function openTools() {
-		// Синхронно, ещё в обработчике нажатия: иначе iOS не поднимет клавиатуру по focus()
-		flushSync(() => (open = true))
-		toolsPanel?.querySelector('input')?.focus()
+		open = true
 	}
 
 	function closeTools() {

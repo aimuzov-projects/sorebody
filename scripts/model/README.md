@@ -12,14 +12,28 @@
 входят: ставить в отдельную папку.
 
 ```bash
-python3 -I config.py <папка со списками> <папка с OBJ> body.json 0.011 0.12 --skin --muscles mus
+python3 -I config.py <папка со списками> <папка с OBJ> body.json 0.011 0.12 --skin --muscles mus --skin-dir neutral
 blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 1 body.json
+blender -b --factory-startup --python neutral.py -- <папка с OBJ> neutral <offset x,y,z> body.json
 node build.mjs body.json body.glb
 ```
 
 Аргументы `0.011 0.12` -- доля треугольников мышц и костей после упрощения, кожа -- 0.3. Мышцы перед
 упрощением перестраиваются (`remesh.py`, см. «Мышцы»), поэтому их доля считается от воксельных сеток. Рядом с GLB появится
 `body.anchors.json` с центрами суставов, их надо перенести в `src/frontend/scene/zones.ts`.
+
+### Бесполая фигура
+
+BodyParts3D -- мужское тело, а фигуре сайта пол ни к чему. `neutral.py` закрывает соски заплатками, а пах строит
+заново, как у манекена. Кожа таза от середины бёдер до низа живота переводится в поле расстояний (OpenVDB из
+Blender), из него плавно вычитаются гениталии и узкая щель между бёдрами: в BP3D они прижаты друг к другу почти до
+промежности. Поле размывается у промежности, а у щели обтягивает мышцы с запасом, чтобы она их не оголила. Затем
+поле обтягивается сеткой в два слоя, как вся кожа BP3D (на двух слоях держится и `skin-test.mjs`), и сшивается с
+кожей по краям полосы.
+
+Форму паха задают `GENITALS`, `GAP`, `ROUND` и `BLUR` в начале скрипта, в координатах фигуры, отсюда `offset` (см.
+ниже). Сосуды полового члена и яичек `detail.py` в куски не берёт, а с `--skin-dir` режет слои Z-Anatomy по той же
+коже.
 
 ## Детальные куски зон
 
@@ -74,7 +88,7 @@ Z-Anatomy почти ничего не попадает. Их куски -- сл
 ```bash
 blender -b Startup.blend --python z_anatomy_export.py -- za-export
 blender -b --factory-startup --python z_align.py -- za-export <папка с OBJ> za-aligned <offset x,y,z>
-python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5 za-aligned --muscles mus 0.1
+python3 -I detail.py <папка со списками> <папка с OBJ> detail/ <offset x,y,z> 0.5 za-aligned --muscles mus 0.1 --skin-dir neutral
 blender -b --factory-startup --python remesh.py -- <папка с OBJ> mus 1 10 1 detail/*-*.json
 for c in detail/*-*.json; do node build.mjs $c ${c%.json}.glb; done
 cp detail/*.glb detail/index.json ../../public/model/detail/

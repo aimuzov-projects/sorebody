@@ -11,6 +11,7 @@
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import { sportHome, sportOf, sportSwitchProps, type SportSlug } from '#frontend/data/sports.ts'
+	import { loadArticle } from '#frontend/lib/article-loader.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
@@ -120,13 +121,11 @@
 		else status = 'loading'
 
 		try {
-			const response = await fetch(`/${sport}/${slug}/`)
-
-			if (!response.ok) throw new Error(`HTTP ${response.status}`)
+			// Статью сцена могла начать грузить ещё по наведению (lib/article-loader.ts)
+			const html = await loadArticle(`/${sport}/${slug}/`)
 
 			// Разбираем только main: стили из head страницы статьи Chrome сверяет с CSP этой
 			// страницы даже в инертном документе DOMParser и сыплет ошибками в консоль
-			const html = await response.text()
 			const from = html.indexOf('<main')
 			const to = html.lastIndexOf('</main>')
 

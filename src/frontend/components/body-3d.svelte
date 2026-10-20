@@ -7,6 +7,7 @@
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { recalledSport, rememberSport } from '#frontend/lib/sport-memory.ts'
+	import { prefetchArticles } from '#frontend/lib/article-loader.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { plural } from '#frontend/lib/plural.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -501,6 +502,12 @@
 			node.removeEventListener('focusin', prefetch)
 		}
 	}
+
+	// Статью по ссылке начинаем грузить заранее: к клику ридер обычно берёт её готовой. Только
+	// статьи текущего спорта -- их и открывает ридер
+	const articlePaths = $derived(new Set(allZones.flatMap((z) => z.injuries.map((i) => `/${sport.slug}/${i.slug}/`))))
+
+	$effect(() => prefetchArticles(document.documentElement, (path) => articlePaths.has(path)))
 
 	/** Данные, пришедшие после следующей смены спорта или смены адреса, отбрасываем. */
 	const sportRequests = createRequestGuard(() => location.href)

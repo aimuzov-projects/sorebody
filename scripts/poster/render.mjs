@@ -38,7 +38,15 @@ await page.addStyleTag({
 await page.waitForTimeout(500)
 
 const box = await page.evaluate(() => window.posterBounds)
-const rect = frame.projectBox(box, viewport.width, viewport.height, frame.POSTER_SHIFT)
+// Проекция -- по канвасу, а не по окну: окно шире на место под полосу прокрутки
+// (scrollbar.css из infra-site-kit), и обрезка по окну сдвигала фигуру в постере на полполосы
+const canvas = await page.evaluate(() => {
+	const { left, top, width, height } = document.querySelector('.body3d__canvas').getBoundingClientRect()
+
+	return { left, top, width, height }
+})
+const projected = frame.projectBox(box, canvas.width, canvas.height, frame.POSTER_SHIFT)
+const rect = { ...projected, left: canvas.left + projected.left, top: canvas.top + projected.top }
 
 await page.screenshot({
 	path: `${out}-full.png`,

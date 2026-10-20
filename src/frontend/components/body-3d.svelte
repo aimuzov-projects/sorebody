@@ -705,7 +705,6 @@
 		if (!location.hash || lite) {
 			placePoster()
 			void document.fonts?.ready.then(placePoster)
-			window.addEventListener('resize', placePoster)
 		}
 
 		if (!location.hash && !lite) hintShown = !movementPage && !introHintSeen()
@@ -762,8 +761,9 @@
 							Object.assign(window, { posterBounds: scene.bounds })
 						}
 
-						// Постер гаснет за 0.3s (`.body3d__poster`), из DOM убираем с запасом после этого
-						setTimeout(() => (posterShown = false), 400)
+						// Постер уходит в тот же кадр, в каком встаёт модель, без перехода: они совпадают, а
+						// гаснущий постер клал свою тень поверх тени модели, и под ногами было две тени
+						posterShown = false
 					}
 
 					if (showFps) {
@@ -793,9 +793,14 @@
 			})
 		}
 
+		// Постер -- по тому же размеру сцены, что и модель. По resize окна он отставал: ширина
+		// сцены меняется и без него, например когда пропадает полоса прокрутки, и модель вставала
+		// на полосу прокрутки левее или правее постера
 		const resizer = new ResizeObserver(() => {
 			body?.resize()
 			homeFrame()
+
+			if (posterShown && posterRect) placePoster()
 		})
 
 		resizer.observe(canvas)
@@ -805,8 +810,6 @@
 		visibility.observe(canvas)
 
 		return () => {
-			window.removeEventListener('resize', placePoster)
-
 			for (const type of ['wheel', 'gesturestart', 'gesturechange']) wrap.removeEventListener(type, stopPageZoom)
 
 			window.removeEventListener('popstate', onHistory)
@@ -1271,6 +1274,7 @@
 	class:body3d--hot={hovered && !open}
 	class:body3d--movement={movementPage}
 	class:body3d--live={live}
+	class:body3d--posted={!!posterRect && status !== 'error'}
 	bind:this={wrap}
 	onpointermove={onPointerMove}
 	onpointerdown={onPointerDown}
@@ -1282,7 +1286,7 @@
 
 	<!-- Пока грузится модель, на месте фигуры -- её постер; с первым кадром он уступает канвасу -->
 	{#if posterShown && posterRect && status !== 'error'}
-		<picture class="body3d__poster" class:body3d__poster--out={live} aria-hidden="true">
+		<picture class="body3d__poster" aria-hidden="true">
 			<source srcset="/model/poster.webp" type="image/webp" />
 			<img
 				class="body3d__poster-image"
@@ -1597,22 +1601,23 @@
 			opacity: 1;
 		}
 
+		/* После постера канвас встаёт сразу, без проявления: постер уходит в тот же кадр, и фигура
+		   не мигает. При плавной смене на середине перехода сквозь фигуру просвечивал фон */
+		&--posted &__canvas {
+			transition: none;
+		}
+
 		/* У точек и меток свой display: без этого атрибут hidden их не прятал */
 		&__spot[hidden],
 		&__mark[hidden] {
 			display: none;
 		}
 
-		/* Постер стоит поверх канваса, пока тот прозрачный, и гаснет вместе с его проявлением */
+		/* Постер стоит на месте фигуры, пока канвас прозрачный, и уходит с её первым кадром */
 		&__poster {
 			pointer-events: none;
 			position: absolute;
 			inset: 0;
-			transition: opacity 0.3s var(--a-ease);
-
-			&--out {
-				opacity: 0;
-			}
 		}
 
 		&__poster-image {

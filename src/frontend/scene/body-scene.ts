@@ -1,21 +1,14 @@
 import {
-	AmbientLight,
 	Box3,
 	Color,
-	DirectionalLight,
-	HemisphereLight,
 	MathUtils,
 	Mesh,
-	NeutralToneMapping,
 	OrthographicCamera,
 	PlaneGeometry,
 	Scene,
 	ShaderMaterial,
 	Spherical,
-	SRGBColorSpace,
 	Vector3,
-	WebGLRenderer,
-	type Object3D,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
@@ -24,6 +17,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { createDetail, DETAIL_REACH, detailKey, partIds } from './detail.ts'
 import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM, SKIN_RIM } from './dissolve.ts'
 import { AZIMUTH_DEG, FRAME, NARROW, POLAR_DEG, TARGET_Y } from './frame.ts'
+import { createRenderer, createStudioLights, disposeTree, muscleColor, watchTheme } from './studio.ts'
 
 type Vec3 = [number, number, number]
 
@@ -43,11 +37,7 @@ export type BodyScene = Awaited<ReturnType<typeof createBodyScene>>
  * для подсветки кожи (`accent.glow` в data/sports.ts).
  */
 export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: string, glow: string) {
-	const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
-
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-	renderer.outputColorSpace = SRGBColorSpace
-	renderer.toneMapping = NeutralToneMapping
+	const renderer = createRenderer(canvas)
 
 	const scene = new Scene()
 	const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 20)
@@ -55,24 +45,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	// Стартовый ракурс -- из frame.ts: по тем же числам до загрузки встаёт постер фигуры
 	camera.position.setFromSphericalCoords(5, POLAR, MathUtils.degToRad(AZIMUTH_DEG)).add(TARGET)
 
-	// Студийный свет продуктового рендера: мягкий верхний, ключ спереди-слева, заполняющий
-	// справа и контровой сзади, чтобы силуэт отделялся от фона
-	scene.add(new HemisphereLight('#ffffff', '#d4d4d9', 1.25))
-	scene.add(new AmbientLight('#ffffff', 0.2))
-
-	const lights: [string, number, Vec3][] = [
-		['#ffffff', 2.1, [-1.6, 3, 2.8]],
-		['#f2f4f8', 0.7, [2.8, 1.2, 1.4]],
-		['#ffffff', 1.5, [0.4, 2.2, -3.2]],
-	]
-
-	for (const [color, intensity, [x, y, z]] of lights) {
-		const light = new DirectionalLight(color, intensity)
-
-		light.position.set(x, y, z)
-		scene.add(light)
-	}
-
+	scene.add(...createStudioLights())
 	scene.add(createContactShadow())
 
 	const controls = new OrbitControls(camera, canvas)
@@ -174,17 +147,11 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		if (obj.name.startsWith('muscles') || obj.name.startsWith('bones')) inner.push(obj)
 	})
 
-	const darkScheme = matchMedia('(prefers-color-scheme: dark)')
-	const themeWatch = new MutationObserver(applyTheme)
-
-	function applyTheme() {
+	const stopTheme = watchTheme(() => {
 		muscles.material.color.set(muscleColor())
 		detail.recolor(muscleColor())
 		dirty = true
-	}
-
-	themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-	darkScheme.addEventListener('change', applyTheme)
+	})
 
 	// Размер канваса для project(): между её вызовами точки пишут стили, и чтение
 	// clientWidth каждый кадр заставляло браузер пересчитывать страницу
@@ -754,8 +721,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			renderer.setAnimationLoop(paused ? null : loop)
 		},
 		dispose() {
-			themeWatch.disconnect()
-			darkScheme.removeEventListener('change', applyTheme)
+			stopTheme()
 			renderer.setAnimationLoop(null)
 			controls.dispose()
 			detail.dispose()
@@ -763,17 +729,6 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			renderer.dispose()
 		},
 	}
-}
-
-/** Освободить геометрию и материалы всех мешей под `root`: renderer.dispose() их не трогает. */
-function disposeTree(root: Object3D) {
-	root.traverse((obj) => {
-		if (!(obj instanceof Mesh)) return
-
-		obj.geometry.dispose()
-
-		for (const material of [obj.material].flat()) material.dispose()
-	})
 }
 
 /**
@@ -806,12 +761,4 @@ void main() {
 	shadow.renderOrder = -1
 
 	return shadow
-}
-
-/** Красный мышц: в тёмной теме глубже, чтобы не светился на тёмном фоне. Тема -- `<html data-theme>` или система. */
-function muscleColor() {
-	const theme = document.documentElement.dataset.theme
-	const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
-
-	return dark ? '#a3392f' : '#c65a4b'
 }

@@ -7,14 +7,14 @@
 
 	import { Shapes } from 'lucide-static'
 
-	import { FREQUENCIES, type Frequency } from '#frontend/data/frequency.ts'
+	import { ALL_FREQUENCIES_HINT, FREQUENCIES, type Frequency } from '#frontend/data/frequency.ts'
 
 	let { value = $bindable('all') }: { value: 'all' | Frequency } = $props()
 
 	/** У каждого уровня частоты свой знак и цвет, как легенда к списку. */
 	const FREQUENCY_CHIPS = [
-		['all', 'Все', Shapes],
-		...FREQUENCIES.map((f) => [f.slug, f.label, f.icon] as const),
+		['all', 'Все', Shapes, ALL_FREQUENCIES_HINT],
+		...FREQUENCIES.map((f) => [f.slug, f.label, f.icon, f.hint] as const),
 	] as const
 
 	/**
@@ -92,13 +92,13 @@
 		class:index__freq-thumb--placed={thumb.width > 0}
 		aria-hidden="true"
 	></span>
-	{#each FREQUENCY_CHIPS as [chip, label, icon], i (chip)}
+	{#each FREQUENCY_CHIPS as [chip, label, icon, hint], i (chip)}
 		<button
 			bind:this={freqChips[i]}
 			class="index__chip index__chip--{chip}"
 			type="button"
 			aria-pressed={value === chip}
-			data-hint={label}
+			data-hint={hint}
 			onclick={() => (value = chip)}
 			><span class="index__chip-icon" aria-hidden="true">{@html icon}</span><span class="index__chip-label"
 				>{label}</span

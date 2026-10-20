@@ -18,7 +18,7 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
-import { muscleWeights, shoulderRig } from './rig.mjs'
+import { buildRig, muscleWeights } from './rig.mjs'
 import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -250,28 +250,33 @@ if (missing.length) {
 	if (cfg.anchors) fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
 }
 
-// Плечо для статьи (rig.py): центры и оси суставов -- в extras сцены, веса и сухожилия -- в вершины мышц.
+// 3D-модель для статьи (rig.py): суставы -- в extras сцены, веса и сухожилия -- в вершины мышц и связок.
 // Центры в координатах сцены: квантование повесит на узлы свой сдвиг и масштаб, сцена переводит их обратно.
 // До упрощения: meshopt выбрасывает вершины, но не двигает их, и атрибуты остаются верными
 if (cfg.rig) {
-	const points = (name) => prims[name].getAttribute('POSITION').getArray()
-	const girdle = Float32Array.from(cfg.rig.fixed.flatMap((name) => [...points(name)]))
-	const rig = shoulderRig({
-		clavicle: points(cfg.rig.clavicle),
-		scapula: points(cfg.rig.scapula),
-		humerus: points(cfg.rig.moving),
-	})
+	const points = Object.fromEntries(
+		Object.entries(prims).map(([name, prim]) => [name, prim.getAttribute('POSITION').getArray()]),
+	)
+	const joints = buildRig(cfg.rig.joints, points)
+	const merge = (names) => Float32Array.from(names.flatMap((name) => [...points[name]]))
 
-	console.log('rig', rig)
-	scene.setExtras({ rig })
+	console.log('rig', JSON.stringify(joints, null, 1))
 
-	for (const name of cfg.rig.weighted) {
-		const { weight, tendon } = muscleWeights(points(name), girdle, points(cfg.rig.moving))
+	for (const [name, group] of Object.entries(cfg.rig.groups)) {
+		if (!group.weighted) continue
+
+		// Подвижная -- кости, которые идут за суставом; неподвижная -- те, от которых мышца начинается
+		const moving = Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
+		const { weight, tendon } = muscleWeights(points[name], merge(group.weighted.fixed), merge(moving))
 		const prim = prims[name]
 
 		prim.setAttribute('_WEIGHT', doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer))
 		prim.setAttribute('_TENDON', doc.createAccessor().setType('SCALAR').setArray(tendon).setBuffer(buffer))
 	}
+
+	scene.setExtras({
+		rig: { ...cfg.rig, joints },
+	})
 }
 
 // Оставляем треугольники, у которых хоть одна вершина в сфере `clip`. Слои из `skinClip.groups`

@@ -2,29 +2,37 @@ import { MathUtils, Matrix4, Vector3 } from 'three'
 
 type Vec3 = [number, number, number]
 
-/** Центры и оси суставов плеча из extras GLB (scripts/model/rig.mjs), координаты сцены до квантования. */
-export type ShoulderRig = {
-	head: Vec3
-	radius: number
-	ghAxis: Vec3
-	ac: Vec3
-	scapulaAxis: Vec3
-	sc: Vec3
-	clavicleAxis: Vec3
+/** Сустав модели из extras GLB (scripts/model/rig.mjs): центр и ось в координатах сцены до квантования. */
+export type RigJoint = {
+	name: string
+	parent: string | null
+	pivot: Vec3
+	radius?: number
+	axis: Vec3
+	/** Доля общего угла движения: у плеча 2/3 -- сустав, 1/3 -- лопатка. */
+	share: number
+	/** Точка, которая при положительном угле уходит к `toward` (проверка знака оси). */
+	probe: Vec3
+	toward: string
 }
 
-/** Рука поднимается не выше: дальше плечевой сустав и лопатка в модели уже не работают. */
-export const MAX_ELEVATION = 150
+/** Группа -- один меш модели: слой (цвет), сустав, за которым она идёт, и вес мышцы между костями. */
+type RigGroup = {
+	layer: string
+	joint?: string
+	weighted?: { joint: string; fixed: string[] }
+	toggle?: { label: string; visible: boolean }
+}
 
-/**
- * Лопаточно-плечевой ритм: из подъёма руки две трети даёт плечевой сустав, треть -- поворот
- * лопатки вверх. Ключица поднимается на треть поворота лопатки. Градусы.
- */
-export function splitElevation(total: number) {
-	const t = MathUtils.clamp(total, 0, MAX_ELEVATION)
-	const scapula = t / 3
-
-	return { gh: t - scapula, scapula, clavicle: scapula / 3 }
+export type ModelRig = {
+	title: string
+	joints: RigJoint[]
+	groups: Record<string, RigGroup>
+	/** `null` -- модель без движения: её только вращают. */
+	motion: { label: string; verb: string; max: number } | null
+	/** Кадр: группа в кадре, сустав, к которому сдвинут центр, направление и дистанция в её размерах. */
+	view: { focus: string; toward?: string; direction: Vec3; distance: number }
+	about: string
 }
 
 /** Поворот на `deg` градусов вокруг оси `axis`, проходящей через `center`. */
@@ -37,17 +45,35 @@ export function rotationAbout(center: Vec3, axis: Vec3, deg: number) {
 		.multiply(new Matrix4().makeTranslation(-c.x, -c.y, -c.z))
 }
 
-/**
- * Положение костей при подъёме руки на `total` градусов. Ключица поворачивается вокруг
- * грудино-ключичного сустава, лопатка -- вместе с ней и ещё вокруг акромиально-ключичного,
- * плечевая кость -- вместе с лопаткой и ещё вокруг центра головки. `gh` -- угол плечевого
- * сустава в радианах: на столько шейдер поворачивает вершины мышц с весом 1 (shoulder-viewer.ts).
- */
-export function rigPose(rig: ShoulderRig, total: number) {
-	const angles = splitElevation(total)
-	const clavicle = rotationAbout(rig.sc, rig.clavicleAxis, angles.clavicle)
-	const scapula = clavicle.clone().multiply(rotationAbout(rig.ac, rig.scapulaAxis, angles.scapula))
-	const humerus = scapula.clone().multiply(rotationAbout(rig.head, rig.ghAxis, angles.gh))
+/** Угол сустава при движении на `total` градусов: его доля общего угла, в пределах движения модели. */
+export function jointAngle(rig: ModelRig, joint: RigJoint, total: number) {
+	return MathUtils.clamp(total, 0, rig.motion?.max ?? 0) * joint.share
+}
 
-	return { clavicle, scapula, humerus, gh: MathUtils.degToRad(angles.gh) }
+/**
+ * Положение каждого сустава при движении на `total` градусов: поворот вокруг его центра на его
+ * долю угла поверх положения родителя. У плеча так ключица поворачивается в грудино-ключичном
+ * суставе, лопатка -- вместе с ней и ещё в акромиально-ключичном, плечевая кость -- вместе
+ * с лопаткой и ещё вокруг центра головки (лопаточно-плечевой ритм).
+ */
+export function rigPose(rig: ModelRig, total: number) {
+	const pose = new Map<string, Matrix4>()
+	const byName = new Map(rig.joints.map((joint) => [joint.name, joint]))
+
+	function place(joint: RigJoint): Matrix4 {
+		const done = pose.get(joint.name)
+
+		if (done) return done
+
+		const parent = joint.parent ? place(byName.get(joint.parent)!) : new Matrix4()
+		const matrix = parent.clone().multiply(rotationAbout(joint.pivot, joint.axis, jointAngle(rig, joint, total)))
+
+		pose.set(joint.name, matrix)
+
+		return matrix
+	}
+
+	for (const joint of rig.joints) place(joint)
+
+	return pose
 }

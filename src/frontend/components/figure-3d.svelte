@@ -2,57 +2,62 @@
 	import { ChevronLeft, Pause, Play } from 'lucide-static'
 	import { onDestroy, onMount } from 'svelte'
 
+	import type { FigureModel } from '#frontend/lib/figure-3d.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
-	import { MAX_ELEVATION } from '#frontend/scene/rig.ts'
-	import type { ShoulderViewer } from '#frontend/scene/shoulder-viewer.ts'
+	import type { ModelViewer } from '#frontend/scene/model-viewer.ts'
 
 	type Props = {
-		modelUrl: string
+		model: FigureModel
 		/** Закрыть просят: стрелка «Назад», Esc. Сам диалог закрывает lib/figure-3d.ts, вместе с историей. */
 		onclose: () => void
 	}
 
-	let { modelUrl, onclose }: Props = $props()
+	let { model, onclose }: Props = $props()
 
-	/** Полный цикл «поднять и опустить», мс. */
+	/** Полный цикл движения туда и обратно, мс. */
 	const CYCLE = 5000
 	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
 	let dialog: HTMLDialogElement
 	let canvas: HTMLCanvasElement
-	let viewer: ShoulderViewer | undefined
+	let viewer: ModelViewer | undefined
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+	// Что модель о себе знает -- после загрузки: подпись движения, предел, тумблеры, текст (i)
+	let info = $state<Pick<ModelViewer, 'title' | 'about' | 'motion' | 'toggles'>>()
 	let angle = $state(0)
-	// Без анимаций в системе рука сама не ходит, только ползунком
-	let playing = $state(!reduceMotion)
-	let deltoid = $state(false)
+	// Без анимаций в системе суставы сами не ходят, только ползунком
+	let playing = $state(false)
+	let visible = $state<Record<string, boolean>>({})
 	let frame = 0
 	let startedAt = 0
+
+	const max = $derived(info?.motion?.max ?? 0)
+	const title = $derived(info?.title ?? '3D-модель')
 
 	// Угол читаем до viewer?.: пока модели нет, optional chaining не читал бы его, и эффект
 	// ни на что бы не подписался
 	$effect(() => {
 		const deg = angle
 
-		viewer?.setElevation(deg)
+		viewer?.setMotion(deg)
 	})
 
 	$effect(() => {
-		const on = deltoid
+		const shown = Object.entries(visible)
 
-		viewer?.setDeltoid(on)
+		for (const [name, on] of shown) viewer?.setVisible(name, on)
 	})
 
 	function tick(now: number) {
 		frame = requestAnimationFrame(tick)
 		const t = (now - startedAt) / CYCLE
 
-		angle = Math.round((MAX_ELEVATION / 2) * (1 - Math.cos(2 * Math.PI * t)) * 10) / 10
+		angle = Math.round((max / 2) * (1 - Math.cos(2 * Math.PI * t)) * 10) / 10
 	}
 
 	function play() {
 		// Цикл продолжается с текущего угла, а не прыгает в ноль
-		const phase = Math.acos(1 - angle / (MAX_ELEVATION / 2)) / (2 * Math.PI)
+		const phase = Math.acos(1 - angle / (max / 2)) / (2 * Math.PI)
 
 		startedAt = performance.now() - phase * CYCLE
 		frame = requestAnimationFrame(tick)
@@ -90,9 +95,9 @@
 		dialog.showModal()
 
 		try {
-			const { createShoulderViewer } = await import('#frontend/scene/shoulder-viewer.ts')
+			const { createModelViewer } = await import('#frontend/scene/model-viewer.ts')
 
-			viewer = await createShoulderViewer(canvas, modelUrl)
+			viewer = await createModelViewer(canvas, model.url, model.highlight)
 		} catch (error) {
 			console.error('3D-модель не загрузилась', error)
 			status = 'error'
@@ -100,13 +105,18 @@
 			return
 		}
 
-		viewer.setElevation(angle)
-		viewer.setDeltoid(deltoid)
+		const { title, about, motion, toggles } = viewer
+
+		info = { title, about, motion, toggles }
+		visible = Object.fromEntries(toggles.map((t) => [t.name, t.visible]))
 		resizeWatch = new ResizeObserver(() => viewer?.resize())
 		resizeWatch.observe(canvas)
 		status = 'ready'
 
-		if (playing) play()
+		if (motion && !reduceMotion) {
+			playing = true
+			play()
+		}
 	})
 
 	onDestroy(() => {
@@ -117,12 +127,8 @@
 </script>
 
 <!-- Полный экран поверх страницы: на телефоне в кадр фото модель не помещалась -->
-<dialog class="figure3d" bind:this={dialog} data-status={status} aria-label="3D-модель плеча" onkeydown={onKey}>
-	<canvas
-		bind:this={canvas}
-		class="figure3d__canvas"
-		aria-label="3D-модель правого плеча сзади: лопатка, ключица, плечевая кость и мышцы вращательной манжеты. Перетащите, чтобы повернуть"
-	></canvas>
+<dialog class="figure3d" bind:this={dialog} data-status={status} aria-label={title} onkeydown={onKey}>
+	<canvas bind:this={canvas} class="figure3d__canvas" aria-label={`${title}. Перетащите, чтобы повернуть`}></canvas>
 
 	{#if status === 'loading'}
 		<p class="figure3d__status">Загружаем 3D-модель…</p>
@@ -132,50 +138,55 @@
 
 	<button class="figure3d__back" type="button" aria-label="Назад" onclick={onclose}>{@html ChevronLeft}</button>
 
-	<button class="figure3d__info" type="button" aria-label="О модели" popovertarget="figure3d-about">
-		{@html INFO_DOT}
-	</button>
-	<p class="figure3d__about" id="figure3d-about" popover="auto">
-		Модель: BodyParts3D, CC BY-SA 2.1 JP. Движение упрощено: кости поворачиваются как жёсткие тела
-	</p>
+	{#if info}
+		<button class="figure3d__info" type="button" aria-label="О модели" popovertarget="figure3d-about">
+			{@html INFO_DOT}
+		</button>
+		<p class="figure3d__about" id="figure3d-about" popover="auto">
+			{info.about}{#if model.note}. {model.note}{/if}
+		</p>
+	{/if}
 
-	<div class="figure3d__bottom">
-		<div class="figure3d__controls">
-			<button
-				class="figure3d__play"
-				type="button"
-				aria-label={playing ? 'Остановить подъём руки' : 'Поднять руку'}
-				aria-pressed={playing}
-				onclick={toggle}
-				disabled={status !== 'ready'}
-			>
-				<span class="figure3d__icon" aria-hidden="true">{@html playing ? Pause : Play}</span>
-			</button>
-			<label class="figure3d__range" style:--fill="{(angle / MAX_ELEVATION) * 100}%">
-				<span class="figure3d__visually-hidden">Подъём руки, градусы</span>
-				<input
-					class="figure3d__slider"
-					type="range"
-					min="0"
-					max={MAX_ELEVATION}
-					step="1"
-					bind:value={angle}
-					oninput={drag}
-					disabled={status !== 'ready'}
-				/>
-				<span class="figure3d__degrees" aria-hidden="true">{Math.round(angle)}°</span>
-			</label>
-			<button
-				class="figure3d__chip"
-				type="button"
-				aria-pressed={deltoid}
-				onclick={() => (deltoid = !deltoid)}
-				disabled={status !== 'ready'}
-			>
-				Дельтовидная
-			</button>
+	{#if info && (info.motion || info.toggles.length)}
+		<div class="figure3d__bottom">
+			<div class="figure3d__controls">
+				{#if info.motion}
+					<button
+						class="figure3d__play"
+						type="button"
+						aria-label={playing ? `Остановить: ${info.motion.verb}` : info.motion.label}
+						aria-pressed={playing}
+						onclick={toggle}
+					>
+						<span class="figure3d__icon" aria-hidden="true">{@html playing ? Pause : Play}</span>
+					</button>
+					<label class="figure3d__range" style:--fill="{(angle / max) * 100}%">
+						<span class="figure3d__visually-hidden">{info.motion.verb}, градусы</span>
+						<input
+							class="figure3d__slider"
+							type="range"
+							min="0"
+							{max}
+							step="1"
+							bind:value={angle}
+							oninput={drag}
+						/>
+						<span class="figure3d__degrees" aria-hidden="true">{Math.round(angle)}°</span>
+					</label>
+				{/if}
+				{#each info.toggles as t (t.name)}
+					<button
+						class="figure3d__chip"
+						type="button"
+						aria-pressed={visible[t.name]}
+						onclick={() => (visible[t.name] = !visible[t.name])}
+					>
+						{t.label}
+					</button>
+				{/each}
+			</div>
 		</div>
-	</div>
+	{/if}
 </dialog>
 
 <style>

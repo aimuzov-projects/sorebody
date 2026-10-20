@@ -161,11 +161,13 @@ for (const doc of injuries) {
 
 	checkDoc(slug, doc, INJURY_HEADINGS)
 
-	test(`${slug}: images and their atlas plates exist in public/`, () => {
-		for (const { src, atlas } of data.images) {
+	test(`${slug}: images, their atlas plates and 3D models exist in public/`, () => {
+		for (const { src, atlas, model } of data.images) {
 			assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
 
 			if (atlas) assert.ok(existsSync(new URL(`.${atlasSrc(atlas.file)}`, `${PUBLIC}/`)), atlas.file)
+
+			if (model) assert.ok(existsSync(new URL(`./model/rig/${model.name}.glb`, `${PUBLIC}/`)), model.name)
 		}
 	})
 

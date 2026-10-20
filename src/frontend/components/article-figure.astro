@@ -7,7 +7,13 @@ import { splitCaption } from '#frontend/lib/caption.ts'
 import { rigUrl } from '#frontend/scene/model-url.ts'
 
 type Props = {
-	image: { src: string; alt: string; caption: string; atlas?: Atlas; model?: { name: string } }
+	image: {
+		src: string
+		alt: string
+		caption: string
+		atlas?: Atlas
+		model?: { name: string; highlight: string[]; note?: string }
+	}
 	/** Префикс id подсказок: на странице несколько иллюстраций. */
 	id: string
 }
@@ -33,7 +39,16 @@ const caption = splitCaption(image.caption)
 		/>
 		{/* Кнопку показывает lib/figure-3d.ts, если браузер умеет WebGL; модель грузится только по ней */}
 		{image.model && (
-			<button class="article__model-open" type="button" hidden data-figure-3d={rigUrl(image.model.name)}>
+			<button
+				class="article__model-open"
+				type="button"
+				hidden
+				data-figure-3d={JSON.stringify({
+					url: rigUrl(image.model.name),
+					highlight: image.model.highlight,
+					note: image.model.note,
+				})}
+			>
 				<span class="article__model-icon" aria-hidden="true" set:html={Rotate3d} />
 				Покрутить в 3D
 			</button>

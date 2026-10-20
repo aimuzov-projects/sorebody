@@ -13,7 +13,7 @@ type Dissolve = ReturnType<typeof createDissolveMaterial>
 export const DETAIL_REACH = 1.25
 
 /** Слои куска: кости как у фигуры, связки с менисками голубоватые, сосуды и нервы цветные. Мышцы -- цветом темы. */
-const LAYERS: Record<string, string> = {
+export const LAYERS: Record<string, string> = {
 	bones: '#efe7da',
 	muscles: '#c65a4b',
 	cartilage: '#d6e4ec',

@@ -13,6 +13,9 @@ import { probeWebGL } from '#frontend/scene/gpu.ts'
  * Открытая модель -- шаг в истории с тем же адресом: на телефоне её закрывают жестом «Назад»,
  * и он не должен уводить со статьи. Главная на этот шаг не реагирует: хеш тот же.
  */
+/** Модель у иллюстрации: адрес GLB, структуры травмы для подсветки, пометка статьи для (i). */
+export type FigureModel = { url: string; highlight: string[]; note?: string }
+
 export function initFigure3d(root: Element) {
 	const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-figure-3d]')]
 
@@ -33,7 +36,7 @@ export function initFigure3d(root: Element) {
 		const { default: Figure3d } = await import('#frontend/components/figure-3d.svelte')
 		const component = mount(Figure3d, {
 			target: button.parentElement!,
-			props: { modelUrl: button.getAttribute('data-figure-3d')!, onclose: requestClose },
+			props: { model: JSON.parse(button.getAttribute('data-figure-3d')!) as FigureModel, onclose: requestClose },
 		})
 
 		history.pushState({ ...history.state, figure3d: true }, '')

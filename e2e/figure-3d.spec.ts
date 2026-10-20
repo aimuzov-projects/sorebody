@@ -25,7 +25,7 @@ test('модель грузится только по кнопке «Покру�
 
 	await open.click()
 
-	const dialog = page.getByRole('dialog', { name: '3D-модель плеча' })
+	const dialog = page.getByRole('dialog', { name: /3D-модель/ })
 
 	await expect(dialog).toBeVisible()
 	await expect(dialog.getByRole('button', { name: 'Назад' })).toBeVisible()
@@ -37,7 +37,7 @@ test('Esc, стрелка и «Назад» браузера закрывают 
 
 	const url = page.url()
 	const open = page.getByRole('button', { name: 'Покрутить в 3D' })
-	const dialog = page.getByRole('dialog', { name: '3D-модель плеча' })
+	const dialog = page.getByRole('dialog', { name: /3D-модель/ })
 
 	await open.click()
 	await expect(dialog).toBeVisible()
@@ -62,7 +62,7 @@ test('в статье на главной модель закрывается, �
 	await page.goto(`/#${SLUG}`)
 
 	const reader = page.locator('.reader')
-	const dialog = page.getByRole('dialog', { name: '3D-модель плеча' })
+	const dialog = page.getByRole('dialog', { name: /3D-модель/ })
 
 	await reader.getByRole('button', { name: 'Покрутить в 3D' }).click()
 	await expect(dialog).toBeVisible()

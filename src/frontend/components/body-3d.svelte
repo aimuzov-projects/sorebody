@@ -155,7 +155,8 @@
 	let lead = $state.raw<{ zone: Zone; index: number; injury: Injury } | null>(null)
 
 	function previewInjury(entry: { zone: Zone; injury: Injury } | null, pointer = true) {
-		if (open) return
+		// Под статьёй модель замерла: строка теряет курсор и фокус, но кадр остаётся
+		if (open || article) return
 
 		lead = entry && { ...entry, index: body ? facingIndex(entry.zone) : 0 }
 		setHighlight(entry?.zone ?? null)
@@ -174,6 +175,8 @@
 
 	function focusLead() {
 		if (!body || open) return
+
+		framed = lead?.injury ?? null
 
 		if (!lead) {
 			body.focus(null)
@@ -949,6 +952,7 @@
 
 		const injury = accent ? injuryFocus(open.zone, open.index, accent.slug) : null
 
+		framed = accent
 		body.frame(0, 0)
 		// Место травмы бывает у края зоны или за ним (широчайшая, задняя поверхность бедра):
 		// проём того же размера переезжает к нему: под точкой видно, на что она указывает
@@ -985,7 +989,7 @@
 	 * проходящий по строкам, не дёргает её от каждой.
 	 */
 	function setAccent(injury: Injury | null) {
-		if (!open || accent === injury) return
+		if (!open || article || accent === injury) return
 
 		accent = injury
 		clearTimeout(accentTimer)
@@ -1072,9 +1076,10 @@
 		article = injury
 		articleSection = undefined
 		toolsOpen = false
-		// Камера возвращается к кадру зоны, пока сцена скрыта: после статьи акцент начнётся заново
-		accent = null
-		focusOpen()
+		// Модель замирает в том кадре, в котором её застала статья: облёт к общему плану под
+		// гаснущей сценой подтормаживал открытие. Камера, не успевшая доехать до травмы, тоже стоит
+		clearTimeout(accentTimer)
+		clearTimeout(previewTimer)
 		sceneHidden = true
 		clearTimeout(sleepTimer)
 		sleepTimer = setTimeout(() => sceneHidden && body?.pause(true), reduceMotion ? 0 : SCENE_FADE_MS)
@@ -1088,6 +1093,49 @@
 		sceneHidden = false
 		clearTimeout(sleepTimer)
 		body?.pause(false)
+		void tick().then(settle)
+	}
+
+	/** Травма, к которой камера уже подъехала (`focusOpen`, `focusLead`). */
+	let framed: Injury | null = null
+	/** Где мышь, по всему окну: над статьёй строки под ней курсора не видят. */
+	let pointerAt: { x: number; y: number } | null = null
+
+	/**
+	 * После статьи: курсор всё ещё над строкой той же травмы -- кадр остаётся как был, иначе модель
+	 * плавно возвращается ко всем травмам. На таче курсора нет, акцент -- у строки, на которой стоял
+	 * список, и он не меняется.
+	 */
+	function settle() {
+		if (article) return
+
+		const current = open ? accent : lead?.injury
+
+		if (!current) return
+
+		if (noHover || slugAt(pointerAt) === current.slug) {
+			// Статью открыли раньше, чем камера доехала до травмы: доезжает сейчас
+			if (framed !== current) {
+				if (open) focusOpen(true)
+				else focusLead()
+			}
+
+			return
+		}
+
+		if (open) setAccent(null)
+		else previewInjury(null, false)
+	}
+
+	/** Строка травмы в списке сцены под точкой, даже если сверху ещё гаснет статья. */
+	function slugAt(point: { x: number; y: number } | null) {
+		if (!point || !wrap) return undefined
+
+		const row = document
+			.elementsFromPoint(point.x, point.y)
+			.find((el): el is HTMLElement => el instanceof HTMLElement && !!el.dataset.slug && wrap.contains(el))
+
+		return row?.dataset.slug
 	}
 
 	function clamp(v: number, min: number, max: number) {
@@ -1210,7 +1258,11 @@
 	}
 </script>
 
-<svelte:window onkeydown={onKey} />
+<svelte:window
+	onkeydown={onKey}
+	onpointermove={(event) =>
+		(pointerAt = event.pointerType === 'touch' ? null : { x: event.clientX, y: event.clientY })}
+/>
 
 <div
 	class="body3d"

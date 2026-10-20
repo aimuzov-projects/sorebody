@@ -12,6 +12,8 @@
 
 	import { ChevronDown } from 'lucide-static'
 
+	import { pageWidth } from '#frontend/lib/page-gutter.ts'
+
 	/** `icon` -- SVG из lucide-static. */
 	type Option = { slug: string; title: string; icon?: string }
 
@@ -45,8 +47,13 @@
 	let root: HTMLDivElement
 	let button: HTMLButtonElement
 	let list = $state<HTMLUListElement>()
+	/** Насколько список сдвинут влево, чтобы не уйти за правый край экрана. */
+	let nudge = $state(0)
 	let typed = ''
 	let typedTimer: ReturnType<typeof setTimeout> | undefined
+
+	/** Поле от края экрана, за которое список не заходит. */
+	const EDGE = 16
 
 	const reduceMotion = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -55,10 +62,29 @@
 
 		up = innerHeight - box.bottom < 300 && box.top > innerHeight - box.bottom
 		active = Math.max(0, options.indexOf(current))
+		nudge = 0
 		open = true
 		await tick()
+		fitList()
 		list?.focus({ preventScroll: true })
 		scrollToActive()
+	}
+
+	// Список растёт вправо от кнопки, а кнопка на телефоне стоит посреди строки: длинные
+	// пункты уводили его за край экрана. Сдвигаем влево, но не дальше левого поля. Замер
+	// с уже стоящим сдвигом, поэтому повторный только поправляет его
+	function fitList() {
+		if (!list) return
+
+		const { left, right } = list.getBoundingClientRect()
+		const over = right - (pageWidth() - EDGE)
+
+		nudge = Math.max(0, nudge + Math.min(over, left - EDGE))
+	}
+
+	// Остров на телефоне раскрывается с масштабом: список, открытый сразу, мерился сжатым
+	function onWindowAnimationEnd(event: AnimationEvent) {
+		if (open && (event.target as Element).contains(root)) fitList()
 	}
 
 	function hide(refocus = true) {
@@ -153,7 +179,7 @@
 	}
 </script>
 
-<svelte:window onpointerdown={onWindowPointer} onpageshow={onPageShow} />
+<svelte:window onpointerdown={onWindowPointer} onpageshow={onPageShow} onanimationend={onWindowAnimationEnd} />
 
 <div class="pselect pselect--{size}" bind:this={root}>
 	<button
@@ -179,6 +205,7 @@
 		<ul
 			class="pselect__list"
 			class:pselect__list--up={up}
+			style:translate={nudge ? `${-nudge}px 0` : undefined}
 			id="{id}-list"
 			role="listbox"
 			tabindex="0"

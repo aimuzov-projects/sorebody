@@ -29,6 +29,24 @@ test('поиск и фильтры прячутся в остров и раск�
 	await expect(page.locator('.search__input')).toBeHidden()
 })
 
+test('список движений в раскрытом острове не уходит за край экрана', async ({ page }) => {
+	await page.goto('/')
+	await page.locator('.index__island-open').tap()
+	// Сразу, не дожидаясь, пока остров дорастёт: tap ждал бы конца анимации
+	await page.getByRole('button', { name: /^Движение/ }).dispatchEvent('click')
+
+	const list = page.getByRole('listbox')
+
+	await expect(list).toBeVisible()
+	// Мерим, когда остров дорос: посреди анимации сжат и сам список
+	await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'))
+
+	const box = (await list.boundingBox())!
+
+	expect(box.x).toBeGreaterThanOrEqual(16)
+	expect(box.x + box.width).toBeLessThanOrEqual(375 - 16)
+})
+
 test('фильтры в раскрытом острове помещаются в ширину экрана', async ({ page }) => {
 	await page.goto('/')
 	await page.locator('.index__island-open').tap()

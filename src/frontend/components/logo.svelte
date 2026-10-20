@@ -93,12 +93,16 @@
 		stroke: url('#brand-logo') currentcolor;
 	}
 
+	/* Знак и "body" -- один перелив на весь логотип: синий от знака до "b", дальше по слову к
+	   зелёному. У --brand-gradient на конце снова синий, поэтому фон вдвое шире слова и ему
+	   достаётся первая половина */
 	@supports (background-clip: text) or (-webkit-background-clip: text) {
 		:global(:root:not([data-sport])) .logo__body {
 			color: transparent;
 			background-image: var(--brand-gradient);
 			-webkit-background-clip: text;
 			background-clip: text;
+			background-size: 200% 100%;
 		}
 	}
 

@@ -99,14 +99,16 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		{!sport && (
 			<svg class="brand-paint" aria-hidden="true" focusable="false">
 				<defs>
-					{/* Градиент для обводки значков Lucide (24 на 24) и знака логотипа (32 на 32) */}
+					{/* Градиент для обводки значков Lucide (24 на 24) -- по диагонали. Знак логотипа
+					    (32 на 32) -- начало перелива слова "body" (components/logo.svelte): синий
+					    держится до "b" и знак целиком синий. 88 и 144 -- края слова в единицах знака */}
 					{(
 						[
-							['brand-icon', 24],
-							['brand-logo', 32],
+							['brand-icon', 0, 24, 24],
+							['brand-logo', 88, 144, 0],
 						] as const
-					).map(([id, size]) => (
-						<linearGradient id={id} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={size} y2={size}>
+					).map(([id, x1, x2, y2]) => (
+						<linearGradient id={id} gradientUnits="userSpaceOnUse" x1={x1} y1="0" x2={x2} y2={y2}>
 							{Array.from({ length: BRAND_STOP_COUNT }, (_, i) => (
 								<stop offset={i / Math.max(BRAND_STOP_COUNT - 1, 1)} class={`brand-stop-${i}`} />
 							))}

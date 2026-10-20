@@ -285,6 +285,11 @@
 	let posterRect = $state<{ left: number; top: number; width: number; height: number } | null>(null)
 	/** Постер ещё в DOM: после первого кадра он гаснет и уходит. */
 	let posterShown = $state(true)
+	/**
+	 * Сам постер -- из серверного HTML (components/scene-poster.astro): на широком экране он стоит
+	 * ещё до JS сцены. С монтированием сцена ставит его к себе и дальше ведёт по posterRect.
+	 */
+	const posterEl = document.querySelector<HTMLElement>('.body3d__poster')
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
@@ -686,8 +691,37 @@
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
 	let mounted = $state(false)
 
+	// Постер на месте фигуры, пока канвас прозрачный: без места (зона или статья по адресу) и без
+	// WebGL его нет, с первым кадром модели он уходит из DOM
+	$effect(() => {
+		if (!posterEl || !mounted) return
+
+		if (!posterShown) {
+			posterEl.remove()
+
+			return
+		}
+
+		posterEl.hidden = !posterRect || status === 'error'
+
+		if (posterRect) {
+			const { style } = posterEl.querySelector('img')!
+
+			style.left = `${posterRect.left}px`
+			style.top = `${posterRect.top}px`
+			style.width = `${posterRect.width}px`
+			style.height = `${posterRect.height}px`
+		}
+	})
+
 	onMount(() => {
 		mounted = true
+
+		// Серверный постер -- в сцену сразу за канвасом: под индексом и шапкой, как и фигура
+		if (posterEl) {
+			canvas.after(posterEl)
+			posterEl.classList.add('body3d__poster--placed')
+		}
 
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
 		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
@@ -1307,21 +1341,7 @@
 >
 	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
-	<!-- Пока грузится модель, на месте фигуры -- её постер; с первым кадром он уступает канвасу -->
-	{#if posterShown && posterRect && status !== 'error'}
-		<picture class="body3d__poster" aria-hidden="true">
-			<source srcset="/model/poster.webp" type="image/webp" />
-			<img
-				class="body3d__poster-image"
-				src="/model/poster.png"
-				alt=""
-				style:left="{posterRect.left}px"
-				style:top="{posterRect.top}px"
-				style:width="{posterRect.width}px"
-				style:height="{posterRect.height}px"
-			/>
-		</picture>
-	{/if}
+	<!-- Здесь, сразу за канвасом, до первого кадра модели стоит постер из components/scene-poster.astro -->
 
 	<!-- Место -- placeHint (scene/frame.ts): справа от головы или под ногами -->
 	{#if hintShown && posterRect}
@@ -1636,18 +1656,6 @@
 		&__spot[hidden],
 		&__mark[hidden] {
 			display: none;
-		}
-
-		/* Постер стоит на месте фигуры, пока канвас прозрачный, и уходит с её первым кадром */
-		&__poster {
-			pointer-events: none;
-			position: absolute;
-			inset: 0;
-		}
-
-		&__poster-image {
-			position: absolute;
-			max-width: none;
 		}
 
 		&--open &__spot {

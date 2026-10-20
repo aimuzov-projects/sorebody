@@ -1,0 +1,11 @@
+{
+	"title": "3D-модель мышц тела",
+	"fromGlb": "body.glb",
+	"drop": ["skin"],
+	"groups": [
+		{ "name": "bones", "layer": "bones" },
+		{ "name": "muscles", "layer": "muscles", "toggle": { "label": "Мышцы", "visible": true } }
+	],
+	"view": { "focus": "bones", "direction": [-0.35, 0.1, 1], "distance": 2.1 },
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP, та же фигура, что на главной, без кожи. Модель без движения"
+}

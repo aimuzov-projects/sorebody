@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray430.png
           caption: 'Мышцы подвздошной области и передней поверхности бедра'
+      model:
+          name: body-muscles
+          highlight: [rectus femoris, vastus lateralis, vastus medialis, vastus intermedius]
+          direction: [-0.35, 0.1, 1]
+          note: 'Подсвечена четырёхглавая мышца бедра, как на иллюстрации: при рабдомиолизе от нагрузки чаще всего страдают крупные мышцы, которые работали больше всего'
 sources:
     - pmid: '36877581'
       label: Bäcker 2023, систематический обзор без метаанализа, рабдомиолиз у спортсменов, 25 исследований

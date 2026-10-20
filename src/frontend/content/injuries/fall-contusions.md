@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray432.png
           caption: 'Поперечный срез середины бедра'
+      model:
+          name: body-muscles
+          highlight: [vastus lateralis, vastus intermedius, rectus femoris]
+          direction: [-0.8, 0.1, 1]
+          note: 'Ушиба в модели нет; подсвечены мышцы передне-наружной поверхности бедра, где ушиб четырёхглавой мышцы бывает чаще всего'
 sources:
     - pmid: '12394459'
       label: Beiner 2002, обзор ушибов мышц и травматического оссифицирующего миозита

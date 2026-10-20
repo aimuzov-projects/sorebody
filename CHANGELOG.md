@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.15.0](https://github.com/aimuzov-projects/sorebody/compare/v1.14.0...v1.15.0) (2026-10-20)
+
+
+### Features
+
+* **article:** tie the header title hover to the back arrow ([f32f02a](https://github.com/aimuzov-projects/sorebody/commit/f32f02a4c9a9b5d206f2d26d57463a2e3a96e313))
+* **article:** tie the header title hover to the back arrow ([3a35a1c](https://github.com/aimuzov-projects/sorebody/commit/3a35a1c845e959a179d50129bedb957b19116d71))
+* **brand:** fill the menu button left to right without looping back ([b491547](https://github.com/aimuzov-projects/sorebody/commit/b49154780208a893f6c80a1b90ebd6d1045caad1))
+* **brand:** run the brand gradient from blue to sky blue ([241c9f6](https://github.com/aimuzov-projects/sorebody/commit/241c9f66b868d46f505ec0288016509f90c55030))
+* **brand:** run the brand gradient from blue to sky blue ([d32277c](https://github.com/aimuzov-projects/sorebody/commit/d32277c6549220a967b7f4c764e96dfd2adcb5af))
+* **home:** explain each frequency level in the filter hint ([6aa4bd0](https://github.com/aimuzov-projects/sorebody/commit/6aa4bd064beef3cef5ab547d650b6b676b09eac3))
+* **home:** explain each frequency level in the filter hint ([d10b0e6](https://github.com/aimuzov-projects/sorebody/commit/d10b0e6d51b693ae80d9eeb0e1e006a0e00f8a97))
+* swipe right to go back on touch screens ([a17b0d5](https://github.com/aimuzov-projects/sorebody/commit/a17b0d596c83964ad162b9f6fbde463cb8798d62))
+* swipe right to go back on touch screens ([247f165](https://github.com/aimuzov-projects/sorebody/commit/247f165650f100734267ee3d2d90d07e4e0ea620))
+
+
+### Bug Fixes
+
+* **home:** don't focus the search when the mobile island opens ([0043bf9](https://github.com/aimuzov-projects/sorebody/commit/0043bf925c90726d01458fafae7879c4363c3860))
+* **home:** don't focus the search when the mobile island opens ([1339fb9](https://github.com/aimuzov-projects/sorebody/commit/1339fb97e22a70705abbd343f08af41a0e336818))
+
 ## [1.14.0](https://github.com/aimuzov-projects/sorebody/compare/v1.13.0...v1.14.0) (2026-10-20)
 
 

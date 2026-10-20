@@ -37,6 +37,14 @@ export function brandGradient(theme: Theme): string {
 }
 
 /**
+ * Тот же градиент без повтора: слева направо от первого цвета к последнему. Для того, что не
+ * плывёт, -- кнопки меню и полосы прогресса: с повтором справа снова проступал синий.
+ */
+export function brandLine(theme: Theme): string {
+	return `linear-gradient(90deg, ${brandStops(theme).join(', ')})`
+}
+
+/**
  * Сколько процентов цвета в заливке плашки у ссылки на другую страницу сайта (styles/article.css,
  * главная). Больше нельзя: на сером фоне главной синий и лайм уже у порога AA, это сверяет тест.
  */
@@ -56,6 +64,7 @@ export function brandTint(theme: Theme): string {
  */
 export const BRAND_GRADIENT_CSS = [
 	`:root{--brand-gradient-light:${brandGradient('light')};--brand-gradient-dark:${brandGradient('dark')};` +
+		`--brand-line-light:${brandLine('light')};--brand-line-dark:${brandLine('dark')};` +
 		`--brand-tint-light:${brandTint('light')};--brand-tint-dark:${brandTint('dark')}}`,
 	...brandAccents().map(
 		({ light, dark }, i) => `.brand-stop-${i}{stop-color:${light};stop-color:light-dark(${light},${dark})}`,

@@ -10,6 +10,7 @@ import {
 	BRAND_SKY,
 	BRAND_STOP_COUNT,
 	brandGradient,
+	brandLine,
 	brandStops,
 	brandTint,
 	LINK_TINT,
@@ -85,8 +86,18 @@ test('global.css takes the brand gradient of its theme and base.astro inserts it
 		'оба блока тёмной темы',
 	)
 
+	assert.match(GLOBAL_CSS, /--brand-line: var\(--brand-line-light\);/)
+	assert.equal(GLOBAL_CSS.match(/--brand-line: var\(--brand-line-dark\);/g)?.length, 2, 'оба блока тёмной темы')
+	assert.match(GLOBAL_CSS, /--accent-fill: var\(--brand-line\);/)
+
 	assert.match(BASE, /BRAND_GRADIENT_CSS/)
 })
+
+for (const theme of ['light', 'dark'] as const)
+	test(`${theme}: the menu button gradient goes left to right without coming back to blue`, () => {
+		assert.equal(brandLine(theme), `linear-gradient(90deg, ${brandStops(theme).join(', ')})`)
+		assert.ok(BRAND_GRADIENT_CSS.includes(`--brand-line-${theme}:${brandLine(theme)}`))
+	})
 
 /** Цвет `color` поверх фона `bg` с непрозрачностью `share`, как `color-mix(... transparent)`. */
 const over = (color: number[], bg: number[], share: number) => color.map((v, k) => v * share + bg[k]! * (1 - share))

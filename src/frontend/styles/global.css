@@ -84,6 +84,7 @@
 	--accent-fill: var(--accent);
 	--on-accent: var(--on-accent-light);
 	--brand-gradient: var(--brand-gradient-light);
+	--brand-line: var(--brand-line-light);
 	--brand-tint: var(--brand-tint-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;
@@ -153,6 +154,7 @@
 		--accent: var(--accent-dark);
 		--on-accent: var(--on-accent-dark);
 		--brand-gradient: var(--brand-gradient-dark);
+		--brand-line: var(--brand-line-dark);
 		--brand-tint: var(--brand-tint-dark);
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
@@ -172,6 +174,7 @@
 	--accent: var(--accent-dark);
 	--on-accent: var(--on-accent-dark);
 	--brand-gradient: var(--brand-gradient-dark);
+	--brand-line: var(--brand-line-dark);
 	--brand-tint: var(--brand-tint-dark);
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
@@ -343,11 +346,11 @@ select {
 /* Заливка кнопки меню разделов (toc-menu.css) -- тоже градиентом: на его точках цвет --on-accent
    проходит AA, как и текст ссылок на фоне. Блоки темы задают --accent-fill с меньшим весом */
 :root:not([data-sport], [data-telegram]) {
-	--accent-fill: var(--brand-gradient);
+	--accent-fill: var(--brand-line);
 }
 
 :root:not([data-sport], [data-telegram]) .reading-progress__bar {
-	background: var(--brand-gradient);
+	background: var(--brand-line);
 	mask-image: linear-gradient(to right, transparent, #000000 30%);
 }
 

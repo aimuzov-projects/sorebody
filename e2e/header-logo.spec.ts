@@ -77,6 +77,40 @@ test('в ридере на главной заголовок в шапке за�
 	await expect(page).not.toHaveURL(new RegExp(`#${SLUG}$`))
 })
 
+for (const [where, url, scope] of [
+	['на отдельной странице', `/crossfit/${SLUG}/`, 'body'],
+	['в ридере на главной', `/#${SLUG}`, '.reader:not(.theme-peek *)'],
+] as const) {
+	test(`${where} наведение на заголовок в шапке подсвечивает стрелку, подсказка -- над текстом`, async ({ page }) => {
+		await page.goto(url)
+
+		const root = page.locator(scope)
+		const title = root.locator('.article-bar__title')
+		const back = root.getByRole(scope === 'body' ? 'link' : 'button', { name: 'Назад' })
+		const background = () => back.evaluate((node) => getComputedStyle(node).backgroundColor)
+
+		await expect(root.locator('.article__title')).toBeVisible()
+		await (scope === 'body' ? page.evaluate(() => scrollTo(0, 400)) : root.evaluate((el) => el.scrollTo(0, 400)))
+		await expect.poll(() => opacity(title)).toBe(1)
+
+		const idle = await background()
+
+		await title.hover()
+		await expect.poll(background).not.toBe(idle)
+
+		const tip = page.locator('.tip--hint')
+
+		await expect(tip).toHaveText('Назад')
+
+		const text = (await title.boundingBox())!
+		const hint = (await tip.boundingBox())!
+		const textCenter = text.x + text.width / 2
+
+		expect(Math.abs(hint.x + hint.width / 2 - textCenter)).toBeLessThan(2)
+		expect(text.width).toBeLessThan(500)
+	})
+}
+
 test.describe('на узком телефоне', () => {
 	test.use({ viewport: { width: 320, height: 640 }, hasTouch: true, isMobile: true })
 

@@ -971,7 +971,9 @@
 		display: none;
 	}
 
-	&:hover {
+	/* Заголовок ведёт туда же, и наведение на него подсвечивает и стрелку */
+	&:hover,
+	&:has(~ .article-bar__lead .article-bar__title:hover) {
 		background: color-mix(in srgb, var(--fg) 7%, transparent);
 	}
 
@@ -1018,7 +1020,10 @@
    заголовок тоже не нажимается */
 .article-bar__title {
 	overflow: hidden;
+	/* По ширине текста, а не всей ячейки: подсказка "Назад" встаёт над серединой заголовка */
+	justify-self: start;
 	min-width: 0;
+	max-width: 100%;
 	font-size: 17px;
 	font-weight: 600;
 	color: var(--fg);
@@ -1026,6 +1031,11 @@
 	text-overflow: ellipsis;
 	letter-spacing: -0.02em;
 	white-space: nowrap;
+	transition: color 0.3s ease;
+
+	&:hover {
+		color: var(--accent);
+	}
 
 	[data-telegram] & {
 		pointer-events: none;

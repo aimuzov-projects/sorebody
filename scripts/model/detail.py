@@ -2,9 +2,11 @@
 # артерии, вены) в сфере вокруг точки зоны, по куску на точку. Нервы -- отдельным куском
 # `<зона>-<сторона>.nerves`, его слабые устройства не грузят.
 # usage: python3 -I detail.py <dl dir> <obj dir> <out dir> <offset x,y,z> <ratio> [<z-anatomy dir>] [--muscles <dir> <ratio>]
+#   [--skin-dir <dir>]
 # z-anatomy dir -- выход z_align.py: связки, мениски, губы, капсулы и нервы поверх BP3D
 # offset -- сдвиг из лога сборки фигуры (строка bounds ... offset), чтобы кусок лёг в её координаты
 # --muscles -- выход remesh.py и доля треугольников мышц BP3D: воксельные сетки плотнее исходных
+# --skin-dir -- выход neutral.py: по этой коже режутся слои Z-Anatomy
 import json, sys, collections, glob, os, re
 
 args = sys.argv[1:]
@@ -13,6 +15,11 @@ if '--muscles' in args:
     k = args.index('--muscles')
     muscle_dirs, muscle_ratio = [args[k + 1]], float(args[k + 2])
     del args[k:k + 3]
+skin_dirs = []
+if '--skin-dir' in args:
+    k = args.index('--skin-dir')
+    skin_dirs = [args[k + 1]]
+    del args[k:k + 2]
 dl, obj_dir, out_dir, offset, ratio, *extra = args
 off = [float(v) for v in offset.split(',')]
 ratio = float(ratio)
@@ -49,6 +56,9 @@ layers = {
     'arteries': by['artery'],
     'veins': by['vein'],
 }
+# Фигура бесполая (см. neutral.py): сосуды полового члена и яичек в куске таза висели бы в пустоте
+for name in ('arteries', 'veins'):
+    layers[name] = {f for f in layers[name] if not re.search(r'\bpenis\b|\btesticular\b', names.get(f, '').lower())}
 # Из Z-Anatomy все связки, мениски, губы и капсулы, а нервы -- только те, о которых говорят статьи:
 # надлопаточный и подмышечный (плечо), локтевой, лучевой и срединный (локоть, кисть), седалищный
 # (задняя поверхность бедра) и латеральный кожный нерв бедра (мералгия). Сплетения целиком тяжёлые
@@ -112,7 +122,7 @@ for zone, (c, r) in ZONES.items():
                 # и направление волокон по вершинам (см. build.mjs)
                 share = muscle_ratio if name == 'muscles' and muscle_ratio else ratio
                 groups.append({'name': name, 'files': near, 'ratio': share * RATIO.get(zone, 1), 'error': 0.005, 'parts': name == 'muscles'})
-        base = {'objDirs': [*muscle_dirs, obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},
+        base = {'objDirs': [*skin_dirs, *muscle_dirs, obj_dir, *extra], 'offset': off, 'clip': {'center': center, 'radius': radius},
                 'skinClip': {'skin': skin[0], 'groups': ['ligaments', 'nerves']}}
         for suffix, part in (('', [g for g in groups if g['name'] != 'nerves']), ('.nerves', [g for g in groups if g['name'] == 'nerves'])):
             if part:

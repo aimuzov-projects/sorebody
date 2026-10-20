@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray389.png
           caption: 'Глубокие мышцы спины'
+      model:
+          name: lumbar-center
+          highlight:
+              [iliocostalis lumborum, longissimus thoracis, multifidus lumborum muscle, quadratus lumborum muscle]
+          direction: [0.3, 0.15, -1]
 sources:
     - pmid: '31278933'
       label: Galliker 2020, систематический обзор серьёзных причин боли в спине в приёмном отделении

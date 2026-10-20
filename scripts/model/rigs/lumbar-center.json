@@ -1,0 +1,105 @@
+{
+	"title": "3D-модель поясницы",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "vertebrae",
+			"bp3d": [
+				"first lumbar vertebra",
+				"second lumbar vertebra",
+				"third lumbar vertebra",
+				"fourth lumbar vertebra",
+				"fifth lumbar vertebra",
+				"sacrum",
+				"right hip bone",
+				"left hip bone"
+			],
+			"ratio": 0.5,
+			"layer": "bones"
+		},
+		{
+			"name": "discs",
+			"za": ["^intervertebral disc (l1-l2|l2-l3|l3-l4|l4-l5|l5-s1)$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "cartilage"
+		},
+		{
+			"name": "nuclei",
+			"za": ["^nucleus pulposus (l1-l2|l2-l3|l3-l4|l4-l5|l5-s1)$"],
+			"ratio": 0.8,
+			"parts": true,
+			"layer": "ligaments",
+			"toggle": {
+				"label": "Ядра дисков",
+				"visible": false
+			}
+		},
+		{
+			"name": "erector",
+			"bp3d": [
+				"right iliocostalis lumborum",
+				"left iliocostalis lumborum",
+				"right longissimus thoracis",
+				"left longissimus thoracis",
+				"right spinalis thoracis",
+				"left spinalis thoracis"
+			],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Разгибатели спины",
+				"visible": true
+			}
+		},
+		{
+			"name": "deep",
+			"za": ["^(right|left) multifidus lumborum muscle$", "^(right|left) quadratus lumborum muscle$"],
+			"ratio": 0.15,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Глубокие мышцы",
+				"visible": true
+			}
+		},
+		{
+			"name": "psoas",
+			"bp3d": ["right psoas major", "left psoas major"],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Поясничная мышца",
+				"visible": true
+			}
+		},
+		{
+			"name": "fascia",
+			"za": ["^(right|left) posterior layer of thoracolumbar fascia$"],
+			"ratio": 0.6,
+			"parts": true,
+			"layer": "ligaments",
+			"toggle": {
+				"label": "Фасция",
+				"visible": false
+			}
+		},
+		{
+			"name": "ligaments",
+			"za": ["^(right|left) iliolumbar ligament$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments"
+		}
+	],
+	"joints": [],
+	"view": {
+		"focus": "discs",
+		"direction": [0.3, 0.15, -1],
+		"distance": 4.2
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; диски, ядра, фасция и часть мышц: Z-Anatomy, CC BY-SA 4.0. Модель без движения: поясница сгибается сразу в пяти сегментах, и мышцы, которые идут через них все, так не повести"
+}

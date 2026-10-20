@@ -25,6 +25,43 @@ const NARROW_SHARE = 0.5
 const TENDON = '#ece4d6'
 
 /**
+ * Подсвеченная структура не мышечного слоя: связки, хрящ и сухожилия и так светлые, и одно лишь
+ * побледнение остальных их не выделило бы -- красим её насыщенным цветом слоя.
+ */
+const HIT: Record<string, string> = {
+	ligaments: '#2f62c9',
+	cartilage: '#2f62c9',
+	tendons: '#2f62c9',
+	nerves: '#d29a00',
+}
+
+function hitShader(color: string): ShaderExtra {
+	return {
+		key: 'model-hit',
+		uniforms: { uHitColor: { value: new Color(color) } },
+		fragmentCommon: 'uniform vec3 uHitColor;',
+		color: 'if (hit > 0.5) diffuseColor.rgb = mix(diffuseColor.rgb, uHitColor, 0.7 * uHighlight / 0.45);',
+	}
+}
+
+/** Два дополнения шейдера в одно: поворот по весу и подсветка. */
+function joinShaders(a: ShaderExtra | undefined, b: ShaderExtra | undefined): ShaderExtra | undefined {
+	if (!a || !b) return a ?? b
+
+	const glue = (x?: string, y?: string) => [x, y].filter(Boolean).join('\n')
+
+	return {
+		key: `${a.key}+${b.key}`,
+		uniforms: { ...a.uniforms, ...b.uniforms },
+		vertexCommon: glue(a.vertexCommon, b.vertexCommon),
+		normal: glue(a.normal, b.normal),
+		position: glue(a.position, b.position),
+		fragmentCommon: glue(a.fragmentCommon, b.fragmentCommon),
+		color: glue(a.color, b.color),
+	}
+}
+
+/**
  * Мышцы и связки с весом подвижной кости (`_WEIGHT`, scripts/model/rig.mjs): вершина поворачивается
  * вокруг центра сустава на его угол, умноженный на вес. Не смешивание двух положений: так сухожилие,
  * огибающее головку, сохраняет радиус и не проваливается в кость. Нормаль и волокна -- тем же поворотом.
@@ -154,6 +191,9 @@ export async function createModelViewer(
 			}
 
 			const color = layer === 'muscles' ? muscleColor() : (LAYERS[layer] ?? LAYERS.bones)
+
+			if (parts && HIT[layer]) extra = joinShaders(extra, hitShader(HIT[layer]))
+
 			const material = createDissolveMaterial(
 				color,
 				layer === 'muscles' ? MUSCLE_RIM : BONE_RIM,

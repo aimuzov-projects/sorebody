@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray220.png
           caption: 'Кости кисти'
+      model:
+          name: wrist-hand-right
+          highlight: [scapholunate interosseous ligament, dorsal radiocarpal ligament]
+          hide: [extensors]
+          direction: [0, 0.15, -1]
+          note: 'Разгибатели спрятаны, чтобы были видны связки запястья; треугольного фиброзно-хрящевого комплекса в модели нет'
 sources:
     - pmid: '32115083'
       label: Patrick 2020, обзор тендинопатий кисти и запястья

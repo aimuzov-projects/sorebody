@@ -9,6 +9,18 @@ images:
       atlas:
           file: Gray331.png
           caption: 'Капсула локтевого сустава спереди'
+      model:
+          name: elbow-right
+          highlight:
+              [
+                  extensor carpi radialis brevis,
+                  extensor digitorum,
+                  common extensor tendon,
+                  flexor carpi radialis,
+                  pronator teres,
+                  common flexor tendon,
+              ]
+          direction: [-1, 0.1, 0.3]
 charts:
     - id: steroid-injection
       title: Через год после укола при латеральном эпикондилите

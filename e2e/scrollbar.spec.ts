@@ -64,23 +64,29 @@ test('статья на главной: значки на месте, колон
 	expect(await titleLeft(page, '.reader')).toBe(left)
 })
 
-test('подсказка значка в углу прижата к его правому краю и там, где прокрутки нет', async ({ page }) => {
+test('подсказка значка в углу стоит по его центру и там, где прокрутки нет', async ({ page }) => {
 	await needClassicScrollbars(page)
 
 	for (const path of ['/', '/about/']) {
 		await page.goto(path)
 		const link = page.getByRole('link', { name: 'Что нового', exact: true })
-		const tip = link.locator('xpath=following-sibling::*[1]')
+		const tip = page.locator('body > .tip--hint')
 
 		// Табом, как в changelog.spec.ts: с клавиатуры подсказка открывается без наведения
 		for (let i = 0; i < 30 && !(await link.evaluate((el) => el === document.activeElement)); i++)
 			await page.keyboard.press('Tab')
 
 		await expect(tip).toBeVisible()
-		const [linkRight, tipRight] = await Promise.all(
-			[link, tip].map((el) => el.evaluate((node) => Math.round(node.getBoundingClientRect().right))),
+		const [linkCenter, tipCenter] = await Promise.all(
+			[link, tip].map((el) =>
+				el.evaluate((node) => {
+					const { left, width } = node.getBoundingClientRect()
+
+					return Math.round(left + width / 2)
+				}),
+			),
 		)
 
-		expect(tipRight, path).toBe(linkRight)
+		expect(Math.abs(tipCenter - linkCenter), path).toBeLessThanOrEqual(1)
 	}
 })

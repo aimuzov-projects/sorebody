@@ -53,7 +53,7 @@ test('заголовок в шапке статьи -- как «Назад»: с
 
 	const title = page.locator('.article-bar__title')
 
-	await expect(title).toHaveAttribute('title', 'Назад')
+	await expect(title).toHaveAttribute('data-hint', 'Назад')
 	// Невидимый заголовок лежит поверх логотипа и не должен забирать его клики
 	await expect(title).toBeHidden()
 

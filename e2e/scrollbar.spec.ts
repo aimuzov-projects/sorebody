@@ -90,3 +90,23 @@ test('подсказка значка в углу стоит по его цен�
 		expect(Math.abs(tipCenter - linkCenter), path).toBeLessThanOrEqual(1)
 	}
 })
+
+// Ширина сцены меняется и без resize окна: пропала полоса прокрутки. Постер встаёт по новой
+// ширине вместе с моделью, иначе модель появлялась левее или правее него
+test('постер модели следует за шириной сцены, даже если окно не менялось', async ({ page }) => {
+	await page.goto('/')
+
+	const poster = page.locator('.body3d__poster-image')
+	const left = () => poster.evaluate((el) => el.getBoundingClientRect().left)
+	const width = () => page.locator('.body3d').evaluate((el) => el.clientWidth)
+
+	await poster.waitFor()
+
+	const before = { left: await left(), width: await width() }
+
+	// Место под полосу больше не держим: сцена становится шире на полосу, окно -- то же.
+	// Через свойство, а не <style>: CSP страницы инлайн-стили не пускает
+	await page.evaluate(() => document.documentElement.style.setProperty('scrollbar-gutter', 'auto'))
+	await expect.poll(width).not.toBe(before.width)
+	await expect.poll(left).not.toBe(before.left)
+})

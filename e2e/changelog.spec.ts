@@ -38,7 +38,7 @@ test('подсказки значков в углу открываются с к
 
 	for (const name of ['О справочнике', 'Что нового']) {
 		const link = page.getByRole('link', { name, exact: true })
-		const tip = link.locator('xpath=following-sibling::*[1]')
+		const tip = page.locator('body > .tip--hint')
 
 		await expect(tip).toBeHidden()
 

@@ -10,14 +10,14 @@
 	import BarLead from '#frontend/components/bar-lead.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
-	import { sportHome, sportOf, type SportSlug } from '#frontend/data/sports.ts'
+	import { sportHome, sportOf, sportSwitchProps, type SportSlug } from '#frontend/data/sports.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 
 	type Props = {
-		injury: { slug: string; title: string; summary: string }
+		injury: { slug: string; title: string; summary: string; sports: SportSlug[] }
 		sport: string
 		/** Раздел, на котором открыть статью после загрузки: его читали, когда сменили спорт. */
 		section?: string
@@ -34,6 +34,8 @@
 	}
 
 	let { injury, sport, section, instant, reduceMotion, onback, onsport, footer }: Props = $props()
+
+	const switchProps = $derived(sportSwitchProps(injury.sports, sport as SportSlug, injury.slug))
 
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
 	/**
@@ -214,9 +216,14 @@
 				<div class="article">
 					<header class="article__hero">
 						<h1 class="article__title">{splitTitle(injury.title).name}</h1>
-						<!-- Строка «Разбор» той же высоты, что в статье: «Коротко» под ней не подскакивает -->
+						<!-- Строка «Разбор» -- та же, что в статье: у травмы нескольких спортов сразу селект, иначе
+						     при подмене появлялся шеврон и строка мигала. До загрузки селект не открыть -->
 						<div class="article__sport">
-							Разбор <span class="article__sport-phrase">{sportOf(sport as SportSlug).phrase}</span>
+							{#if switchProps}
+								<span>Разбор </span><span inert><SportSwitch {...switchProps} /></span>
+							{:else}
+								Разбор <span class="article__sport-phrase">{sportOf(sport as SportSlug).phrase}</span>
+							{/if}
 						</div>
 						<div class="article__summary">
 							<p class="article__summary-label">

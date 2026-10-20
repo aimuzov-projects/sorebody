@@ -15,6 +15,7 @@ const injury = (slug: string, region: Region) => ({
 	summary: '',
 	frequency: 'common' as const,
 	movements: [],
+	sports: [],
 	region,
 })
 

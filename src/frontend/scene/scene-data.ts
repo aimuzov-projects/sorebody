@@ -1,10 +1,11 @@
 import { sportHome, SPORTS, type Sport } from '#frontend/data/sports.ts'
-import { sportInjuries } from '#frontend/lib/catalog.ts'
+import { lensSports, sportInjuries } from '#frontend/lib/catalog.ts'
 import { buildZones } from '#frontend/scene/zones.ts'
 
 /** Данные сцены спорта для его главной и страниц элементов: зоны с травмами и элементы для фильтра. */
 export async function sceneData(sport: Sport) {
 	const entries = await sportInjuries(sport)
+	const sportsOf = await lensSports()
 	const injuries = entries.map(({ slug, injury, lens }) => ({
 		slug,
 		title: injury.data.title,
@@ -13,6 +14,7 @@ export async function sceneData(sport: Sport) {
 		frequency: lens.data.frequency,
 		movements: lens.data.elements,
 		region: injury.data.region,
+		sports: sportsOf.get(slug) ?? [],
 	}))
 	const { zones, whole } = buildZones(sport, injuries)
 	const movements = sport.elements

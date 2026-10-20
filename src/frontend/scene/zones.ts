@@ -1,6 +1,6 @@
 import type { Frequency } from '#frontend/data/frequency.ts'
 import { REGIONS, type Region } from '#frontend/data/regions.ts'
-import { frequencyRank, type Sport } from '#frontend/data/sports.ts'
+import { frequencyRank, type Sport, type SportSlug } from '#frontend/data/sports.ts'
 import type { Box } from '#frontend/scene/frame.ts'
 
 type Vec3 = [number, number, number]
@@ -31,6 +31,8 @@ type ZoneInjury = {
 	summary: string
 	frequency: Frequency
 	movements: string[]
+	/** Спорты с разбором этой травмы: заготовка статьи рисует по ним селект «Разбор ‹в …›». */
+	sports: SportSlug[]
 }
 
 /**

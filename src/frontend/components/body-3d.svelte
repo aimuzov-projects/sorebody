@@ -2088,10 +2088,25 @@
 			width: auto;
 			max-height: 56dvh;
 			padding: 20px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
+			/* Гаснут подложка и дети, а не сама шторка: шторка с прозрачностью меньше 1 -- корень
+			   для backdrop-filter, и пока шёл переход, подложка размывала бы только саму себя */
+			transition: transform 0.45s var(--a-ease);
 
 			/* Под строками место под остров поиска: он висит над нижним краем поверх шторки */
 			&:has(:global(.index__tools)) {
 				padding-bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom) + 64px);
+			}
+
+			/* Подложка лежит в слое позиционированных, а строки шапки и зон -- в обычном потоке,
+			   под ней. Относительное позиционирование поднимает их над подложкой. Остров
+			   поиска не трогаем: он прибит к низу экрана */
+			& > :global(:not(.index__tools)) {
+				position: relative;
+			}
+
+			&::before,
+			& > :global(*) {
+				transition: opacity 0.45s var(--a-ease);
 			}
 		}
 
@@ -2104,6 +2119,9 @@
 				&::before {
 					inset: -96px 0 0;
 					background: linear-gradient(to top, var(--a-bg) calc(100% - 96px), transparent);
+					-webkit-backdrop-filter: none;
+					backdrop-filter: none;
+					mask-image: none;
 				}
 			}
 		}
@@ -2120,10 +2138,26 @@
 			background: linear-gradient(to right, var(--a-bg) 60%, transparent);
 
 			/* Переопределения для телефона -- здесь, а не в блоке шторки выше: там их перебивало это
-			   правило, и шторка получала боковую подложку с резким верхним краем поперёк ореола */
+			   правило, и шторка получала боковую подложку с резким верхним краем поперёк ореола.
+			   Подложка та же, что у раскрытой зоны: поверх модели, полупрозрачная, с размытием,
+			   к фигуре растворяется по smoothstep -- прозрачная за 48 px до шторки. С z-index -1
+			   она уходила под canvas сцены, и ноги фигуры лежали прямо на заголовке */
 			@media (width < 700px) {
-				inset: -40px 0 0;
-				background: linear-gradient(to top, var(--a-bg) 70%, transparent);
+				z-index: auto;
+				inset: -48px 0 0;
+				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				mask-image: linear-gradient(
+					to bottom,
+					rgb(0 0 0 / 0%) 0px,
+					rgb(0 0 0 / 7%) 12px,
+					rgb(0 0 0 / 26%) 24px,
+					rgb(0 0 0 / 50%) 36px,
+					rgb(0 0 0 / 74%) 48px,
+					rgb(0 0 0 / 93%) 60px,
+					rgb(0 0 0 / 100%) 72px
+				);
 			}
 		}
 
@@ -2134,6 +2168,12 @@
 
 			@media (width < 700px) {
 				transform: translateY(16px);
+				opacity: 1;
+
+				&::before,
+				& > :global(*) {
+					opacity: 0;
+				}
 			}
 
 			@media (--reduced-motion) {

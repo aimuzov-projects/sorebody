@@ -1,6 +1,11 @@
 {
 	"name": "sorebody",
 	"type": "module",
+	"changelog": {
+		"icons": [
+			"PadelRacket"
+		]
+	},
 	"version": "1.12.0",
 	"private": true,
 	"license": "MIT",

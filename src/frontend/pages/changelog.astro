@@ -1,4 +1,5 @@
 ---
+import { itemHtml, releaseDate, releaseId } from '@aimuzov-projects/infra-site-kit/changelog.js'
 import { ChevronLeft } from 'lucide-static'
 
 import BarLead from '#frontend/components/bar-lead.svelte'
@@ -6,13 +7,12 @@ import SiteHeader from '#frontend/components/site-header.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import { RELEASES } from '#frontend/data/changelog.ts'
 import Base from '#frontend/layouts/base.astro'
-import { itemHtml, releaseDate } from '#frontend/lib/changelog.ts'
 import '#frontend/styles/article.css'
 
 const title = 'Что нового'
 
 /** Раздел на релиз: id из версии, чтобы на него можно было сослаться. */
-const sections = RELEASES.map((r) => ({ ...r, id: `v${r.version.replaceAll('.', '-')}` }))
+const sections = RELEASES.map((r) => ({ ...r, id: releaseId(r.version) }))
 ---
 
 <Base {title} description="Что изменилось в Sorebody: новые статьи, графики и удобства, простыми словами.">

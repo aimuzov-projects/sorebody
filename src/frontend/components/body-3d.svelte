@@ -306,7 +306,7 @@
 	}
 
 	function placePoster() {
-		// По сцене, как и живая модель: окно шире на место под полосу прокрутки (scrollbar.css из infra-site-kit)
+		// По сцене, как и живая модель: окно шире на место под полосу прокрутки (base.css из infra-site-kit)
 		const width = wrap?.clientWidth || innerWidth
 		const height = wrap?.clientHeight || innerHeight
 		const shift = startShift(width, height)

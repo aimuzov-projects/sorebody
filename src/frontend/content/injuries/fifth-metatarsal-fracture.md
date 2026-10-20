@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray355.png
           caption: 'Связки стопы снаружи'
+      model:
+          name: leg-foot-right
+          highlight: [fibularis brevis]
+          direction: [-0.9, 0.7, 0.3]
+          note: 'Перелома в модели нет; подсвечена короткая малоберцовая мышца: её сухожилие крепится к основанию пятой плюсневой кости'
 sources:
     - pmid: '34789369'
       label: Herterich 2021, систематический обзор лечения переломов основания пятой плюсневой кости

@@ -9,6 +9,10 @@ images:
       atlas:
           file: Gray438.png
           caption: 'Мышцы задней поверхности голени, поверхностный слой'
+      model:
+          name: leg-foot-right
+          highlight: [medial head of gastrocnemius]
+          direction: [-0.2, 0.1, -1]
 sources:
     - pmid: '41981329'
       label: Godoy 2026, обзор лучевой диагностики «теннисной ноги»

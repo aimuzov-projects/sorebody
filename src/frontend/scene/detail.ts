@@ -18,6 +18,8 @@ export const LAYERS: Record<string, string> = {
 	muscles: '#c65a4b',
 	cartilage: '#d6e4ec',
 	ligaments: '#9fbbe6',
+	// Сухожилия в 3D-моделях статей (scene/model-viewer.ts): белёсые, как на иллюстрациях
+	tendons: '#e6dccb',
 	arteries: '#c9463d',
 	veins: '#4f6fb8',
 	nerves: '#e8c650',

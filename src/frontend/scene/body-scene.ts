@@ -567,6 +567,17 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				skin.uniforms.uTintColor.value.copy(glowTarget)
 			}
 		},
+		/**
+		 * Куда едет камера: центр орбиты, зум и ракурс; `null` -- никуда. Для автотестов: на
+		 * программном WebGL камера доезжает минутами, а цель видна сразу.
+		 */
+		goal() {
+			if (!focusTo) return null
+
+			const { target, zoom, azimuth, polar } = focusTo
+
+			return { x: target.x, y: target.y, z: target.z, zoom, azimuth, polar }
+		},
 		/** Текущий цвет подсветки, `#rrggbb`. */
 		glowHex() {
 			return `#${skin.material.emissive.getHexString()}`

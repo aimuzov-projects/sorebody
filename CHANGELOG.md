@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.16.2](https://github.com/aimuzov-projects/sorebody/compare/v1.16.1...v1.16.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **scene:** blur the phone index backdrop over the model ([6c3e5bd](https://github.com/aimuzov-projects/sorebody/commit/6c3e5bd736274dd913ab205c04f9c78a16b54398))
+* **scene:** blur the phone index backdrop over the model ([07b0875](https://github.com/aimuzov-projects/sorebody/commit/07b0875e3e5da7a8f6e623732e8bb47d57e7e8e4))
+* **scene:** blur the zone panel backdrop from the first frame ([bd52d72](https://github.com/aimuzov-projects/sorebody/commit/bd52d7265bac9b8cea7d988b1d4c3051166d5a9b))
+* **scene:** blur the zone panel backdrop from the first frame ([c311b51](https://github.com/aimuzov-projects/sorebody/commit/c311b51653170d70277a663ac9f442831d9eecf3))
+* **scene:** render the figure poster in the server HTML ([30586fc](https://github.com/aimuzov-projects/sorebody/commit/30586fce6ced4522e61bdaa9601ec5e507021c15))
+* **scene:** render the figure poster in the server HTML ([bdcfcc8](https://github.com/aimuzov-projects/sorebody/commit/bdcfcc80178349e88a4e73b373ef77d23b78ccd7))
+* **scene:** render the figure poster in the server HTML on phone home pages ([24332bd](https://github.com/aimuzov-projects/sorebody/commit/24332bd620d11a3056af34dfe42ca887f350a484))
+* **scene:** render the figure poster in the server HTML on phone home pages ([3efc471](https://github.com/aimuzov-projects/sorebody/commit/3efc471cc3d3ced401772c54190a0a3f564407e7))
+
 ## [1.16.1](https://github.com/aimuzov-projects/sorebody/compare/v1.16.0...v1.16.1) (2026-10-20)
 
 

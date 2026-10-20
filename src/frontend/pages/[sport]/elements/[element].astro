@@ -1,6 +1,7 @@
 ---
 import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
+import PosterPreload from '#frontend/components/poster-preload.astro'
 import { SPORTS, sportArticle, sportHome } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
 import { modelUrl } from '#frontend/scene/model-url.ts'
@@ -36,6 +37,7 @@ const injuries = entries
 	bodyClass="scene-page"
 	sport={sport.slug}
 >
+	<PosterPreload slot="head" />
 	<!-- Подвал сайта внутри сцены -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
 		<h1 class="scene-page__title">{title}</h1>

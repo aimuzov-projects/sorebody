@@ -1,0 +1,9 @@
+---
+/**
+ * Постер фигуры (components/body-3d.svelte) вставляет сцена, а она `client:only`: без preload
+ * браузер узнаёт о картинке только после загрузки и запуска её JS, и место фигуры до того пустое.
+ * Так картинка грузится вместе со страницей. webp -- как в `<source>` постера.
+ */
+---
+
+<link rel="preload" as="image" href="/model/poster.webp" type="image/webp" fetchpriority="high" />

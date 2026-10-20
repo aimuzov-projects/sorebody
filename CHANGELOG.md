@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.16.0](https://github.com/aimuzov-projects/sorebody/compare/v1.15.1...v1.16.0) (2026-10-20)
+
+
+### Features
+
+* **home:** prefetch an article when its link is hovered ([c7cc223](https://github.com/aimuzov-projects/sorebody/commit/c7cc223a1da6d8799e8b651ec4c647a5b518e0f9))
+* **home:** prefetch an article when its link is hovered ([2fe9aae](https://github.com/aimuzov-projects/sorebody/commit/2fe9aaea5d665ff2c3dd1f91758cd011afa50158))
+* **search:** help out of an empty search ([a24b558](https://github.com/aimuzov-projects/sorebody/commit/a24b558a98cb19d148ae7317780f518a680f8596))
+* **search:** help out of an empty search ([6426a64](https://github.com/aimuzov-projects/sorebody/commit/6426a64d5d2304a4bf57d51fbcb6d410d7680232))
+
+
+### Bug Fixes
+
+* **home:** line the poster up with the model and swap them in one frame ([497a5d4](https://github.com/aimuzov-projects/sorebody/commit/497a5d483f961665c6f515ccfe0ddda39ac22889))
+* **home:** line the poster up with the model and swap them in one frame ([6f3dc3a](https://github.com/aimuzov-projects/sorebody/commit/6f3dc3a4c401a328d543bfe9f92d9e0caa126c21))
+* **scene:** count rendered frames in the ?fps counter ([f6d6147](https://github.com/aimuzov-projects/sorebody/commit/f6d6147f260d726c4186b6c365338729aa32524d))
+* **scene:** count rendered frames in the ?fps counter ([0f9b0a7](https://github.com/aimuzov-projects/sorebody/commit/0f9b0a7df58a088018b384205fb110a80a7a2817))
+* **ui:** show the sport select in the article placeholder ([555fbbc](https://github.com/aimuzov-projects/sorebody/commit/555fbbc8d0ebcf14f545f03b6b57727a1cb0e0c7))
+* **ui:** show the sport select in the article placeholder ([9cb17c5](https://github.com/aimuzov-projects/sorebody/commit/9cb17c5c77d3e58afaf70268fb5d8c7687426039))
+
+
+### Performance Improvements
+
+* **scene:** skip idle frames and hidden layers ([ac70bc3](https://github.com/aimuzov-projects/sorebody/commit/ac70bc3f15a53a5e34465dedc292a995e350ff5c))
+* **scene:** skip idle frames and hidden layers ([f39bc63](https://github.com/aimuzov-projects/sorebody/commit/f39bc63142c43c1591b67b1549c2c795ba75519d))
+
 ## [1.15.1](https://github.com/aimuzov-projects/sorebody/compare/v1.15.0...v1.15.1) (2026-10-20)
 
 

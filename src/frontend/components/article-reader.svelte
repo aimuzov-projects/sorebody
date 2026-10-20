@@ -309,7 +309,9 @@
 				display: none;
 			}
 
-			&:hover {
+			/* Как у .article-bar__back: наведение на заголовок подсвечивает и стрелку */
+			&:hover,
+			&:has(~ :global(.article-bar__lead .article-bar__title:hover)) {
 				background: var(--a-fill);
 			}
 

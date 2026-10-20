@@ -24,3 +24,11 @@ export function modelUrl() {
 
 	return url
 }
+
+/** Адрес 3D-модели для статьи (`public/model/rig/`) с версией по её файлу, как у фигуры. */
+export function rigUrl(name: string) {
+	const file = `rig/${name}.glb`
+	const hash = createHash('sha256').update(readFileSync(join(DIR, file)))
+
+	return `/model/${file}?v=${hash.digest('hex').slice(0, 12)}`
+}

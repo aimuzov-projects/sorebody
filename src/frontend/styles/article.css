@@ -393,6 +393,79 @@
 		}
 	}
 
+	/* Фото и кнопка в его углу: 3D-модель на весь экран (components/figure-3d.svelte) */
+	&__media {
+		position: relative;
+	}
+
+	/* Кнопка действия, а не пометка: залита акцентом и лежит на фото, подпись -- глагол.
+	   Значок 3D один раз поворачивается, когда кнопка появляется, и снова на наведении:
+	   подсказывает, что модель можно вращать */
+	&__model-open {
+		cursor: pointer;
+		position: absolute;
+		right: 12px;
+		bottom: 12px;
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		padding: 9px 16px 9px 12px;
+		border: 0;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--bg);
+		background: var(--accent);
+		box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 28%, transparent);
+		transition:
+			translate 0.3s var(--article-ease),
+			box-shadow 0.3s var(--article-ease);
+
+		@media (--reduced-motion) {
+			transition: none;
+		}
+
+		&:hover {
+			translate: 0 -1px;
+			box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 36%, transparent);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 3px;
+		}
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	&__model-icon {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
+		animation: model-turn 1.2s var(--article-ease) 0.8s;
+
+		@media (--reduced-motion) {
+			animation: none;
+		}
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& svg {
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	&__model-open:hover &__model-icon {
+		animation: model-turn-hover 0.9s var(--article-ease);
+
+		@media (--reduced-motion) {
+			animation: none;
+		}
+	}
+
 	&__image {
 		width: 100%;
 		mask-image: var(--article-image-mask);
@@ -1202,5 +1275,22 @@
 @media print {
 	.article__sources-more {
 		display: none;
+	}
+}
+
+@keyframes model-turn {
+	50% {
+		rotate: y 180deg;
+	}
+
+	to {
+		rotate: y 360deg;
+	}
+}
+
+/* Та же анимация под другим именем: иначе на наведении она бы не запустилась заново */
+@keyframes model-turn-hover {
+	to {
+		rotate: y 360deg;
 	}
 }

@@ -45,6 +45,10 @@ type Props = {
 }
 
 const { injury, lens, sports = [] } = Astro.props
+
+// meshopt-декодер 3D-модели у иллюстрации -- WebAssembly; разрешаем его только статьям с моделью
+if (injury.data.images.some((image) => image.model)) Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
+
 const { data } = injury
 const sport = lens?.sport
 const home = sport ? sportHome(sport.slug) : '/'

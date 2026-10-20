@@ -126,9 +126,11 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<script>
 			import '#frontend/lib/telegram.ts'
 			import { initHints } from '#frontend/lib/hint.ts'
+			import { initSwipeBack } from '#frontend/lib/swipe-back.ts'
 			import { initThemeToggle } from '#frontend/lib/theme.ts'
 
 			initHints()
+			initSwipeBack()
 			initThemeToggle()
 		</script>
 	</body>

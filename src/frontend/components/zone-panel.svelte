@@ -205,7 +205,7 @@
 			/* На телефоне заголовок зоны встаёт в строку шапки вместо логотипа, справа от него --
 			   переключатель темы: крупный заголовок под шапкой съедал треть экрана над зоной */
 			.zone--bottom & {
-				padding-top: calc(var(--theme-toggle-top) + (var(--header-row) - 44px) / 2);
+				padding-top: var(--theme-toggle-top);
 				padding-right: calc(var(--theme-toggle-room) - 24px);
 			}
 		}
@@ -217,6 +217,15 @@
 			gap: 6px;
 			align-items: center;
 			margin-left: -12px;
+
+			/* В строке шапки -- те же токены, что у стрелки статьи (.article-bar__back):
+			   при переходе из зоны в статью стрелка и заголовок не прыгают. Колонка
+			   отступает на 24px, а не на --frame-x, разницу добираем здесь */
+			.zone--bottom & {
+				gap: var(--back-gap);
+				min-height: var(--header-row);
+				margin-left: calc(var(--frame-x) - 24px - var(--back-pull));
+			}
 		}
 
 		&__back {
@@ -248,6 +257,24 @@
 				outline: 2px solid var(--a-blue);
 				outline-offset: 2px;
 			}
+
+			/* Подложка 32px, как у .reader__back; зона нажатия добрана ::before влево и по высоте */
+			.zone--bottom & {
+				position: relative;
+				width: var(--back-size);
+				height: var(--back-size);
+
+				&::before {
+					content: '';
+					position: absolute;
+					inset: -6px 0 -6px -6px;
+				}
+
+				&:focus-visible {
+					/* Внутрь круга: снаружи рамка подходила бы к заголовку ближе 8px */
+					outline-offset: -2px;
+				}
+			}
 		}
 
 		&__back-icon {
@@ -263,6 +290,16 @@
 				height: 100%;
 				stroke-width: 2.4;
 			}
+
+			.zone--bottom & {
+				width: 28px;
+				height: 28px;
+
+				/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+				& :global(svg) {
+					stroke-width: 2.2;
+				}
+			}
 		}
 
 		&__title {
@@ -275,9 +312,17 @@
 			line-height: 1.08;
 			letter-spacing: -0.015em;
 
-			/* В строке шапки -- кегль под её высоту */
+			/* В строке шапки -- маленький заголовок, как .article-bar__title: одна строка,
+			   остальное многоточием */
 			.zone--bottom & {
-				font-size: min(28px, calc((100cqi - 48px) / (var(--chars, 1) * 0.575)));
+				overflow: hidden;
+				min-width: 0;
+				font-size: 17px;
+				font-weight: 600;
+				line-height: normal;
+				text-overflow: ellipsis;
+				letter-spacing: -0.02em;
+				white-space: nowrap;
 			}
 		}
 
@@ -290,6 +335,11 @@
 			align-items: center;
 			margin: 10px 0 0 -12px;
 			font-size: 15px;
+
+			/* На телефоне -- по той же вертикали, что стрелка в строке шапки */
+			.zone--bottom & {
+				margin-left: calc(var(--frame-x) - 24px - var(--back-pull));
+			}
 		}
 
 		&__reset {

@@ -1,9 +1,12 @@
 <!--
 	Выбор движения в индексе главной: подпись и значение цветом спорта, список -- popup-select.
-	Первый пункт -- «любое», пустое значение.
+	Первый пункт -- «любое», пустое значение, со звёздочкой: «что угодно».
 -->
 <script lang="ts">
+	import { Asterisk } from 'lucide-static'
+
 	import PopupSelect from '#frontend/components/popup-select.svelte'
+	import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
 
 	type Option = { slug: string; title: string }
 
@@ -20,7 +23,10 @@
 <div class="mselect">
 	<span class="mselect__label" id="{id}-label">{label}</span>
 	<PopupSelect
-		options={[{ slug: '', title: empty }, ...options]}
+		options={[
+			{ slug: '', title: empty, icon: Asterisk },
+			...options.map((o) => ({ ...o, icon: MOVEMENT_ICONS[o.slug as ElementIcon] })),
+		]}
 		{value}
 		onchoose={(slug) => (value = slug)}
 		labelledby="{id}-label"

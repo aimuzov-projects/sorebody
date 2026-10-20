@@ -7,6 +7,8 @@
 -->
 <script lang="ts">
 	import PopupSelect from '#frontend/components/popup-select.svelte'
+	import { SPORT_ICONS } from '#frontend/data/sport-icons.ts'
+	import type { SportSlug } from '#frontend/data/sports.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
 
 	type SportOption = { slug: string; title: string; phrase: string; href: string }
@@ -46,7 +48,7 @@
 </script>
 
 <span class="sswitch__label" id="{id}-label">Вид спорта</span><PopupSelect
-	options={sports}
+	options={sports.map((s) => ({ ...s, icon: SPORT_ICONS[s.slug as SportSlug] }))}
 	{value}
 	onchoose={choose}
 	labelledby="{id}-label"

@@ -4,14 +4,16 @@
 	поиск по первым буквам. Стрелки только двигают подсветку, выбор -- Enter или клик: выбор спорта
 	уводит на другую страницу, и случайная стрелка не должна туда переходить. Список открывается
 	вниз, а если места нет -- вверх (на телефоне индекс внизу). Цвета -- токены сцены, на странице
-	статьи их нет, там -- общие токены сайта.
+	статьи их нет, там -- общие токены сайта. Если хоть у одного пункта есть иконка, колонка иконок
+	есть у всех: пункт без неё стоит в одну линию с остальными.
 -->
 <script lang="ts">
 	import { tick, type Snippet } from 'svelte'
 
-	import { Check, ChevronDown } from 'lucide-static'
+	import { ChevronDown } from 'lucide-static'
 
-	type Option = { slug: string; title: string }
+	/** `icon` -- SVG из lucide-static. */
+	type Option = { slug: string; title: string; icon?: string }
 
 	let {
 		options,
@@ -35,6 +37,7 @@
 
 	const id = $props.id()
 	const current = $derived(options.find((o) => o.slug === value) ?? options[0])
+	const withIcons = $derived(options.some((o) => o.icon))
 
 	let open = $state(false)
 	let up = $state(false)
@@ -197,9 +200,9 @@
 					onpointermove={() => (active = i)}
 					onclick={() => choose(i)}
 				>
-					<span class="pselect__check" aria-hidden="true"
-						>{#if option === current}{@html Check}{/if}</span
-					>
+					{#if withIcons}
+						<span class="pselect__icon" aria-hidden="true">{@html option.icon ?? ''}</span>
+					{/if}
 					{option.title}
 				</li>
 			{/each}
@@ -308,7 +311,7 @@
 			display: flex;
 			gap: 8px;
 			align-items: center;
-			padding: 8px 12px 8px 8px;
+			padding: 8px 12px;
 			border-radius: 10px;
 			font-size: 16px;
 			line-height: 1.3;
@@ -319,21 +322,28 @@
 				background: var(--a-fill, var(--surface));
 			}
 
+			/* Выбранный -- жирный и цвета акцента, без галочки: фон занят подсветкой стрелок и мыши */
 			&[aria-selected='true'] {
 				font-weight: 600;
 				color: var(--pselect-accent);
 			}
 		}
 
-		&__check {
+		/* Иконка приглушена, у выбранного пункта -- цвета акцента, как текст */
+		&__icon {
 			display: inline-flex;
 			flex: none;
-			width: 16px;
-			height: 16px;
+			width: 18px;
+			height: 18px;
+			color: var(--a-fg2, var(--muted));
+		}
+
+		&__option[aria-selected='true'] &__icon {
+			color: inherit;
 		}
 
 		&__chevron,
-		&__check {
+		&__icon {
 			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
 			& :global(svg) {
 				width: 100%;

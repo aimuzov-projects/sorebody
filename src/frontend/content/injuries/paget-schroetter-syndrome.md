@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray808.png
           caption: 'Правое плечевое сплетение и подключичная артерия спереди'
+      model:
+          name: shoulder-girdle-right
+          highlight: [subclavian vein, axillary vein, scalenus anterior, subclavius]
+          show: [veins, arteries]
+          hide: [pectoral, deltoid]
+          direction: [-0.35, 0.25, 1]
+          note: 'Большая грудная и дельтовидная спрятаны, чтобы были видны подключичная вена между ключицей и первым ребром и лестничные мышцы рядом с ней; тромба в модели нет'
 sources:
     - pmid: '38155995'
       label: Pejkova 2023, описание случая тромбоза подключичной вены у тренера по кроссфиту

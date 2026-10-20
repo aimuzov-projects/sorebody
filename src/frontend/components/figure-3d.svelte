@@ -336,11 +336,14 @@
 	.figure3d__controls {
 		pointer-events: auto;
 		display: flex;
+		flex-wrap: wrap;
 		gap: 4px;
 		align-items: center;
-		max-width: 100%;
+		justify-content: center;
+		/* У модели бывает с десяток тумблеров: они переносятся на следующую строку, а не за край */
+		max-width: min(100%, 860px);
 		padding: 4px;
-		border-radius: 999px;
+		border-radius: 22px;
 		font-size: 14px;
 		background: color-mix(in srgb, var(--bg) 72%, transparent);
 		backdrop-filter: blur(12px);
@@ -349,10 +352,7 @@
 		/* В одну строку на телефоне панель не влезает: сверху запуск и ползунок во всю ширину,
 		   под ними чип */
 		@media (--below-sm) {
-			flex-wrap: wrap;
-			justify-content: center;
 			width: 100%;
-			border-radius: 22px;
 		}
 	}
 

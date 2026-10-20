@@ -9,6 +9,16 @@ images:
       atlas:
           file: Gray410.png
           caption: 'Мышцы передней поверхности груди и плеча'
+      model:
+          name: shoulder-girdle-right
+          highlight:
+              [
+                  clavicular part of pectoralis major,
+                  sternocostal part of pectoralis major,
+                  abdominal part of pectoralis major,
+              ]
+          direction: [-0.45, 0.1, 1]
+          note: 'Разрыва в модели нет: мышца показана целой'
     - src: /injuries/pectoralis-major-rupture-02.webp
       alt: 'Отрыв сухожилия правой большой грудной мышцы от плечевой кости: культя смещена к грудине, место отрыва на кости подсвечено'
       caption: 'Разрыв большой грудной мышцы: сухожилие оторвано от плечевой кости, мышца смещается к грудине. Схематичная иллюстрация, сгенерирована нейросетью.'

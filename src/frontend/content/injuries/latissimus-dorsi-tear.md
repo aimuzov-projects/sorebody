@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray409.png
           caption: 'Мышцы, соединяющие руку с позвоночником'
+      model:
+          name: shoulder-girdle-right
+          highlight: [latissimus dorsi muscle, teres major]
+          direction: [-0.4, 0.1, -1]
+          note: 'Широчайшая мышца показана до нижних рёбер: позвонков поясницы и таза, от которых она начинается, в модели нет'
 sources:
     - pmid: '37720893'
       label: Recker 2023, систематический обзор 9 исследований, 159 профессиональных бейсболистов

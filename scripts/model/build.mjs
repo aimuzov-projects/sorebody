@@ -18,6 +18,7 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
+import { muscleWeights, shoulderRig } from './rig.mjs'
 import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -100,6 +101,7 @@ const scene = doc.createScene('body')
 const missing = []
 
 const positions = []
+const prims = {}
 
 for (const group of cfg.groups) {
 	const pos = []
@@ -147,6 +149,7 @@ for (const group of cfg.groups) {
 		.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(idx)).setBuffer(buffer))
 
 	positions.push(position)
+	prims[group.name] = prim
 
 	if (group.parts) {
 		prim.setAttribute(
@@ -245,6 +248,30 @@ if (missing.length) {
 	}
 
 	if (cfg.anchors) fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
+}
+
+// Плечо для статьи (rig.py): центры и оси суставов -- в extras сцены, веса и сухожилия -- в вершины мышц.
+// Центры в координатах сцены: квантование повесит на узлы свой сдвиг и масштаб, сцена переводит их обратно.
+// До упрощения: meshopt выбрасывает вершины, но не двигает их, и атрибуты остаются верными
+if (cfg.rig) {
+	const points = (name) => prims[name].getAttribute('POSITION').getArray()
+	const girdle = Float32Array.from(cfg.rig.fixed.flatMap((name) => [...points(name)]))
+	const rig = shoulderRig({
+		clavicle: points(cfg.rig.clavicle),
+		scapula: points(cfg.rig.scapula),
+		humerus: points(cfg.rig.moving),
+	})
+
+	console.log('rig', rig)
+	scene.setExtras({ rig })
+
+	for (const name of cfg.rig.weighted) {
+		const { weight, tendon } = muscleWeights(points(name), girdle, points(cfg.rig.moving))
+		const prim = prims[name]
+
+		prim.setAttribute('_WEIGHT', doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer))
+		prim.setAttribute('_TENDON', doc.createAccessor().setType('SCALAR').setArray(tendon).setBuffer(buffer))
+	}
 }
 
 // Оставляем треугольники, у которых хоть одна вершина в сфере `clip`. Слои из `skinClip.groups`

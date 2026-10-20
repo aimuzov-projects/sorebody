@@ -1050,19 +1050,24 @@
 	justify-self: start;
 }
 
-/* Маленький заголовок в шапке: одна строка, остальное -- многоточием. Он лежит поверх логотипа
-   и даже прозрачным перехватывал бы клики по нему */
+/* Маленький заголовок в шапке: одна строка, остальное -- многоточием. Нажатие на него -- как
+   на стрелку "Назад". Он лежит поверх логотипа, поэтому до проявления спрятан (visibility в
+   анимациях ниже): прозрачный перехватывал бы клики по логотипу. В Telegram стрелки нет, и
+   заголовок тоже не нажимается */
 .article-bar__title {
-	pointer-events: none;
 	overflow: hidden;
 	min-width: 0;
-	margin: 0;
 	font-size: 17px;
 	font-weight: 600;
 	color: var(--fg);
+	text-decoration: none;
 	text-overflow: ellipsis;
 	letter-spacing: -0.02em;
 	white-space: nowrap;
+
+	[data-telegram] & {
+		pointer-events: none;
+	}
 }
 
 /* Большой заголовок, заходя под шапку, гаснет и уходит вверх быстрее прокрутки, а в шапке на
@@ -1080,6 +1085,7 @@
 @keyframes article-title-in {
 	from {
 		transform: translateY(6px);
+		visibility: hidden;
 		opacity: 0;
 	}
 }
@@ -1092,6 +1098,7 @@
 
 @keyframes article-title-fade-in {
 	from {
+		visibility: hidden;
 		opacity: 0;
 	}
 }
@@ -1190,6 +1197,7 @@
 
 	.article-bar__title {
 		transform: translateY(calc((1 - var(--title-in, 0)) * 6px));
+		visibility: var(--title-visibility, hidden);
 		opacity: var(--title-in, 0);
 	}
 }

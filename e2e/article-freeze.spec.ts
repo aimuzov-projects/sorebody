@@ -19,6 +19,15 @@ const same = (a: Goal, b: Goal) =>
 		!!b &&
 		(['x', 'y', 'z', 'zoom', 'azimuth', 'polar'] as const).every((key) => Math.abs(a[key] - b[key]) < 1e-3))
 
+/**
+ * Закрыть статью с клавиатуры, не трогая курсор. Сцена снимается с паузы и на программном WebGL
+ * в CI забирает кадры: статья уходит дольше обычных пяти секунд ожидания.
+ */
+async function closeReader(page: Page) {
+	await page.keyboard.press('Escape')
+	await expect(page.locator('.reader')).toHaveCount(0, { timeout: 30_000 })
+}
+
 /** Зона с моделью, курсор на строке травмы, камера едет к её месту. */
 async function openRow(page: Page) {
 	// Модель под webdriver грузится только с `?scene`, и не быстро
@@ -49,9 +58,8 @@ test('статья из зоны: модель стоит, после неё к�
 	await page.waitForTimeout(800)
 	expect(same(await goal(page), framed)).toBe(true)
 
-	await page.keyboard.press('Escape')
-	await expect(page.locator('.reader')).toHaveCount(0)
-	await expect(row).toHaveClass(/zone__item--current/)
+	await closeReader(page)
+	await expect(row).toHaveClass(/zone__item--current/, { timeout: 30_000 })
 	await page.waitForTimeout(800)
 	expect(same(await goal(page), framed)).toBe(true)
 })
@@ -70,8 +78,7 @@ test('статья из зоны: курсор ушёл со строки -- п�
 	await page.waitForTimeout(800)
 	expect(same(await goal(page), framed)).toBe(true)
 
-	await page.keyboard.press('Escape')
-	await expect(page.locator('.reader')).toHaveCount(0)
-	await expect(page.locator('.zone__item--current')).toHaveCount(0)
+	await closeReader(page)
+	await expect(page.locator('.zone__item--current')).toHaveCount(0, { timeout: 30_000 })
 	await expect.poll(async () => same(await goal(page), framed), { timeout: 30_000 }).toBe(false)
 })

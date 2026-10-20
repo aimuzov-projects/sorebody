@@ -286,10 +286,13 @@
 	/** Постер ещё в DOM: после первого кадра он гаснет и уходит. */
 	let posterShown = $state(true)
 	/**
-	 * Сам постер -- из серверного HTML (components/scene-poster.astro): на широком экране он стоит
-	 * ещё до JS сцены. С монтированием сцена ставит его к себе и дальше ведёт по posterRect.
+	 * Стартовый кадр из серверного HTML (components/scene-poster.astro): постер стоит там ещё до JS
+	 * сцены. С монтированием сцена ставит кадр к себе и дальше ведёт постер по posterRect.
 	 */
-	const posterEl = document.querySelector<HTMLElement>('.body3d__poster')
+	const startEl = document.querySelector<HTMLElement>('.body3d__start')
+	const posterEl = startEl?.querySelector<HTMLElement>('.body3d__poster')
+	/** Полоса фигуры на телефоне главной: есть только там (scene-poster.astro). */
+	const bandEl = startEl?.querySelector<HTMLElement>('.body3d__start-band')
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
@@ -297,11 +300,18 @@
 	const posterMode = flags.has('poster')
 
 	/**
-	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
-	 * зависит от экрана и от того, что в шторке, поэтому меряем по месту. offsetTop, а не
-	 * getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
+	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой. На главной
+	 * полоса -- из CSS серверного постера: по ней он стоит до JS, и модель встаёт туда же. На
+	 * странице движения высота шторки зависит от его травм, поэтому меряем по месту. offsetTop, а
+	 * не getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
 	 */
 	function startShift(width: number, height: number) {
+		if (width < 700 && bandEl) {
+			const band = bandEl.getBoundingClientRect()
+
+			return fitShift(poster.box as never, width, height, band.top, band.bottom)
+		}
+
 		const header = wrap?.querySelector<HTMLElement>('.site-header')
 		const index = wrap?.querySelector<HTMLElement>('.index')
 
@@ -717,10 +727,10 @@
 	onMount(() => {
 		mounted = true
 
-		// Серверный постер -- в сцену сразу за канвасом: под индексом и шапкой, как и фигура
-		if (posterEl) {
-			canvas.after(posterEl)
-			posterEl.classList.add('body3d__poster--placed')
+		// Серверный кадр с постером -- в сцену сразу за канвасом: под индексом и шапкой, как и фигура
+		if (startEl) {
+			canvas.after(startEl)
+			startEl.classList.add('body3d__start--placed')
 		}
 
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не

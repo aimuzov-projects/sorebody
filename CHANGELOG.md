@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.1](https://github.com/aimuzov-projects/sorebody/compare/v1.16.0...v1.16.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** move to infra-site-kit v2 with base.css ([1f62b89](https://github.com/aimuzov-projects/sorebody/commit/1f62b899046cb9cb78b20d58e706997946d79a3a))
+* **deps:** move to infra-site-kit v2 with base.css ([156950c](https://github.com/aimuzov-projects/sorebody/commit/156950c62c2a982bf58b3a59a499f65a3255db7a))
+* **scene:** line the phone zone header up with the article bar ([f47eef2](https://github.com/aimuzov-projects/sorebody/commit/f47eef2a9703c3a6cf0fecd808307ad8f985b4a7))
+* **scene:** line the phone zone header up with the article bar ([a30d8e5](https://github.com/aimuzov-projects/sorebody/commit/a30d8e526ea18c6cd9eec8b5fc43898e6461976c))
+* **scene:** preload the figure poster with the page ([3376767](https://github.com/aimuzov-projects/sorebody/commit/337676778d03a455033247c907c0dc1d4008c111))
+* **scene:** preload the figure poster with the page ([b7419f6](https://github.com/aimuzov-projects/sorebody/commit/b7419f66c43914f11c2e8b4f85c0ea390f591c8a))
+
 ## [1.16.0](https://github.com/aimuzov-projects/sorebody/compare/v1.15.1...v1.16.0) (2026-10-20)
 
 

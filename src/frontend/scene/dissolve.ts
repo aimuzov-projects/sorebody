@@ -157,8 +157,10 @@ if (uHighlight > 0.0) for (int i = 0; i < 8; i++) hit = max(hit, 1.0 - step(0.5,
 #endif
 bool kept = uPeel > 0.5 && hit > 0.5;
 float dissolveEdge = 1.0;
-// Край проёма: лёгкая органика без зубцов -- шум редкий и слабый
-float n = snoise(vDissolvePos * 4.0) * 0.7 + snoise(vDissolvePos * 11.0) * 0.3;
+// Край проёма: лёгкая органика без зубцов -- шум редкий и слабый. Без проёма он не нужен,
+// а считался бы в каждом пикселе фигуры
+float n = 0.0;
+if (uOuter >= 0.0 || uRadius > 0.0) n = snoise(vDissolvePos * 4.0) * 0.7 + snoise(vDissolvePos * 11.0) * 0.3;
 // Граница проёма во внешнем слое -- той же формулой с шумом, что у него самого
 if (uOuter >= 0.0 && distance(vDissolvePos, uCenter) - uOuter + n * 0.007 * smoothstep(0.0, 0.05, uOuter) > 0.0) discard;
 if (uRadius > 0.0) {

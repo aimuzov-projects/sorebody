@@ -163,9 +163,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	})
 
 	let baseMuscles: Mesh | undefined
+	// Мышцы и кости под кожей: пока проём закрыт, их не видно, а рисовались бы каждый кадр
+	const inner: Mesh[] = []
 
 	gltf.scene.traverse((obj) => {
-		if (obj instanceof Mesh && obj.name.startsWith('muscles')) baseMuscles = obj
+		if (!(obj instanceof Mesh)) return
+
+		if (obj.name.startsWith('muscles')) baseMuscles = obj
+
+		if (obj.name.startsWith('muscles') || obj.name.startsWith('bones')) inner.push(obj)
 	})
 
 	const darkScheme = matchMedia('(prefers-color-scheme: dark)')
@@ -174,6 +180,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	function applyTheme() {
 		muscles.material.color.set(muscleColor())
 		detail.recolor(muscleColor())
+		dirty = true
 	}
 
 	themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
@@ -241,13 +248,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		}
 	}
 
+	const toCamera = new Vector3()
+	const normalVec = new Vector3()
+
 	/** Нормаль, спроецированная на направление к камере: меньше нуля -- точка на обратной стороне тела. */
 	function facing(normal: Vec3) {
-		return camera.position
-			.clone()
-			.sub(TARGET)
+		return toCamera
+			.subVectors(camera.position, TARGET)
 			.normalize()
-			.dot(new Vector3(...normal))
+			.dot(normalVec.set(...normal))
 	}
 
 	let radius = 0
@@ -267,6 +276,10 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 	let tintTo = 0
 	let last = performance.now()
 	let onFrame: (() => void) | undefined
+	// Кадр стоит (зона открыта, всё доехало) -- не рисуем его заново, телефон не греется.
+	// `dirty` -- что-то поменяли снаружи, нужен кадр
+	let dirty = true
+	let rendered = 0
 
 	// Наезд на зону: куда сдвинуть центр орбиты, какой зум и ракурс, и что вернуть после
 	// `spring` -- доезд пружиной с лёгким перелётом (наезд на травму), иначе экспонентой
@@ -312,6 +325,13 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		const dt = Math.min((now - last) / 1000, 0.1)
 
 		last = now
+		// Что ещё в пути до конца этого кадра: тогда кадр рисуем
+		let moving =
+			radius !== radiusTo ||
+			deep !== deepTo ||
+			Math.abs(highlightTo - highlight) > 1e-3 ||
+			center.distanceToSquared(centerTo) > 1e-10
+
 		radius += (radiusTo - radius) * (1 - Math.exp(-dt * 7))
 		center.lerp(centerTo, 1 - Math.exp(-dt * 6))
 		muscles.uniforms.uCenter.value.copy(center)
@@ -333,11 +353,15 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		// Мышцы видны только в проёме кожи: в BodyParts3D сухожилия у колена и мышцы шеи
 		// местами выходят за кожу и проступали серыми полосами. Без проёма мышц нет вовсе
 		muscles.uniforms.uOuter.value = radius
+
+		for (const mesh of inner) mesh.visible = radius > 0
+
 		detail.sync(center, radius, deep, highlight, peel)
 
 		const ease = 1 - Math.exp(-dt * 6)
 
 		if (shift.x !== shiftTo.x || shift.y !== shiftTo.y || shift.s !== shiftTo.s) {
+			moving = true
 			shift.x += (shiftTo.x - shift.x) * ease
 			shift.y += (shiftTo.y - shift.y) * ease
 			shift.s += (shiftTo.s - shift.s) * ease
@@ -348,6 +372,12 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 
 			applyFrame()
 		}
+
+		moving ||=
+			Math.abs(glowTo - skin.material.emissiveIntensity) > 1e-3 ||
+			skin.material.emissive.getHex() !== glowTarget.getHex() ||
+			Math.abs(tintTo - skin.uniforms.uTintStrength.value) > 1e-3 ||
+			skin.uniforms.uTintPrevStrength.value > 1e-3
 
 		skin.material.emissiveIntensity += (glowTo - skin.material.emissiveIntensity) * ease
 		skin.material.emissive.lerp(glowTarget, ease)
@@ -367,6 +397,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		const goal = focusTo ? (manual ? null : focusTo) : restore
 
 		if (zoomBack && !goal) {
+			moving = true
 			const n = Math.ceil(dt * 120)
 			const h = dt / n
 
@@ -444,6 +475,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 				Math.abs(tilt) < 1e-3 &&
 				velocity.target.lengthSq() < 1e-8
 
+			if (!settled) moving = true
+
 			if (!focusTo && settled) {
 				restore = null
 				controls.maxZoom = MAX_ZOOM
@@ -451,14 +484,29 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			}
 		}
 
-		controls.update(dt)
+		// update() отвечает true, пока камера едет: автоповорот, инерция, зум
+		if (controls.update(dt)) moving = true
 
 		if (camera.zoom !== framedZoom) applyFrame()
 
+		// Метки страницы ставим и в стоящем кадре: их набор меняется и без движения фигуры
+		if (!moving && !dirty) {
+			// Пропущенные кадры -- не медленный GPU: замер начинаем заново
+			windowFrom = lastFrame = now
+			windowFrames = 0
+			onFrame?.()
+
+			return
+		}
+
+		dirty = false
+		rendered++
 		renderer.render(scene, camera)
 		onFrame?.()
 		adaptPixelRatio(now)
 	}
+
+	controls.addEventListener('change', () => (dirty = true))
 
 	// Слабый GPU не тянет ретину: если за секунду меньше 45 кадров, рисуем в 1x
 	let windowFrom = performance.now()
@@ -474,6 +522,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		loading++
 
 		void task.finally(() => {
+			// Кусок зоны встал на сцену -- кадр нужен заново
+			dirty = true
 			loading--
 			windowFrom = performance.now()
 			windowFrames = 0
@@ -523,12 +573,17 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/** Детальный кусок зоны вокруг точки `point` для зоны радиуса `size`; `null` -- убрать. */
 		showDetail(slug: string | null, point?: Vec3, size = 0) {
+			dirty = true
 			quiet(detail.show(slug && point ? detailKey(slug, point) : null, point, size * DETAIL_REACH))
 		},
 		project,
+		/** Сколько кадров нарисовано: в стоящем кадре счёт замирает (автотесты, замеры). */
+		get rendered() {
+			return rendered
+		},
 		facing,
 		controls,
-		/** Вызывается после каждой отрисовки: тут DOM-метки догоняют фигуру через `project()`. */
+		/** Вызывается каждый кадр, и нарисованный, и стоящий: тут DOM-метки догоняют фигуру через `project()`. */
 		set onFrame(fn: (() => void) | undefined) {
 			onFrame = fn
 		},
@@ -538,6 +593,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		 * сразу встаёт на место.
 		 */
 		frame(x: number, y: number, scale = 1, instant = false) {
+			dirty = true
 			shiftTo.x = x
 			shiftTo.y = y
 			shiftTo.s = scale
@@ -549,6 +605,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/** Вернуть зум к 1 пружиной: щипок увеличивает фигуру, только пока пальцы на экране. */
 		settleZoom() {
+			dirty = true
+
 			if (camera.zoom === 1 || focusTo || restore) return
 
 			velocity.zoom = 0
@@ -556,10 +614,12 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/** Синее свечение всей фигуры -- зона "Всё тело". */
 		glow(on: boolean) {
+			dirty = true
 			glowTo = on ? 0.16 : 0
 		},
 		/** Цвет подсветки -- цвет спорта; `instant` -- без перехода от прежнего. */
 		glowColor(color: string, instant = false) {
+			dirty = true
 			glowTarget.set(color)
 
 			if (instant) {
@@ -584,6 +644,8 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/** Подсветить места на коже голубым с переходом в серый; `null` гасит. */
 		tint(points: Vec3[] | null, radius = 0.1) {
+			dirty = true
+
 			if (points?.length) {
 				const [a, b = a] = points
 				const { uTint, uTintPrev, uTintStrength, uTintPrevStrength } = skin.uniforms
@@ -612,6 +674,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		 * `midline` -- проём не переходит середину тела, нужен паху.
 		 */
 		dissolve(point: Vec3 | null, size = 0, depth: 'muscle' | 'deep' = 'muscle', peeled = false, midline = false) {
+			dirty = true
 			skin.uniforms.uMidline.value = midline ? 1 : 0
 			muscles.uniforms.uMidline.value = midline ? 1 : 0
 
@@ -628,6 +691,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 		},
 		/** Подсветить мышцы, в названиях которых есть строки из `names`; `null` гасит. */
 		highlight(names: string[] | null) {
+			dirty = true
 			const ids = partIds(baseMuscles?.userData.parts, names)
 
 			muscles.uniforms.uParts.value = ids
@@ -647,6 +711,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			view?: { azimuth: number; polar: number },
 			spring = false,
 		) {
+			dirty = true
 			manual = false
 
 			zoomBack = false
@@ -682,6 +747,7 @@ export async function createBodyScene(canvas: HTMLCanvasElement, modelUrl: strin
 			focusTo = { target, zoom, azimuth, polar, spring }
 		},
 		pause(paused: boolean) {
+			dirty = true
 			last = performance.now()
 			windowFrom = last
 			windowFrames = 0

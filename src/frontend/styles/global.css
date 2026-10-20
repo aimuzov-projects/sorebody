@@ -473,6 +473,13 @@ img {
 		width: 12px;
 		height: 12px;
 	}
+
+	/* Подпись к значку или ссылке (lib/hint.ts), мышь сквозь неё. Ширина по тексту: у края
+	   экрана ужатая по месту справа подпись переносилась бы раньше max-width */
+	&--hint {
+		pointer-events: none;
+		width: max-content;
+	}
 }
 
 @keyframes bubble-in {
@@ -499,30 +506,6 @@ img {
 @keyframes bubble-fade {
 	from {
 		opacity: 0;
-	}
-}
-
-/* Подсказка под значком в правом верхнем углу (lib/corner-tip.ts): тема, «Что нового»,
-   «О справочнике». В верхнем слое (popover), иначе её накрыл бы круг подсмотра темы; место
-   ставит скрипт. Без плашки, а круг под текстом бывает в другой схеме: белый текст в режиме
-   difference читается и на светлом, и на тёмном */
-.corner-tip {
-	pointer-events: none;
-	position: fixed;
-	inset: auto;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 0.75rem;
-	line-height: 1.4;
-	color: #ffffff;
-	white-space: nowrap;
-	background: none;
-	mix-blend-mode: difference;
-	animation: bubble-fade 0.25s ease;
-
-	@media (--reduced-motion) {
-		animation: none;
 	}
 }
 

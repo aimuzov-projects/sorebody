@@ -17,8 +17,6 @@ const ICONS: [Theme, string][] = [
 			<span class={`theme-toggle__icon theme-toggle__icon--${theme}`} aria-hidden="true" set:html={icon} />
 		))}
 	</button>
-	<!-- Действие уже есть в aria-label кнопки: подсказка только для глаз -->
-	<span class="corner-tip" aria-hidden="true" popover="manual" data-theme-tip></span>
 </div>
 
 <style>

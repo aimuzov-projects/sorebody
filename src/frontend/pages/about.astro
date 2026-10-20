@@ -25,7 +25,7 @@ const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 		<span class="reading-progress__bar"></span>
 	</div>
 	<SiteHeader>
-		<a class="article-bar__back" href="/" aria-label="Назад" title="Назад" data-back set:html={ChevronLeft} />
+		<a class="article-bar__back" href="/" aria-label="Назад" data-hint="Назад" data-back set:html={ChevronLeft} />
 		<BarLead {title} home="/" />
 	</SiteHeader>
 	<main class="article" data-article>

@@ -840,7 +840,7 @@
 }
 /* stylelint-enable selector-max-type */
 
-/* Сноски -- надстрочные номера, без скобок; подпись источника в title */
+/* Сноски -- надстрочные номера, без скобок; подпись источника в подсказке (lib/hint.ts) */
 .cite {
 	margin-left: 2px;
 	font-size: 0.68em;
@@ -849,47 +849,9 @@
 }
 
 .cite__link {
-	position: relative;
 	padding: 0 1px;
 	color: var(--accent);
 	text-decoration: none;
-
-	/* Тултип с источником: над номером, подложкой цвета текста, появляется на наведение
-	   и на фокус с клавиатуры. В покое его нет совсем: прозрачный, он всё равно занимал
-	   место, и у сносок у правого края страница на телефоне становилась шире экрана */
-	&[data-tip]::after {
-		pointer-events: none;
-		content: attr(data-tip);
-		position: absolute;
-		z-index: 3;
-		bottom: calc(100% + 10px);
-		left: 50%;
-		transform: translate(-50%, 0);
-		display: none;
-		width: max-content;
-		max-width: min(280px, 80vw);
-		padding: 6px 10px;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 500;
-		line-height: 1.35;
-		color: var(--bg);
-		text-align: center;
-		letter-spacing: 0;
-		white-space: normal;
-		background: var(--fg);
-		box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
-		animation: cite-tip-in 0.2s ease;
-
-		@media (prefers-reduced-motion: reduce) {
-			animation: none;
-		}
-	}
-
-	&[data-tip]:hover::after,
-	&[data-tip]:focus-visible::after {
-		display: block;
-	}
 }
 
 /* Проценты в разделе о частоте -- крупнее и жирнее */
@@ -1223,13 +1185,6 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		transition: none;
-	}
-}
-
-@keyframes cite-tip-in {
-	from {
-		transform: translate(-50%, 4px);
-		opacity: 0;
 	}
 }
 

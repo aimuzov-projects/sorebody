@@ -108,7 +108,7 @@ test('turns (N) and (N, M) footnotes into superscript links without brackets', (
 
 	assert.match(
 		html,
-		/рвётся<sup class="cite"><a class="cite__link" href="https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/1\/" aria-label="Источник 1: Knapik 2022" data-tip="Knapik 2022">1<\/a><\/sup>\./,
+		/рвётся<sup class="cite"><a class="cite__link" href="https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/1\/" aria-label="Источник 1: Knapik 2022" data-hint="Knapik 2022">1<\/a><\/sup>\./,
 	)
 
 	assert.match(

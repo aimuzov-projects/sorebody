@@ -194,7 +194,7 @@
 	<!-- Шире прокрутки на место под полосу окна: см. .reader__page -->
 	<div class="reader__page">
 		<SiteHeader>
-			<button class="reader__back" type="button" aria-label="Назад" title="Назад" onclick={onback}
+			<button class="reader__back" type="button" aria-label="Назад" data-hint="Назад" onclick={onback}
 				><span class="reader__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
 			>
 			<!-- Логотип и маленький заголовок, который проявляется по мере прокрутки. Пока статья

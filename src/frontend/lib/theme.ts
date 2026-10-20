@@ -9,8 +9,6 @@ import {
 	type Theme,
 } from '@aimuzov-projects/infra-site-kit/theme.js'
 
-import { attachCornerTip } from './corner-tip.ts'
-
 /**
  * Тема сайта: как в системе, светлая или тёмная, логика в infra-site-kit. До отрисовки выбор
  * ставит ThemeBoot в layouts/base.astro. В Mini App тему задаёт Telegram, переключатель там скрыт.
@@ -78,15 +76,11 @@ export function initThemeToggle() {
 
 	if (!button) return
 
-	const tip = document.querySelector<HTMLElement>('[data-theme-tip]')
-	const place = tip ? attachCornerTip(button, tip) : () => {}
-
 	const sync = () => {
 		button.setAttribute('aria-label', themeLabel(currentTheme(), systemScheme()))
 
-		if (tip) tip.textContent = themeAction(currentTheme(), systemScheme())
-
-		place()
+		// Подсказка (lib/hint.ts) называет то, что даст клик
+		button.dataset.hint = themeAction(currentTheme(), systemScheme())
 	}
 
 	button.addEventListener('click', () => toggleTheme({ key: THEME_KEY }))

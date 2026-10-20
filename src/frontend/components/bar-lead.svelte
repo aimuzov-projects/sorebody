@@ -38,7 +38,7 @@
 	<a
 		class="article-bar__title"
 		href={home}
-		title="Назад"
+		data-hint="Назад"
 		tabindex="-1"
 		aria-hidden="true"
 		data-back

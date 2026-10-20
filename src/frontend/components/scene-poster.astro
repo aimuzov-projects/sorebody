@@ -1,34 +1,77 @@
 ---
 /**
  * Постер фигуры в серверном HTML: сцена (components/body-3d.svelte) `client:only`, и без него
- * место фигуры пустовало, пока грузится и запускается её JS. На широком экране он встаёт по CSS
- * (scene/poster-css.ts) туда же, где его поставила бы сцена. С монтированием сцена забирает этот
- * же элемент к себе и дальше ставит его сама, на телефоне -- впервые. Preload картинки --
- * components/poster-preload.astro, хеши в CSP ставит страница (POSTER_CSP).
+ * место фигуры пустовало, пока грузится и запускается её JS. Он встаёт по CSS
+ * (scene/poster-css.ts) туда же, где его поставила бы сцена: на широком экране везде, на телефоне --
+ * только на главной (`home`). С монтированием сцена забирает этот же элемент к себе и дальше ставит
+ * его сама. Preload картинки -- components/poster-preload.astro, хеши в CSP ставит страница
+ * (POSTER_CSP).
  */
 import { POSTER_CSS, POSTER_REVEAL } from '#frontend/scene/poster-css.ts'
+
+type Props = {
+	/**
+	 * Главная спорта: на телефоне кадр стоит по полосе `.body3d__start-band` из CSS, а не по
+	 * шторке сцены. На страницах движения шторка своя у каждого, там кадр ждёт сцену.
+	 */
+	home?: boolean
+}
+
+const { home = false } = Astro.props
 ---
 
 <style is:inline set:html={POSTER_CSS}></style>
-<picture class="body3d__poster" aria-hidden="true" hidden>
-	<source srcset="/model/poster.webp" type="image/webp" />
-	<img class="body3d__poster-image" src="/model/poster.png" alt="" />
-</picture>
+<div class:list={['body3d__start', home && 'body3d__start--home']}>
+	<picture class="body3d__poster" aria-hidden="true" hidden>
+		<source srcset="/model/poster.webp" type="image/webp" />
+		<img class="body3d__poster-image" src="/model/poster.png" alt="" />
+	</picture>
+	{home && <span class="body3d__start-band"></span>}
+</div>
 <script is:inline set:html={POSTER_REVEAL} />
 <style>
-	/* Окно постера -- всё окно, как у сцены (.body3d): `fixed` без отступов. В сцене он стоит
-	   над канвасом и уходит с первым кадром модели */
-	.body3d__poster {
+	/* Окно стартового кадра -- всё окно, как у сцены (.body3d): `fixed` без отступов. В сцене он
+	   стоит над канвасом, постер уходит с первым кадром модели, полоса остаётся */
+	.body3d__start {
 		pointer-events: none;
 		position: fixed;
 		inset: 0;
 		container-type: size;
+	}
+
+	/* Полоса фигуры на телефоне главной: от строки шапки до шторки индекса. Шторку рисует сцена,
+	   и высота её содержимого зависит от шрифта: здесь -- высота с системным шрифтом Apple (SF),
+	   поля -- как у `.index` в body-3d.svelte. Кадр стоит по этой полосе и после загрузки сцены,
+	   поэтому постер и модель совпадают при любом шрифте */
+	.body3d__start--home {
+		--start-top: calc(var(--theme-toggle-top) + var(--header-row));
+		--start-sheet: min(
+			56dvh,
+			calc(258px + 20px + max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom) + 64px)
+		);
+
+		/* Уже 360 строки зон и подводка переносятся: шторка 440-470px и упирается в потолок */
+		@media (width < 360px) {
+			--start-sheet: 56dvh;
+		}
+	}
+
+	.body3d__start-band {
+		position: absolute;
+		top: var(--start-top);
+		bottom: var(--start-sheet);
+		visibility: hidden;
+	}
+
+	.body3d__poster {
+		position: absolute;
+		inset: 0;
 		/* Фон сцены, пока её нет: иначе ореол за фигурой проявлялся бы вместе со сценой */
 		background: radial-gradient(ellipse 60% 70% at 50% 45%, var(--a-glow) 0%, var(--a-bg) 70%);
 	}
 
 	/* В сцене фон её собственный, а постер лёг бы на канвас */
-	.body3d__poster--placed {
+	.body3d__start--placed .body3d__poster {
 		background: none;
 	}
 
@@ -37,9 +80,9 @@ import { POSTER_CSS, POSTER_REVEAL } from '#frontend/scene/poster-css.ts'
 		max-width: none;
 	}
 
-	/* На телефоне место считает сцена по своей шторке: до неё постера нет */
+	/* На телефоне вне главной место считает сцена по своей шторке: до неё постера нет */
 	@container (width < 700px) {
-		.body3d__poster:not(.body3d__poster--placed) .body3d__poster-image {
+		.body3d__start:not(.body3d__start--home, .body3d__start--placed) .body3d__poster-image {
 			display: none;
 		}
 	}

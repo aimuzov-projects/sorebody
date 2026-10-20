@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { projectBox, type Box } from './frame.ts'
-import { POSTER_CSS, posterGeometry, WIDE_SHIFT } from './poster-css.ts'
+import { FIT_FILL, fitShift, projectBox, type Box } from './frame.ts'
+import { phoneTerms, POSTER_CSS, posterGeometry, WIDE_SHIFT } from './poster-css.ts'
 import poster from './poster.json' with { type: 'json' }
 
 const NUMBER = String.raw`(-?[\d.]+(?:e-?\d+)?)`
@@ -45,7 +45,36 @@ test('the server poster CSS puts the figure where projectBox does on wide screen
 	}
 })
 
-test('the server poster CSS is the wide-screen frame', () => {
+test('the server poster CSS is the wide-screen frame, and the phone frame on the home page', () => {
 	assert.deepEqual(WIDE_SHIFT, { x: 0.17, y: 0, s: 1 })
-	assert.match(POSTER_CSS, /^\.body3d__poster-image\{left:calc\(.+\);top:.+;width:.+;height:.+\}$/)
+	assert.match(POSTER_CSS, /^\.body3d__poster-image\{left:calc\(.+\);top:.+;width:.+;height:.+\}@container/)
+	assert.match(POSTER_CSS, /@container \(width < 700px\)\{\.body3d__start--home \.body3d__poster-image\{--poster-h:/)
+})
+
+// Те же шаги, что в phoneGeometry: высота фигуры, середина полосы, ось окна
+test('the phone poster terms give the fitShift frame', () => {
+	const box = poster.box as Box
+	const terms = phoneTerms(box)
+
+	for (const [width, height, top, bottom] of [
+		[375, 812, 52, 454],
+		[320, 568, 52, 250],
+		[390, 844, 52, 486],
+		[430, 932, 64, 574],
+		// Полоса узкая: фигура мельче кадра без масштаба
+		[375, 667, 52, 300],
+	]) {
+		const expected = projectBox(box, width, height, fitShift(box, width, height, top, bottom))
+		const unscaled = terms.tall * Math.min(height / 2, width / (2 * 0.62))
+		const tall = Math.min(unscaled, FIT_FILL * (bottom - top))
+		const actual = {
+			left: width / 2 + terms.left * tall,
+			top: top + (bottom - top - tall) / 2,
+			width: terms.width * tall,
+			height: tall,
+		}
+
+		for (const key of ['left', 'top', 'width', 'height'] as const)
+			assert.ok(Math.abs(actual[key] - expected[key]) < 0.01, `${width}x${height} ${key}`)
+	}
 })

@@ -40,7 +40,7 @@ const { entries, zones, whole, movements, scene } = await sceneData(sport)
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
 		<h1 class="scene-page__title">{scene.heading}</h1>
-		<ScenePoster />
+		<ScenePoster home />
 		<Body3d client:only="svelte" {zones} {whole} {movements} sport={scene} modelUrl={modelUrl()}>
 			<Footer slot="footer" />
 		</Body3d>

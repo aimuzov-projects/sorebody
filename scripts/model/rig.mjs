@@ -254,6 +254,17 @@ export function buildRig(joints, points) {
 
 		if (spec.lowest) return { center: lowest(points[spec.lowest]) }
 
+		// Самая передняя и самая задняя точка: носок стопы, пятка
+		if (spec.frontmost || spec.backmost) {
+			const v = points[spec.frontmost ?? spec.backmost]
+			const sign = spec.frontmost ? 1 : -1
+			let best = 2
+
+			for (let p = 2; p < v.length; p += 3) if (v[p] * sign > v[best] * sign) best = p
+
+			return { center: [v[best - 2], v[best - 1], v[best]] }
+		}
+
 		throw new Error(`rig: unknown point ${JSON.stringify(spec)}`)
 	}
 
@@ -281,6 +292,41 @@ export function buildRig(joints, points) {
 			toward: joint.toward,
 		}
 	})
+}
+
+/**
+ * Вес по нескольким костям: у каждой своя доля угла сустава (`{femur: 0, patella: 0.65, tibia: 1}`),
+ * вершина берёт их смесь с весами по обратной четвёртой степени расстояния до кости: ближняя
+ * кость почти целиком решает, иначе далёкий от сустава верх мышцы тоже чуть поворачивался бы. Так четырёхглавая
+ * идёт от бедра через надколенник к бугристости большеберцовой, не отставая ни от одной из костей.
+ * `tendon` -- близость к костям с ненулевой долей.
+ */
+export function anchorWeights(points, anchors) {
+	const near = anchors.map(({ points: bone }) => createNearest(bone))
+	const weight = new Float32Array(points.length / 3)
+	const tendon = new Float32Array(points.length / 3)
+
+	for (let p = 0, i = 0; p < points.length; p += 3, i++) {
+		let sum = 0
+		let total = 0
+		let moving = Infinity
+
+		anchors.forEach(({ share }, k) => {
+			const d = near[k](points[p], points[p + 1], points[p + 2])
+			// 1 мм -- чтобы вершина на самой кости не делила на ноль
+			const w = 1 / Math.max(d, 0.001) ** 4
+
+			sum += share * w
+			total += w
+
+			if (share > 0) moving = Math.min(moving, d)
+		})
+
+		weight[i] = sum / total
+		tendon[i] = Math.min(1, Math.max(0, 1 - (moving - 0.003) / 0.02)) ** 1.5
+	}
+
+	return { weight, tendon }
 }
 
 /**

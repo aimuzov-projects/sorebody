@@ -18,7 +18,7 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
-import { buildRig, muscleWeights } from './rig.mjs'
+import { anchorWeights, buildRig, muscleWeights } from './rig.mjs'
 import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -266,13 +266,22 @@ if (cfg.rig) {
 		if (!group.weighted) continue
 
 		// Подвижная -- кости, которые идут за суставом; неподвижная -- те, от которых мышца начинается
-		const moving = Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
-		const { weight, tendon } = muscleWeights(
-			points[name],
-			merge(group.weighted.fixed),
-			merge(moving),
-			group.weighted.reach,
-		)
+		const moving =
+			group.weighted.moving ??
+			Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
+		const { anchors } = group.weighted
+		const { weight, tendon } = anchors
+			? anchorWeights(
+					points[name],
+					Object.entries(anchors).map(([bone, share]) => ({ points: points[bone], share })),
+				)
+			: muscleWeights(points[name], merge(group.weighted.fixed), merge(moving), group.weighted.reach)
+		// Связка между двумя подвижными костями (надколенника: надколенник идёт на 2/3 угла колена,
+		// большеберцовая -- на весь): вес от доли одной кости до доли другой
+		const [lo, hi] = group.weighted.range ?? [0, 1]
+
+		for (let i = 0; i < weight.length; i++) weight[i] = lo + (hi - lo) * weight[i]
+
 		const prim = prims[name]
 
 		prim.setAttribute('_WEIGHT', doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer))

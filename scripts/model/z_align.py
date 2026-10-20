@@ -137,16 +137,17 @@ for m in manifest:
     w = np.stack([np.exp(-((np.linalg.norm(v - f['center'], axis=1) / 120) ** 2)) for f in near], 1) + 1e-12
     w /= w.sum(1, keepdims=True)
     p = sum(w[:, [i]] * (f['scale'] * v @ f['rot'].T + f['shift']) for i, f in enumerate(near))
-    word = 'left' if side == 'l' else 'right'
+    # Срединные структуры (диски) -- без стороны в имени
+    name = {'l': 'left ', 'r': 'right '}.get(side, '') + base.lower()
     with open(f"{exp_dir}/{m['file']}.obj") as src, open(f"{out_dir}/{m['file']}.obj", 'w') as dst:
-        dst.write(f'# English name : {word} {base.lower()}\n')
+        dst.write(f'# English name : {name}\n')
         for x, y, z in p:
             dst.write(f'v {x:.3f} {y:.3f} {z:.3f}\n')
         for line in src:
             if line.startswith('f '):
                 dst.write(line)
     kind = 'muscles' if m.get('muscle') else 'nerves' if 'nerve' in base.lower() or 'plexus' in base.lower() else 'ligaments'
-    out.append({'file': m['file'], 'name': f'{word} {base.lower()}', 'kind': kind, 'zone': fit['zone'], 'tris': m['tris']})
+    out.append({'file': m['file'], 'name': name, 'kind': kind, 'zone': fit['zone'], 'tris': m['tris']})
 
 json.dump({'fits': [{k: (v.tolist() if hasattr(v, 'tolist') else v) for k, v in f.items()} for f in fits], 'objects': out},
           open(f'{out_dir}/manifest.json', 'w'), indent=1)

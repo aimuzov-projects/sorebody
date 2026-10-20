@@ -2,13 +2,22 @@
 # капсулы, нервы и мышцы, которых нет в BodyParts3D. Сетки берутся после модификаторов
 # (Subdivision, Solidify, Hook, кривые с толщиной), в мировых координатах Blender.
 # Рядом кладутся опорные кости для z_align.py и manifest.json.
-# usage: blender -b Startup.blend --python z_anatomy_export.py -- <out dir>
+# usage: blender -b Startup.blend --python z_anatomy_export.py -- <out dir> [--wide]
+# --wide -- для 3D-моделей статей (rig.py): ещё сумки, сухожилия, апоневрозы, удерживатели, диски и мембраны,
+#   суффиксы сторон вида .er/.ol и срединные структуры без суффикса. Детальные куски главной -- без него
 import bpy, json, os, re, sys
 
-out_dir = sys.argv[sys.argv.index('--') + 1]
+args = sys.argv[sys.argv.index('--') + 1:]
+out_dir = args[0]
+WIDE = '--wide' in args
 os.makedirs(out_dir, exist_ok=True)
 
 KEEP = re.compile(r'ligament|menisc|labrum|articular capsule|nerve|plexus', re.I)
+if WIDE:
+    KEEP = re.compile(KEEP.pattern + r'|bursa|aponeurosis|tendon|retinacul|intervertebral disc|nucleus pulposus|'
+                      r'interosseous membrane|thoracolumbar fascia|iliotibial tract|interpubic disc', re.I)
+# Срединные структуры без суффикса стороны -- только эти: остальное без суффикса -- служебные копии
+MIDLINE = re.compile(r'^(intervertebral disc|nucleus pulposus|interpubic disc)', re.I)
 # Внутреннее ухо (CC BY-NC-SA) и почка (CC BY-NC) -- не берём; черепные структуры зонам не нужны
 DROP = re.compile(r'cochlea|semicircular|vestibul|tympan|ossicle|stapes|incus|malleus|kidney|renal|cranial|optic|olfactory', re.I)
 # Пальцы у Z-Anatomy согнуты иначе, чем у BP3D: их связки и ветви нервов висели бы в воздухе
@@ -49,8 +58,12 @@ for ob in bpy.data.objects:
         continue
 
     base, _, side = ob.name.rpartition('.')
-    if ob.name in SPINE:
-        base, side = ob.name, 'c'
+    # Вторая буква суффикса (.er/.ol у связки надколенника) -- вариант той же структуры; в имени файла остаётся
+    tag = side
+    if ob.name in SPINE or (WIDE and '.' not in ob.name and MIDLINE.search(ob.name)):
+        base, side, tag = ob.name, 'c', 'c'
+    elif WIDE and len(side) == 2 and side[0] in 'eo' and side[1] in 'lr':
+        side = side[1]
     # .l/.r -- сами структуры; .g/.j/.t/.i/.s -- подписи и служебные копии
     elif side not in {'l', 'r'}:
         continue
@@ -71,7 +84,7 @@ for ob in bpy.data.objects:
 
     mesh.calc_loop_triangles()
     mw = ob.matrix_world
-    name = re.sub(r'[^\w.-]+', '_', f'{base}.{side}')
+    name = re.sub(r'[^\w.-]+', '_', f'{base}.{tag}')
 
     with open(f'{out_dir}/{name}.obj', 'w') as fh:
         fh.write(f'# English name : {ob.name}\n')

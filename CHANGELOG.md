@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.0](https://github.com/aimuzov-projects/sorebody/compare/v1.13.0...v1.14.0) (2026-10-20)
+
+
+### Features
+
+* **ui:** draw the football icon as an outline ([b897645](https://github.com/aimuzov-projects/sorebody/commit/b89764538f3660ef7e37a30b2e67f585e62c86d4))
+* **ui:** show icons in the action and sport selects ([dc2f747](https://github.com/aimuzov-projects/sorebody/commit/dc2f747f1780bbc2c9e6975716abebc0e33a6cdc))
+
 ## [1.13.0](https://github.com/aimuzov-projects/sorebody/compare/v1.12.0...v1.13.0) (2026-10-20)
 
 

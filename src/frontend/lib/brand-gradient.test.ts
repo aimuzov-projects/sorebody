@@ -5,8 +5,9 @@ import { test } from 'node:test'
 import { SPORTS } from '#frontend/data/sports.ts'
 
 import {
+	BRAND_COLORS,
 	BRAND_GRADIENT_CSS,
-	BRAND_SPORTS,
+	BRAND_SKY,
 	BRAND_STOP_COUNT,
 	brandGradient,
 	brandStops,
@@ -40,8 +41,8 @@ const BACKGROUNDS: Record<Theme, string[]> = { light: ['#ffffff', '#f5f5f7'], da
 const accentOf = (slug: string, theme: Theme) => SPORTS.find((s) => s.slug === slug)!.accent[theme]
 
 for (const theme of ['light', 'dark'] as const) {
-	test(`${theme}: the brand gradient runs through the accents of its sports`, () => {
-		const accents = BRAND_SPORTS.map((slug) => accentOf(slug, theme))
+	test(`${theme}: the brand gradient runs from the crossfit blue to the sky blue`, () => {
+		const accents = [accentOf('crossfit', theme), BRAND_SKY[theme]]
 
 		assert.deepEqual(brandStops(theme), accents)
 		assert.equal(brandGradient(theme), `linear-gradient(90deg, ${[...accents, accents[0]].join(', ')})`)
@@ -64,11 +65,9 @@ for (const theme of ['light', 'dark'] as const) {
 }
 
 test('every brand colour has an SVG gradient stop', () => {
-	assert.equal(BRAND_STOP_COUNT, BRAND_SPORTS.length)
+	assert.equal(BRAND_STOP_COUNT, BRAND_COLORS.length)
 
-	for (const [i, slug] of BRAND_SPORTS.entries()) {
-		const [light, dark] = [accentOf(slug, 'light'), accentOf(slug, 'dark')]
-
+	for (const [i, { light, dark }] of BRAND_COLORS.entries()) {
 		assert.ok(
 			BRAND_GRADIENT_CSS.includes(
 				`.brand-stop-${i}{stop-color:${light};stop-color:light-dark(${light},${dark})}`,

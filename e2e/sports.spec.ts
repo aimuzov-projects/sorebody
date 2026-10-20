@@ -297,6 +297,34 @@ test('«Разбор в …» в статье на главной открыва
 // Разбор другого спорта грузится поверх показанной статьи: строка «Разбор» не пропадает на время
 // загрузки, название и она стоят на месте, прокрученная статья не уезжает в начало. Ответ задержан:
 // на локальном сервере статья приходит раньше, чем заготовка успела бы мелькнуть
+// Пока статья грузится, заготовка уже рисует селект спорта: раньше там стоял текст без шеврона,
+// и при подмене строка «Разбор» мигала
+test('строка «Разбор» в заготовке статьи та же, что в загруженной', async ({ page }) => {
+	let release = () => {}
+	const held = new Promise<void>((resolve) => (release = resolve))
+
+	await page.route(/\/crossfit\/ankle-sprain\/$/, async (route) => {
+		await held
+		await route.continue()
+	})
+
+	await page.goto('/#ankle-sprain')
+
+	const reader = page.locator('.reader:not(.theme-peek *)')
+	const line = reader.locator('.article__sport').first()
+	const box = () => line.evaluate((el) => el.getBoundingClientRect().toJSON())
+
+	await expect(reader).toHaveAttribute('aria-busy', 'true')
+	await expect(line.locator('.pselect__chevron')).toBeVisible()
+
+	const before = await box()
+
+	release()
+	await expect(reader).toHaveAttribute('aria-busy', 'false')
+	await expect(reader.locator('[data-sport-switch] button')).toBeVisible()
+	expect(await box()).toEqual(before)
+})
+
 for (const scrolled of [false, true])
 	test(`смена спорта в статье на главной не сдвигает страницу (${scrolled ? 'в середине статьи' : 'в начале'})`, async ({
 		page,

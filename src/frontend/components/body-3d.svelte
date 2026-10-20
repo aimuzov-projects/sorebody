@@ -30,7 +30,14 @@
 		type HintPlace,
 	} from '#frontend/scene/frame.ts'
 	import { probeWebGL } from '#frontend/scene/gpu.ts'
-	import { activeFilterChips, isFiltering, litZone, matchesFilters, zoneEntries } from '#frontend/scene/filters.ts'
+	import {
+		activeFilterChips,
+		emptySearch,
+		isFiltering,
+		litZone,
+		matchesFilters,
+		zoneEntries,
+	} from '#frontend/scene/filters.ts'
 	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
 	import { applySportHead, createRequestGuard, createSportLoader } from '#frontend/scene/sport-loader.ts'
 	import poster from '#frontend/scene/poster.json'
@@ -83,6 +90,11 @@
 
 	function resetFilters() {
 		query = ''
+		loosenFilters()
+	}
+
+	/** Запрос остаётся: его результаты отсекли частота и движение. */
+	function loosenFilters() {
 		frequency = 'all'
 		movement = ''
 	}
@@ -92,6 +104,9 @@
 
 	const counts = $derived(new Map(allZones.map((zone) => [zone, zone.injuries.filter(matches).length])))
 	const results = $derived(query.trim() ? zoneEntries(allZones, matches) : [])
+	const empty = $derived(
+		query.trim() && results.length === 0 ? emptySearch(allZones, { query, frequency, movement }) : null,
+	)
 	/** Травмы движения по зонам сверху вниз, в порядке индекса главной. */
 	const movementInjuries = $derived(movementPage ? zoneEntries(allZones, matches) : [])
 
@@ -1460,8 +1475,10 @@
 				chips={activeFilters}
 				{filtering}
 				{results}
+				{empty}
 				sport={sport.slug}
 				onreset={resetFilters}
+				onloosen={loosenFilters}
 				onpick={onItemClick}
 			/>
 			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->

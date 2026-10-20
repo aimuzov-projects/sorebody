@@ -29,7 +29,9 @@ async function swipe(page: Page, on: Locator, { fromX = 0.2, toX = 0.8, dy = 0, 
 
 			fire('touchstart', x0, y, now)
 			fire('touchmove', (x0 + x1) / 2, y + dy / 2, now + ms / 2)
-			fire('touchend', x1, y + dy, now + ms)
+			// Отпускаем палец уже после возврата из evaluate: свайп может сразу увести страницу,
+			// и evaluate падал бы вместе с её контекстом
+			setTimeout(() => fire('touchend', x1, y + dy, now + ms))
 		},
 		{ x0: box.x + box.width * fromX, x1: box.x + box.width * toX, y, dy, ms },
 	)

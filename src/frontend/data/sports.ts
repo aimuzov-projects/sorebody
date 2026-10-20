@@ -268,6 +268,26 @@ export const sportHome = (slug: SportSlug) => (slug === DEFAULT_SPORT ? '/' : `/
 
 export const sportArticle = (slug: SportSlug, injury: string) => `/${slug}/${injury}/`
 
+/**
+ * Props селекта «Разбор ‹в …›» статьи (components/sport-switch.svelte). Одна сборка на страницу статьи
+ * и заготовку ридера: заготовка рисует тот же селект, иначе при подмене строка мигала. Спорт один --
+ * селекта нет.
+ */
+export function sportSwitchProps(sports: readonly SportSlug[], current: SportSlug, injury: string) {
+	if (sports.length < 2) return undefined
+
+	return {
+		sports: sports.map((slug) => ({
+			slug,
+			title: sportOf(slug).title,
+			phrase: sportOf(slug).phrase,
+			href: sportArticle(slug, injury),
+		})),
+		value: current,
+		size: 'lead' as const,
+	}
+}
+
 export const sportElement = (slug: SportSlug, element: string) => `/${slug}/elements/${element}/`
 
 /** Место травмы в порядке частоты спорта; травмы не из списка -- в конец. */

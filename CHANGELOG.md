@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.15.1](https://github.com/aimuzov-projects/sorebody/compare/v1.15.0...v1.15.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **ui:** keep the popup select list inside the screen ([703ac5c](https://github.com/aimuzov-projects/sorebody/commit/703ac5cb2f005b7c8db72a2ca3d47d71c126ab2a))
+* **ui:** keep the popup select list inside the screen ([48e5fcf](https://github.com/aimuzov-projects/sorebody/commit/48e5fcf7f79618f75868aa23e9c5c1aeff2706e8))
+
 ## [1.15.0](https://github.com/aimuzov-projects/sorebody/compare/v1.14.0...v1.15.0) (2026-10-20)
 
 

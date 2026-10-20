@@ -12,6 +12,7 @@ import {
 	sportElement,
 	sportHome,
 	sportOf,
+	sportSwitchProps,
 	type Sport,
 	type SportSlug,
 } from '#frontend/data/sports.ts'
@@ -78,19 +79,7 @@ const nameTail = name.slice(nameHead.length)
  * ведут к разделам, которых в общей части нет (`#adapt`, `#frequency`, `#mechanism`). Такой хеш
  * уводим к тому же разделу статьи кроссфита. Inline-скрипты Astro в CSP не хеширует, хеш считаем сами.
  */
-const switchProps =
-	sport && sports.length > 1
-		? {
-				sports: sports.map((slug) => ({
-					slug,
-					title: sportOf(slug).title,
-					phrase: sportOf(slug).phrase,
-					href: sportArticle(slug, injury.id),
-				})),
-				value: sport.slug,
-				size: 'lead' as const,
-			}
-		: undefined
+const switchProps = sport && sportSwitchProps(sports, sport.slug, injury.id)
 
 const lensOnly = LENS_HEADINGS.filter((h) => !INJURY_HEADINGS.some((i) => i.id === h.id)).map((h) => h.id)
 const toLens =

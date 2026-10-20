@@ -4,16 +4,18 @@
 	свёрнутым он показывает включённые фильтры, по нажатию раскрывается
 -->
 <script lang="ts">
-	import { ChevronDown, Search, X } from 'lucide-static'
+	import { ChevronDown, Search, SearchX, X } from 'lucide-static'
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
+	import { plural } from '#frontend/lib/plural.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
-	import type { activeFilterChips, zoneEntries } from '#frontend/scene/filters.ts'
+	import type { activeFilterChips, EmptySearch, zoneEntries } from '#frontend/scene/filters.ts'
 	import type { Zone } from '#frontend/scene/zones.ts'
 
 	import FrequencySwitch from '#frontend/components/frequency-switch.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
+	import ZoneGlyph from '#frontend/components/zone-glyph.svelte'
 
 	type Injury = Zone['injuries'][number]
 
@@ -27,8 +29,10 @@
 		chips,
 		filtering,
 		results,
+		empty,
 		sport,
 		onreset,
+		onloosen,
 		onpick,
 	}: {
 		query: string
@@ -44,8 +48,12 @@
 		chips: ReturnType<typeof activeFilterChips>
 		filtering: boolean
 		results: ReturnType<typeof zoneEntries>
+		/** Запрос ничего не нашёл: чем помочь (scene/filters.ts). */
+		empty: EmptySearch | null
 		sport: string
 		onreset: () => void
+		/** Сбросить частоту и движение, оставив запрос. */
+		onloosen: () => void
 		onpick: (event: MouseEvent, injury: Injury) => void
 	} = $props()
 
@@ -131,21 +139,57 @@
 			<MovementSelect options={movements} bind:value={movement} label={elementLabel} empty="любое" />
 		</div>
 		{#if query.trim()}
+			{@const rows = results.length || empty?.kind !== 'layout' ? results : empty.results}
 			<ul class="index__results" aria-live="polite">
-				{#each results as { zone, injury } (injury.slug)}
-					{@const { name, alias } = splitTitle(injury.title)}
+				{#if empty?.kind === 'layout'}
+					<li class="index__hint">
+						Похоже, не та раскладка: ищем «{empty.query}».
+						<button class="index__hint-action" type="button" onclick={() => (query = empty.query)}
+							>Исправить</button
+						>
+					</li>
+				{/if}
+				{#each rows as { zone, injury } (injury.slug)}
+					{@const { name } = splitTitle(injury.title)}
 					<li>
 						<a
 							class="index__result"
 							href="/{sport}/{injury.slug}/"
 							onclick={(event) => onpick(event, injury)}
 						>
+							<ZoneGlyph region={zone.slug} label={zone.label} />
 							<span class="index__result-title">{name}</span>
-							<span class="index__result-zone">{alias ? `${zone.label} · ${alias}` : zone.label}</span>
 						</a>
 					</li>
 				{:else}
-					<li class="index__empty">Ничего не нашлось</li>
+					<li class="index__empty">
+						<p class="index__empty-title">
+							<span class="index__empty-icon" aria-hidden="true">{@html SearchX}</span>Ничего не нашлось
+						</p>
+						{#if empty?.kind === 'filters'}
+							<p class="index__empty-text">
+								Мешают фильтры: без них {empty.count === 1 ? 'нашлась' : 'нашлось'}
+								бы {`${empty.count}\u00a0${plural(empty.count, ['статья', 'статьи', 'статей'])}`}.
+							</p>
+							<button class="index__empty-action" type="button" onclick={onloosen}
+								>Сбросить фильтры</button
+							>
+						{:else}
+							<p class="index__empty-text">Попробуйте другое слово.<br />Или начните с&nbsp;частых:</p>
+							<ul class="index__suggest" aria-label="Частые травмы">
+								{#each empty?.kind === 'none' ? empty.suggestions : [] as { injury } (injury.slug)}
+									<li class="index__suggest-entry">
+										<a
+											class="index__suggest-item"
+											href="/{sport}/{injury.slug}/"
+											onclick={(event) => onpick(event, injury)}
+											>{splitTitle(injury.title).name}</a
+										>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+					</li>
 				{/each}
 			</ul>
 		{/if}
@@ -245,9 +289,11 @@
 			}
 		}
 
+		/* Значок зоны -- в одну строку с названием */
 		&__result {
-			display: grid;
-			gap: 2px;
+			display: flex;
+			gap: 10px;
+			align-items: center;
 			padding: 10px 0;
 			color: var(--a-fg);
 			text-decoration: none;
@@ -260,17 +306,120 @@
 			}
 		}
 
+		/* Одной строкой: длинное название обрезается, полное -- в статье */
 		&__result-title {
+			overflow: hidden;
+			min-width: 0;
 			font-size: 18px;
 			font-weight: 600;
 			line-height: 1.3;
+			text-overflow: ellipsis;
 			letter-spacing: 0;
+			white-space: nowrap;
 		}
 
-		&__result-zone,
+		/* Пустой поиск -- как «Статей пока нет» на странице движения: заголовок, пояснение, выход */
 		&__empty {
+			padding: 8px 0;
+			animation: fade-in 0.4s var(--a-ease) both;
+		}
+
+		&__empty-icon {
+			display: inline-flex;
+			flex: none;
+			width: 22px;
+			height: 22px;
+			color: var(--a-fg2);
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+				stroke-width: 1.75;
+			}
+		}
+
+		/* Значок -- в одну строку с заголовком, как значок зоны у результатов */
+		&__empty-title {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			margin: 0 0 4px;
+			font-size: 18px;
+			font-weight: 600;
+		}
+
+		&__empty-text {
+			max-width: 34ch;
+			margin: 0;
+			font-size: 15px;
+			color: var(--a-fg2);
+		}
+
+		&__empty-action,
+		&__hint-action {
+			cursor: pointer;
+			padding: 0;
+			border: 0;
+			font: inherit;
+			font-weight: 600;
+			color: var(--a-blue);
+			background: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		&__empty-action {
+			margin-top: 10px;
+			font-size: 15px;
+		}
+
+		&__hint {
+			padding: 4px 0 8px;
 			font-size: 14px;
 			color: var(--a-fg2);
+		}
+
+		/* Облако частых травм: теги идут строкой друг за другом и переносятся, как текст, в стиле
+		   «по исследованиям» из подводки главной */
+		&__suggest {
+			max-width: 34ch;
+			margin: 10px 0 0;
+			padding: 0;
+			font-size: 15px;
+			line-height: 1.9;
+			list-style: none;
+		}
+
+		&__suggest-entry {
+			display: inline;
+		}
+
+		&__suggest-item {
+			margin-right: 0.3em;
+			padding: 0.1em 0.4em;
+			border-radius: 0.3em;
+			color: var(--a-blue);
+			text-decoration: none;
+			background-color: color-mix(in srgb, var(--a-blue) 8%, transparent);
+			-webkit-box-decoration-break: clone;
+			box-decoration-break: clone;
+			transition:
+				color 0.2s var(--a-ease),
+				background-color 0.2s var(--a-ease);
+
+			&:hover {
+				color: var(--a-on-blue);
+				background-color: var(--a-blue);
+			}
+
+			&:focus-visible {
+				border-radius: 4px;
+				outline: 2px solid var(--a-blue);
+				outline-offset: 2px;
+			}
 		}
 	}
 
@@ -431,15 +580,7 @@
 			}
 
 			& .index__result-title {
-				overflow: hidden;
-				min-width: 0;
 				font-size: 16px;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-			}
-
-			& .index__result-zone {
-				display: none;
 			}
 
 			/* Свернуть -- иконкой в строке поиска, а не кнопкой "Готово" отдельной строкой внизу:

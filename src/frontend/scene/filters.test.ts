@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { activeFilterChips, isFiltering, litZone, matchesFilters, zoneEntries } from './filters.ts'
+import {
+	activeFilterChips,
+	emptySearch,
+	isFiltering,
+	litZone,
+	matchesFilters,
+	swapLayout,
+	zoneEntries,
+} from './filters.ts'
 import type { Zone } from './zones.ts'
 
 type Injury = Zone['injuries'][number]
@@ -93,4 +101,42 @@ test('пустую под фильтры зону не подсвечиваем,
 	assert.equal(litZone(head, counts), null)
 	assert.equal(litZone({ slug: 'elbow' }, counts), null)
 	assert.equal(litZone(null, counts), null)
+})
+
+test('раскладка: клавиши меняются на соседние, без букв менять нечего', () => {
+	assert.equal(swapLayout('Hfcnz;tybt'), 'растяжение')
+	assert.equal(swapLayout('ащще'), 'foot')
+	assert.equal(swapLayout('123'), '')
+	assert.equal(swapLayout('  '), '')
+})
+
+test('пустой поиск: сначала раскладка, потом фильтры, иначе частые травмы', () => {
+	const common = injury('patellar-tendinopathy', 'common', ['running'], 'Тендинопатия надколенника')
+	const knee = { slug: 'knee', injuries: [common, acl, ankle] } as unknown as Zone
+	const foot = { slug: 'ankle-foot', injuries: [ankle, common] } as unknown as Zone
+	const zones = [knee, foot]
+	const layout = emptySearch(zones, { ...none, query: 'hfcnz;tybt' })
+
+	assert.equal(layout.kind, 'layout')
+
+	assert.deepEqual(layout.kind === 'layout' && [layout.query, layout.results.map((e) => e.injury.slug)], [
+		'растяжение',
+		['ankle-sprain', 'ankle-sprain'],
+	])
+
+	assert.deepEqual(emptySearch(zones, { ...none, query: 'растяжение', frequency: 'rare' }), {
+		kind: 'filters',
+		count: 2,
+	})
+
+	assert.deepEqual(emptySearch(zones, { query: 'hfcnz;tybt', frequency: 'rare', movement: '' }), {
+		kind: 'filters',
+		count: 2,
+	})
+
+	const nothing = emptySearch(zones, { ...none, query: 'asdasd' })
+
+	assert.deepEqual(nothing.kind === 'none' && nothing.suggestions.map((e) => [e.zone.slug, e.injury.slug]), [
+		['knee', 'patellar-tendinopathy'],
+	])
 })

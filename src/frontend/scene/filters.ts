@@ -66,3 +66,57 @@ export function zoneEntries(zones: Zone[], match: (injury: Injury) => boolean) {
 export function litZone<Z>(zone: Z | null, counts: ReadonlyMap<Z, number>): Z | null {
 	return zone && (counts.get(zone) ?? 0) > 0 ? zone : null
 }
+
+const EN_KEYS = "qwertyuiop[]asdfghjkl;'zxcvbnm,.`"
+const RU_KEYS = 'йцукенгшщзхъфывапролджэячсмитьбюё'
+const SWAP = new Map([...EN_KEYS].flatMap((en, i) => [[en, RU_KEYS[i]!] as const, [RU_KEYS[i]!, en] as const]))
+
+/**
+ * Запрос, набранный не в той раскладке: «rjktyj» -> «колено», «ащще» -> «foot». Каждую клавишу
+ * меняем на соседку по раскладке. Нечего менять -- пустая строка.
+ */
+export function swapLayout(query: string) {
+	const q = normalize(query)
+	const swapped = [...q].map((ch) => SWAP.get(ch) ?? ch).join('')
+
+	return swapped === q ? '' : swapped
+}
+
+type Entry = ReturnType<typeof zoneEntries>[number]
+
+/**
+ * Чем помочь, когда запрос ничего не нашёл. Сначала -- раскладка: запрос в соседней что-то
+ * находит, показываем это. Потом -- фильтры: без частоты и движения нашлось бы `count`. Иначе --
+ * частые травмы спорта, чтобы было куда пойти.
+ */
+export type EmptySearch =
+	| { kind: 'layout'; query: string; results: Entry[] }
+	| { kind: 'filters'; count: number }
+	| { kind: 'none'; suggestions: Entry[] }
+
+export function emptySearch(zones: Zone[], filters: SceneFilters, suggest = 6): EmptySearch {
+	const find = (f: SceneFilters) => zoneEntries(zones, (injury) => matchesFilters(injury, f))
+	const swapped = swapLayout(filters.query)
+
+	if (swapped) {
+		const results = find({ ...filters, query: swapped })
+
+		if (results.length) return { kind: 'layout', query: swapped, results }
+	}
+
+	const loose = Math.max(
+		...[filters.query, swapped]
+			.filter(Boolean)
+			.map((query) => find({ query, frequency: 'all', movement: '' }).length),
+	)
+
+	if (loose) return { kind: 'filters', count: loose }
+
+	// Травма в двух зонах (голеностоп и стопа) попала бы в подсказки дважды
+	const seen = new Set<string>()
+	const suggestions = zoneEntries(zones, (injury) => injury.frequency === 'common').filter(
+		({ injury }) => !seen.has(injury.slug) && seen.add(injury.slug),
+	)
+
+	return { kind: 'none', suggestions: suggestions.slice(0, suggest) }
+}

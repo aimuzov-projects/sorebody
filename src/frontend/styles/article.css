@@ -642,13 +642,11 @@
 		display: block;
 	}
 
-	/* Раскрыть список -- действие, а не переход: ссылка цвета акцента, а не чипс, как у движений */
+	/* Раскрыть список -- действие, а не переход: ссылка цвета акцента, а не чипс, как у движений.
+	   Без шеврона: он у селекта "Разбор в ...", и кнопку путали бы с ним */
 	&__sources-more {
 		cursor: pointer;
 		position: relative;
-		display: inline-flex;
-		gap: 4px;
-		align-items: center;
 		margin-top: 4px;
 		padding: 0;
 		border: 0;
@@ -657,12 +655,7 @@
 		font-size: 15px;
 		font-weight: 500;
 		color: var(--accent);
-		text-underline-offset: 3px;
 		background: none;
-
-		&:hover {
-			text-decoration: underline;
-		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
@@ -672,12 +665,6 @@
 		&[hidden] {
 			display: none;
 		}
-	}
-
-	&__sources-more-icon {
-		display: inline-flex;
-		width: 18px;
-		height: 18px;
 	}
 
 	&__source-list {

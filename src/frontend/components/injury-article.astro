@@ -1,15 +1,7 @@
 ---
 import { createHash } from 'node:crypto'
 
-import {
-	ArrowRight,
-	ChevronDown,
-	ChevronLeft,
-	ChevronRight,
-	ExternalLink,
-	TextQuote,
-	TriangleAlert,
-} from 'lucide-static'
+import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -329,7 +321,6 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 				</ol>
 				<button class="article__sources-more" type="button" aria-controls="sources-list" hidden>
 					Ещё {hiddenSources} {plural(hiddenSources, ['источник', 'источника', 'источников'])}
-					<span class="article__sources-more-icon" aria-hidden="true" set:html={ChevronDown} />
 				</button>
 			</section>
 		</footer>

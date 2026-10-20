@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.13.0](https://github.com/aimuzov-projects/sorebody/compare/v1.12.0...v1.13.0) (2026-10-20)
+
+
+### Features
+
+* **article:** fade the reader in without the rise from below ([ef0211c](https://github.com/aimuzov-projects/sorebody/commit/ef0211c9c9ccfeb0c67c830d8512efd2608868ed))
+* **article:** hand the title to the header as it slides under it ([#116](https://github.com/aimuzov-projects/sorebody/issues/116)) ([19e9098](https://github.com/aimuzov-projects/sorebody/commit/19e9098ca4aebb9e42be600cf7c7008463c76714))
+* **article:** let the header title go back like the arrow ([e6e4cef](https://github.com/aimuzov-projects/sorebody/commit/e6e4ceff2567d53f60db25f58011c24d881581d8))
+* **home:** hold the model still while an article is open ([3c00b10](https://github.com/aimuzov-projects/sorebody/commit/3c00b10981305bff7f198f05790934739ffeb78e))
+* **home:** make the phone figure larger and let a pinch zoom it ([#117](https://github.com/aimuzov-projects/sorebody/issues/117)) ([fe9b143](https://github.com/aimuzov-projects/sorebody/commit/fe9b14345e59cdf9cef2ac7b783e413a5cdbbc43))
+* **logo:** paint the mark and "body" as one gradient on pages without a sport ([837be92](https://github.com/aimuzov-projects/sorebody/commit/837be920b18a2f5146e3b5d3b406a1d18378836b))
+* **model:** make the figure genderless ([#119](https://github.com/aimuzov-projects/sorebody/issues/119)) ([92459c2](https://github.com/aimuzov-projects/sorebody/commit/92459c21d4fad37b4c7df0301a8e9fcdb4bac90d))
+* speak of pain instead of injuries in the interface ([#115](https://github.com/aimuzov-projects/sorebody/issues/115)) ([7e3568b](https://github.com/aimuzov-projects/sorebody/commit/7e3568b2431203f75821dddb436ec1c51569a22a))
+* **ui:** show every tooltip as the grey article plate ([1b433f8](https://github.com/aimuzov-projects/sorebody/commit/1b433f81869adbdcb428102de4d1d0df72ec8c0c))
+
+
+### Bug Fixes
+
+* **about:** link BodyParts3D to its description page ([#114](https://github.com/aimuzov-projects/sorebody/issues/114)) ([38b60e8](https://github.com/aimuzov-projects/sorebody/commit/38b60e80311f26ac4f6c76a6f34c4ffb9fc2056a))
+* **article:** keep the sources button plain, without the hover underline and chevron ([0666e19](https://github.com/aimuzov-projects/sorebody/commit/0666e19d88f61a108f3930e2c4146ea3f26d7d1d))
+* **home:** bring back corner-tip.ts, deleted by mistake in the spec commit ([1abb974](https://github.com/aimuzov-projects/sorebody/commit/1abb9749eb0f14c909467ebac7832a9b485fe749))
+
 ## [1.12.0](https://github.com/aimuzov-projects/sorebody/compare/v1.11.0...v1.12.0) (2026-10-19)
 
 

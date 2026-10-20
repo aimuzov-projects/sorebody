@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray513.png
           caption: 'Внутренняя сонная и позвоночная артерии справа'
+      model:
+          name: head-neck-center
+          highlight: [internal carotid artery, vertebral artery]
+          show: [arteries]
+          hide: [neck-muscles]
+          direction: [-1, 0, 0.3]
+          note: 'Расслоения в модели нет: артерии показаны целыми'
 sources:
     - pmid: '41278057'
       label: Cho 2025, описание случая диссекции и синдрома Валленберга после кроссфита

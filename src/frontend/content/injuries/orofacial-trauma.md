@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray1002.png
           caption: 'Постоянные зубы'
+      model:
+          name: head-neck-center
+          highlight: [central secondary incisor tooth, lateral secondary incisor tooth]
+          hide: [neck-muscles]
+          direction: [-0.2, 0, 1]
+          note: 'Повреждений в модели нет; подсвечены резцы, их травмы встречаются чаще всего'
 sources:
     - pmid: '39015942'
       label: Zerman 2024, scoping-обзор реплантации после полного выбивания зуба, с упором на детей

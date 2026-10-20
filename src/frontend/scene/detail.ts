@@ -20,6 +20,9 @@ export const LAYERS: Record<string, string> = {
 	ligaments: '#9fbbe6',
 	// Сухожилия в 3D-моделях статей (scene/model-viewer.ts): белёсые, как на иллюстрациях
 	tendons: '#e6dccb',
+	// Мозг и глаз в модели головы: розовато-серое вещество и белая склера
+	brain: '#e3bfb6',
+	eye: '#eef0f2',
 	arteries: '#c9463d',
 	veins: '#4f6fb8',
 	nerves: '#e8c650',

@@ -32,7 +32,11 @@ const HIT: Record<string, string> = {
 	ligaments: '#2f62c9',
 	cartilage: '#2f62c9',
 	tendons: '#2f62c9',
+	eye: '#2f62c9',
 	nerves: '#d29a00',
+	// Зубы -- единственные кости с названиями частей: подсвеченный резец тёплый на белых соседях
+	bones: '#d9963a',
+	brain: '#c65a4b',
 }
 
 function hitShader(color: string): ShaderExtra {

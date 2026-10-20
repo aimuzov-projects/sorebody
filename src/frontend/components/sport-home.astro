@@ -1,6 +1,7 @@
 ---
 import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
+import PosterPreload from '#frontend/components/poster-preload.astro'
 import { SPORTS, sportArticle, sportHome, type Sport } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
 import { modelUrl } from '#frontend/scene/model-url.ts'
@@ -30,6 +31,7 @@ const { entries, zones, whole, movements, scene } = await sceneData(sport)
 	canonical={sportHome(sport.slug)}
 	sportHomes={Object.fromEntries(SPORTS.map((s) => [s.slug, sportHome(s.slug)]))}
 >
+	<PosterPreload slot="head" />
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
 		<h1 class="scene-page__title">{scene.heading}</h1>

@@ -31,6 +31,13 @@
 	--on-accent-dark: #161617;
 }
 
+:root[data-sport='running'] {
+	--accent-light: #a84d08;
+	--accent-dark: #fb923c;
+	--on-accent-light: #ffffff;
+	--on-accent-dark: #161617;
+}
+
 /* Главная меняет спорт без перезагрузки (body-3d.svelte): зарегистрированные цвета плавно
    перетекают в новые, а с ними и всё, что красится через них. Начальные значения -- кроссфит */
 @property --accent-light {

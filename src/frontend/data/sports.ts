@@ -76,6 +76,25 @@ const FOOTBALL_ELEMENTS = [
 export type FootballElement = (typeof FOOTBALL_ELEMENTS)[number]['slug']
 
 /**
+ * Нагрузки и условия бега по docs/research/running-injuries-pubmed.md, раздел «Элементы». У бега одно
+ * движение, поэтому элемент -- не техника, а то, что меняет нагрузку: объём, скорость, рельеф, грунт,
+ * обувь, погода. Длинная пробежка входит в рост объёма, виражей стадиона нет: по ним нет работ о травмах.
+ */
+const RUNNING_ELEMENTS = [
+	{ slug: 'mileage-spike', title: 'Резкий рост объёма', titleEn: 'Mileage spike' },
+	{ slug: 'speed-work', title: 'Интервалы и скорость', titleEn: 'Speed work' },
+	{ slug: 'uphill', title: 'Бег в гору', titleEn: 'Uphill running' },
+	{ slug: 'downhill', title: 'Бег под гору', titleEn: 'Downhill running' },
+	{ slug: 'trail', title: 'Трейл и неровный грунт', titleEn: 'Trail and uneven ground' },
+	{ slug: 'race', title: 'Забег и марафон', titleEn: 'Race and marathon' },
+	{ slug: 'heat', title: 'Жара и влажность', titleEn: 'Heat and humidity' },
+	{ slug: 'footwear-change', title: 'Смена обуви', titleEn: 'Footwear change' },
+	{ slug: 'overstriding', title: 'Длинный шаг и низкий каденс', titleEn: 'Overstriding and low cadence' },
+] as const
+
+export type RunningElement = (typeof RUNNING_ELEMENTS)[number]['slug']
+
+/**
  * Все травмы кроссфита от самой частой к самой редкой: в этом порядке они стоят в списках зон.
  * Уровень и порядок -- из таблицы диагнозов в docs/research/crossfit-injuries-pubmed.md:
  * частые -- там "очень часто" и "часто", нечастые -- "нередко" и "нечасто", редкие -- только
@@ -175,10 +194,36 @@ const FOOTBALL_FREQUENCY_ORDER = [
 	'proximal-hamstring-avulsion',
 ]
 
+/**
+ * Травмы бега от частых к редким, уровни и порядок -- по правилу уровня в
+ * docs/research/running-injuries-pubmed.md: доля в проспективном пуле Kakouris 2021 (частые -- 5%
+ * и больше, нечастые -- есть строка, но меньше), редкие -- только медпункты забегов и серии случаев.
+ */
+const RUNNING_FREQUENCY_ORDER = [
+	// Частые
+	'achilles-tendinopathy',
+	'medial-tibial-stress-syndrome',
+	'patellofemoral-pain',
+	'plantar-fasciitis',
+	'ankle-sprain',
+	'iliotibial-band-syndrome',
+	// Нечастые
+	'greater-trochanteric-pain-syndrome',
+	'meniscus-tear',
+	'muscle-strains',
+	'lower-limb-stress-fractures',
+	'hamstring-strain',
+	'low-back-strain',
+	// Редкие
+	'exertional-heat-illness',
+	'exercise-associated-hyponatremia',
+	'exertional-rhabdomyolysis',
+]
+
 type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
-export type SportSlug = 'crossfit' | 'padel' | 'football'
+export type SportSlug = 'crossfit' | 'padel' | 'football' | 'running'
 
 export type Sport = {
 	slug: SportSlug
@@ -255,6 +300,23 @@ export const SPORTS = [
 		// тёмной темы, цифры на нём тёмные. Тон сдвинут к бирюзе дальше лайма падела, но светлота
 		// и насыщенность не дают спутать его с бирюзой частых травм
 		accent: { light: '#0a6640', dark: '#30d18a', onLight: '#ffffff', onDark: '#161617', glow: '#22c07a' },
+	},
+	{
+		slug: 'running',
+		title: 'Бег',
+		phrase: 'в беге',
+		elementLabel: 'Нагрузка или условие',
+		elementsTitle: 'Нагрузки и условия',
+		elementOn: 'при нагрузке',
+		description:
+			'Справочник боли в беге: как часто случаются, симптомы, когда к врачу и как изменить бег и тренировки — со ссылками на исследования.',
+		mechanismTitle: 'Механизм и нагрузки',
+		elements: RUNNING_ELEMENTS,
+		frequencyOrder: RUNNING_FREQUENCY_ORDER,
+		// Оранжевый: светлый -- 5.6:1 на белом и 5.2:1 на серой заливке чипов, AA держит и плашка
+		// ссылки; тёмный -- 8:1 на фоне тёмной темы, цифры на нём тёмные. От красного «опасно»
+		// отходит по тону к жёлтому, от остальных спортов далеко
+		accent: { light: '#a84d08', dark: '#fb923c', onLight: '#ffffff', onDark: '#161617', glow: '#f97316' },
 	},
 ] as const satisfies readonly Sport[]
 

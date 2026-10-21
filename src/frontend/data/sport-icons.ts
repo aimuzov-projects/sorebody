@@ -1,3 +1,5 @@
+import { SportShoe } from 'lucide-static'
+
 import type { SportSlug } from './sports.ts'
 
 /** Обёртка как у lucide-static: сетка 24, линия 2, круглые концы. */
@@ -7,7 +9,7 @@ const icon = (name: string, body: string) =>
 /**
  * Иконки спортов в стиле Lucide. В наборе нет ни мяча, ни ракетки, а гиря, гантель и ворота уже
  * заняты движениями (`movement-icons.ts`), поэтому знаки свои: гиря, ракетка падела с мячом,
- * футбольный мяч.
+ * футбольный мяч. У бега -- кроссовок из самого Lucide: движениям он не нужен.
  */
 export const SPORT_ICONS: Record<SportSlug, string> = {
 	crossfit: icon(
@@ -22,4 +24,5 @@ export const SPORT_ICONS: Record<SportSlug, string> = {
 		'football',
 		'<circle cx="12" cy="12" r="10"/><path d="M12 8 15.8 10.8 14.4 15.2H9.6L8.2 10.8Z"/><path d="M12 8V5M7.9 2.9 12 5l4.1-2.1M15.8 10.8l2.9-1M19.4 5.3l-.7 4.5 3.2 3.2M14.4 15.2l1.7 2.5M20.7 17l-4.6.7-2 4.1M9.6 15.2l-1.7 2.5M9.9 21.8l-2-4.1-4.6-.7M8.2 10.8l-2.9-1M2.1 13l3.2-3.2-.7-4.5"/>',
 	),
+	running: SportShoe,
 }

@@ -54,3 +54,26 @@ test('football: shuttle runs are a change of direction, plain running stays runn
 	assert.equal(movementIn('борьбы за верховые мячи в прыжке', 'football'), 'tackle')
 	assert.equal(movementIn('вратарской тренировки с прыжками', 'football'), 'goalkeeping')
 })
+
+test('running: the icon is the load that changes, plain running gets none', () => {
+	assert.equal(movementIn('длинных спусков под гору', 'running'), 'downhill')
+	assert.equal(movementIn('интервалов на стадионе', 'running'), 'speed-work')
+	assert.equal(movementIn('резкого роста недельного объёма', 'running'), 'mileage-spike')
+	assert.equal(movementIn('марафона в жару', 'running'), 'race')
+	assert.equal(movementIn('бега в жару днём', 'running'), 'heat')
+	assert.equal(movementIn('бега по корням и камням на трейле', 'running'), 'trail')
+	assert.equal(movementIn('сразу перейти в минималистичную обувь', 'running'), 'footwear-change')
+	assert.equal(movementIn('лёгкого бега в ровном темпе', 'running'), undefined)
+})
+
+test('running: run-walk, drinking volumes and calf raises get no load icon', () => {
+	assert.equal(movementIn('отрезки бега с ходьбой', 'running'), undefined)
+	assert.equal(movementIn('по жажде: заданные объёмы не подходят', 'running'), undefined)
+	assert.equal(movementIn('подъёмы на носки с весом', 'running'), undefined)
+	assert.equal(movementIn('жаропонижающих перед сном', 'running'), undefined)
+	assert.equal(movementIn('влажной салфетки', 'running'), undefined)
+	assert.equal(movementIn('шаг чуть короче и чаще', 'running'), 'overstriding')
+	assert.equal(movementIn('чуть более частый шаг', 'running'), 'overstriding')
+	assert.equal(movementIn('длинной медленной пробежки', 'running'), 'mileage-spike')
+	assert.equal(movementIn('старта после болезни', 'running'), 'race')
+})

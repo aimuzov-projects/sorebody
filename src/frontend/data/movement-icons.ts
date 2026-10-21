@@ -17,13 +17,18 @@ import {
 	Crosshair,
 	Dumbbell,
 	FastForward,
+	Flag,
 	Flame,
 	Footprints,
 	Goal,
 	Hand,
 	HandGrab,
 	Merge,
+	Metronome,
+	Mountain,
 	MoveDown,
+	MoveDownRight,
+	MoveUpRight,
 	MoveVertical,
 	OctagonPause,
 	Repeat2,
@@ -33,6 +38,9 @@ import {
 	Spline,
 	Split,
 	Swords,
+	ThermometerSun,
+	Timer,
+	TrendingUp,
 	Undo2,
 	Users,
 	Volleyball,
@@ -41,14 +49,14 @@ import {
 	Zap,
 } from 'lucide-static'
 
-import type { CrossfitElement, FootballElement, PadelElement } from './sports.ts'
+import type { CrossfitElement, FootballElement, PadelElement, RunningElement } from './sports.ts'
 
 /**
  * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
  * движения: куда идёт штанга, за что держатся, чем работают. Гиря -- `weight`,
  * кольца -- `infinity`.
  */
-export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballElement, string> = {
+export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballElement | RunningElement, string> = {
 	squat: ArrowDownToLine,
 	deadlift: ArrowUpFromLine,
 	'hip-thrust': ArrowBigUp,
@@ -93,6 +101,16 @@ export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballEle
 	collision: Merge,
 	goalkeeping: Shield,
 	fall: ArrowDownToDot,
+	// Бег: что меняется в нагрузке -- объём, темп, рельеф, грунт, погода, обувь, шаг
+	'mileage-spike': TrendingUp,
+	'speed-work': Timer,
+	uphill: MoveUpRight,
+	downhill: MoveDownRight,
+	trail: Mountain,
+	race: Flag,
+	heat: ThermometerSun,
+	'footwear-change': Footprints,
+	overstriding: Metronome,
 }
 
 export type ElementIcon = keyof typeof MOVEMENT_ICONS

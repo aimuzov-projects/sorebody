@@ -5,6 +5,7 @@ import { sportOf, SPORTS, type SportSlug } from '#frontend/data/sports.ts'
 const CROSSFIT = sportOf('crossfit')
 const PADEL = sportOf('padel')
 const FOOTBALL = sportOf('football')
+const RUNNING = sportOf('running')
 
 /** `#0066cc` -> `rgb(0, 102, 204)`: так цвет отдаёт getComputedStyle. */
 const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair) => parseInt(pair, 16)).join(', ')})`
@@ -174,6 +175,30 @@ test('из падела в футбол -- на месте, со своим цв
 	await expect(page.locator('.index__zone-label', { hasText: 'Локоть' })).toHaveCount(0)
 	await expect(page.locator('.index__zone-label', { hasText: 'Голова' })).toHaveCount(1)
 	expect(await samePage(page)).toBe(true)
+})
+
+// Четвёртый спорт: из футбола в бег на месте, зелёный перетекает в оранжевый. Головы и плеча
+// у бега нет, а голень остаётся: её травмы есть у обоих спортов
+test('из футбола в бег -- на месте, со своим цветом и своими зонами', async ({ page }) => {
+	await page.goto('/football/')
+	await markPage(page)
+	await chooseSport(page, 'Футбол', 'Бег')
+
+	await expect(page).toHaveURL(/\/running\/$/)
+	await expect(page.locator('h1')).toHaveText('Боль в беге')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'running')
+	await expect(sportButton(page, 'Бег')).toHaveCSS('color', rgb(RUNNING.accent.light))
+	await expect(page.locator('.index__zone-label', { hasText: 'Голова' })).toHaveCount(0)
+	await expect(page.locator('.index__zone-label', { hasText: 'Плечо' })).toHaveCount(0)
+	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(1)
+	expect(await samePage(page)).toBe(true)
+})
+
+test('страница нагрузки бега собирает её травмы', async ({ page }) => {
+	await page.goto('/running/elements/downhill/')
+	await expect(page.locator('.index__title')).toHaveText('Бег под гору')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'running')
+	await expect(page.locator('a[href="/running/iliotibial-band-syndrome/"]').first()).toBeAttached()
 })
 
 // Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит

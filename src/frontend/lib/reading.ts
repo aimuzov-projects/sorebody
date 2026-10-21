@@ -1,5 +1,6 @@
 import { initFigure3d } from './figure-3d.ts'
 import { keepReadingPlace } from './reading-place.ts'
+import { initSectionLinks } from './section-link.ts'
 import { initSourcesPeek } from './sources-peek.ts'
 import { initArticleTips } from './tip.ts'
 import { initTocMenu } from './toc-menu.ts'
@@ -72,8 +73,8 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	onScroll()
 
 	// Переход к разделу -- из оглавления или ссылкой в тексте, как в пометке "Когда сразу к
-	// врачу", -- плавной прокруткой и без смены хеша: на главной хеш ведёт навигацию между
-	// сценой, зоной и статьёй, и `#urgent` открывал бы сцену вместо раздела
+	// врачу", -- плавной прокруткой. Хеш раздела -- в адрес, заменой: ссылку на раздел можно
+	// скопировать, а "Назад" ведёт со статьи, а не по разделам. "Начало" хеш снимает
 	const onClick = (event: Event) => {
 		const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]')
 		const target = link && root.querySelector(`#${CSS.escape(link.hash.slice(1))}`)
@@ -82,6 +83,13 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 
 		event.preventDefault()
 		target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+
+		if (sections.includes(target))
+			history.replaceState(
+				history.state,
+				'',
+				target.id === 'start' ? `${location.pathname}${location.search}` : `#${target.id}`,
+			)
 	}
 
 	root.addEventListener('click', onClick)
@@ -91,6 +99,7 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	const stopTocMenu = initTocMenu(root)
 	const stopSourcesPeek = initSourcesPeek(root)
 	const stopFigure3d = initFigure3d(root)
+	const stopSectionLinks = initSectionLinks(root)
 
 	return () => {
 		stopPlace()
@@ -98,6 +107,7 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		stopTocMenu()
 		stopSourcesPeek()
 		stopFigure3d()
+		stopSectionLinks()
 		scroller.removeEventListener('scroll', onScroll)
 		root.removeEventListener('click', onClick)
 		cancelAnimationFrame(frame)

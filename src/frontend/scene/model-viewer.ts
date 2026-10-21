@@ -7,7 +7,7 @@ import { IMAGE_HEIGHT, IMAGE_WIDTH } from '#frontend/lib/article-image.ts'
 
 import { LAYERS, partIds } from './detail.ts'
 import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM, type ShaderExtra } from './dissolve.ts'
-import { jointAngle, rigPose, type ModelRig } from './rig.ts'
+import { framePose, frameSpan, jointAngle, rigPose, type ModelRig } from './rig.ts'
 import { createRenderer, createStudioLights, disposeTree, muscleColor, watchTheme } from './studio.ts'
 
 export type ModelViewer = Awaited<ReturnType<typeof createModelViewer>>
@@ -186,8 +186,14 @@ export async function createModelViewer(
 	const joints = new Map(rig.joints.map((joint) => [joint.name, joint]))
 
 	// Кости и мышцы -- в группах суставов: группа несёт поворот, а узел внутри -- свой сдвиг
-	// и масштаб от квантования (build.mjs). Без сустава группа стоит на месте
-	const frames = new Map(rig.joints.map((joint) => [joint.name, new Group()]))
+	// и масштаб от квантования (build.mjs). Без сустава группа стоит на месте. У модели из кадров
+	// расчёта группы -- кости, на которых едут меши
+	const frames = new Map(
+		rig.frames
+			? Object.keys(rig.frames.poses).map((bone) => [bone, new Group()])
+			: rig.joints.map((joint) => [joint.name, new Group()]),
+	)
+	const morphed: Mesh[] = []
 
 	for (const frame of frames.values()) {
 		frame.matrixAutoUpdate = false
@@ -201,7 +207,9 @@ export async function createModelViewer(
 		const layer = group?.layer ?? 'bones'
 		const parts: string[] | undefined = mesh.userData.parts
 
-		mesh.geometry.computeVertexNormals()
+		// Нормали кадров лежат в морфах рядом с нормалями кадра 0, пересчёт разошёлся бы с ними
+		if (mesh.morphTargetInfluences) morphed.push(mesh)
+		else mesh.geometry.computeVertexNormals()
 
 		if (layer === 'bones' && !parts) mesh.material = bones.material
 		else {
@@ -255,8 +263,13 @@ export async function createModelViewer(
 
 		if (group?.toggle) mesh.visible = group.toggle.visible
 
-		;(group?.joint && frames.get(group.joint) ? frames.get(group.joint)! : scene).add(mesh)
+		const frame = frames.get((rig.frames ? group?.bone : group?.joint) ?? '')
+
+		;(frame ?? scene).add(mesh)
 	}
+
+	// Кадр 0, пока ползунок не тронут: с нулевыми весами нормали остались бы средними по кадрам
+	for (const mesh of morphed) mesh.morphTargetInfluences![0] = 1
 
 	// Подсветка травмы: бледнеют все структуры с названиями, кроме названных; если ни одной
 	// из них в модели нет -- не бледнеет никто
@@ -349,6 +362,29 @@ export async function createModelViewer(
 		resize,
 		/** Движение модели на `deg` градусов: суставы делят угол по своим долям. */
 		setMotion(deg: number) {
+			if (rig.frames) {
+				const [i, t] = frameSpan(rig.frames.angles, deg)
+
+				for (const [bone, frame] of frames) {
+					framePose(rig.frames, bone, deg, frame.matrix)
+					frame.matrixWorldNeedsUpdate = true
+				}
+
+				// Цель k -- кадр k. Сумма весов 1: нормаль сетки -- средняя по кадрам, и она сокращается
+				for (const mesh of morphed) {
+					const weights = mesh.morphTargetInfluences!
+
+					weights.fill(0)
+					weights[i] = 1 - t
+
+					if (t > 0) weights[i + 1] = t
+				}
+
+				dirty = true
+
+				return
+			}
+
 			const pose = rigPose(rig, deg)
 
 			for (const [name, frame] of frames) {

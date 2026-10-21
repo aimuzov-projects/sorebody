@@ -9,6 +9,10 @@ images:
       atlas:
           file: Gray438.png
           caption: 'Мышцы задней поверхности голени, поверхностный слой'
+      model:
+          name: leg-foot-right
+          highlight: [calcaneal tendon]
+          direction: [-0.3, 0.1, -1]
 sources:
     - pmid: '33414454'
       label: Millar 2021, обзор по тендинопатиям, Nature Reviews Disease Primers

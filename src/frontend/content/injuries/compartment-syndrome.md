@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray440.png
           caption: 'Поперечный срез голени посередине'
+      model:
+          name: leg-foot-right
+          highlight: [tibialis anterior, extensor digitorum longus, extensor hallucis longus]
+          show: [membrane]
+          direction: [-0.5, 0.1, 1]
+          note: 'Фасций, которые делят голень на футляры, в модели нет; подсвечены мышцы переднего футляра, где синдром бывает чаще всего'
 sources:
     - pmid: '42704783'
       label: Stahel 2026, обзор об остром компартмент-синдроме конечностей

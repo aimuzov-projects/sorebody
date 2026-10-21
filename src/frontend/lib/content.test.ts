@@ -161,11 +161,27 @@ for (const doc of injuries) {
 
 	checkDoc(slug, doc, INJURY_HEADINGS)
 
-	test(`${slug}: images and their atlas plates exist in public/`, () => {
-		for (const { src, atlas } of data.images) {
+	test(`${slug}: images, their atlas plates and 3D models exist in public/`, () => {
+		for (const { src, atlas, model } of data.images) {
 			assert.ok(existsSync(new URL(`.${src}`, `${PUBLIC}/`)), src)
 
 			if (atlas) assert.ok(existsSync(new URL(`.${atlasSrc(atlas.file)}`, `${PUBLIC}/`)), atlas.file)
+
+			if (model) assert.ok(existsSync(new URL(`./model/rig/${model.name}.glb`, `${PUBLIC}/`)), model.name)
+		}
+	})
+
+	// Опечатка в show или hide молча ничего бы не показала и не спрятала
+	test(`${slug}: groups the article shows or hides are in its 3D model`, () => {
+		for (const { model } of data.images) {
+			if (!model) continue
+
+			const glb = readFileSync(new URL(`./model/rig/${model.name}.glb`, `${PUBLIC}/`))
+			const json = JSON.parse(glb.subarray(20, 20 + glb.readUInt32LE(12)).toString('utf8'))
+			const groups = Object.keys(json.scenes[0].extras.rig.groups)
+
+			for (const name of [...(model.show ?? []), ...(model.hide ?? [])])
+				assert.ok(groups.includes(name), `${model.name}: ${name}`)
 		}
 	})
 

@@ -1,0 +1,166 @@
+{
+	"title": "3D-модель локтя",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "humerus",
+			"bp3d": ["right humerus"],
+			"ratio": 0.6,
+			"layer": "bones"
+		},
+		{
+			"name": "forearm",
+			"bp3d": ["right radius", "right ulna"],
+			"ratio": 0.6,
+			"layer": "bones",
+			"joint": "elbow"
+		},
+		{
+			"name": "biceps",
+			"bp3d": ["long head of right biceps brachii", "short head of right biceps brachii"],
+			"ratio": 0.12,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"]
+			},
+			"toggle": {
+				"label": "Двуглавая",
+				"visible": true
+			}
+		},
+		{
+			"name": "brachialis",
+			"bp3d": ["right brachialis"],
+			"ratio": 0.12,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"]
+			}
+		},
+		{
+			"name": "triceps",
+			"bp3d": [
+				"long head of right triceps brachii",
+				"lateral head of right triceps brachii",
+				"medial head of right triceps brachii"
+			],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"]
+			},
+			"toggle": {
+				"label": "Трёхглавая",
+				"visible": true
+			}
+		},
+		{
+			"name": "extensors",
+			"bp3d": [
+				"right extensor carpi radialis longus",
+				"right extensor carpi radialis brevis",
+				"right extensor digitorum",
+				"right extensor carpi ulnaris",
+				"right anconeus",
+				"right supinator",
+				"right brachioradialis"
+			],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"],
+				"reach": 0.03
+			},
+			"toggle": {
+				"label": "Разгибатели",
+				"visible": true
+			}
+		},
+		{
+			"name": "flexors",
+			"bp3d": [
+				"humeral head of right pronator teres",
+				"ulnar head of right pronator teres",
+				"right flexor carpi radialis",
+				"right palmaris longus",
+				"humeral head of right flexor carpi ulnaris",
+				"ulnar head of right flexor carpi ulnaris",
+				"right flexor digitorum superficialis"
+			],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"],
+				"reach": 0.03
+			},
+			"toggle": {
+				"label": "Сгибатели",
+				"visible": true
+			}
+		},
+		{
+			"name": "tendons",
+			"za": ["^right common (extensor|flexor) tendon$"],
+			"ratio": 1,
+			"parts": true,
+			"layer": "tendons"
+		},
+		{
+			"name": "ligaments",
+			"za": ["^right annular ligament of radius$", "^right ulnar collateral ligament$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"]
+			}
+		},
+		{
+			"name": "capsule",
+			"za": ["^right articular capsule of elbow joint$"],
+			"ratio": 0.6,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "elbow",
+				"fixed": ["humerus"]
+			},
+			"toggle": {
+				"label": "Капсула",
+				"visible": false
+			}
+		}
+	],
+	"joints": [
+		{
+			"name": "elbow",
+			"pivot": {
+				"sphere": ["forearm", "humerus"]
+			},
+			"axis": "x",
+			"probe": {
+				"lowest": "forearm"
+			},
+			"toward": "+z",
+			"share": 1
+		}
+	],
+	"view": {
+		"focus": "ligaments",
+		"direction": [-0.4, 0.1, 1],
+		"distance": 11
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки и общие сухожилия: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+}

@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray339.png
           caption: 'Правый тазобедренный сустав спереди'
+      model:
+          name: hip-thigh-right
+          highlight: [acetabular labrum]
+          show: [hip-ligaments]
+          hide: [quadriceps, iliopsoas, adductors]
+          direction: [-0.5, 0.15, 1]
+          note: 'Cam-деформации шейки бедра в модели нет: шейка показана нормальной'
 charts:
     - id: cam-asymptomatic
       title: Бедро не болит, но на снимке есть…

@@ -18,7 +18,7 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
-import { muscleWeights, shoulderRig } from './rig.mjs'
+import { anchorWeights, buildRig, createNearest, muscleWeights } from './rig.mjs'
 import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -250,28 +250,83 @@ if (missing.length) {
 	if (cfg.anchors) fs.writeFileSync(outPath.replace(/\.glb$/, '.anchors.json'), JSON.stringify(anchors, null, 1))
 }
 
-// Плечо для статьи (rig.py): центры и оси суставов -- в extras сцены, веса и сухожилия -- в вершины мышц.
+// 3D-модель для статьи (rig.py): суставы -- в extras сцены, веса и сухожилия -- в вершины мышц и связок.
 // Центры в координатах сцены: квантование повесит на узлы свой сдвиг и масштаб, сцена переводит их обратно.
 // До упрощения: meshopt выбрасывает вершины, но не двигает их, и атрибуты остаются верными
 if (cfg.rig) {
-	const points = (name) => prims[name].getAttribute('POSITION').getArray()
-	const girdle = Float32Array.from(cfg.rig.fixed.flatMap((name) => [...points(name)]))
-	const rig = shoulderRig({
-		clavicle: points(cfg.rig.clavicle),
-		scapula: points(cfg.rig.scapula),
-		humerus: points(cfg.rig.moving),
-	})
+	const points = Object.fromEntries(
+		Object.entries(prims).map(([name, prim]) => [name, prim.getAttribute('POSITION').getArray()]),
+	)
+	const joints = buildRig(cfg.rig.joints, points)
+	const merge = (names) => Float32Array.from(names.flatMap((name) => [...points[name]]))
 
-	console.log('rig', rig)
-	scene.setExtras({ rig })
+	console.log('rig', JSON.stringify(joints, null, 1))
 
-	for (const name of cfg.rig.weighted) {
-		const { weight, tendon } = muscleWeights(points(name), girdle, points(cfg.rig.moving))
+	const share = (anchors) => Object.entries(anchors).map(([bone, share]) => ({ points: points[bone], share }))
+
+	for (const [name, group] of Object.entries(cfg.rig.groups)) {
+		// Мышца между неподвижной грудной клеткой и лопаткой (широчайшая над нижним углом): `_FOLLOW` --
+		// насколько вершина идёт за суставом `follow.joint` целиком, от 0 у рёбер до 1 у лопатки
+		if (group.follow) {
+			const { weight } = anchorWeights(points[name], share(group.follow.anchors))
+			// Частичный вес смешивает два положения и уводит вершину под рёбра: между `edge` [lo, hi]
+			// вес сжимается к 0 или 1, и смешанной остаётся узкая полоса
+			const [lo, hi] = group.follow.edge ?? [0, 1]
+
+			for (let i = 0; i < weight.length; i++) {
+				const t = Math.min(1, Math.max(0, (weight[i] - lo) / (hi - lo)))
+
+				weight[i] = t * t * (3 - 2 * t)
+			}
+
+			prims[name].setAttribute(
+				'_FOLLOW',
+				doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer),
+			)
+		}
+
+		if (!group.weighted) continue
+
+		// Подвижная -- кости, которые идут за суставом; неподвижная -- те, от которых мышца начинается
+		const moving =
+			group.weighted.moving ??
+			Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
+		const { anchors } = group.weighted
+		const { weight, tendon } = anchors
+			? anchorWeights(points[name], share(anchors))
+			: muscleWeights(points[name], merge(group.weighted.fixed), merge(moving), group.weighted.reach)
+		// Связка между двумя подвижными костями (надколенника: надколенник идёт на 2/3 угла колена,
+		// большеберцовая -- на весь): вес от доли одной кости до доли другой
+		const [lo, hi] = group.weighted.range ?? [0, 1]
+
+		for (let i = 0; i < weight.length; i++) weight[i] = lo + (hi - lo) * weight[i]
+
+		// Брюшко лежит на неподвижной кости, а за суставом идёт только конец у подвижной: дальше
+		// `falloff` [от, до] метров от подвижных костей вес гаснет. Иначе поверхностный слой мышцы
+		// в паре сантиметров от бедра получал частичный вес по всей длине, и четырёхглавая
+		// с подвздошно-большеберцовым трактом сгибались посреди бедра
+		if (group.weighted.falloff) {
+			const [from, to] = group.weighted.falloff
+			const bones = anchors ? Object.keys(anchors).filter((bone) => anchors[bone] > 0) : moving
+			const near = createNearest(merge(bones))
+			const p = points[name]
+
+			for (let i = 0; i < weight.length; i++) {
+				const t = Math.min(1, Math.max(0, (near(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]) - from) / (to - from)))
+
+				weight[i] *= 1 - t * t * (3 - 2 * t)
+			}
+		}
+
 		const prim = prims[name]
 
 		prim.setAttribute('_WEIGHT', doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer))
 		prim.setAttribute('_TENDON', doc.createAccessor().setType('SCALAR').setArray(tendon).setBuffer(buffer))
 	}
+
+	scene.setExtras({
+		rig: { ...cfg.rig, joints },
+	})
 }
 
 // Оставляем треугольники, у которых хоть одна вершина в сфере `clip`. Слои из `skinClip.groups`

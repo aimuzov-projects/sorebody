@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray347.png
           caption: 'Правое колено спереди, внутренние связки'
+      model:
+          name: knee-right
+          highlight: [superficial part of tibial collateral ligament, deep part of tibial collateral ligament]
+          hide: [quadriceps]
+          direction: [0.7, 0.1, 1]
+          note: 'Сухожилия портняжной, нежной и полусухожильной мышц, которые лежат поверх связки, в модели не показаны'
 sources:
     - pmid: '34239952'
       label: Vosoughi 2021, обзор современных представлений о травме медиальной коллатеральной связки

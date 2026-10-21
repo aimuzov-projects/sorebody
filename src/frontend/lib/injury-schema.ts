@@ -65,7 +65,20 @@ export const injurySchema = z.strictObject({
 			atlas: z.strictObject({ file: z.string().regex(ATLAS_FILE), caption: z.string().min(10) }).optional(),
 			// 3D-модель той же области: в углу иллюстрации кнопка, по ней фото сменяет модель
 			// (public/model/rig/<name>.glb, scripts/model/rig.py)
-			model: z.strictObject({ name: z.literal('shoulder-right') }).optional(),
+			model: z
+				.strictObject({
+					name: z.string().regex(/^[a-z0-9-]+$/),
+					// Названия структур травмы, как в BodyParts3D и Z-Anatomy без стороны: остаются цветными
+					highlight: z.array(z.string().min(3)).default([]),
+					// Группы модели, видимые сразу или спрятанные сразу, вопреки описателю (rigs/<name>.json)
+					show: z.array(z.string()).default([]),
+					hide: z.array(z.string()).default([]),
+					// Откуда смотрит камера: x наружу у левой стороны, y вверх, z вперёд. Без него -- из описателя
+					direction: z.tuple([z.number(), z.number(), z.number()]).optional(),
+					// Добавка к (i) модели: чего в ней нет или что упрощено именно для этой травмы
+					note: z.string().min(10).optional(),
+				})
+				.optional(),
 		}),
 	),
 	charts: chartsSchema,

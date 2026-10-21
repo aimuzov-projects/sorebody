@@ -1,0 +1,195 @@
+{
+	"title": "3D-модель головы и шеи",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "cranium",
+			"bp3d": [
+				"frontal bone",
+				"occipital bone",
+				"sphenoid bone",
+				"right parietal bone",
+				"left parietal bone",
+				"right temporal bone",
+				"left temporal bone"
+			],
+			"ratio": 0.15,
+			"layer": "bones",
+			"toggle": {
+				"label": "Свод черепа",
+				"visible": true
+			}
+		},
+		{
+			"name": "face",
+			"bp3d": [
+				"ethmoid",
+				"vomer",
+				"mandible",
+				"hyoid bone",
+				"right zygomatic bone",
+				"left zygomatic bone",
+				"right nasal bone",
+				"left nasal bone",
+				"right lacrimal bone",
+				"left lacrimal bone",
+				"right palatine bone",
+				"left palatine bone",
+				"right maxilla",
+				"left maxilla",
+				"right inferior nasal concha",
+				"left inferior nasal concha"
+			],
+			"ratio": 0.2,
+			"layer": "bones"
+		},
+		{
+			"name": "spine",
+			"bp3d": [
+				"atlas",
+				"axis",
+				"third cervical vertebra",
+				"fourth cervical vertebra",
+				"fifth cervical vertebra",
+				"sixth cervical vertebra",
+				"seventh cervical vertebra"
+			],
+			"ratio": 0.4,
+			"layer": "bones"
+		},
+		{
+			"name": "teeth",
+			"bp3d": ["tooth"],
+			"ratio": 0.2,
+			"parts": true,
+			"layer": "bones",
+			"toggle": {
+				"label": "Зубы",
+				"visible": true
+			},
+			"inset": 0.001
+		},
+		{
+			"name": "brain",
+			"bp3d": [
+				"left angular gyrus",
+				"left cingulate gyrus",
+				"left fusiform gyrus",
+				"left inferior frontal gyrus",
+				"left inferior temporal gyrus",
+				"left middle frontal gyrus",
+				"left middle temporal gyrus",
+				"left occipital lobe",
+				"left parahippocampal gyrus",
+				"left postcentral gyrus",
+				"left precentral gyrus",
+				"left superior frontal gyrus",
+				"left superior parietal lobule",
+				"left supramarginal gyrus",
+				"right angular gyrus",
+				"right cingulate gyrus",
+				"right fusiform gyrus",
+				"right inferior frontal gyrus",
+				"right inferior temporal gyrus",
+				"right middle frontal gyrus",
+				"right middle temporal gyrus",
+				"right occipital lobe",
+				"right parahippocampal gyrus",
+				"right postcentral gyrus",
+				"right precentral gyrus",
+				"right superior frontal gyrus",
+				"right superior parietal lobule",
+				"right supramarginal gyrus",
+				"cerebellum",
+				"pons",
+				"midbrain",
+				"medulla oblongata"
+			],
+			"ratio": 0.03,
+			"parts": true,
+			"layer": "brain",
+			"toggle": {
+				"label": "Мозг",
+				"visible": true
+			}
+		},
+		{
+			"name": "eyes",
+			"bp3d": [
+				"right cornea",
+				"left cornea",
+				"right sclera",
+				"left sclera",
+				"right choroid",
+				"left choroid",
+				"right iris",
+				"left iris",
+				"right lens",
+				"left lens",
+				"right vitreous body",
+				"left vitreous body",
+				"optic part of right retina",
+				"optic part of left retina",
+				"right optic nerve",
+				"left optic nerve"
+			],
+			"ratio": 0.12,
+			"parts": true,
+			"layer": "eye"
+		},
+		{
+			"name": "eye-muscles",
+			"bp3d": [
+				"right superior rectus",
+				"left superior rectus",
+				"right inferior rectus",
+				"left inferior rectus",
+				"right medial rectus",
+				"left medial rectus",
+				"right lateral rectus",
+				"left lateral rectus"
+			],
+			"ratio": 0.4,
+			"parts": true,
+			"layer": "muscles"
+		},
+		{
+			"name": "arteries",
+			"bp3d": [
+				"right internal carotid artery",
+				"left internal carotid artery",
+				"right common carotid artery",
+				"left common carotid artery",
+				"right vertebral artery",
+				"left vertebral artery",
+				"basilar artery"
+			],
+			"ratio": 0.3,
+			"parts": true,
+			"layer": "arteries",
+			"toggle": {
+				"label": "Артерии",
+				"visible": false
+			}
+		},
+		{
+			"name": "neck-muscles",
+			"bp3d": ["right sternocleidomastoid", "left sternocleidomastoid"],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Мышцы шеи",
+				"visible": true
+			}
+		}
+	],
+	"joints": [],
+	"view": {
+		"focus": "cranium",
+		"direction": [-1, 0.15, 0.4],
+		"distance": 2.8
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP. Модель без движения; мозг собран из извилин, борозды между ними видны щелями"
+}

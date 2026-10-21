@@ -9,6 +9,10 @@ images:
       atlas:
           file: Gray1237.png
           caption: 'Ладонь левой руки: кожные складки и кости'
+      model:
+          name: wrist-hand-right
+          direction: [0, 0.1, 1]
+          note: 'Кожи ладони и мозолей в модели нет: показаны кости, связки и сухожилия под ней'
 sources:
     - pmid: '28671402'
       label: Forsch 2017, обзор по ведению рваных ран

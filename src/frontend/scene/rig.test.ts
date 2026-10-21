@@ -1,72 +1,89 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { Vector3 } from 'three'
 
-import { MAX_ELEVATION, rigPose, rotationAbout, splitElevation, type ShoulderRig } from './rig.ts'
+import { jointAngle, rigPose, rotationAbout, type ModelRig } from './rig.ts'
+
+const DIR = 'public/model/rig'
 
 /** Rig из extras сцены в JSON-чанке GLB: геометрию для этого распаковывать не нужно. */
-function readRig(): ShoulderRig {
-	const glb = readFileSync('public/model/rig/shoulder-right.glb')
+function readRig(file: string): ModelRig {
+	const glb = readFileSync(`${DIR}/${file}`)
 	const length = glb.readUInt32LE(12)
 	const json = JSON.parse(glb.subarray(20, 20 + length).toString('utf8'))
 
 	return json.scenes[0].extras.rig
 }
 
-const rig = readRig()
+const models = readdirSync(DIR)
+	.filter((file) => file.endsWith('.glb'))
+	.map((file) => [file, readRig(file)] as const)
 const near = (a: Vector3, b: Vector3, eps = 1e-6) => a.distanceTo(b) < eps
 
-test('подъём руки делится на сустав и лопатку два к одному и упирается в предел', () => {
-	assert.deepEqual(splitElevation(90), { gh: 60, scapula: 30, clavicle: 10 })
-	assert.equal(splitElevation(400).gh + splitElevation(400).scapula, MAX_ELEVATION)
-	assert.deepEqual(splitElevation(-10), { gh: 0, scapula: 0, clavicle: 0 })
+test('в public/model/rig есть хотя бы одна модель', () => {
+	assert.ok(models.length > 0)
 })
 
 test('поворот вокруг оси не сдвигает её центр', () => {
-	const center = new Vector3(...rig.head)
+	const center = new Vector3(0.1, 1.2, -0.05)
 
-	assert.ok(near(center.clone().applyMatrix4(rotationAbout(rig.head, rig.ghAxis, 70)), center))
+	assert.ok(near(center.clone().applyMatrix4(rotationAbout(center.toArray(), [0, 0, 1], 70)), center))
 })
 
-test('в покое кости стоят на месте', () => {
-	const pose = rigPose(rig, 0)
-	const p = new Vector3(0.1, 1.2, -0.05)
+for (const [file, rig] of models) {
+	test(`${file}: в покое кости стоят на месте`, () => {
+		const p = new Vector3(0.1, 1.2, -0.05)
 
-	for (const m of [pose.clavicle, pose.scapula, pose.humerus]) assert.ok(near(p.clone().applyMatrix4(m), p))
-})
+		for (const matrix of rigPose(rig, 0).values()) assert.ok(near(p.clone().applyMatrix4(matrix), p))
+	})
 
-test('при любом подъёме суставы не расходятся', () => {
-	for (const total of [30, 90, MAX_ELEVATION]) {
-		const pose = rigPose(rig, total)
-		const ac = new Vector3(...rig.ac)
-		const head = new Vector3(...rig.head)
+	test(`${file}: при любом угле сустав остаётся общей точкой двух костей`, () => {
+		if (!rig.motion) return
 
-		// Акромиально-ключичный сустав -- общая точка ключицы и лопатки
-		assert.ok(near(ac.clone().applyMatrix4(pose.clavicle), ac.clone().applyMatrix4(pose.scapula)))
-		// Головка остаётся во впадине лопатки: её центр плечевая кость и лопатка ведут одинаково
-		assert.ok(near(head.clone().applyMatrix4(pose.humerus), head.clone().applyMatrix4(pose.scapula)))
-	}
-})
+		for (const total of [rig.motion.max / 3, rig.motion.max]) {
+			const pose = rigPose(rig, total)
 
-test('рука поднимается вбок и вверх, а лопатка поворачивается нижним углом наружу', () => {
-	const pose = rigPose(rig, 90)
-	// Точка на плечевой кости в 25 см под головкой: примерно локоть
-	const elbow = new Vector3(...rig.head).add(new Vector3(0, -0.25, 0))
-	const moved = elbow.clone().applyMatrix4(pose.humerus)
+			for (const joint of rig.joints) {
+				const pivot = new Vector3(...joint.pivot)
+				const parent = joint.parent ? pose.get(joint.parent)!.clone() : null
+				const own = pivot.clone().applyMatrix4(pose.get(joint.name)!)
 
-	assert.ok(moved.y > elbow.y + 0.15, `локоть поднялся на ${(moved.y - elbow.y).toFixed(3)} м`)
-	// Правая сторона на -X: наружу -- к меньшему X
-	assert.ok(moved.x < elbow.x, 'локоть ушёл наружу')
+				assert.ok(near(own, parent ? pivot.clone().applyMatrix4(parent) : pivot), `${joint.name} на ${total}°`)
+			}
+		}
+	})
 
-	const angle = new Vector3(...rig.ac).add(new Vector3(0.05, -0.15, 0))
+	test(`${file}: положительный угол ведёт кость в сторону, заданную описателем`, () => {
+		if (!rig.motion) return
 
-	assert.ok(angle.clone().applyMatrix4(pose.scapula).x < angle.x, 'нижний угол лопатки ушёл наружу')
-})
+		for (const joint of rig.joints) {
+			// Только свой поворот сустава: родительский может уводить точку и в другую сторону
+			const probe = new Vector3(...joint.probe)
+			const moved = probe.clone().applyMatrix4(rotationAbout(joint.pivot, joint.axis, jointAngle(rig, joint, 30)))
+			const k = 'xyz'.indexOf(joint.toward[1]) as 0 | 1 | 2
+			const sign = joint.toward[0] === '-' ? -1 : 1
 
-test('центр головки лежит в пределах головки плечевой кости, оси единичные', () => {
-	assert.ok(rig.radius > 0.018 && rig.radius < 0.03, `радиус ${rig.radius}`)
+			assert.ok((moved.getComponent(k) - probe.getComponent(k)) * sign > 0, `${joint.name} → ${joint.toward}`)
+		}
+	})
 
-	for (const axis of [rig.ghAxis, rig.scapulaAxis, rig.clavicleAxis])
-		assert.ok(Math.abs(new Vector3(...axis).length() - 1) < 1e-3)
-})
+	test(`${file}: оси единичные, у каждой группы известный слой и сустав`, () => {
+		const joints = new Set(rig.joints.map((joint) => joint.name))
+
+		for (const joint of rig.joints) assert.ok(Math.abs(new Vector3(...joint.axis).length() - 1) < 1e-3)
+
+		for (const [name, group] of Object.entries(rig.groups)) {
+			assert.ok(group.layer, `${name}: слой`)
+
+			if (group.joint) assert.ok(joints.has(group.joint), `${name}: сустав ${group.joint}`)
+
+			if (group.weighted) assert.ok(joints.has(group.weighted.joint), `${name}: вес по ${group.weighted.joint}`)
+		}
+	})
+
+	test(`${file}: у радиуса головки правдоподобный размер`, () => {
+		for (const joint of rig.joints)
+			if (joint.radius) assert.ok(joint.radius > 0.005 && joint.radius < 0.04, `${joint.name}: ${joint.radius}`)
+	})
+}

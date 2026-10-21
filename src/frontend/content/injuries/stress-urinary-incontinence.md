@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray1166.png
           caption: 'Срединный разрез женского таза'
+      model:
+          name: hip-thigh-right
+          highlight: [coccygeus, iliococcygeus, pubococcygeus, puborectalis]
+          show: [pelvic-floor]
+          hide: [femur, adductors, hamstrings, quadriceps, gluteals, iliopsoas]
+          direction: [0.15, 1, 0.45]
+          note: 'Органов малого таза в модели нет, а таз в BodyParts3D мужской: показаны только мышцы тазового дна сверху'
 charts:
     - id: pfmt-cure
       title: Тренировка тазового дна при стрессовом недержании

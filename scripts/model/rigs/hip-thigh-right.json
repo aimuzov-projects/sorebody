@@ -1,0 +1,223 @@
+{
+	"title": "3D-модель таза и бедра",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "pelvis",
+			"bp3d": ["right hip bone", "left hip bone", "sacrum"],
+			"za": ["^interpubic disc$"],
+			"ratio": 0.5,
+			"layer": "bones"
+		},
+		{
+			"name": "femur",
+			"bp3d": ["right femur"],
+			"ratio": 0.6,
+			"layer": "bones",
+			"joint": "hip"
+		},
+		{
+			"name": "adductors",
+			"bp3d": [
+				"right adductor longus",
+				"right adductor brevis",
+				"right adductor magnus",
+				"right pectineus",
+				"right gracilis"
+			],
+			"ratio": 0.05,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"],
+				"reach": 0.05
+			},
+			"toggle": {
+				"label": "Приводящие",
+				"visible": true
+			}
+		},
+		{
+			"name": "hamstrings",
+			"bp3d": [
+				"long head of right biceps femoris",
+				"short head of right biceps femoris",
+				"right semitendinosus",
+				"right semimembranosus"
+			],
+			"ratio": 0.05,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"],
+				"reach": 0.06
+			},
+			"toggle": {
+				"label": "Задняя группа",
+				"visible": true
+			}
+		},
+		{
+			"name": "quadriceps",
+			"bp3d": [
+				"right rectus femoris",
+				"right vastus lateralis",
+				"right vastus medialis",
+				"right vastus intermedius",
+				"right sartorius"
+			],
+			"ratio": 0.04,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"],
+				"reach": 0.05
+			},
+			"toggle": {
+				"label": "Передняя группа",
+				"visible": true
+			}
+		},
+		{
+			"name": "gluteals",
+			"bp3d": [
+				"right gluteus maximus",
+				"right gluteus medius",
+				"right gluteus minimus",
+				"right tensor fasciae latae",
+				"right piriformis",
+				"right quadratus femoris"
+			],
+			"ratio": 0.05,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"]
+			},
+			"toggle": {
+				"label": "Ягодичные",
+				"visible": true
+			}
+		},
+		{
+			"name": "iliopsoas",
+			"bp3d": ["right iliacus", "right psoas major"],
+			"ratio": 0.07,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"]
+			},
+			"toggle": {
+				"label": "Подвздошно-поясничная",
+				"visible": false
+			}
+		},
+		{
+			"name": "abdominal",
+			"bp3d": ["right external oblique"],
+			"za": [
+				"^right internal abdominal oblique muscle$",
+				"^right transversus abdominis muscle$",
+				"^right rectus abdominis muscle$"
+			],
+			"ratio": 0.025,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Мышцы живота",
+				"visible": false
+			}
+		},
+		{
+			"name": "pelvic-floor",
+			"bp3d": [
+				"right coccygeus",
+				"left coccygeus",
+				"right iliococcygeus",
+				"left iliococcygeus",
+				"right pubococcygeus",
+				"left pubococcygeus",
+				"right puborectalis",
+				"left puborectalis"
+			],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Тазовое дно",
+				"visible": false
+			}
+		},
+		{
+			"name": "hip-ligaments",
+			"za": [
+				"^right acetabular labrum$",
+				"^right articular capsule of hip joint$",
+				"^right (descending|transverse) part of iliofemoral ligament$",
+				"^right (pubofemoral|ischiofemoral) ligament$"
+			],
+			"ratio": 0.6,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"]
+			},
+			"toggle": {
+				"label": "Связки и губа",
+				"visible": false
+			}
+		},
+		{
+			"name": "pelvic-ligaments",
+			"za": ["^right inguinal ligament$", "^right (sacrotuberous|sacrospinous) ligament$"],
+			"ratio": 0.6,
+			"parts": true,
+			"layer": "ligaments"
+		},
+		{
+			"name": "nerves",
+			"za": ["^right lateral femoral cutaneous nerve$", "^right sciatic nerve$"],
+			"ratio": 0.6,
+			"parts": true,
+			"layer": "nerves",
+			"weighted": {
+				"joint": "hip",
+				"fixed": ["pelvis"],
+				"reach": 0.06
+			},
+			"toggle": {
+				"label": "Нервы",
+				"visible": false
+			}
+		}
+	],
+	"joints": [
+		{
+			"name": "hip",
+			"pivot": {
+				"sphere": ["femur", "pelvis"]
+			},
+			"axis": "x",
+			"probe": {
+				"lowest": "femur"
+			},
+			"toward": "+z",
+			"share": 1
+		}
+	],
+	"view": {
+		"focus": "pelvis",
+		"toward": "hip",
+		"direction": [-0.45, 0.1, 1],
+		"distance": 2.4
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки, губа, нервы и часть мышц живота: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+}

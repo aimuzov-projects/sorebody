@@ -13,6 +13,19 @@ import { probeWebGL } from '#frontend/scene/gpu.ts'
  * Открытая модель -- шаг в истории с тем же адресом: на телефоне её закрывают жестом «Назад»,
  * и он не должен уводить со статьи. Главная на этот шаг не реагирует: хеш тот же.
  */
+/**
+ * Модель у иллюстрации: адрес GLB, структуры травмы для подсветки, группы, видимые и спрятанные
+ * сразу, откуда смотреть (как на иллюстрации) и пометка статьи для (i).
+ */
+export type FigureModel = {
+	url: string
+	highlight: string[]
+	show: string[]
+	hide: string[]
+	direction?: [number, number, number]
+	note?: string
+}
+
 export function initFigure3d(root: Element) {
 	const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-figure-3d]')]
 
@@ -23,7 +36,7 @@ export function initFigure3d(root: Element) {
 	// Крестик и Esc закрывают через историю: шаг модели уходит, и «Вперёд» её не вернёт
 	const requestClose = () => (history.state?.figure3d ? history.back() : close?.())
 
-	async function open(button: HTMLButtonElement) {
+	async function open(button: HTMLButtonElement, byPointer: boolean) {
 		if (close) return
 
 		// Пока грузится компонент, второе нажатие не откроет вторую модель
@@ -33,7 +46,7 @@ export function initFigure3d(root: Element) {
 		const { default: Figure3d } = await import('#frontend/components/figure-3d.svelte')
 		const component = mount(Figure3d, {
 			target: button.parentElement!,
-			props: { modelUrl: button.getAttribute('data-figure-3d')!, onclose: requestClose },
+			props: { model: JSON.parse(button.getAttribute('data-figure-3d')!) as FigureModel, onclose: requestClose },
 		})
 
 		history.pushState({ ...history.state, figure3d: true }, '')
@@ -43,12 +56,22 @@ export function initFigure3d(root: Element) {
 			removeEventListener('popstate', onHistory)
 			close = null
 			void unmount(component)
+
+			// Фокус возвращается на кнопку. Если модель открыли мышью или пальцем, рамки фокуса нет:
+			// после Esc браузер нарисовал бы её, будто кнопку выбрали Tab. Рамка вернётся,
+			// когда фокус уйдёт с кнопки
+			if (byPointer) {
+				button.dataset.quietFocus = ''
+				button.addEventListener('blur', () => delete button.dataset.quietFocus, { once: true })
+			}
+
 			button.focus()
 		}
 	}
 
 	const listeners = buttons.map((button) => {
-		const onClick = () => void open(button)
+		// Нажатие Enter или пробела на кнопке -- click с detail 0
+		const onClick = (event: MouseEvent) => void open(button, event.detail > 0)
 
 		button.hidden = false
 		button.addEventListener('click', onClick)

@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray434.png
           caption: 'Мышцы ягодичной области и задней поверхности бедра'
+      model:
+          name: hip-thigh-right
+          highlight: [long head of biceps femoris, short head of biceps femoris, semitendinosus, semimembranosus]
+          hide: [gluteals]
+          direction: [-0.3, 0.1, -1]
+          note: 'Ягодичные мышцы спрятаны, чтобы было видно начало задней группы на седалищном бугре; колена в модели нет, поэтому мышцы обрываются у его уровня'
 sources:
     - pmid: '30356646'
       label: Erickson 2017, обзор реабилитации и возвращения в спорт после растяжения

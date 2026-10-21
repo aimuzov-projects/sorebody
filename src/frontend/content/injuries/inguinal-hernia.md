@@ -9,6 +9,13 @@ images:
       atlas:
           file: Gray1146.png
           caption: 'Семенной канатик в паховом канале'
+      model:
+          name: hip-thigh-right
+          highlight:
+              [inguinal ligament, external oblique, internal abdominal oblique muscle, transversus abdominis muscle]
+          show: [abdominal]
+          direction: [0.1, 0.1, 1]
+          note: 'Пахового канала, семенного канатика и самой грыжи в модели нет; подсвечены паховая связка и мышцы живота, из которых складываются стенки канала'
 sources:
     - pmid: '40610521'
       label: Rosenberg 2025, обзор паховых грыж в Nature Reviews Disease Primers

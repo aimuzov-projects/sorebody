@@ -9,6 +9,10 @@ images:
       atlas:
           file: Gray203.png
           caption: 'Левая лопатка сзади'
+      model:
+          name: shoulder-right
+          hide: [muscles]
+          note: 'Трещин в модели нет: кости показаны целыми'
 sources:
     - pmid: '17414993'
       label: Fredericson 2006, обзор стрессовых переломов у спортсменов

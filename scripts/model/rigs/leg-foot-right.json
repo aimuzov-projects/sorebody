@@ -1,0 +1,201 @@
+{
+	"title": "3D-модель голени и стопы",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "leg",
+			"bp3d": ["right tibia", "right fibula"],
+			"ratio": 0.6,
+			"layer": "bones"
+		},
+		{
+			"name": "foot",
+			"bp3d": [
+				"right talus",
+				"right calcaneus",
+				"navicular bone of right foot",
+				"right cuboid bone",
+				"right medial cuneiform bone",
+				"right intermediate cuneiform bone",
+				"right lateral cuneiform bone",
+				"right first metatarsal bone",
+				"right second metatarsal bone",
+				"right third metatarsal bone",
+				"right fourth metatarsal bone",
+				"right fifth metatarsal bone",
+				"distal phalanx of right big toe",
+				"distal phalanx of right fourth toe",
+				"distal phalanx of right little toe",
+				"distal phalanx of right second toe",
+				"distal phalanx of right third toe",
+				"middle phalanx of right fourth toe",
+				"middle phalanx of right little toe",
+				"middle phalanx of right second toe",
+				"middle phalanx of right third toe",
+				"proximal phalanx of right big toe",
+				"proximal phalanx of right fourth toe",
+				"proximal phalanx of right little toe",
+				"proximal phalanx of right second toe",
+				"proximal phalanx of right third toe"
+			],
+			"ratio": 0.6,
+			"layer": "bones",
+			"joint": "ankle"
+		},
+		{
+			"name": "calf",
+			"bp3d": [
+				"lateral head of right gastrocnemius",
+				"medial head of right gastrocnemius",
+				"right soleus",
+				"right plantaris"
+			],
+			"ratio": 0.07,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			},
+			"toggle": {
+				"label": "Икроножная и камбаловидная",
+				"visible": true
+			}
+		},
+		{
+			"name": "achilles",
+			"bp3d": ["right calcaneal tendon"],
+			"ratio": 0.4,
+			"parts": true,
+			"layer": "tendons",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			}
+		},
+		{
+			"name": "anterior",
+			"bp3d": [
+				"right tibialis anterior",
+				"right extensor digitorum longus",
+				"right extensor hallucis longus",
+				"right fibularis tertius"
+			],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			},
+			"toggle": {
+				"label": "Передняя группа",
+				"visible": true
+			}
+		},
+		{
+			"name": "fibularis",
+			"bp3d": ["right fibularis longus", "right fibularis brevis"],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			},
+			"toggle": {
+				"label": "Малоберцовые",
+				"visible": true
+			}
+		},
+		{
+			"name": "deep-posterior",
+			"bp3d": ["right tibialis posterior", "right flexor digitorum longus", "right flexor hallucis longus"],
+			"ratio": 0.08,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			},
+			"toggle": {
+				"label": "Глубокие задние",
+				"visible": false
+			}
+		},
+		{
+			"name": "lateral-ligaments",
+			"za": ["^right (anterior|posterior) talofibular ligament$", "^right calcaneofibular ligament$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			}
+		},
+		{
+			"name": "medial-ligaments",
+			"za": [
+				"^right posterior tibiotalar ligament$",
+				"^right tibiocalcaneal ligament$",
+				"^right tibionavicular ligament$"
+			],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "ankle",
+				"fixed": ["leg"]
+			}
+		},
+		{
+			"name": "syndesmosis",
+			"za": ["^right (anterior|posterior|transverse) tibiofibular ligament$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments"
+		},
+		{
+			"name": "plantar-fascia",
+			"za": ["^right plantar aponeurosis$"],
+			"ratio": 0.8,
+			"parts": true,
+			"layer": "ligaments",
+			"joint": "ankle"
+		},
+		{
+			"name": "membrane",
+			"za": ["^right interosseous membrane of leg$"],
+			"ratio": 0.5,
+			"parts": true,
+			"layer": "ligaments",
+			"toggle": {
+				"label": "Межкостная мембрана",
+				"visible": false
+			}
+		}
+	],
+	"joints": [
+		{
+			"name": "ankle",
+			"pivot": {
+				"sphere": ["foot", "leg"]
+			},
+			"axis": "x",
+			"probe": {
+				"frontmost": "foot"
+			},
+			"toward": "-y",
+			"share": 1
+		}
+	],
+	"view": {
+		"focus": "leg",
+		"toward": "ankle",
+		"direction": [-0.6, 0.1, 1],
+		"distance": 2.4
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки и подошвенный апоневроз: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+}

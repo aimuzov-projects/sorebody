@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray220.png
           caption: 'Кости кисти'
+      model:
+          name: wrist-hand-right
+          hide: [extensors]
+          direction: [0, 0.15, -1]
+          note: 'Переломов и связок пальцев в модели нет: показаны кости кисти и связки запястья'
 sources:
     - pmid: '37963039'
       label: Cavalcanti Kussmaul 2023, обзор лечения закрытых переломов пальцев и пястных костей

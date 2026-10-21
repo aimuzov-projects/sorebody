@@ -9,6 +9,12 @@ images:
       atlas:
           file: Gray355.png
           caption: 'Связки стопы снаружи'
+      model:
+          name: leg-foot-right
+          highlight: [anterior talofibular ligament, calcaneofibular ligament]
+          hide: [fibularis]
+          direction: [-1, 0.15, 0.3]
+          note: 'Малоберцовые мышцы спрятаны, чтобы были видны наружные связки голеностопа; разрыва в модели нет'
 sources:
     - pmid: '33362991'
       label: Halabchi 2020, обзор острого растяжения голеностопа у спортсменов

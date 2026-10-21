@@ -1,0 +1,179 @@
+{
+	"title": "3D-модель плеча",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "clavicle",
+			"bp3d": ["right clavicle"],
+			"ratio": 0.5,
+			"layer": "bones",
+			"joint": "sc"
+		},
+		{
+			"name": "scapula",
+			"bp3d": ["right scapula"],
+			"ratio": 0.3,
+			"layer": "bones",
+			"joint": "ac"
+		},
+		{
+			"name": "humerus",
+			"bp3d": ["right humerus"],
+			"ratio": 0.4,
+			"layer": "bones",
+			"joint": "gh"
+		},
+		{
+			"name": "muscles",
+			"bp3d": ["right supraspinatus", "right infraspinatus muscle", "right teres minor", "right subscapularis"],
+			"ratio": 0.25,
+			"parts": true,
+			"layer": "muscles",
+			"joint": "ac",
+			"weighted": {
+				"joint": "gh",
+				"fixed": ["clavicle", "scapula"]
+			}
+		},
+		{
+			"name": "biceps",
+			"bp3d": ["long head of right biceps brachii", "short head of right biceps brachii"],
+			"ratio": 0.25,
+			"parts": true,
+			"layer": "muscles",
+			"joint": "ac",
+			"weighted": {
+				"joint": "gh",
+				"fixed": ["clavicle", "scapula"],
+				"reach": 0.05
+			},
+			"toggle": {
+				"label": "Двуглавая",
+				"visible": false
+			}
+		},
+		{
+			"name": "deltoid",
+			"bp3d": [
+				"clavicular part of right deltoid",
+				"acromial part of right deltoid",
+				"spinal part of right deltoid"
+			],
+			"ratio": 0.25,
+			"parts": true,
+			"layer": "muscles",
+			"joint": "ac",
+			"weighted": {
+				"joint": "gh",
+				"fixed": ["clavicle", "scapula"]
+			},
+			"toggle": {
+				"label": "Дельтовидная",
+				"visible": false
+			}
+		},
+		{
+			"name": "girdle-ligaments",
+			"za": [
+				"^right glenoid labrum$",
+				"^right coraco-acromial ligament$",
+				"^right acromioclavicular ligament$",
+				"^right articular capsule of acromioclavicular joint$",
+				"^right (conoid|trapezoid) ligament$",
+				"^right superior transverse scapular ligament$"
+			],
+			"ratio": 0.5,
+			"parts": true,
+			"layer": "ligaments",
+			"joint": "ac",
+			"toggle": {
+				"label": "Связки и губа",
+				"visible": false
+			}
+		},
+		{
+			"name": "joint-ligaments",
+			"za": [
+				"^right articular capsule of glenohumeral joint$",
+				"^right (superior|middle|inferior) glenohumeral ligament$",
+				"^right coracohumeral ligament$",
+				"^right transverse humeral ligament$"
+			],
+			"ratio": 0.5,
+			"parts": true,
+			"layer": "ligaments",
+			"joint": "ac",
+			"weighted": {
+				"joint": "gh",
+				"fixed": ["scapula"]
+			},
+			"toggle": {
+				"label": "Капсула",
+				"visible": false
+			}
+		},
+		{
+			"name": "bursa",
+			"za": ["^right subacromial bursa$"],
+			"ratio": 0.8,
+			"parts": true,
+			"layer": "cartilage",
+			"joint": "ac",
+			"toggle": {
+				"label": "Сумка",
+				"visible": false
+			}
+		}
+	],
+	"joints": [
+		{
+			"name": "sc",
+			"pivot": {
+				"far": "clavicle",
+				"from": {
+					"contact": ["clavicle", "scapula"]
+				}
+			},
+			"axis": "z",
+			"probe": {
+				"contact": ["clavicle", "scapula"]
+			},
+			"toward": "+y",
+			"share": 0.1111
+		},
+		{
+			"name": "ac",
+			"parent": "sc",
+			"pivot": {
+				"contact": ["clavicle", "scapula"]
+			},
+			"axis": "plane:scapula",
+			"probe": {
+				"lowest": "scapula"
+			},
+			"toward": "-x",
+			"share": 0.3333
+		},
+		{
+			"name": "gh",
+			"parent": "ac",
+			"pivot": {
+				"sphere": ["humerus", "scapula"]
+			},
+			"axis": "plane:scapula",
+			"probe": {
+				"lowest": "humerus"
+			},
+			"toward": "-x",
+			"share": 0.6667
+		}
+	],
+	"view": {
+		"focus": "scapula",
+		"toward": "gh",
+		"direction": [-0.35, 0.15, -1],
+		"distance": 3.4
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки, губа, капсула и сумка: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+}

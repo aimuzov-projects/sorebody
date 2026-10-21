@@ -1,4 +1,4 @@
-// Расчёты для плеча в статье (rig.py): центры поворота костей, оси и веса вершин мышц.
+// Расчёты для 3D-моделей статей (rig.py): центры поворота костей, оси и веса вершин мышц.
 // Координаты уже сцены: метры, Y вверх, перед = +Z, правая сторона на -X.
 
 /**
@@ -190,76 +190,156 @@ const smoothstep = (x) => {
 
 const round = (v) => v.map((x) => +x.toFixed(5))
 
+const AXES = { x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] }
+
 /**
- * Центры и оси суставов плеча. Знак каждой оси выбран так, чтобы положительный угол поднимал руку:
- * локоть уходит вверх, нижний угол лопатки -- наружу, акромиальный конец ключицы -- вверх.
+ * Суставы модели по описателю (`rigs/<name>.json`, см. README): центр, ось, доля общего угла
+ * и проба знака. `points` -- вершины групп в координатах сцены.
+ *
+ * Центр: `sphere: [a, b]` -- сфера по вершинам `a` у самой `b` (головка в суставной впадине);
+ * `contact: [a, b]` -- середина места, где `a` ближе всего к `b`; `far: a, from: <центр>` --
+ * дальний от `from` конец `a` (грудино-ключичный сустав от акромиально-ключичного).
+ * Ось: `x`, `y`, `z` или `plane:<группа>` -- нормаль плоскости группы (лопатка).
+ * Знак оси -- такой, чтобы `probe` при повороте на положительный угол уходил к `toward`
+ * (`-x` -- наружу у правой стороны, `+y` -- вверх, `+z` -- вперёд).
  */
-export function shoulderRig({ clavicle, scapula, humerus }) {
-	const toScapula = createNearest(scapula)
-	const near = (points) => {
+export function buildRig(joints, points) {
+	const nearest = new Map()
+	const toGroup = (name) => {
+		if (!nearest.has(name)) nearest.set(name, createNearest(points[name]))
+
+		return nearest.get(name)
+	}
+	const distances = (a, b) => {
+		const near = toGroup(b)
+		const v = points[a]
 		const d = []
 
-		for (let p = 0; p < points.length; p += 3) d.push(toScapula(points[p], points[p + 1], points[p + 2]))
+		for (let p = 0; p < v.length; p += 3) d.push(near(v[p], v[p + 1], v[p + 2]))
 
 		return d
 	}
+	const contact = ([a, b], band = 0.003) => {
+		const d = distances(a, b)
+		const min = Math.min(...d)
 
-	// Головка -- по суставной поверхности, то есть вершинам плечевой кости у самой лопатки
-	const dh = near(humerus)
-	const minH = Math.min(...dh)
-	const joint = []
-
-	for (let i = 0; i < dh.length; i++)
-		if (dh[i] < minH + 0.01) joint.push(humerus[3 * i], humerus[3 * i + 1], humerus[3 * i + 2])
-
-	const head = fitSphere(joint)
-
-	// Акромиально-ключичный сустав -- место, где ключица ближе всего к лопатке; грудино-ключичный -- дальний конец
-	const dc = near(clavicle)
-	const minC = Math.min(...dc)
-	const ac = centroid(clavicle, (p) => dc[p / 3] < minC + 0.003)
-	let far = 0
-
-	for (let p = 0; p < clavicle.length; p += 3) {
-		const d = Math.hypot(clavicle[p] - ac[0], clavicle[p + 1] - ac[1], clavicle[p + 2] - ac[2])
-
-		if (d > far) far = d
+		return centroid(points[a], (p) => d[p / 3] < min + band)
 	}
 
-	const sc = centroid(
-		clavicle,
-		(p) => Math.hypot(clavicle[p] - ac[0], clavicle[p + 1] - ac[1], clavicle[p + 2] - ac[2]) > far - 0.008,
-	)
+	function place(spec) {
+		if (spec.sphere) {
+			const [a, b] = spec.sphere
+			const d = distances(a, b)
+			const min = Math.min(...d)
+			const surface = []
 
-	// Плоскость лопатки -- две главные оси её облака, нормаль к ней -- ось отведения и поворота лопатки
-	const plane = principalAxes(scapula)[2]
-	const step = Math.PI / 6
-	const elbow = lowest(humerus)
-	// Наружу у правого плеча -- к -X. По высоте не проверить: локоть висит почти под головкой
-	// и поднимается при повороте в любую сторону
-	const ghAxis = rotate(elbow, head.center, plane, step)[0] < elbow[0] ? plane : plane.map((x) => -x)
-	const angle = lowest(scapula)
-	const scapulaAxis = rotate(angle, ac, plane, step)[0] < angle[0] ? plane : plane.map((x) => -x)
-	const clavicleAxis = rotate(ac, sc, [0, 0, 1], step)[1] > ac[1] ? [0, 0, 1] : [0, 0, -1]
+			// Суставная поверхность -- вершины `a` в сантиметре от самой близкой к `b`
+			for (let i = 0; i < d.length; i++) if (d[i] < min + 0.01) surface.push(...points[a].slice(3 * i, 3 * i + 3))
 
-	return {
-		head: round(head.center),
-		radius: +head.radius.toFixed(5),
-		ghAxis: round(ghAxis),
-		ac: round(ac),
-		scapulaAxis: round(scapulaAxis),
-		sc: round(sc),
-		clavicleAxis,
+			return fitSphere(surface)
+		}
+
+		if (spec.contact) return { center: contact(spec.contact) }
+
+		if (spec.far) {
+			const from = place(spec.from).center
+			const v = points[spec.far]
+			const dist = (p) => Math.hypot(v[p] - from[0], v[p + 1] - from[1], v[p + 2] - from[2])
+			let far = 0
+
+			for (let p = 0; p < v.length; p += 3) far = Math.max(far, dist(p))
+
+			return { center: centroid(v, (p) => dist(p) > far - 0.008) }
+		}
+
+		if (spec.lowest) return { center: lowest(points[spec.lowest]) }
+
+		// Самая передняя и самая задняя точка: носок стопы, пятка
+		if (spec.frontmost || spec.backmost) {
+			const v = points[spec.frontmost ?? spec.backmost]
+			const sign = spec.frontmost ? 1 : -1
+			let best = 2
+
+			for (let p = 2; p < v.length; p += 3) if (v[p] * sign > v[best] * sign) best = p
+
+			return { center: [v[best - 2], v[best - 1], v[best]] }
+		}
+
+		throw new Error(`rig: unknown point ${JSON.stringify(spec)}`)
 	}
+
+	return joints.map((joint) => {
+		const { center, radius } = place(joint.pivot)
+		const base = joint.axis.startsWith('plane:') ? principalAxes(points[joint.axis.slice(6)])[2] : AXES[joint.axis]
+
+		if (!base) throw new Error(`rig ${joint.name}: unknown axis ${joint.axis}`)
+
+		const probe = place(joint.probe).center
+		const k = 'xyz'.indexOf(joint.toward[1])
+		const sign = joint.toward[0] === '-' ? -1 : 1
+		const moved = rotate(probe, center, base, Math.PI / 6)
+		const axis = (moved[k] - probe[k]) * sign > 0 ? base : base.map((x) => -x)
+
+		return {
+			name: joint.name,
+			parent: joint.parent ?? null,
+			pivot: round(center),
+			...(radius ? { radius: +radius.toFixed(5) } : {}),
+			axis: round(axis),
+			share: joint.share,
+			// Для теста: точка, которая при положительном угле уходит к `toward`
+			probe: round(probe),
+			toward: joint.toward,
+		}
+	})
 }
 
 /**
- * Вес плечевой кости по вершинам мышцы: у лопатки и ключицы 0, у плечевой кости 1, между ними плавно.
- * `tendon` -- последние сантиметры у плечевой кости, шейдер красит их как сухожилие.
+ * Вес по нескольким костям: у каждой своя доля угла сустава (`{femur: 0, patella: 0.65, tibia: 1}`),
+ * вершина берёт их смесь с весами по обратной четвёртой степени расстояния до кости: ближняя
+ * кость почти целиком решает, иначе далёкий от сустава верх мышцы тоже чуть поворачивался бы. Так четырёхглавая
+ * идёт от бедра через надколенник к бугристости большеберцовой, не отставая ни от одной из костей.
+ * `tendon` -- близость к костям с ненулевой долей.
  */
-export function muscleWeights(points, girdle, humerus) {
-	const toGirdle = createNearest(girdle)
-	const toHumerus = createNearest(humerus)
+export function anchorWeights(points, anchors) {
+	const near = anchors.map(({ points: bone }) => createNearest(bone))
+	const weight = new Float32Array(points.length / 3)
+	const tendon = new Float32Array(points.length / 3)
+
+	for (let p = 0, i = 0; p < points.length; p += 3, i++) {
+		let sum = 0
+		let total = 0
+		let moving = Infinity
+
+		anchors.forEach(({ share }, k) => {
+			const d = near[k](points[p], points[p + 1], points[p + 2])
+			// 1 мм -- чтобы вершина на самой кости не делила на ноль
+			const w = 1 / Math.max(d, 0.001) ** 4
+
+			sum += share * w
+			total += w
+
+			if (share > 0) moving = Math.min(moving, d)
+		})
+
+		weight[i] = sum / total
+		tendon[i] = Math.min(1, Math.max(0, 1 - (moving - 0.003) / 0.02)) ** 1.5
+	}
+
+	return { weight, tendon }
+}
+
+/**
+ * Вес подвижной кости по вершинам мышцы или связки: у неподвижной 0, у подвижной 1, между ними
+ * плавно. `tendon` -- последние сантиметры у подвижной кости, шейдер красит их как сухожилие.
+ *
+ * `reach` -- для мышцы, которая лежит вдоль подвижной кости, но не прилегает к ней (двуглавая
+ * вдоль плечевой): вес растёт с расстоянием от неподвижной кости и становится 1 через `reach`
+ * метров, иначе брюшко с промежуточным весом растянулось бы листом.
+ */
+export function muscleWeights(points, fixed, moving, reach = 0) {
+	const toGirdle = createNearest(fixed)
+	const toHumerus = createNearest(moving)
 	const weight = new Float32Array(points.length / 3)
 	const tendon = new Float32Array(points.length / 3)
 
@@ -267,7 +347,7 @@ export function muscleWeights(points, girdle, humerus) {
 		const dg = toGirdle(points[p], points[p + 1], points[p + 2])
 		const dh = toHumerus(points[p], points[p + 1], points[p + 2])
 
-		weight[i] = smoothstep((dg / (dg + dh + 1e-9) - 0.35) / 0.5)
+		weight[i] = reach ? smoothstep(dg / reach) : smoothstep((dg / (dg + dh + 1e-9) - 0.35) / 0.5)
 		// 3 мм -- запас на раздувание remesh.py
 		tendon[i] = Math.min(1, Math.max(0, 1 - (dh - 0.003) / 0.02)) ** 1.5
 	}

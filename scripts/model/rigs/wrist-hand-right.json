@@ -1,0 +1,170 @@
+{
+	"title": "3D-модель запястья и кисти",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "forearm",
+			"bp3d": ["right radius", "right ulna"],
+			"ratio": 0.6,
+			"layer": "bones"
+		},
+		{
+			"name": "carpals",
+			"bp3d": [
+				"right scaphoid",
+				"right lunate",
+				"right pisiform",
+				"right trapezium",
+				"right trapezoid",
+				"right capitate",
+				"right hamate"
+			],
+			"ratio": 0.6,
+			"layer": "bones",
+			"joint": "wrist"
+		},
+		{
+			"name": "hand",
+			"bp3d": [
+				"right first metacarpal bone",
+				"right second metacarpal bone",
+				"right third metacarpal bone",
+				"right fourth metacarpal bone",
+				"right fifth metacarpal bone",
+				"proximal phalanx of right index finger",
+				"middle phalanx of right index finger",
+				"distal phalanx of right index finger",
+				"proximal phalanx of right middle finger",
+				"middle phalanx of right middle finger",
+				"distal phalanx of right middle finger",
+				"proximal phalanx of right ring finger",
+				"middle phalanx of right ring finger",
+				"distal phalanx of right ring finger",
+				"proximal phalanx of right little finger",
+				"middle phalanx of right little finger",
+				"distal phalanx of right little finger",
+				"proximal phalanx of right thumb",
+				"distal phalanx of right thumb"
+			],
+			"ratio": 0.6,
+			"layer": "bones",
+			"joint": "wrist"
+		},
+		{
+			"name": "extensors",
+			"bp3d": [
+				"right extensor carpi radialis longus",
+				"right extensor carpi radialis brevis",
+				"right extensor digitorum",
+				"right extensor carpi ulnaris",
+				"right extensor indicis",
+				"right extensor pollicis longus",
+				"right extensor pollicis brevis",
+				"right abductor pollicis longus"
+			],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "wrist",
+				"fixed": ["forearm"]
+			},
+			"toggle": {
+				"label": "Разгибатели",
+				"visible": true
+			}
+		},
+		{
+			"name": "flexors",
+			"bp3d": [
+				"right flexor carpi radialis",
+				"right palmaris longus",
+				"ulnar head of right flexor carpi ulnaris",
+				"humeral head of right flexor carpi ulnaris",
+				"right flexor digitorum superficialis",
+				"right flexor digitorum profundus"
+			],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"weighted": {
+				"joint": "wrist",
+				"fixed": ["forearm"]
+			},
+			"toggle": {
+				"label": "Сгибатели",
+				"visible": true
+			}
+		},
+		{
+			"name": "ligaments",
+			"za": [
+				"^right articular capsule of radiocarpal joint$",
+				"^right dorsal radiocarpal ligament$",
+				"^right (radial|ulnar) collateral ligament of wrist joint$",
+				"^right scapholunate interosseous ligament$",
+				"^right (palmar )?lunotriquetral",
+				"^right pisometacarpal ligament$"
+			],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "wrist",
+				"fixed": ["forearm"]
+			},
+			"toggle": {
+				"label": "Связки",
+				"visible": true
+			}
+		},
+		{
+			"name": "retinacula",
+			"za": ["^right (extensor|flexor) retinaculum of wrist$"],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"weighted": {
+				"joint": "wrist",
+				"fixed": ["forearm"]
+			},
+			"toggle": {
+				"label": "Удерживатели",
+				"visible": false
+			}
+		},
+		{
+			"name": "hand-ligaments",
+			"za": [
+				"^right (dorsal|palmar) carpometacarpal ligaments$",
+				"^right (dorsal|palmar|interosseous) metacarpal ligaments$"
+			],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"joint": "wrist"
+		}
+	],
+	"joints": [
+		{
+			"name": "wrist",
+			"pivot": {
+				"sphere": ["carpals", "forearm"]
+			},
+			"axis": "x",
+			"probe": {
+				"lowest": "hand"
+			},
+			"toward": "-z",
+			"share": 1
+		}
+	],
+	"view": {
+		"focus": "carpals",
+		"toward": "wrist",
+		"direction": [0, 0.1, -1],
+		"distance": 6
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки и удерживатели: Z-Anatomy, CC BY-SA 4.0. Модель без движения; связок пальцев в модели нет"
+}

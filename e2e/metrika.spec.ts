@@ -57,7 +57,7 @@ test('referer хита после захода по ссылке на зону -
 
 	await page.goto('/?region=knee')
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
-	await page.getByRole('button', { name: 'Назад' }).click()
+	await page.getByRole('region', { name: 'Колено' }).getByRole('button', { name: 'Назад' }).click()
 	await expect(page).toHaveURL(/\/$/)
 
 	const origin = new URL(page.url()).origin

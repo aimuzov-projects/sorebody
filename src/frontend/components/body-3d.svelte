@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, tick, untrack, type Snippet } from 'svelte'
 
-	import { PersonStanding, X } from 'lucide-static'
+	import { ChevronLeft, PersonStanding, X } from 'lucide-static'
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
 	import { introHintSeen, markIntroHintSeen } from '#frontend/lib/intro-hint.ts'
@@ -1458,7 +1458,18 @@
 	<!-- Шапка сцены -- та же, что у статей: на месте «‹» логотип, просто знак без ссылки.
 	     На about ведёт (i) справа, из base.astro -->
 	<SiteHeader floating>
-		<div class="index__brand-row" class:index__brand-row--away={open?.side === 'bottom'}>
+		<div
+			class="index__brand-row"
+			class:index__brand-row--away={open?.side === 'bottom'}
+			class:index__brand-row--back={open && open.side !== 'bottom'}
+		>
+			<!-- В раскрытой зоне на десктопе «‹» встаёт на своё место перед логотипом, как у статьи:
+			     стрелка у заголовка колонки далеко от угла, где выход ищут -->
+			{#if open && open.side !== 'bottom'}
+				<button class="index__back" type="button" aria-label="Назад" data-hint="Назад" onclick={up}
+					><span class="index__back-icon" aria-hidden="true">{@html ChevronLeft}</span></button
+				>
+			{/if}
 			<Logo />
 		</div>
 	</SiteHeader>
@@ -2250,6 +2261,71 @@
 				pointer-events: none;
 				visibility: hidden;
 				opacity: 0;
+			}
+
+			/* Место под «‹» занимает сама стрелка, логотип остаётся где был */
+			&--back {
+				gap: 0;
+				margin-left: 0;
+
+				/* В Mini App стрелки нет: выход -- системная кнопка Telegram */
+				:global([data-telegram]) & {
+					margin-left: var(--back-room);
+				}
+			}
+		}
+
+		/* Стрелка назад в шапке сцены -- как .reader__back в article-reader.svelte */
+		&__back {
+			cursor: pointer;
+			position: relative;
+			display: inline-grid;
+			flex: none;
+			place-items: center;
+			width: var(--back-size);
+			height: var(--back-size);
+			margin: 0 var(--back-gap) 0 calc(-1 * var(--back-pull));
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			color: var(--a-blue);
+			background: none;
+			transition: background 0.3s var(--a-ease);
+
+			/* Зона нажатия добрана влево и по высоте, к логотипу не тянется */
+			&::before {
+				content: '';
+				position: absolute;
+				inset: -6px 0 -6px -6px;
+			}
+
+			:global([data-telegram]) & {
+				display: none;
+			}
+
+			&:hover {
+				background: var(--a-fill);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--a-blue);
+				/* Внутрь круга: снаружи рамка подходила бы к логотипу ближе 8px */
+				outline-offset: -2px;
+			}
+		}
+
+		&__back-icon {
+			display: inline-flex;
+			width: 28px;
+			height: 28px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				/* Оптическая поправка влево, как у .article-bar__back */
+				translate: -6% 0;
+				width: 100%;
+				height: 100%;
+				stroke-width: 2.2;
 			}
 		}
 

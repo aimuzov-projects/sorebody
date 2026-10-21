@@ -9,6 +9,7 @@ import {
 	BicepsFlexed,
 	Box,
 	BrickWall,
+	CalendarRange,
 	ChevronsRight,
 	ChevronsUp,
 	CircleDot,
@@ -23,6 +24,7 @@ import {
 	Goal,
 	Hand,
 	HandGrab,
+	Layers2,
 	Merge,
 	Metronome,
 	Mountain,
@@ -31,9 +33,11 @@ import {
 	MoveUpRight,
 	MoveVertical,
 	OctagonPause,
+	PlaneTakeoff,
 	Repeat2,
 	Infinity as Rings,
 	RotateCcw,
+	ScanFace,
 	Shield,
 	Spline,
 	Split,
@@ -49,14 +53,17 @@ import {
 	Zap,
 } from 'lucide-static'
 
-import type { CrossfitElement, FootballElement, PadelElement, RunningElement } from './sports.ts'
+import type { BasketballElement, CrossfitElement, FootballElement, PadelElement, RunningElement } from './sports.ts'
 
 /**
  * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
  * движения: куда идёт штанга, за что держатся, чем работают. Гиря -- `weight`,
  * кольца -- `infinity`.
  */
-export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballElement | RunningElement, string> = {
+export const MOVEMENT_ICONS: Record<
+	CrossfitElement | PadelElement | FootballElement | RunningElement | BasketballElement,
+	string
+> = {
 	squat: ArrowDownToLine,
 	deadlift: ArrowUpFromLine,
 	'hip-thrust': ArrowBigUp,
@@ -111,6 +118,12 @@ export const MOVEMENT_ICONS: Record<CrossfitElement | PadelElement | FootballEle
 	heat: ThermometerSun,
 	'footwear-change': Footprints,
 	overstriding: Metronome,
+	// Баскетбол: приземление, смена направления, остановка, контакт, мяч и падение -- общие с паделом
+	// и футболом
+	'landing-on-foot': Layers2,
+	drive: PlaneTakeoff,
+	'elbow-to-face': ScanFace,
+	'congested-schedule': CalendarRange,
 }
 
 export type ElementIcon = keyof typeof MOVEMENT_ICONS

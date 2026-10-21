@@ -6,6 +6,7 @@ const CROSSFIT = sportOf('crossfit')
 const PADEL = sportOf('padel')
 const FOOTBALL = sportOf('football')
 const RUNNING = sportOf('running')
+const BASKETBALL = sportOf('basketball')
 
 /** `#0066cc` -> `rgb(0, 102, 204)`: так цвет отдаёт getComputedStyle. */
 const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair) => parseInt(pair, 16)).join(', ')})`
@@ -199,6 +200,29 @@ test('страница нагрузки бега собирает её трав�
 	await expect(page.locator('.index__title')).toHaveText('Бег под гору')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'running')
 	await expect(page.locator('a[href="/running/iliotibial-band-syndrome/"]').first()).toBeAttached()
+})
+
+// Пятый спорт: из бега в баскетбол на месте, оранжевый перетекает в фиолетовый. У баскетбола есть
+// голова (сотрясение, лицо, глаз) и кисть, которых у бега нет
+test('из бега в баскетбол -- на месте, со своим цветом и своими зонами', async ({ page }) => {
+	await page.goto('/running/')
+	await markPage(page)
+	await chooseSport(page, 'Бег', 'Баскетбол')
+
+	await expect(page).toHaveURL(/\/basketball\/$/)
+	await expect(page.locator('h1')).toHaveText('Боль в баскетболе')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'basketball')
+	await expect(sportButton(page, 'Баскетбол')).toHaveCSS('color', rgb(BASKETBALL.accent.light))
+	await expect(page.locator('.index__zone-label', { hasText: 'Голова' })).toHaveCount(1)
+	await expect(page.locator('.index__zone-label', { hasText: 'Запястье и кисть' })).toHaveCount(1)
+	expect(await samePage(page)).toBe(true)
+})
+
+test('страница ситуации баскетбола собирает её травмы', async ({ page }) => {
+	await page.goto('/basketball/elements/landing-on-foot/')
+	await expect(page.locator('.index__title')).toHaveText('Приземление на стопу соперника')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'basketball')
+	await expect(page.locator('a[href="/basketball/ankle-sprain/"]').first()).toBeAttached()
 })
 
 // Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит

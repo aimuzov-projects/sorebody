@@ -67,6 +67,30 @@ test('catches running workouts and shoes, but not running itself', () => {
 		assert.deepEqual(sportWordsIn(text), [], text)
 })
 
+test('catches basketball gear and slang, but not the anatomy with the same roots', () => {
+	for (const text of [
+		'в баскетболе',
+		'стритбол',
+		'данк',
+		'трёхочковый',
+		'удар о щит',
+		'бросок в кольцо',
+		'борьба под кольцом',
+		'проход к кольцу',
+		'удар по кольцу',
+	])
+		assert.notDeepEqual(sportWordsIn(text), [], text)
+
+	for (const text of [
+		'щитовидный хрящ',
+		'кольцевидная связка',
+		'кольцевая связка',
+		'в кольцевидном хряще',
+		'палец застрял в кольце',
+	])
+		assert.deepEqual(sportWordsIn(text), [], text)
+})
+
 test('lets medical and everyday words through', () => {
 	for (const text of [
 		'толчок стопой',

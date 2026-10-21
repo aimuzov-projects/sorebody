@@ -128,6 +128,89 @@ achilles AND rupture` → 0). Найдено только острое утол�
 
 ---
 
+## Шея и верх спины
+
+Поиск 21.10.2026 (E-utilities, efetch rettype=abstract): `crossfit neck pain` (1),
+`(crossfit OR "high-intensity functional training") AND (neck OR cervical OR thoracic)` (19),
+`(crossfit[tiab] OR "functional fitness"[tiab] OR "high intensity functional training"[tiab] OR "extreme
+conditioning"[tiab]) AND injur* AND (neck[tiab] OR cervical[tiab] OR spine[tiab] OR "upper back"[tiab])`
+(30), `(weightlifting OR powerlifting OR "resistance training") AND injur* AND neck[tiab] AND (epidemiology
+OR incidence OR prevalence)` (20). Плюс просмотр всех абстрактов этого файла на `neck|cervical|thoracic|
+upper back|trapez`. Отдельного исследования боли в шее у кроссфитеров нет: шея и грудной отдел видны только
+строками областей в общих опросах.
+
+| Что                                  | Цифра                                                                                                        | PMID     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------ | -------- |
+| Шея, доля травм                      | 5% травм за 12 мес. (Nordic Musculoskeletal Questionnaire, 22 кроссфитера)                                   | 38763564 |
+| Грудной отдел, доля травм            | 13%, 2-е место вместе с коленом после поясницы (19%); 52 кроссфитера                                         | 40673788 |
+| «Туловище, спина, голова или шея»    | 12% травм (29 из 247), 2-е место вместе с ногой и коленом — сумма областей, не диагноз                       | 27760844 |
+| Позвоночник в клинике                | 20.9% из 523 травм; из них поясница 83.1%, на остальные отделы — 16.9% (расчёт); радикулярные жалобы у 53%   | 31688179 |
+| Трапециевидная и мышцы верхней спины | среди самых частых мышечных травм: у мужчин — мышцы верхней спины, у женщин — трапециевидная и верх спины    | 33606579 |
+| Силовой тренинг, приёмные отделения  | растяжения мышц и связок: верх туловища 17.3%, шея 6.5% (NEISS 2010–2016)                                    | 30317960 |
+| Штанга, травмы головы и шеи          | 3105 обращений, шея — 32%; самый частый тип — рваные раны (32.4%), большинство отпущены домой (74.5%)        | 39563996 |
+| Пауэрлифтинг                         | у женщин травмы шеи и грудного отдела достоверно чаще, чем у мужчин (104 спортсмена)                         | 29785405 |
+| Растяжения шеи в спорте, США         | у женщин больше всего растяжений шеи — в силовом тренинге и аэробике; в аэробике рост 15.5 → 25.3 на млн/год | 30889777 |
+
+Механизм по элементам (жимы, рывок, стойка на руках, кипы) в абстрактах не описан: ни одна работа
+не связывает боль в шее с конкретным движением кроссфита. Элементы для линзы — только по смыслу,
+с оговоркой «исследования не уточняют».
+
+**Уровень.** Строки «шея» нет в метаанализах (35278328, 33322981): там плечо, спина, колено. Прямые доли —
+5% (n=22) и 13% грудного отдела (n=52), обе на крошечных выборках. Трапециевидная названа среди частых
+мышечных травм, но без доли. Предложение: `uncommon` («нередко»), в порядке — после `muscle-strains`.
+
+### Общие источники по ведению боли в шее (для всех спортов)
+
+| Тема                          | Что в абстракте                                                                                                                                                                                                             | PMID     |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| CPG JOSPT 2017                | Пересмотр клинического руководства APTA по боли в шее. Абстракт — только цель, без рекомендаций: формулировки сверять по полному тексту                                                                                     | 28666405 |
+| CPG OPTIMa 2016               | Исключить серьёзную патологию; объяснить доброкачественный, самоограниченный ход и важность движения; при ≤ 3 мес. — обучение плюс упражнения на подвижность; не предлагать воротник, расслабляющий массаж, тепло в клинике | 26984876 |
+| CPG DEGAM 2025 (S3)           | Почти половина взрослых в Германии хотя бы раз в год; при острой боли (0–3 нед.) без признаков структурной причины (двигательный дефицит, ночная боль, травма) снимки не нужны; активизация — центральный элемент лечения   | 40665902 |
+| Прогноз, SR+MA                | Боль 64 из 100 в начале, 35 через 6.5 нед., 42 через 12 мес.; инвалидизация 30 → 17 к 6.5 нед. без дальнейшего улучшения                                                                                                    | 21458776 |
+| Прогноз, когорта              | Через год 76% выздоровели или значительно лучше, но у 47% боль сохраняется; совет «подождать» связан с выздоровлением (ОШ 6.7)                                                                                              | 18565009 |
+| Прогноз, Neck Pain Task Force | У 50–75% людей с болью в шее она повторится через 1–5 лет; сильнее всего на исход влияют психосоциальные факторы                                                                                                            | 18204403 |
+| Обзор BMJ 2017                | Большинство острых эпизодов проходят сами, но больше трети через год ещё с симптомами или рецидивами; при острой боли эффективны НПВС и миорелаксанты; среди немедикаментозных — сильнее всего данные за упражнения         | 28807894 |
+| Упражнения, Cochrane 2015     | Для острой боли данных нет; при хронической — умеренные данные за силовые упражнения на шейно-лопаточный пояс; одна растяжка эффекта не даёт                                                                                | 25629215 |
+| Травма шеи: правило Canadian  | Высокий риск — возраст ≥ 65, опасный механизм, покалывание в руках/ногах; нельзя повернуть голову на 45° в обе стороны — снимок; чувствительность 100%                                                                      | 11597285 |
+| Травма шеи: NEXUS             | Низкий риск при пяти условиях: нет болезненности по средней линии, нет неврологического дефицита, ясное сознание, нет опьянения, нет отвлекающей боли; чувствительность 99.0%                                               | 10891516 |
+| Радикулопатия                 | Боль в руке на фоне боли в шее, снижение рефлексов (чаще трицепса), тест Спурлинга; МРТ при красных флагах или если 4–6 нед. лечения не помогли; большинство случаев проходят                                               | 27175952 |
+| Миелопатия (полный текст)     | Прогрессирующие неврологические симптомы: онемение, неловкость рук, неустойчивость, падения, недержание; срочно к специалисту (полный текст PMC6074604)                                                                     | 29472200 |
+| Межлопаточная боль            | Боль между лопатками бывает от сдавления корешка C7–C8; у 70% боль в шее или у лопатки опережала симптомы в руке                                                                                                            | 16924193 |
+| Сосуды шеи, IFOMPT 2023       | Сосудистые причины боли в шее редки, но их нужно искать в анамнезе до мануального вмешательства                                                                                                                             | 36099171 |
+| Распространённость, GBD 2021  | 203 млн человек с болью в шее в 2020 г.; стандартизованная распространённость 2450 на 100 000, у женщин выше                                                                                                                | 38383088 |
+| Грудной отдел, SR             | Боль в грудном отделе: годовая распространённость 3.5–34.8%, данные хуже, чем по шее и пояснице, сильно зависят от определения                                                                                              | 19563667 |
+| Стингеры (контактные виды)    | Транзиторная нейропраксия корешка или плечевого сплетения от минут до часов; около половины игроков контактных видов переносили хотя бы один                                                                                | 32691363 |
+
+### Источники раздела
+
+| PMID     | Первый автор                     | Год  | Название                                                                                                                                                       | Журнал                       | Тип                   |
+| -------- | -------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | --------------------- |
+| 38763564 | Menezes-Reis R                   | 2024 | Functional capacity and risk of injury in CrossFit practitioners measured through smartphone apps                                                              | J Bodyw Mov Ther             | Поперечное (n=22)     |
+| 40673788 | Ikiz B                           | 2025 | The relationship of functional movement screen score with balance, core endurance, and musculoskeletal system injuries in CrossFit athletes                    | J Sports Med Phys Fitness    | Поперечное (n=52)     |
+| 30317960 | Burekhovich SA                   | 2018 | Epidemiology and Trends of Weightlifting-Related Sprains and Strains that Presented to Emergency Departments in the United States                              | J Long Term Eff Med Implants | NEISS                 |
+| 39563996 | Sharma S                         | 2024 | Epidemiology of Barbell Weightlifting-Related Head and Neck Injuries in the United States: A 10-Year Analysis of National Injury Data                          | OTO Open                     | NEISS                 |
+| 29785405 | Strömbäck E                      | 2018 | Prevalence and Consequences of Injuries in Powerlifting: A Cross-sectional Study                                                                               | Orthop J Sports Med          | Поперечное            |
+| 30889777 | DePasse JM                       | 2019 | Sex- and Sport-Specific Epidemiology of Cervical Spine Injuries Sustained During Sporting Activities                                                           | World Neurosurg              | NEISS                 |
+| 28666405 | Blanpied PR                      | 2017 | Neck Pain: Revision 2017                                                                                                                                       | J Orthop Sports Phys Ther    | CPG                   |
+| 26984876 | Côté P                           | 2016 | Management of neck pain and associated disorders: A clinical practice guideline from the Ontario Protocol for Traffic Injury Management (OPTIMa) Collaboration | Eur Spine J                  | CPG                   |
+| 40665902 | El-Allawy A                      | 2025 | Clinical Practice Guideline: Nonspecific Neck Pain                                                                                                             | Dtsch Arztebl Int            | CPG (S3)              |
+| 21458776 | Hush JM                          | 2011 | Prognosis of acute idiopathic neck pain is poor: a systematic review and meta-analysis                                                                         | Arch Phys Med Rehabil        | SR + MA               |
+| 18565009 | Vos CJ                           | 2008 | Clinical course and prognostic factors in acute neck pain: an inception cohort study in general practice                                                       | Pain Med                     | Проспективная когорта |
+| 18204403 | Carroll LJ                       | 2008 | Course and prognostic factors for neck pain in the general population: results of the Bone and Joint Decade 2000-2010 Task Force on Neck Pain                  | Spine (Phila Pa 1976)        | Синтез доказательств  |
+| 28807894 | Cohen SP                         | 2017 | Advances in the diagnosis and management of neck pain                                                                                                          | BMJ                          | Обзор                 |
+| 25629215 | Gross A                          | 2015 | Exercises for mechanical neck disorders                                                                                                                        | Cochrane Database Syst Rev   | SR + MA               |
+| 11597285 | Stiell IG                        | 2001 | The Canadian C-spine rule for radiography in alert and stable trauma patients                                                                                  | JAMA                         | Проспективная когорта |
+| 10891516 | Hoffman JR                       | 2000 | Validity of a set of clinical criteria to rule out injury to the cervical spine in patients with blunt trauma                                                  | N Engl J Med                 | Проспективное         |
+| 27175952 | Childress MA                     | 2016 | Nonoperative Management of Cervical Radiculopathy                                                                                                              | Am Fam Physician             | Обзор                 |
+| 29472200 | Davies BM                        | 2018 | Degenerative cervical myelopathy                                                                                                                               | BMJ                          | Клинический обзор     |
+| 16924193 | Tanaka Y                         | 2006 | Cervical roots as origin of pain in the neck or scapular regions                                                                                               | Spine (Phila Pa 1976)        | Проспективное (n=50)  |
+| 36099171 | Rushton A                        | 2023 | International Framework for Examination of the Cervical Region for Potential of Vascular Pathologies of the Neck Prior to Musculoskeletal Intervention         | J Orthop Sports Phys Ther    | Позиционное заявление |
+| 38383088 | GBD 2021 Neck Pain Collaborators | 2024 | Global, regional, and national burden of neck pain, 1990-2020, and projections to 2050                                                                         | Lancet Rheumatol             | GBD                   |
+| 19563667 | Briggs AM                        | 2009 | Thoracic spine pain in the general population: prevalence, incidence and associated factors in children, adolescents and adults. A systematic review           | BMC Musculoskelet Disord     | SR                    |
+| 32691363 | Bowles DR                        | 2020 | The Prevalence and Management of Stingers in College and Professional Collision Athletes                                                                       | Curr Rev Musculoskelet Med   | Обзор                 |
+
+---
+
 ## 4. Список литературы
 
 | PMID     | Первый автор           | Год  | Название                                                                                                                     | Журнал                              | Тип                               |

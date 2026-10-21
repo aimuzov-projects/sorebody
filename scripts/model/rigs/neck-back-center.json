@@ -1,0 +1,104 @@
+{
+	"title": "3D-модель шеи и верха спины",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "spine",
+			"bp3d": [
+				"occipital bone",
+				"atlas",
+				"axis",
+				"third cervical vertebra",
+				"fourth cervical vertebra",
+				"fifth cervical vertebra",
+				"sixth cervical vertebra",
+				"seventh cervical vertebra",
+				"first thoracic vertebra",
+				"second thoracic vertebra",
+				"third thoracic vertebra",
+				"fourth thoracic vertebra",
+				"fifth thoracic vertebra",
+				"sixth thoracic vertebra",
+				"intervertebral disk of third cervical vertebra",
+				"intervertebral disk of fourth cervical vertebra",
+				"intervertebral disk of fifth cervical vertebra",
+				"intervertebral disk of sixth cervical vertebra",
+				"intervertebral disk of seventh cervical vertebra",
+				"intervertebral disk of first thoracic vertebra",
+				"intervertebral disk of second thoracic vertebra",
+				"left first rib",
+				"right first rib",
+				"left second rib",
+				"right second rib",
+				"left third rib",
+				"right third rib",
+				"left fourth rib",
+				"right fourth rib",
+				"left fifth rib",
+				"right fifth rib",
+				"left sixth rib",
+				"right sixth rib"
+			],
+			"ratio": 0.2,
+			"layer": "bones"
+		},
+		{
+			"name": "girdle",
+			"bp3d": ["left scapula", "right scapula", "left clavicle", "right clavicle"],
+			"ratio": 0.3,
+			"layer": "bones"
+		},
+		{
+			"name": "deep",
+			"bp3d": [
+				"left levator scapulae",
+				"right levator scapulae",
+				"left splenius capitis",
+				"right splenius capitis",
+				"left splenius cervicis",
+				"right splenius cervicis",
+				"left semispinalis capitis",
+				"right semispinalis capitis",
+				"left semispinalis cervicis",
+				"right semispinalis cervicis",
+				"left rhomboid major",
+				"right rhomboid major",
+				"left rhomboid minor",
+				"right rhomboid minor"
+			],
+			"ratio": 0.12,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Глубокие мышцы",
+				"visible": true
+			}
+		},
+		{
+			"name": "trapezius",
+			"bp3d": [
+				"descending part of left trapezius",
+				"descending part of right trapezius",
+				"transverse part of left trapezius",
+				"transverse part of right trapezius",
+				"ascending part of left trapezius",
+				"ascending part of right trapezius"
+			],
+			"ratio": 0.12,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Трапециевидная мышца",
+				"visible": true
+			}
+		}
+	],
+	"joints": [],
+	"view": {
+		"focus": "spine",
+		"direction": [0.3, 0.15, -1],
+		"distance": 2
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP. Модель без движения: шея поворачивается сразу в семи позвонках, и мышцы, которые идут через них все, так не повести"
+}

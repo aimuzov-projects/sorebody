@@ -11,6 +11,7 @@
 	/** Центр точки зоны в координатах фигурки. «Всё тело» точки не ставит: горит вся фигурка. */
 	const SPOTS: Record<Exclude<Region, 'other'>, [number, number]> = {
 		head: [12, 3.5],
+		neck: [12, 7],
 		shoulder: [8.5, 7.5],
 		elbow: [6.5, 11],
 		'wrist-hand': [6, 15],

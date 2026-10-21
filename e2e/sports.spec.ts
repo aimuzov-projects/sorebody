@@ -559,6 +559,14 @@ test('на странице спорта видны только зоны с е�
 	await expect(page.locator('.index__zone-label', { hasText: 'Голень' })).toHaveCount(0)
 })
 
+// У кроссфита в шее мышечная боль и диссекция, а у бега ни у одной травмы шеи линзы нет
+test('зона «Шея и верх спины» собирает травмы шеи спорта', async ({ page }) => {
+	await page.goto('/#zone=neck:0')
+	await expect(page.locator('.zone .zone__item')).toHaveText([/растяжение мышц шеи/, /Диссекция/])
+	await page.goto('/running/')
+	await expect(page.locator('.index__zone-label', { hasText: 'Шея и верх спины' })).toHaveCount(0)
+})
+
 test('«Разбор в …» ведёт на статью другого спорта к тому же разделу без нового шага', async ({ page }) => {
 	await page.goto('/crossfit/ankle-sprain/')
 	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })

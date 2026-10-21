@@ -2158,7 +2158,9 @@
 			left: 0;
 			gap: 10px;
 			width: auto;
-			max-height: 56dvh;
+			/* Шторка по содержимому: с SF и Roboto десять зон ложатся в шесть рядов, а с шрифтом шире
+			   (DejaVu в Linux) в восемь, и при 56dvh последний ряд уходил за край экрана */
+			max-height: 62dvh;
 			padding: 20px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
 			/* Гаснут подложка и дети, а не сама шторка: шторка с прозрачностью меньше 1 -- корень
 			   для backdrop-filter, и пока шёл переход, подложка размывала бы только саму себя */
@@ -2676,6 +2678,13 @@
 			@container zones (height < 392px) {
 				padding: 2px 0;
 				line-height: 1.25;
+			}
+
+			/* С шеей зон у кроссфита и падела десять: на ноутбуке 1280×720 с шрифтом шире SF им
+			   не хватало 12px */
+			@container zones (height < 303px) {
+				padding: 1px 0;
+				line-height: 1.2;
 			}
 
 			@media (width < 700px) {

@@ -1,7 +1,7 @@
 ---
 title: Диссекция сонной или позвоночной артерии
 titleEn: Cervical artery dissection
-region: other
+region: neck
 images:
     - src: /injuries/cervical-artery-dissection-01.webp
       alt: 'Артерии правой стороны шеи: общая сонная делится у щитовидного хряща, на внутренней сонной вскрыто расслоение стенки с кровью, позади — позвоночная артерия в позвонках'

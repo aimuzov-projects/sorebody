@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.22.0](https://github.com/aimuzov-projects/sorebody/compare/v1.21.0...v1.22.0) (2026-10-21)
+
+
+### Features
+
+* add the neck and upper back zone ([f82d799](https://github.com/aimuzov-projects/sorebody/commit/f82d7992d56477b23a6f578c516de4e0f4a3cb58))
+* add the neck and upper back zone ([802aeb9](https://github.com/aimuzov-projects/sorebody/commit/802aeb93a7958d2aa12ec8eed20c800fbea91107))
+* **article:** link to a section from the contents and its heading ([0d7c802](https://github.com/aimuzov-projects/sorebody/commit/0d7c802918d3a17a8cbc5d36a9cc148281883a27))
+* **content:** add a 3D model to the neck strain article ([8eb6a1c](https://github.com/aimuzov-projects/sorebody/commit/8eb6a1cd8443e4d11bf3b331ec42f60f0cb7d688))
+* **scene:** show the back arrow beside the logo in an open zone ([4188b9c](https://github.com/aimuzov-projects/sorebody/commit/4188b9c7f21a60bc66fc74550718dec88be8a1e0))
+* **scene:** show the back arrow beside the logo in an open zone ([37efa49](https://github.com/aimuzov-projects/sorebody/commit/37efa49bf228122e5d0fd9712a8d24d0b9c60596))
+
+
+### Bug Fixes
+
+* **article:** hide the side table of contents scrollbar ([4cf8247](https://github.com/aimuzov-projects/sorebody/commit/4cf824769396bbc17e1da8fa735f1b9da277160d))
+* **article:** move the side table of contents with the page ([3c8251b](https://github.com/aimuzov-projects/sorebody/commit/3c8251b3c920435d98bf8122414184123303197f))
+* **article:** move the side table of contents with the page instead of its own scroll ([38fada9](https://github.com/aimuzov-projects/sorebody/commit/38fada96bf9eacbd7be2acc70dee747a6fbbb9d4))
+* **article:** open a linked section right away ([48c9816](https://github.com/aimuzov-projects/sorebody/commit/48c9816c02e841ea2a33be473cfa3f7866b99ce8))
+* **article:** step the side table of contents by whole items ([854089f](https://github.com/aimuzov-projects/sorebody/commit/854089f4b29747e651b902e58178f49d71f64bfb))
+* **changelog:** break the 1.15.1 title so the bold toc item keeps its lines ([2d4e3a7](https://github.com/aimuzov-projects/sorebody/commit/2d4e3a78c0aa415ef96d47be697bc84799c67e06))
+* **home:** fit ten zones on a laptop and split the sitemap walks ([9d98ca9](https://github.com/aimuzov-projects/sorebody/commit/9d98ca94ca28df86701348e59bb38e1a1de27a7f))
+* **home:** let the phone sheet hold eight rows of zones ([719a303](https://github.com/aimuzov-projects/sorebody/commit/719a30389f0dd13f4d99d2b52c0e9fb16d22224d))
+* **scene:** keep an article over the model under its own path ([dcc6cf8](https://github.com/aimuzov-projects/sorebody/commit/dcc6cf8119447845b6f3cf07ba116f85dd10e7ae))
+* **scene:** keep an article over the model under its own path ([074deee](https://github.com/aimuzov-projects/sorebody/commit/074deee960792cc62db157b707e9ebd84ed53987))
+
 ## [1.21.0](https://github.com/aimuzov-projects/sorebody/compare/v1.20.0...v1.21.0) (2026-10-21)
 
 

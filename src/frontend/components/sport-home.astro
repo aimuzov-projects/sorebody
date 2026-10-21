@@ -2,9 +2,11 @@
 import Body3d from '#frontend/components/body-3d.svelte'
 import Footer from '#frontend/components/footer.astro'
 import PosterPreload from '#frontend/components/poster-preload.astro'
+import ScenePoster from '#frontend/components/scene-poster.astro'
 import { SPORTS, sportArticle, sportHome, type Sport } from '#frontend/data/sports.ts'
 import Base from '#frontend/layouts/base.astro'
 import { modelUrl } from '#frontend/scene/model-url.ts'
+import { POSTER_CSP } from '#frontend/scene/poster-css.ts'
 import { sceneData } from '#frontend/scene/scene-data.ts'
 import '#frontend/styles/article.css'
 import '#frontend/styles/scene.css'
@@ -18,6 +20,9 @@ const { sport } = Astro.props
 
 // meshopt-декодер модели -- WebAssembly; разрешаем его только на страницах с моделью
 Astro.csp?.insertScriptResource("'wasm-unsafe-eval'")
+// Inline-стиль и скрипт серверного постера (components/scene-poster.astro)
+Astro.csp?.insertStyleHash(POSTER_CSP.style)
+Astro.csp?.insertScriptHash(POSTER_CSP.script)
 
 const { entries, zones, whole, movements, scene } = await sceneData(sport)
 ---
@@ -35,6 +40,7 @@ const { entries, zones, whole, movements, scene } = await sceneData(sport)
 	<!-- Подвал сайта внутри индекса -- ориентир страницы, поэтому и остальное содержимое в main -->
 	<main>
 		<h1 class="scene-page__title">{scene.heading}</h1>
+		<ScenePoster home />
 		<Body3d client:only="svelte" {zones} {whole} {movements} sport={scene} modelUrl={modelUrl()}>
 			<Footer slot="footer" />
 		</Body3d>

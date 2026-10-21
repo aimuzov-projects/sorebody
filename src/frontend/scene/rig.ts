@@ -24,6 +24,8 @@ type RigGroup = {
 	/** Вершины идут за суставом целиком с весом `_FOLLOW`: мышца от рёбер к лопатке. */
 	follow?: { joint: string }
 	toggle?: { label: string; visible: boolean }
+	/** Сдвиг вершин внутрь по нормали, м: корни зубов BodyParts3D местами выходят из тонкой кости. */
+	inset?: number
 }
 
 export type ModelRig = {

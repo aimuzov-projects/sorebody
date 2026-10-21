@@ -66,7 +66,8 @@
 			"toggle": {
 				"label": "Зубы",
 				"visible": true
-			}
+			},
+			"inset": 0.001
 		},
 		{
 			"name": "brain",

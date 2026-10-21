@@ -46,7 +46,7 @@ for g in desc['groups']:
     files = bp3d(g.get('bp3d', [])) + za_files(g.get('za', []))
     groups.append({'name': g['name'], 'files': files, 'ratio': g.get('ratio', 0.3), 'error': g.get('error', 0.005),
                    'parts': g.get('parts', False)})
-    meta[g['name']] = {k: g[k] for k in ('layer', 'joint', 'weighted', 'follow', 'toggle') if k in g}
+    meta[g['name']] = {k: g[k] for k in ('layer', 'joint', 'weighted', 'follow', 'toggle', 'inset') if k in g}
 
 json.dump({
     'objDirs': [muscle_dir, *([za_dir] if za_dir != '-' else []), obj_dir],

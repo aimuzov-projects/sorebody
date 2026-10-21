@@ -237,6 +237,8 @@ export async function createModelViewer(
 			const ids = partIds(parts, highlight)
 
 			material.uniforms.uParts.value = ids
+			// Сдвиг внутрь в метрах, uInset -- в единицах меша: узел масштабирует квантованные вершины
+			material.uniforms.uInset.value = (group?.inset ?? 0) / mesh.scale.x
 
 			if (ids.some((id) => id > 0)) lit.add(name)
 

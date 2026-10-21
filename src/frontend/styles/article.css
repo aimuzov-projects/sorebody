@@ -431,9 +431,14 @@
 			box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 36%, transparent);
 		}
 
-		&:focus-visible {
+		/* data-quiet-focus -- фокус вернулся после модели, открытой мышью (lib/figure-3d.ts) */
+		&:focus-visible:not([data-quiet-focus]) {
 			outline: 2px solid var(--accent);
 			outline-offset: 3px;
+		}
+
+		&[data-quiet-focus] {
+			outline: none;
 		}
 
 		&[hidden] {

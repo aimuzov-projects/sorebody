@@ -36,7 +36,7 @@ export function initFigure3d(root: Element) {
 	// Крестик и Esc закрывают через историю: шаг модели уходит, и «Вперёд» её не вернёт
 	const requestClose = () => (history.state?.figure3d ? history.back() : close?.())
 
-	async function open(button: HTMLButtonElement) {
+	async function open(button: HTMLButtonElement, byPointer: boolean) {
 		if (close) return
 
 		// Пока грузится компонент, второе нажатие не откроет вторую модель
@@ -56,12 +56,22 @@ export function initFigure3d(root: Element) {
 			removeEventListener('popstate', onHistory)
 			close = null
 			void unmount(component)
+
+			// Фокус возвращается на кнопку. Если модель открыли мышью или пальцем, рамки фокуса нет:
+			// после Esc браузер нарисовал бы её, будто кнопку выбрали Tab. Рамка вернётся,
+			// когда фокус уйдёт с кнопки
+			if (byPointer) {
+				button.dataset.quietFocus = ''
+				button.addEventListener('blur', () => delete button.dataset.quietFocus, { once: true })
+			}
+
 			button.focus()
 		}
 	}
 
 	const listeners = buttons.map((button) => {
-		const onClick = () => void open(button)
+		// Нажатие Enter или пробела на кнопке -- click с detail 0
+		const onClick = (event: MouseEvent) => void open(button, event.detail > 0)
 
 		button.hidden = false
 		button.addEventListener('click', onClick)

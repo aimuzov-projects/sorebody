@@ -71,3 +71,25 @@ test('в статье на главной модель закрывается, �
 	await expect(page).toHaveURL(new RegExp(`#${SLUG}$`))
 	await expect(reader.locator('.article__title')).toBeVisible()
 })
+
+test('после Esc фокус на кнопке, но рамка -- только если модель открыли с клавиатуры', async ({ page }) => {
+	await page.goto(`/injuries/${SLUG}/`)
+
+	const open = page.getByRole('button', { name: 'Покрутить в 3D' })
+	const dialog = page.getByRole('dialog', { name: /3D-модель/ })
+	const outline = () => open.evaluate((button) => getComputedStyle(button).outlineStyle)
+
+	await open.click()
+	await expect(dialog).toBeVisible()
+	await page.keyboard.press('Escape')
+	await expect(dialog).toHaveCount(0)
+	await expect(open).toBeFocused()
+	expect(await outline()).toBe('none')
+
+	await page.keyboard.press('Enter')
+	await expect(dialog).toBeVisible()
+	await page.keyboard.press('Escape')
+	await expect(dialog).toHaveCount(0)
+	await expect(open).toBeFocused()
+	expect(await outline()).toBe('solid')
+})

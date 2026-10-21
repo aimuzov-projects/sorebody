@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.0](https://github.com/aimuzov-projects/sorebody/compare/v1.22.0...v1.23.0) (2026-10-21)
+
+
+### Features
+
+* **scene:** render the index in the server HTML ([a25e52b](https://github.com/aimuzov-projects/sorebody/commit/a25e52b0e3c59253bede593726ca4c34a38f63e9))
+* **scene:** render the index in the server HTML ([927a59c](https://github.com/aimuzov-projects/sorebody/commit/927a59c9d96c075de0598d98851583404e5215dd))
+
 ## [1.22.0](https://github.com/aimuzov-projects/sorebody/compare/v1.21.0...v1.22.0) (2026-10-21)
 
 

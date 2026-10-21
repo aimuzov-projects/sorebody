@@ -52,3 +52,28 @@ test('в статье поверх модели якорь раздела не �
 	await expect(page).toHaveURL(/\/basketball\/#zone=[\w-]+:\d$/)
 	await expect(page.locator('.zone')).toBeVisible()
 })
+
+// Браузер сам прыгает к разделу только к load: до этого было видно начало статьи
+test('по ссылке на раздел страница появляется сразу на нём, без начала статьи', async ({ page }) => {
+	await page.addInitScript(() => {
+		const frames: number[] = []
+
+		Object.assign(window, { frames_: frames })
+
+		const tick = () => {
+			if (document.documentElement.style.visibility !== 'hidden' && document.body) frames.push(scrollY)
+
+			if (frames.length < 30) requestAnimationFrame(tick)
+		}
+
+		requestAnimationFrame(tick)
+	})
+
+	await page.goto(`${ARTICLE}#urgent`, { waitUntil: 'commit' })
+	await expect(page.locator('#urgent-title')).toBeInViewport()
+
+	const frames = await page.evaluate(() => (window as unknown as { frames_: number[] }).frames_)
+
+	expect(frames.length).toBeGreaterThan(0)
+	expect(frames.every((y) => y > 0)).toBe(true)
+})

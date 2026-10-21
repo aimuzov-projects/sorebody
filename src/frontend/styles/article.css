@@ -560,7 +560,7 @@
 	}
 
 	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет.
-	   Своей прокрутки у длинного оглавления нет: оно едет вслед за чтением страницы (lib/reading.ts),
+	   Своей прокрутки у длинного оглавления нет: оно шагает по пунктам вслед за чтением страницы (lib/reading.ts),
 	   а колесо над ним крутит саму страницу */
 	&__layout {
 		@media (width >= 1100px) {
@@ -580,7 +580,8 @@
 			overflow: hidden;
 			display: block;
 			max-height: calc(100dvh - var(--header-clear) - 48px);
-			padding: 12px 0;
+			/* --toc-tail -- добавка снизу, чтобы последний шаг тоже пришёлся на начало пункта */
+			padding: 12px 0 calc(12px + var(--toc-tail, 0px));
 			mask-image: linear-gradient(to bottom, transparent, #000000 12px, #000000 calc(100% - 24px), transparent);
 		}
 	}

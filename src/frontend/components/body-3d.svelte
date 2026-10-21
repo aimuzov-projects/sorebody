@@ -8,6 +8,7 @@
 	import { metrikaGoal, metrikaHit } from '#frontend/lib/metrika.ts'
 	import { recalledSport, rememberSport } from '#frontend/lib/sport-memory.ts'
 	import { prefetchArticles } from '#frontend/lib/article-loader.ts'
+	import { cssVars } from '#frontend/lib/css-vars.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
 	import { plural } from '#frontend/lib/plural.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
@@ -65,6 +66,9 @@
 	type SportData = Pick<Props, 'zones' | 'whole' | 'movements' | 'sport'>
 
 	let { modelUrl, footer, movementPage, ...initial }: Props = $props()
+
+	/** Индекс и шапку рисует и сервер (`client:load`): адрес и DOM страницы есть только в браузере. */
+	const browser = typeof window !== 'undefined'
 
 	let data = $state.raw<SportData>(untrack(() => ({ ...initial })))
 
@@ -297,14 +301,14 @@
 	 * Стартовый кадр из серверного HTML (components/scene-poster.astro): постер стоит там ещё до JS
 	 * сцены. С монтированием сцена ставит кадр к себе и дальше ведёт постер по posterRect.
 	 */
-	const startEl = document.querySelector<HTMLElement>('.body3d__start')
+	const startEl = browser ? document.querySelector<HTMLElement>('.body3d__start') : null
 	const posterEl = startEl?.querySelector<HTMLElement>('.body3d__poster')
 	/** Полоса фигуры на телефоне главной: есть только там (scene-poster.astro). */
 	const bandEl = startEl?.querySelector<HTMLElement>('.body3d__start-band')
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
-	const flags = new URLSearchParams(location.search)
+	const flags = new URLSearchParams(browser ? location.search : '')
 	const posterMode = flags.has('poster')
 
 	/**
@@ -425,7 +429,7 @@
 	 */
 	let baseLevel = 0
 	/** Путь сцены под открытой статьёй -- главная спорта или страница движения: к нему ведёт "Назад". */
-	let scenePath = location.pathname
+	let scenePath = browser ? location.pathname : sport.home
 
 	function parseHash() {
 		return placeAt(location, sport, [...zones, whole])
@@ -728,12 +732,15 @@
 	}
 
 	// Зона и статья из адреса -- сразу в первом кадре. Из onMount главная успевала
-	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал
-	openRegion()
-	// Главная, на которую ушли из `<head>` за выбранным спортом (lib/sport-memory.ts), получает
-	// хеш прежнего спорта как есть
-	dropDeadHash()
-	sync()
+	// отрисоваться: её список уезжал, а статья проявлялась, хотя её никто не открывал. Сервер
+	// адреса не знает и рисует общий план
+	if (browser) {
+		openRegion()
+		// Главная, на которую ушли из `<head>` за выбранным спортом (lib/sport-memory.ts), получает
+		// хеш прежнего спорта как есть
+		dropDeadHash()
+		sync()
+	}
 
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
 	let mounted = $state(false)
@@ -763,6 +770,10 @@
 
 	onMount(() => {
 		mounted = true
+
+		// Серверный индекс, спрятанный до JS (scene/poster-css.ts), отдаём сцене. Через кадр: к нему
+		// `index--away` уже без перехода погасил индекс, и снятие класса его не покажет
+		requestAnimationFrame(() => document.documentElement.classList.remove('scene-placed'))
 
 		// Серверный кадр с постером -- в сцену сразу за канвасом: под индексом и шапкой, как и фигура
 		if (startEl) {
@@ -1380,6 +1391,7 @@
 	class="body3d"
 	class:body3d--open={open}
 	class:body3d--hidden={sceneHidden}
+	class:body3d--server={!mounted}
 	class:body3d--hot={hovered && !open}
 	class:body3d--movement={movementPage}
 	class:body3d--live={live}
@@ -1457,7 +1469,7 @@
 			class:body3d__spot--empty={counts.get(spot.zone) === 0}
 			bind:this={spotEls[i]}
 			type="button"
-			style:--i={i}
+			{@attach cssVars({ '--i': i })}
 			hidden={!live}
 			tabindex={counts.get(spot.zone) === 0 ? -1 : undefined}
 			aria-label="{spot.zone.label}: {counts.get(spot.zone)} {plural(counts.get(spot.zone) ?? 0)}"
@@ -1692,6 +1704,23 @@
 		transition:
 			opacity 0.45s var(--a-ease),
 			visibility 0s;
+
+		/* Без JS сцена не оживёт, а её серверный индекс из кнопок лёг бы поверх списка травм
+		   из `<noscript>` (components/sport-home.astro) */
+		@media (scripting: none) {
+			display: none;
+		}
+
+		/* Серверный HTML до монтирования: стартовый кадр с постером стоит под сценой, а не в ней, и
+		   фон сцены его закрыл бы. Фон до JS -- у самого постера (components/scene-poster.astro) */
+		&--server {
+			background: none;
+		}
+
+		/* Адрес открыл статью сразу (scene/poster-css.ts): сцена под ней скрывается без перехода */
+		:global(.scene-placed) & {
+			transition: none;
+		}
 
 		/* Под статьёй сцену не видно вовсе: гаснет, потом скрывается, рендер стоит */
 		&--hidden {
@@ -2232,6 +2261,18 @@
 					rgb(0 0 0 / 93%) 60px,
 					rgb(0 0 0 / 100%) 72px
 				);
+			}
+		}
+
+		/* Адрес открывает зону или статью (scene/poster-css.ts): серверный индекс не показываем, и
+		   уход без перехода -- его никто не видел */
+		:global(.scene-placed) & {
+			visibility: hidden;
+
+			&,
+			&::before,
+			& > :global(*) {
+				transition: none;
 			}
 		}
 

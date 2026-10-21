@@ -1,11 +1,12 @@
-import type { CrossfitElement as Movement } from '#frontend/data/sports.ts'
+import type { ElementIcon as Movement } from '#frontend/data/movement-icons.ts'
+import type { SportSlug } from '#frontend/data/sports.ts'
 
 /**
  * Корни, по которым движение узнаётся в свободном тексте пары "Вместо/Лучше". `\b` в JS
  * кириллицу не видит, поэтому начало слова -- через `(?<!\p{L})`. Ходьба идёт под бег: иконка
  * у них общая. Порядок важен при равной позиции: "жим лёжа" раньше просто "жима".
  */
-const RULES: [RegExp, Movement][] = [
+const CROSSFIT: [RegExp, Movement][] = [
 	[/(?<!\p{L})жим\p{L}*(?:\s+[^\s,;.]+){0,5}?\s+(?:лежа|скам|от груди)/u, 'bench-press'],
 	[/(?<!\p{L})(?:стой\p{L}* на руках|стоек на руках|отжиман\p{L}* в стойке)/u, 'handstand-push-up'],
 	[/(?<!\p{L})(?:жим|швунг)/u, 'overhead-press'],
@@ -28,11 +29,47 @@ const RULES: [RegExp, Movement][] = [
 	[/(?<!\p{L})берпи/u, 'burpee'],
 ]
 
+/** Бег, ходьба и гребля в паре "Лучше" встречаются в любом спорте: значок у них из кроссфита. */
+const COMMON: [RegExp, Movement][] = [
+	[/(?<!\p{L})(?:бег(?:а|ом|у|е)?(?!\p{L})|ходьб|прогулк)/u, 'running'],
+	[/(?<!\p{L})греб[лн]/u, 'rowing'],
+]
+
+/** Удары и перемещения падела. "Рывок" здесь -- к мячу, а не штанга. */
+const PADEL: [RegExp, Movement][] = [
+	[/(?<!\p{L})смэш/u, 'smash'],
+	[/(?<!\p{L})(?:бандех|вибор)/u, 'bandeja-vibora'],
+	[/(?<!\p{L})(?:с л[её]та|у сетки)/u, 'volley'],
+	[/(?<!\p{L})удар\p{L}* слева/u, 'backhand'],
+	[/(?<!\p{L})(?:от стекла|от стенк)/u, 'off-the-glass'],
+	[/(?<!\p{L})(?:рыв(?:ок|к)|в углы|за каждым мячом)/u, 'sprint-to-ball'],
+	[/(?<!\p{L})выпад/u, 'lunge'],
+	[/(?<!\p{L})прыж/u, 'jump-landing'],
+	...COMMON,
+]
+
+/** Игровые действия футбола. Челночный бег -- смена направления, а не просто бег. */
+const FOOTBALL: [RegExp, Movement][] = [
+	[/(?<!\p{L})(?:вратар|на воротах)/u, 'goalkeeping'],
+	[/(?<!\p{L})(?:головой|верхов)/u, 'heading'],
+	[/(?<!\p{L})(?:подкат|отбор|борьб|прессинг|единоборств|контакт)/u, 'tackle'],
+	[/(?<!\p{L})(?:финт|смен\p{L}* направлени|челночн)/u, 'change-of-direction'],
+	[/(?<!\p{L})(?:торможени|остановк)/u, 'deceleration'],
+	[/(?<!\p{L})(?:спринт|рыв(?:ок|к)|ускорени|старт)/u, 'sprint'],
+	[/(?<!\p{L})(?:удар\p{L}* по (?:мячу|воротам)|передач|навес|стандарт)/u, 'kicking'],
+	[/(?<!\p{L})прыж/u, 'jump-landing'],
+	[/(?<!\p{L})столкновен/u, 'collision'],
+	[/(?<!\p{L})падени/u, 'fall'],
+	...COMMON,
+]
+
+const RULES: Record<SportSlug, [RegExp, Movement][]> = { crossfit: CROSSFIT, padel: PADEL, football: FOOTBALL }
+
 /**
- * Первое по тексту движение из списка или `undefined`. Оговорки "без прыжка", "без рывков"
+ * Первое по тексту движение спорта или `undefined`. Оговорки "без прыжка", "без рывков"
  * выкидываются заранее: движение в них как раз отсутствует.
  */
-export function movementIn(text: string): Movement | undefined {
+export function movementIn(text: string, sport: SportSlug = 'crossfit'): Movement | undefined {
 	const plain = text
 		.toLowerCase()
 		.replaceAll('ё', 'е')
@@ -40,7 +77,7 @@ export function movementIn(text: string): Movement | undefined {
 		.replace(/(?<!\p{L})без\s+[\p{L}-]+/gu, '')
 	let best: { at: number; movement: Movement } | undefined
 
-	for (const [rule, movement] of RULES) {
+	for (const [rule, movement] of RULES[sport]) {
 		const at = plain.search(rule)
 
 		if (at >= 0 && (!best || at < best.at)) best = { at, movement }

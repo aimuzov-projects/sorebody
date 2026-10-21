@@ -16,7 +16,8 @@ function escape(text: string) {
 	return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 }
 
-function iconsSvg(filled: number) {
+/** Ряд из десяти фигурок, `filled` закрашены. SVG скрыт от скринридера: число рядом текстом. */
+export function iconsSvg(filled: number) {
 	const width = ICONS * ICON + (ICONS - 1) * GAP
 	const icons = Array.from({ length: ICONS }, (_, i) => {
 		const state = i < filled ? 'on' : 'off'

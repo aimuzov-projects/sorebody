@@ -89,6 +89,10 @@ test('global.css takes the brand gradient of its theme and base.astro inserts it
 	assert.match(GLOBAL_CSS, /--brand-line: var\(--brand-line-light\);/)
 	assert.equal(GLOBAL_CSS.match(/--brand-line: var\(--brand-line-dark\);/g)?.length, 2, 'оба блока тёмной темы')
 	assert.match(GLOBAL_CSS, /--accent-fill: var\(--brand-line\);/)
+	assert.match(GLOBAL_CSS, /--brand-column: var\(--brand-column-light\);/)
+	assert.equal(GLOBAL_CSS.match(/--brand-column: var\(--brand-column-dark\);/g)?.length, 2, 'оба блока тёмной темы')
+	assert.match(GLOBAL_CSS, /--brand-solid: var\(--brand-solid-light\);/)
+	assert.equal(GLOBAL_CSS.match(/--brand-solid: var\(--brand-solid-dark\);/g)?.length, 2, 'оба блока тёмной темы')
 
 	assert.match(BASE, /BRAND_GRADIENT_CSS/)
 })
@@ -97,6 +101,12 @@ for (const theme of ['light', 'dark'] as const)
 	test(`${theme}: the menu button gradient goes left to right without coming back to blue`, () => {
 		assert.equal(brandLine(theme), `linear-gradient(90deg, ${brandStops(theme).join(', ')})`)
 		assert.ok(BRAND_GRADIENT_CSS.includes(`--brand-line-${theme}:${brandLine(theme)}`))
+	})
+
+for (const theme of ['light', 'dark'] as const)
+	test(`${theme}: the recovery timeline gradient goes top to bottom`, () => {
+		assert.equal(brandLine(theme, 180), `linear-gradient(180deg, ${brandStops(theme).join(', ')})`)
+		assert.ok(BRAND_GRADIENT_CSS.includes(`--brand-column-${theme}:${brandLine(theme, 180)}`))
 	})
 
 /** Цвет `color` поверх фона `bg` с непрозрачностью `share`, как `color-mix(... transparent)`. */
@@ -124,3 +134,8 @@ test('the internal link pill keeps AA for every sport and the brand gradient', (
 	assert.match(ARTICLE_CSS, new RegExp(`color-mix\\(in srgb, var\\(--accent\\) ${LINK_TINT}%, transparent\\)`))
 	assert.match(BODY_3D, new RegExp(`color-mix\\(in srgb, var\\(--a-blue\\) ${LINK_TINT}%, transparent\\)`))
 })
+
+for (const theme of ['light', 'dark'] as const)
+	test(`${theme}: the solid brand color is the first stop of the gradient`, () => {
+		assert.ok(BRAND_GRADIENT_CSS.includes(`--brand-solid-${theme}:${brandStops(theme)[0]}`))
+	})

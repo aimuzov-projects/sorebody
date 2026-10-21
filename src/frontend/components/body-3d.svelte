@@ -262,12 +262,20 @@
 	let canvas: HTMLCanvasElement
 	let body: BodyScene | undefined
 	let status = $state<'loading' | 'ready' | 'error'>('loading')
+	/** Почему 3D нет: браузер без WebGL или модель не загрузилась. От этого -- текст плашки и кнопка повтора. */
+	let failure = $state<'webgl' | 'load'>('webgl')
 	/** WebGL без видеокарты: сцену не грузим, пока её не включат кнопкой (`startScene`, из onMount). */
 	let lite = $state(false)
 	let loadScene = () => {}
 
 	function startScene() {
 		lite = false
+		loadScene()
+	}
+
+	/** Модель не загрузилась: ещё одна попытка с той же страницы, без перезагрузки. */
+	function retryScene() {
+		status = 'loading'
 		loadScene()
 	}
 
@@ -701,8 +709,8 @@
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
 	let mounted = $state(false)
 
-	// Постер на месте фигуры, пока канвас прозрачный: без места (зона или статья по адресу) и без
-	// WebGL его нет, с первым кадром модели он уходит из DOM
+	// Постер на месте фигуры, пока канвас прозрачный: без места (зона или статья по адресу) его нет,
+	// с первым кадром модели он уходит из DOM. Без 3D он остаётся: снимок фигуры лучше пустоты
 	$effect(() => {
 		if (!posterEl || !mounted) return
 
@@ -712,7 +720,7 @@
 			return
 		}
 
-		posterEl.hidden = !posterRect || status === 'error'
+		posterEl.hidden = !posterRect
 
 		if (posterRect) {
 			const { style } = posterEl.querySelector('img')!
@@ -773,7 +781,8 @@
 			void document.fonts?.ready.then(placePoster)
 		}
 
-		if (!location.hash && !lite) hintShown = !movementPage && !introHintSeen()
+		// Подсказка «нажмите на зону» -- только когда фигура живая: без WebGL нажимать не на что
+		if (!location.hash && !lite && webgl !== 'none') hintShown = !movementPage && !introHintSeen()
 
 		sync()
 		window.addEventListener('popstate', onHistory)
@@ -856,7 +865,9 @@
 
 			ready.catch((error) => {
 				console.error(error)
+				failure = 'load'
 				status = 'error'
+				hintShown = false
 			})
 		}
 
@@ -1385,8 +1396,24 @@
 		</p>
 	{/if}
 
+	<!-- Без 3D: на месте фигуры остаётся её снимок (постер), рядом плашка, как у медленного WebGL.
+	     Не загрузилась модель -- можно попробовать ещё раз, без WebGL пробовать нечего -->
 	{#if status === 'error' && !open}
-		<p class="body3d__status">Не получилось показать 3D: ваш браузер не поддерживает WebGL.</p>
+		<p
+			class="body3d__hint body3d__lite body3d__failed"
+			class:body3d__hint--below={posterRect && !hintPlace.side}
+			class:body3d__lite--corner={!posterRect}
+			style:--hint-x="{hintPlace.x}px"
+			style:--hint-y="{hintPlace.y}px"
+			style:--hint-room="{hintPlace.room}px"
+		>
+			{#if failure === 'webgl'}
+				Этот браузер не показывает 3D, поэтому здесь снимок фигуры. Зоны открываются из списка
+			{:else}
+				3D-модель не загрузилась, поэтому здесь снимок фигуры
+				<button class="body3d__lite-start" type="button" onclick={retryScene}>Попробовать ещё раз</button>
+			{/if}
+		</p>
 	{/if}
 
 	{#each spots as spot, i (i)}
@@ -1777,6 +1804,15 @@
 			padding: 12px 14px;
 		}
 
+		/* Плашка «3D не показать»: на широком экране места справа много, но строка в пол-экрана
+		   не читается -- не шире обычной подсказки */
+		&__failed {
+			max-width: min(var(--hint-room), 300px);
+			/* Без балансировки строк подсказок: она укорачивала строки, а коробка оставалась прежней
+			   ширины, и справа висела пустота */
+			text-wrap: pretty;
+		}
+
 		/* Места фигуры ещё не знаем: плашка в правом верхнем углу под шапкой */
 		&__lite--corner {
 			top: calc(var(--theme-toggle-top) + var(--header-row) + 8px);
@@ -1801,22 +1837,6 @@
 			&:focus-visible {
 				outline: 2px solid var(--a-blue);
 				outline-offset: 2px;
-			}
-		}
-
-		/* Загрузка или ошибка WebGL -- там, где стоит фигура: справа от индекса, на телефоне над ним */
-		&__status {
-			position: absolute;
-			inset: 0 0 0 38vw;
-			display: grid;
-			place-items: center;
-			margin: 0;
-			padding: 24px;
-			color: var(--a-fg2);
-			text-align: center;
-
-			@media (width < 700px) {
-				inset: 0 0 56dvh;
 			}
 		}
 

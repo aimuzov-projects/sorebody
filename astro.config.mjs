@@ -5,7 +5,7 @@ import svelte from '@astrojs/svelte'
 import { defineConfig } from 'astro/config'
 
 import { DEFAULT_SPORT } from './src/frontend/data/sports.ts'
-import { chartsPlugin } from './src/frontend/lib/markdown-charts.ts'
+import { blocksPlugin } from './src/frontend/lib/markdown-blocks.ts'
 
 // Травмы с линзами в нескольких спортах: их `/injuries/<slug>/` -- настоящая общая страница,
 // у остальных там переадресация на единственный разбор (pages/injuries/[slug].astro)
@@ -46,7 +46,19 @@ export default defineConfig({
 	],
 	// Подсветка Shiki несовместима с CSP.
 	// Маркеры `data-chart` в статьях превращаются в пиктограммы из frontmatter.
-	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [chartsPlugin] }) },
+	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [blocksPlugin] }) },
+	// three грузится динамическим импортом, и dev-сервер находит его, когда страница уже открыта:
+	// пересобирает зависимости, а открытые вкладки получают 504 на старые бандлы. Собираем заранее
+	vite: {
+		optimizeDeps: {
+			include: [
+				'three',
+				'three/examples/jsm/controls/OrbitControls.js',
+				'three/examples/jsm/libs/meshopt_decoder.module.js',
+				'three/examples/jsm/loaders/GLTFLoader.js',
+			],
+		},
+	},
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
 	// `frame-ancestors` в `<meta>` не работает: его ставит Caddy (infra-server, sites/wodcare.caddy),
 	// там разрешено встраивание только Метрике для вебвизора и карты кликов.

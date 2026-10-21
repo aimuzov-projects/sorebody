@@ -95,6 +95,27 @@ const RUNNING_ELEMENTS = [
 export type RunningElement = (typeof RUNNING_ELEMENTS)[number]['slug']
 
 /**
+ * Движения и игровые ситуации баскетбола по docs/research/basketball-injuries-pubmed.md, раздел
+ * «Элементы». Приземление, смена направления, остановка, контакт, мяч и падение -- общие с паделом
+ * и футболом. Защитные приставные шаги входят в смену направления, уличной площадки нет: по ней
+ * нет работ о травмах.
+ */
+const BASKETBALL_ELEMENTS = [
+	{ slug: 'jump-landing', title: 'Приземление после прыжка', titleEn: 'Jump landing' },
+	{ slug: 'landing-on-foot', title: 'Приземление на стопу соперника', titleEn: "Landing on an opponent's foot" },
+	{ slug: 'change-of-direction', title: 'Резкая смена направления', titleEn: 'Change of direction' },
+	{ slug: 'deceleration', title: 'Резкая остановка', titleEn: 'Hard stop' },
+	{ slug: 'drive', title: 'Проход под кольцо', titleEn: 'Drive to the basket' },
+	{ slug: 'collision', title: 'Контакт под кольцом и заслоны', titleEn: 'Contact under the basket' },
+	{ slug: 'ball-impact', title: 'Мяч в пальцы', titleEn: 'Ball to the fingers' },
+	{ slug: 'elbow-to-face', title: 'Локоть или рука в лицо', titleEn: 'Elbow or hand to the face' },
+	{ slug: 'fall', title: 'Падение на паркет', titleEn: 'Fall on the court' },
+	{ slug: 'congested-schedule', title: 'Плотный календарь', titleEn: 'Congested schedule' },
+] as const
+
+export type BasketballElement = (typeof BASKETBALL_ELEMENTS)[number]['slug']
+
+/**
  * Все травмы кроссфита от самой частой к самой редкой: в этом порядке они стоят в списках зон.
  * Уровень и порядок -- из таблицы диагнозов в docs/research/crossfit-injuries-pubmed.md:
  * частые -- там "очень часто" и "часто", нечастые -- "нередко" и "нечасто", редкие -- только
@@ -220,10 +241,41 @@ const RUNNING_FREQUENCY_ORDER = [
 	'exertional-rhabdomyolysis',
 ]
 
+/**
+ * Травмы баскетбола от частых к редким по правилу уровня в docs/research/basketball-injuries-pubmed.md:
+ * частые -- от 3% всех травм отдельной строкой в медкарте НБА (Mack 2025) или у студентов Division I,
+ * нечастые -- доля или частота в когорте с медицинской регистрацией, редкие -- публичные данные,
+ * серии случаев и регистры смертей. Внутри уровня -- по доле в таблице Mack.
+ */
+const BASKETBALL_FREQUENCY_ORDER = [
+	// Частые
+	'ankle-sprain',
+	'low-back-strain',
+	'fall-contusions',
+	'concussion',
+	// Нечастые
+	'hamstring-strain',
+	'patellofemoral-pain',
+	'adductor-groin-pain',
+	'orofacial-trauma',
+	'achilles-tendinopathy',
+	'mcl-sprain',
+	'finger-sprains',
+	'meniscus-tear',
+	'hand-finger-injuries',
+	'acl-tear',
+	'eye-injury',
+	'lower-limb-stress-fractures',
+	'fifth-metatarsal-fracture',
+	// Редкие
+	'achilles-tendon-rupture',
+	'sudden-cardiac-arrest',
+]
+
 type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
-export type SportSlug = 'crossfit' | 'padel' | 'football' | 'running'
+export type SportSlug = 'crossfit' | 'padel' | 'football' | 'running' | 'basketball'
 
 export type Sport = {
 	slug: SportSlug
@@ -317,6 +369,23 @@ export const SPORTS = [
 		// ссылки; тёмный -- 8:1 на фоне тёмной темы, цифры на нём тёмные. От красного «опасно»
 		// отходит по тону к жёлтому, от остальных спортов далеко
 		accent: { light: '#a84d08', dark: '#fb923c', onLight: '#ffffff', onDark: '#161617', glow: '#f97316' },
+	},
+	{
+		slug: 'basketball',
+		title: 'Баскетбол',
+		phrase: 'в баскетболе',
+		elementLabel: 'Движение или ситуация',
+		elementsTitle: 'Движения и ситуации',
+		elementOn: 'в ситуации',
+		description:
+			'Справочник боли в баскетболе: как часто случаются, симптомы, когда к врачу и как изменить игру и тренировки — со ссылками на исследования.',
+		mechanismTitle: 'Механизм и игровые ситуации',
+		elements: BASKETBALL_ELEMENTS,
+		frequencyOrder: BASKETBALL_FREQUENCY_ORDER,
+		// Фиолетовый: оранжевый мяча уже у бега. Светлый -- 7:1 на белом и 6.5:1 на серой заливке чипов,
+		// тёмный -- почти 10:1 на фоне тёмной темы, цифры на нём тёмные. От индиго нечастых и пурпура
+		// редких отходит дальше 0.09 в OKLab, от синего кроссфита -- на 0.15
+		accent: { light: '#6d28d9', dark: '#c4b5fd', onLight: '#ffffff', onDark: '#161617', glow: '#a855f7' },
 	},
 ] as const satisfies readonly Sport[]
 

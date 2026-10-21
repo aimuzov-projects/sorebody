@@ -190,6 +190,8 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'hand-rips': { offset: [0, -0.07, 0.015], normal: [0, 0, 1], view: { azimuth: 20, polar: 80 } },
 	// Переломы и вывихи -- пястные кости и пальцы, ниже ладонных мозолей
 	'hand-finger-injuries': { offset: [0.01, -0.1, 0.01], normal: [0.3, 0, 1], view: { azimuth: 20, polar: 80 } },
+	// Растяжения пальцев -- средние суставы пальцев, дальше переломов пястных костей
+	'finger-sprains': { offset: [0.01, -0.135, 0.01], normal: [0, 0, 1], view: { azimuth: 15, polar: 80 } },
 	// Таз: импинджмент -- перед тазобедренного сустава, отрыв хамстрингов -- седалищный бугор сзади
 	'femoroacetabular-impingement': { offset: [0, 0, 0.06], normal: [0, 0, 1], view: { azimuth: 20, polar: 76 } },
 	'proximal-hamstring-avulsion': {
@@ -294,6 +296,7 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	},
 	'wrist-sprain': { depth: 'deep' },
 	'hand-finger-injuries': { depth: 'deep' },
+	'finger-sprains': { depth: 'deep' },
 	'shoulder-dislocation': { depth: 'deep' },
 	'lower-leg-fracture': { depth: 'deep' },
 	'lower-limb-stress-fractures': { depth: 'deep' },

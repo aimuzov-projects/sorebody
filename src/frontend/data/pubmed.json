@@ -1,4 +1,13 @@
 {
+	"7786216": {
+		"authors": "Zagelbaum BM, et al",
+		"title": "The National Basketball Association eye injury study.",
+		"journal": "Arch Ophthalmol",
+		"year": "1995",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1001/archopht.1995.01100060075035"
+	},
 	"8734891": {
 		"authors": "Orchard JW, et al",
 		"title": "Biomechanics of iliotibial band friction syndrome in runners.",
@@ -53,6 +62,16 @@
 		"medline": true,
 		"doi": "10.1097/00042752-200007000-00004"
 	},
+	"11273971": {
+		"authors": "McKay GD, et al",
+		"title": "Ankle injuries in basketball: injury rate and risk factors.",
+		"journal": "Br J Sports Med",
+		"year": "2001",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsm.35.2.103",
+		"pmcid": "PMC1724316"
+	},
 	"11476532": {
 		"authors": "Beiner JM, et al",
 		"title": "Muscle contusion injuries: current treatment options.",
@@ -61,6 +80,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.5435/00124635-200107000-00002"
+	},
+	"11782645": {
+		"authors": "Labella CR, et al",
+		"title": "Effect of mouthguards on dental injuries and concussions in college basketball.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2002",
+		"types": ["Comparative Study", "Journal Article"],
+		"medline": true,
+		"doi": "10.1097/00005768-200201000-00007"
 	},
 	"12091669": {
 		"authors": "Delgado GJ, et al",
@@ -154,6 +182,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsm.2003.009357",
 		"pmcid": "PMC1724962"
+	},
+	"15722279": {
+		"authors": "Lian OB, et al",
+		"title": "Prevalence of jumper's knee among elite athletes from different sports: a cross-sectional study.",
+		"journal": "Am J Sports Med",
+		"year": "2005",
+		"types": ["Comparative Study", "Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546504270454"
 	},
 	"15829535": {
 		"authors": "Almond CS, et al",
@@ -280,6 +317,15 @@
 		"medline": true,
 		"doi": "10.1056/NEJMoa064039"
 	},
+	"17597956": {
+		"authors": "Drezner JA, et al",
+		"title": "Inter-association Task Force recommendations on emergency preparedness and management of sudden cardiac arrest in high school and college athletic programs: a consensus statement.",
+		"journal": "J Athl Train",
+		"year": "2007",
+		"types": ["Consensus Statement", "Journal Article", "Practice Guideline"],
+		"medline": true,
+		"pmcid": "PMC1896083"
+	},
 	"17678660": {
 		"authors": "Segal NA, et al",
 		"title": "Greater trochanteric pain syndrome: epidemiology and associated factors.",
@@ -380,6 +426,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
 		"medline": true,
 		"doi": "10.2106/JBJS.I.01229"
+	},
+	"20515437": {
+		"authors": "Povlsen B, et al",
+		"title": "Outcome of late presentation of injuries of the volar plate of the proximal interphalangeal joint.",
+		"journal": "Scand J Plast Reconstr Surg Hand Surg",
+		"year": "2010",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.3109/02844311.2010.483104"
 	},
 	"20532869": {
 		"authors": "Waldén M, et al",
@@ -487,6 +542,21 @@
 		"medline": true,
 		"doi": "10.1177/0363546511408877"
 	},
+	"21795671": {
+		"authors": "McGuine TA, et al",
+		"title": "The effect of lace-up ankle braces on injury rates in high school basketball players.",
+		"journal": "Am J Sports Med",
+		"year": "2011",
+		"types": [
+			"Journal Article",
+			"Randomized Controlled Trial",
+			"Research Support, N.I.H., Extramural",
+			"Research Support, Non-U.S. Gov't"
+		],
+		"medline": true,
+		"doi": "10.1177/0363546511406242",
+		"pmcid": "PMC3213051"
+	},
 	"21825112": {
 		"authors": "Petersen J, et al",
 		"title": "Preventive effect of eccentric training on acute hamstring injuries in men's soccer: a cluster-randomized controlled trial.",
@@ -540,6 +610,15 @@
 		"medline": true,
 		"doi": "10.1136/bmj.e787",
 		"pmcid": "PMC3282676"
+	},
+	"22415208": {
+		"authors": "Longo UG, et al",
+		"title": "The FIFA 11+ program is effective in preventing injuries in elite male basketball players: a cluster randomized controlled trial.",
+		"journal": "Am J Sports Med",
+		"year": "2012",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1177/0363546512438761"
 	},
 	"22464032": {
 		"authors": "Moen MH, et al",
@@ -595,6 +674,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.2165/11635400-000000000-00000"
+	},
+	"23015949": {
+		"authors": "Drakos MC, et al",
+		"title": "Injury in the national basketball association: a 17-year overview.",
+		"journal": "Sports Health",
+		"year": "2010",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1941738109357303",
+		"pmcid": "PMC3445097"
 	},
 	"23016001": {
 		"authors": "Mohseni M, et al",
@@ -668,6 +756,16 @@
 		"types": ["Journal Article", "Randomized Controlled Trial"],
 		"medline": true,
 		"doi": "10.1249/MSS.0b013e3182874769"
+	},
+	"23450596": {
+		"authors": "Chalmer J, et al",
+		"title": "Conservative interventions for treating hyperextension injuries of the proximal interphalangeal joints of the fingers.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2013",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1002/14651858.CD009030.pub2",
+		"pmcid": "PMC11403558"
 	},
 	"23467966": {
 		"authors": "Ekstrand J, et al",
@@ -808,6 +906,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.2147/OAJSM.S39331",
 		"pmcid": "PMC3873798"
+	},
+	"24503231": {
+		"authors": "Paschos NK, et al",
+		"title": "Management of proximal interphalangeal joint hyperextension injuries: a randomized controlled trial.",
+		"journal": "J Hand Surg Am",
+		"year": "2014",
+		"types": ["Comparative Study", "Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1016/j.jhsa.2013.11.038"
 	},
 	"24570615": {
 		"authors": "Tatar Y, et al",
@@ -982,6 +1089,15 @@
 		"doi": "10.3174/ajnr.A4173",
 		"pmcid": "PMC4464797"
 	},
+	"25455398": {
+		"authors": "Prucz RB, et al",
+		"title": "Finger joint injuries.",
+		"journal": "Clin Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.csm.2014.09.002"
+	},
 	"25455402": {
 		"authors": "Freilich AM",
 		"title": "Evaluation and treatment of jersey finger and pulley injuries in athletes.",
@@ -1102,6 +1218,16 @@
 		"medline": true,
 		"doi": "10.1007/s40279-015-0336-5"
 	},
+	"25977310": {
+		"authors": "Harmon KG, et al",
+		"title": "Incidence, Cause, and Comparative Frequency of Sudden Cardiac Death in National Collegiate Athletic Association Athletes: A Decade in Review.",
+		"journal": "Circulation",
+		"year": "2015",
+		"types": ["Comparative Study", "Journal Article", "Research Support, N.I.H., Extramural", "Review"],
+		"medline": true,
+		"doi": "10.1161/CIRCULATIONAHA.115.015431",
+		"pmcid": "PMC4496313"
+	},
 	"26018970": {
 		"authors": "Beyer R, et al",
 		"title": "Heavy Slow Resistance Versus Eccentric Training as Treatment for Achilles Tendinopathy: A Randomized Controlled Trial.",
@@ -1179,6 +1305,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546515598995"
 	},
+	"26330572": {
+		"authors": "Zuckerman SL, et al",
+		"title": "Epidemiology of Sports-Related Concussion in NCAA Athletes From 2009-2010 to 2013-2014: Incidence, Recurrence, and Mechanisms.",
+		"journal": "Am J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546515599634"
+	},
 	"26381473": {
 		"authors": "Casa DJ, et al",
 		"title": "National Athletic Trainers' Association Position Statement: Exertional Heat Illnesses.",
@@ -1207,6 +1342,16 @@
 		"doi": "10.1155/2013/367169",
 		"pmcid": "PMC4590904"
 	},
+	"26502412": {
+		"authors": "Taylor JB, et al",
+		"title": "Prevention of Lower Extremity Injuries in Basketball: A Systematic Review and Meta-Analysis.",
+		"journal": "Sports Health",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1177/1941738115593441",
+		"pmcid": "PMC4547118"
+	},
 	"26502450": {
 		"authors": "Friedman MV, et al",
 		"title": "Traumatic Tear of the Latissimus Dorsi Myotendinous Junction: Case Report of a CrossFit-Related Injury.",
@@ -1216,6 +1361,15 @@
 		"medline": true,
 		"doi": "10.1177/1941738115595975",
 		"pmcid": "PMC4622375"
+	},
+	"26535239": {
+		"authors": "Jackson TJ, et al",
+		"title": "Epidemiology of Hip Injuries in the National Basketball Association: A 24-Year Overview.",
+		"journal": "Orthop J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967113499130",
+		"pmcid": "PMC4555488"
 	},
 	"26535325": {
 		"authors": "Weisenthal BM, et al",
@@ -1253,6 +1407,16 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1016/j.csm.2015.08.003"
+	},
+	"26627111": {
+		"authors": "Begly JP, et al",
+		"title": "Return to Play and Performance After Jones Fracture in National Basketball Association Athletes.",
+		"journal": "Sports Health",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/1941738115621011",
+		"pmcid": "PMC4922517"
 	},
 	"26644427": {
 		"authors": "van Leeuwen KD, et al",
@@ -1344,6 +1508,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2015-094657"
 	},
+	"26940226": {
+		"authors": "Stanley LE, et al",
+		"title": "Sex Differences in the Incidence of Anterior Cruciate Ligament, Medial Collateral Ligament, and Meniscal Injuries in Collegiate and High School Sports: 2009-2010 Through 2013-2014.",
+		"journal": "Am J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546516630927"
+	},
 	"26954572": {
 		"authors": "Castillo-Lozano R, et al",
 		"title": "Incidence of musculoskeletal sport injuries in a sample of male and female recreational paddle-tennis players.",
@@ -1385,6 +1558,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2015-095838"
+	},
+	"27022062": {
+		"authors": "Padaki AS, et al",
+		"title": "Concussion Incidence and Return-to-Play Time in National Basketball Association Players: Results From 2006 to 2014.",
+		"journal": "Am J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546516634679"
 	},
 	"27034129": {
 		"authors": "Waldén M, et al",
@@ -1481,6 +1663,15 @@
 		"doi": "10.1177/1941738115601425",
 		"pmcid": "PMC4922516"
 	},
+	"27364907": {
+		"authors": "Zuckerman SL, et al",
+		"title": "Injuries sustained in National Collegiate Athletic Association men's and women's basketball, 2009/2010-2014/2015.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2016-096005"
+	},
 	"27578854": {
 		"authors": "Summitt RJ, et al",
 		"title": "Shoulder Injuries in Individuals Who Participate in CrossFit Training.",
@@ -1517,6 +1708,15 @@
 		"types": ["Journal Article", "Consensus Statement"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2016-096743"
+	},
+	"27660369": {
+		"authors": "Drezner JA, et al",
+		"title": "AMSSM Position Statement on Cardiovascular Preparticipation Screening in Athletes: Current evidence, knowledge gaps, recommendations and future directions.",
+		"journal": "Br J Sports Med",
+		"year": "2017",
+		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2016-096781"
 	},
 	"27714843": {
 		"authors": "Fisker FY, et al",
@@ -1663,6 +1863,15 @@
 		"doi": "10.1503/cmaj.151104",
 		"pmcid": "PMC5289870"
 	},
+	"28251168": {
+		"authors": "Morse KW, et al",
+		"title": "Return to Play After Forearm and Hand Injuries in the National Basketball Association.",
+		"journal": "Orthop J Sports Med",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967117690002",
+		"pmcid": "PMC5317012"
+	},
 	"28314419": {
 		"authors": "Micieli JA, et al",
 		"title": "Eye and Orbital Injuries in Sports.",
@@ -1738,6 +1947,15 @@
 		"doi": "10.1136/bmj.j1982",
 		"pmcid": "PMC5426368"
 	},
+	"28600149": {
+		"authors": "Lee TH, et al",
+		"title": "Retinal Detachment Associated With Basketball-Related Eye Trauma.",
+		"journal": "Am J Ophthalmol",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.ajo.2017.05.025"
+	},
 	"28602272": {
 		"authors": "Worthing RM, et al",
 		"title": "Prevention of Friction Blisters in Outdoor Pursuits: A Systematic Review.",
@@ -1746,6 +1964,16 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1016/j.wem.2017.03.007"
+	},
+	"28644776": {
+		"authors": "Boden BP, et al",
+		"title": "Eye Injuries in High School and Collegiate Athletes.",
+		"journal": "Sports Health",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/1941738117712425",
+		"pmcid": "PMC5582698"
 	},
 	"28646098": {
 		"authors": "Beaudouin F, et al",
@@ -1828,6 +2056,16 @@
 		"medline": true,
 		"doi": "10.1177/0363546517732526"
 	},
+	"29106811": {
+		"authors": "Khan M, et al",
+		"title": "Epidemiology and Impact on Performance of Lower Extremity Stress Injuries in Professional Basketball Players.",
+		"journal": "Sports Health",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/1941738117738988",
+		"pmcid": "PMC5857731"
+	},
 	"29174096": {
 		"authors": "Lin JS, et al",
 		"title": "Surgical and Nonsurgical Management of Mallet Finger: A Systematic Review.",
@@ -1888,6 +2126,15 @@
 		"medline": true,
 		"doi": "10.1080/10903127.2017.1392666"
 	},
+	"29411289": {
+		"authors": "Siebert DM, et al",
+		"title": "Sudden cardiac arrest on the field of play: turning tragedy into a survivable event.",
+		"journal": "Neth Heart J",
+		"year": "2018",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12471-018-1084-6",
+		"pmcid": "PMC5818383"
+	},
 	"29510653": {
 		"authors": "Thorborg K, et al",
 		"title": "Clinical Examination, Diagnostic Imaging, and Testing of Athletes With Groin Pain: An Evidence-Based Approach to Effective Management.",
@@ -1934,6 +2181,16 @@
 		"medline": true,
 		"doi": "10.4085/1062-6050-59-16",
 		"pmcid": "PMC5894372"
+	},
+	"29625645": {
+		"authors": "Kamnerdnakta S, et al",
+		"title": "Complications of Proximal Interphalangeal Joint Injuries: Prevention and Treatment.",
+		"journal": "Hand Clin",
+		"year": "2018",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.hcl.2017.12.014",
+		"pmcid": "PMC5891829"
 	},
 	"29691289": {
 		"authors": "Werner J, et al",
@@ -2152,6 +2409,15 @@
 		"medline": true,
 		"doi": "10.1016/j.arthro.2018.07.037"
 	},
+	"30480010": {
+		"authors": "Tummala SV, et al",
+		"title": "10-Year Epidemiology of Ankle Injuries in Men's and Women's Collegiate Basketball.",
+		"journal": "Orthop J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967118805400",
+		"pmcid": "PMC6240983"
+	},
 	"30543493": {
 		"authors": "Yu J, et al",
 		"title": "Outcomes and Return to Sport After Pectoralis Major Tendon Repair: A Systematic Review.",
@@ -2314,6 +2580,15 @@
 		"medline": true,
 		"doi": "10.1007/s00113-019-0667-z"
 	},
+	"31103088": {
+		"authors": "Tan RES, et al",
+		"title": "Injuries Around the Proximal Interphalangeal Joint.",
+		"journal": "Clin Plast Surg",
+		"year": "2019",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.cps.2019.03.005"
+	},
 	"31171515": {
 		"authors": "López-Valenciano A, et al",
 		"title": "Epidemiology of injuries in professional football: a systematic review and meta-analysis.",
@@ -2350,6 +2625,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
 		"medline": true,
 		"doi": "10.1080/00913847.2019.1637301"
+	},
+	"31268773": {
+		"authors": "Lemme NJ, et al",
+		"title": "Epidemiology and Video Analysis of Achilles Tendon Ruptures in the National Basketball Association.",
+		"journal": "Am J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/0363546519858609"
 	},
 	"31270563": {
 		"authors": "Alves C, et al",
@@ -2396,6 +2680,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2019-101253"
 	},
+	"31389712": {
+		"authors": "Herzog MM, et al",
+		"title": "Ankle Sprains in the National Basketball Association, 2013-2014 Through 2016-2017.",
+		"journal": "Am J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/0363546519864678"
+	},
 	"31394009": {
 		"authors": "Al Attar WSA, et al",
 		"title": "A meta-analysis of meta-analyses of the effectiveness of FIFA injury prevention programs in soccer.",
@@ -2422,6 +2715,16 @@
 		"medline": true,
 		"doi": "10.1186/s12891-019-2749-z",
 		"pmcid": "PMC6698340"
+	},
+	"31424974": {
+		"authors": "Hutchison MK, et al",
+		"title": "Prevalence of Patellar Tendinopathy and Patellar Tendon Abnormality in Male Collegiate Basketball Players: A Cross-Sectional Study.",
+		"journal": "J Athl Train",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-70-18",
+		"pmcid": "PMC6795094"
 	},
 	"31473593": {
 		"authors": "D'Hooghe P, et al",
@@ -2487,6 +2790,24 @@
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000000543"
 	},
+	"31700939": {
+		"authors": "Makovicka JL, et al",
+		"title": "Epidemiology of Lumbar Spine Injuries in Men's and Women's National Collegiate Athletic Association Basketball Athletes.",
+		"journal": "Orthop J Sports Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967119879104",
+		"pmcid": "PMC6823986"
+	},
+	"31719950": {
+		"authors": "Othman S, et al",
+		"title": "On the Court: A Comprehensive Analysis of Basketball Facial Trauma.",
+		"journal": "Craniomaxillofac Trauma Reconstr",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"doi": "10.1055/s-0039-1679930",
+		"pmcid": "PMC6839978"
+	},
 	"31722935": {
 		"authors": "Edouard P, et al",
 		"title": "Injury frequency and characteristics (location, type, cause and severity) differed significantly among athletics ('track and field') disciplines during 14 international championships (2007-2018): implications for medical service planning.",
@@ -2520,6 +2841,15 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD013502",
 		"pmcid": "PMC6900168"
+	},
+	"31827363": {
+		"authors": "Florit D, et al",
+		"title": "Incidence of Tendinopathy in Team Sports in a Multidisciplinary Sports Club Over 8 Seasons.",
+		"journal": "J Sports Sci Med",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"medline": true,
+		"pmcid": "PMC6873129"
 	},
 	"31850973": {
 		"authors": "Asher CM, et al",
@@ -2585,6 +2915,15 @@
 		"medline": true,
 		"doi": "10.1016/j.csm.2019.10.004"
 	},
+	"32115092": {
+		"authors": "Miller EA, et al",
+		"title": "Management of Finger Joint Dislocation and Fracture-Dislocations in Athletes.",
+		"journal": "Clin Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.csm.2019.10.006"
+	},
 	"32147339": {
 		"authors": "Rubinger L, et al",
 		"title": "Return to work following a distal biceps repair: a systematic review of the literature.",
@@ -2611,6 +2950,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1007/s00167-020-05930-9"
+	},
+	"32202444": {
+		"authors": "Patel BH, et al",
+		"title": "Adductor injuries in the National Basketball Association: an analysis of return to play and player performance from 2010 to 2019.",
+		"journal": "Phys Sportsmed",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1080/00913847.2020.1746978"
 	},
 	"32202487": {
 		"authors": "Rojas-Valverde D, et al",
@@ -2767,6 +3115,15 @@
 		"doi": "10.13107/jocr.2250-0685.1546",
 		"pmcid": "PMC7276628"
 	},
+	"32548586": {
+		"authors": "Baker H, et al",
+		"title": "Injury in the Women's National Basketball Association (WNBA) From 2015 to 2019.",
+		"journal": "Arthrosc Sports Med Rehabil",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1016/j.asmr.2020.02.003",
+		"pmcid": "PMC7283941"
+	},
 	"32561515": {
 		"authors": "Della Villa F, et al",
 		"title": "Systematic video analysis of ACL injuries in professional male football (soccer): injury mechanisms, situational patterns and biomechanics study on 134 consecutive cases.",
@@ -2860,6 +3217,15 @@
 		"medline": true,
 		"doi": "10.1111/sms.13852"
 	},
+	"33062767": {
+		"authors": "Deckey DG, et al",
+		"title": "Hand and Wrist Injuries in Men's and Women's National Collegiate Athletic Association Basketball.",
+		"journal": "Orthop J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967120953070",
+		"pmcid": "PMC7536375"
+	},
 	"33064426": {
 		"authors": "Shakil A, et al",
 		"title": "Inguinal Hernias: Diagnosis and Management.",
@@ -2932,6 +3298,16 @@
 		"medline": true,
 		"doi": "10.3390/medicina56110589",
 		"pmcid": "PMC7694459"
+	},
+	"33184114": {
+		"authors": "Peterson DF, et al",
+		"title": "Aetiology and incidence of sudden cardiac arrest and death in young competitive athletes in the USA: a 4-year prospective study.",
+		"journal": "Br J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2020-102666",
+		"pmcid": "PMC8551972"
 	},
 	"33188561": {
 		"authors": "de Souza BC, et al",
@@ -3040,6 +3416,15 @@
 		"medline": true,
 		"doi": "10.3390/medicina56120720",
 		"pmcid": "PMC7766530"
+	},
+	"33409809": {
+		"authors": "Stormholt ER, et al",
+		"title": "Symptoms Preceding Sports-Related Sudden Cardiac Death in Persons Aged 1-49 Years.",
+		"journal": "Curr Cardiol Rep",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1007/s11886-020-01438-3"
 	},
 	"33414454": {
 		"authors": "Millar NL, et al",
@@ -3151,6 +3536,15 @@
 		"medline": true,
 		"doi": "10.1080/00913847.2021.1892468"
 	},
+	"33623799": {
+		"authors": "Allahabadi S, et al",
+		"title": "Systematic Review of Orthopaedic and Sports Medicine Injuries and Treatment Outcomes in Women's National Basketball Association and National Basketball Association Players.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/2325967120982076",
+		"pmcid": "PMC7878958"
+	},
 	"33632663": {
 		"authors": "Edouard P, et al",
 		"title": "Lower limb muscle injury location shift from posterior lower leg to hamstring muscles with increasing discipline-related running velocity in international athletics championships.",
@@ -3196,6 +3590,15 @@
 		"medline": true,
 		"doi": "10.1136/bmj.n375",
 		"pmcid": "PMC7941216"
+	},
+	"33707154": {
+		"authors": "Dooley K, et al",
+		"title": "Male basketball players who report hip and groin pain perceive its negative impact both on- and off-court: A cross-sectional study.",
+		"journal": "J Sci Med Sport",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2021.02.005"
 	},
 	"33709003": {
 		"authors": "Geoghegan L, et al",
@@ -3329,6 +3732,15 @@
 		"doi": "10.1001/jamanetworkopen.2021.8191",
 		"pmcid": "PMC8080231"
 	},
+	"33912617": {
+		"authors": "Shi H, et al",
+		"title": "Comparison Between Soccer and Basketball of Bone Bruise and Meniscal Injury Patterns in Anterior Cruciate Ligament Injuries.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967121995844",
+		"pmcid": "PMC8050764"
+	},
 	"33989090": {
 		"authors": "Lucarno S, et al",
 		"title": "Systematic Video Analysis of Anterior Cruciate Ligament Injuries in Professional Female Soccer Players.",
@@ -3410,6 +3822,15 @@
 		"doi": "10.1136/bjsports-2020-103867",
 		"pmcid": "PMC8479731"
 	},
+	"34213367": {
+		"authors": "Lian J, et al",
+		"title": "Systematic Review of Injuries in the Men's and Women's National Basketball Association.",
+		"journal": "Am J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1177/03635465211014506"
+	},
 	"34239952": {
 		"authors": "Vosoughi F, et al",
 		"title": "Medial Collateral Ligament Injury of the Knee: A Review on Current Concept and Management.",
@@ -3419,6 +3840,15 @@
 		"doi": "10.22038/abjs.2021.48458.2401",
 		"pmcid": "PMC8221433"
 	},
+	"34262980": {
+		"authors": "Sanchez R, et al",
+		"title": "Effect of Achilles Tendon Repair on Performance Outcomes After Return to Play in National Collegiate Athletic Association Division I Basketball Athletes.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671211015239",
+		"pmcid": "PMC8246508"
+	},
 	"34272296": {
 		"authors": "LeVasseur MR, et al",
 		"title": "SLAP tears and return to sport and work: current concepts.",
@@ -3427,6 +3857,26 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1136/jisakos-2020-000537"
+	},
+	"34280270": {
+		"authors": "Lempke LB, et al",
+		"title": "Epidemiology of Injuries in National Collegiate Athletic Association Women's Basketball: 2014-2015 Through 2018-2019.",
+		"journal": "J Athl Train",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-466-20",
+		"pmcid": "PMC8293880"
+	},
+	"34280288": {
+		"authors": "Morris SN, et al",
+		"title": "Epidemiology of Injuries in National Collegiate Athletic Association Men's Basketball: 2014-2015 Through 2018-2019.",
+		"journal": "J Athl Train",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-436-20",
+		"pmcid": "PMC8293890"
 	},
 	"34397403": {
 		"authors": "Landesa-Piñeiro L, et al",
@@ -3446,6 +3896,15 @@
 		"doi": "10.2478/hukin-2020-0059",
 		"pmcid": "PMC8336555"
 	},
+	"34412662": {
+		"authors": "Achenbach L, et al",
+		"title": "Collision with opponents-but not foul play-dominates injury mechanism in professional men's basketball.",
+		"journal": "BMC Sports Sci Med Rehabil",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s13102-021-00322-z",
+		"pmcid": "PMC8375128"
+	},
 	"34497463": {
 		"authors": "Alekseyev K, et al",
 		"title": "Identifying the Most Common CrossFit Injuries in a Variety of Athletes.",
@@ -3455,6 +3914,15 @@
 		"doi": "10.1177/1179572719897069",
 		"pmcid": "PMC8282166"
 	},
+	"34529179": {
+		"authors": "Davis AC, et al",
+		"title": "The Effectiveness of Neuromuscular Warmups for Lower Extremity Injury Prevention in Basketball: A Systematic Review.",
+		"journal": "Sports Med Open",
+		"year": "2021",
+		"types": ["Systematic Review", "Journal Article"],
+		"doi": "10.1186/s40798-021-00355-1",
+		"pmcid": "PMC8446130"
+	},
 	"34534982": {
 		"authors": "Fernandes DA, et al",
 		"title": "Diagnostic Accuracy of Clinical Tests and Imaging Exams for Femoroacetabular Impingement: An Umbrella Review of Systematic Reviews.",
@@ -3463,6 +3931,16 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000000978"
+	},
+	"34574403": {
+		"authors": "Owoeye OBA, et al",
+		"title": "The Burden and Risk Factors of Patellar and Achilles Tendinopathy in Youth Basketball: A Cohort Study.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2021",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.3390/ijerph18189480",
+		"pmcid": "PMC8470990"
 	},
 	"34591697": {
 		"authors": "Davey MS, et al",
@@ -3517,6 +3995,24 @@
 		"types": ["Journal Article"],
 		"doi": "10.1177/23969873211046475",
 		"pmcid": "PMC8564160"
+	},
+	"34778484": {
+		"authors": "Schultz BJ, et al",
+		"title": "Tendency of Driving to the Basket Is Associated With Increased Risk of Anterior Cruciate Ligament Tears in National Basketball Association Players: A Cohort Study.",
+		"journal": "Orthop J Sports Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671211052953",
+		"pmcid": "PMC8573492"
+	},
+	"34789094": {
+		"authors": "Bui D, et al",
+		"title": "Outcomes of Acute Operative Repair of Complete Digital Proximal Interphalangeal Joint Collateral Ligament Ruptures: A Systematic Review.",
+		"journal": "J Hand Surg Asian Pac Vol",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1142/S2424835521500624"
 	},
 	"34789369": {
 		"authors": "Herterich V, et al",
@@ -3591,6 +4087,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1111/imj.15667"
+	},
+	"34972488": {
+		"authors": "Emery CA, et al",
+		"title": "The \"SHRed Injuries Basketball\" Neuromuscular Training Warm-up Program Reduces Ankle and Knee Injury Rates by 36% in Youth Basketball.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2022",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.2519/jospt.2022.10959"
 	},
 	"35022509": {
 		"authors": "Mayer-Suess L, et al",
@@ -3703,6 +4208,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2021-104539",
 		"pmcid": "PMC9163714"
+	},
+	"35258646": {
+		"authors": "Mercurio M, et al",
+		"title": "Soccer players show the highest seasonal groin pain prevalence and the longest time loss from sport among 500 athletes from major team sports.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s00167-022-06924-5"
 	},
 	"35278328": {
 		"authors": "Knapik JJ",
@@ -3863,6 +4377,15 @@
 		"doi": "10.1007/s12178-022-09781-4",
 		"pmcid": "PMC9463423"
 	},
+	"35873212": {
+		"authors": "Feng R, et al",
+		"title": "Knee Movement Characteristics of Basketball Players in Landing Tasks Before Onset of Patellar Tendinopathy: A Prospective Study.",
+		"journal": "Front Sports Act Living",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.3389/fspor.2022.847945",
+		"pmcid": "PMC9300994"
+	},
 	"35954598": {
 		"authors": "Pereira PM, et al",
 		"title": "Patellofemoral Pain Syndrome Risk Associated with Squats: A Systematic Review.",
@@ -3881,6 +4404,16 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1186/s40634-022-00493-9",
 		"pmcid": "PMC9378805"
+	},
+	"35995597": {
+		"authors": "Mason Z, et al",
+		"title": "Emergency Preparedness for Sudden Cardiac Arrest in Amateur Athletic Union Basketball Teams: An Opportunity to Improve Outcomes in Higher Risk Athletes.",
+		"journal": "Clin J Sport Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/JSM.0000000000001062",
+		"pmcid": "PMC9594135"
 	},
 	"36150754": {
 		"authors": "Racinais S, et al",
@@ -3910,6 +4443,24 @@
 		"types": ["Journal Article"],
 		"doi": "10.1136/bmjsem-2022-001419",
 		"pmcid": "PMC9511658"
+	},
+	"36208619": {
+		"authors": "Stojanović E, et al",
+		"title": "A multicomponent neuromuscular warm-up program reduces lower-extremity injuries in trained basketball players: a cluster randomized controlled trial.",
+		"journal": "Phys Sportsmed",
+		"year": "2023",
+		"types": ["Randomized Controlled Trial", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1080/00913847.2022.2133978"
+	},
+	"36225389": {
+		"authors": "Rizzi AM, et al",
+		"title": "Lower Extremity Stress Fractures in the National Basketball Association, 2013-2014 Through 2018-2019.",
+		"journal": "Orthop J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671221126485",
+		"pmcid": "PMC9549108"
 	},
 	"36243942": {
 		"authors": "Jukes C, et al",
@@ -4041,6 +4592,15 @@
 		"doi": "10.52965/001c.36984",
 		"pmcid": "PMC9797018"
 	},
+	"36593154": {
+		"authors": "Hanson ZC, et al",
+		"title": "Boutonniere Versus Pseudoboutonniere Deformities: Pathoanatomy, Diagnosis, and Treatment.",
+		"journal": "J Hand Surg Am",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.jhsa.2022.10.019"
+	},
 	"36617848": {
 		"authors": "Lagas IF, et al",
 		"title": "One fifth of patients with Achilles tendinopathy have symptoms after 10 years: A prospective cohort study.",
@@ -4085,6 +4645,15 @@
 		"types": ["Systematic Review", "Journal Article"],
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000001114"
+	},
+	"36752659": {
+		"authors": "Stojanović E, et al",
+		"title": "The incidence rate of ACL injuries and ankle sprains in basketball players: A systematic review and meta-analysis.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1111/sms.14328"
 	},
 	"36758425": {
 		"authors": "Foch E, et al",
@@ -4196,6 +4765,15 @@
 		"medline": true,
 		"doi": "10.1177/19417381231160167",
 		"pmcid": "PMC10606974"
+	},
+	"36990061": {
+		"authors": "Kuenstler EM, et al",
+		"title": "Facial injuries in the National Basketball Association: 2013-14 through 2017-18.",
+		"journal": "Phys Sportsmed",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1080/00913847.2023.2196932"
 	},
 	"37009599": {
 		"authors": "Saremi H, et al",
@@ -4342,6 +4920,15 @@
 		"doi": "10.1136/bmjsem-2023-001607",
 		"pmcid": "PMC10277135"
 	},
+	"37347023": {
+		"authors": "Nutarelli S, et al",
+		"title": "Epidemiology of Patellar Tendinopathy in Athletes and the General Population: A Systematic Review and Meta-analysis.",
+		"journal": "Orthop J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671231173659",
+		"pmcid": "PMC10280536"
+	},
 	"37398834": {
 		"authors": "Costa D, et al",
 		"title": "Humeral Fracture in a Young CrossFit Practitioner.",
@@ -4402,6 +4989,15 @@
 		"doi": "10.1002/14651858.CD014461.pub2",
 		"pmcid": "PMC10448864"
 	},
+	"37648410": {
+		"authors": "Gill VS, et al",
+		"title": "Biomechanics and situational patterns associated with anterior cruciate ligament injuries in the National Basketball Association (NBA).",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2023-107075"
+	},
 	"37655801": {
 		"authors": "Stearns RL, et al",
 		"title": "Exertional Heat Stroke Survival at the Falmouth Road Race: 180 New Cases With Expanded Analysis.",
@@ -4420,6 +5016,16 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000001180"
+	},
+	"37667237": {
+		"authors": "Wang T, et al",
+		"title": "The role of ultrasonography in diagnosing acute closed volar plate injury of proximal interphalangeal joint.",
+		"journal": "BMC Med Imaging",
+		"year": "2023",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1186/s12880-023-01079-2",
+		"pmcid": "PMC10478303"
 	},
 	"37678659": {
 		"authors": "Hoexum F, et al",
@@ -4484,6 +5090,15 @@
 		"medline": true,
 		"doi": "10.1016/j.jht.2023.08.016"
 	},
+	"37818921": {
+		"authors": "Liang L, et al",
+		"title": "Mechanisms of dental injuries in basketball, United States, 2003-2022.",
+		"journal": "Dent Traumatol",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/edt.12894"
+	},
 	"37832814": {
 		"authors": "Lowry V, et al",
 		"title": "A Systematic Review of Clinical Practice Guidelines on the Diagnosis and Management of Various Shoulder Disorders.",
@@ -4538,6 +5153,16 @@
 		"doi": "10.1530/EOR-23-0035",
 		"pmcid": "PMC10646517"
 	},
+	"37955565": {
+		"authors": "Petek BJ, et al",
+		"title": "Sudden Cardiac Death in National Collegiate Athletic Association Athletes: A 20-Year Study.",
+		"journal": "Circulation",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1161/CIRCULATIONAHA.123.065908",
+		"pmcid": "PMC10843024"
+	},
 	"37955931": {
 		"authors": "de Sire A, et al",
 		"title": "Risk of injury and kinematic assessment of the shoulder biomechanics during strokes in padel players: a cross-sectional study.",
@@ -4556,6 +5181,15 @@
 		"medline": true,
 		"doi": "10.3238/arztebl.m2023.0226",
 		"pmcid": "PMC10840131"
+	},
+	"38074301": {
+		"authors": "Poudel B, et al",
+		"title": "Missed games, financial losses, and characteristics of eye injuries in the National Basketball Association during the 2010-2011 to 2017-2018 seasons.",
+		"journal": "Saudi J Ophthalmol",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"doi": "10.4103/sjopt.sjopt_168_22",
+		"pmcid": "PMC10701147"
 	},
 	"38115872": {
 		"authors": "Diz JBM, et al",
@@ -4622,6 +5256,15 @@
 		"doi": "10.1177/03635465231225486",
 		"pmcid": "PMC10943609"
 	},
+	"38360482": {
+		"authors": "Grange M, et al",
+		"title": "Management of stable proximal interphalangeal joint volar plate injuries with figure-of-8 orthoses: A parallel-group randomized controlled trial.",
+		"journal": "J Hand Ther",
+		"year": "2024",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1016/j.jht.2023.11.001"
+	},
 	"38383359": {
 		"authors": "Arriaza R, et al",
 		"title": "Prevalence of hip femoroacetabular impingement deformities in high-level (La Liga) male professional football players.",
@@ -4649,6 +5292,15 @@
 		"types": ["Systematic Review", "Journal Article", "Network Meta-Analysis"],
 		"medline": true,
 		"doi": "10.1016/j.jsams.2024.02.001"
+	},
+	"38404441": {
+		"authors": "Baswaraj D, et al",
+		"title": "Syncope in Athletes: A Prelude to Sudden Cardiac Death?",
+		"journal": "Mo Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"pmcid": "PMC10887456"
 	},
 	"38413133": {
 		"authors": "Skaug KL, et al",
@@ -4696,6 +5348,15 @@
 		"doi": "10.1016/j.bas.2024.102763",
 		"pmcid": "PMC10951760"
 	},
+	"38524890": {
+		"authors": "Tosarelli F, et al",
+		"title": "Video Analysis of Anterior Cruciate Ligament Injuries in Male Professional Basketball Players: Injury Mechanisms, Situational Patterns, and Biomechanics.",
+		"journal": "Orthop J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671241234880",
+		"pmcid": "PMC10960353"
+	},
 	"38531745": {
 		"authors": "Meng J, et al",
 		"title": "Long-term effects of exercise therapy versus arthroscopic partial meniscectomy for degenerative meniscal tear: A meta-analysis of randomized controlled trials.",
@@ -4740,6 +5401,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1002/ksa.12199"
+	},
+	"38682118": {
+		"authors": "Hull PA, et al",
+		"title": "Mechanism of Knee Injuries in the National Basketball Association: A Video-Based Analysis.",
+		"journal": "Adv Orthop",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1155/2024/5594149",
+		"pmcid": "PMC11055643"
 	},
 	"38684328": {
 		"authors": "Achenbach L, et al",
@@ -4806,6 +5476,16 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1016/j.jhsg.2024.01.015",
 		"pmcid": "PMC11133945"
+	},
+	"38877729": {
+		"authors": "Mack CD, et al",
+		"title": "Epidemiology of Injuries Among National Basketball Association Players: 2013-2014 Through 2018-2019.",
+		"journal": "Sports Health",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/19417381241258482",
+		"pmcid": "PMC11569584"
 	},
 	"38909253": {
 		"authors": "LaGreca M, et al",
@@ -4888,6 +5568,15 @@
 		"doi": "10.3390/jcm13175219",
 		"pmcid": "PMC11395971"
 	},
+	"39283093": {
+		"authors": "Bishay AE, et al",
+		"title": "Does Mechanism of Injury Affect Recovery After Sport-Related Concussion in Basketball? A Pilot Study.",
+		"journal": "Neurosurgery",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1227/neu.0000000000003175"
+	},
 	"39315553": {
 		"authors": "Dean B, et al",
 		"title": "Guideline on managing thumb ulnar collateral ligament injuries: the British Society of Surgery for the Hand Evidence for Surgical Treatment (BEST) findings and recommendations.",
@@ -4924,6 +5613,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2024-108110"
 	},
+	"39424345": {
+		"authors": "Hansen PY, et al",
+		"title": "Players in the Women's National Basketball Association Are More Likely to Tear Their Anterior Cruciate Ligament if They Are a Guard, Forward, or Driving to the Basket: A Case-Control Study.",
+		"journal": "J Knee Surg",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1055/s-0044-1791848"
+	},
 	"39425468": {
 		"authors": "Ortiz-Lango LA, et al",
 		"title": "An overview of the risk factors for producing fifth metatarsal fracture in sports activities: A systematic review.",
@@ -4942,6 +5640,24 @@
 		"types": ["Systematic Review", "Journal Article"],
 		"medline": true,
 		"doi": "10.17219/acem/187891"
+	},
+	"39561751": {
+		"authors": "Lapegue F, et al",
+		"title": "Finger Sprains, Ultrasound Anatomy, and Pathology of Finger Ligaments.",
+		"journal": "Semin Musculoskelet Radiol",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1055/s-0044-1791732"
+	},
+	"39581495": {
+		"authors": "Leiber-Wackenheim F",
+		"title": "Anterior ankle impingement.",
+		"journal": "Orthop Traumatol Surg Res",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.otsr.2024.104063"
 	},
 	"39640199": {
 		"authors": "Fan L, et al",
@@ -5090,6 +5806,16 @@
 		"medline": true,
 		"doi": "10.61409/V10240692"
 	},
+	"40162942": {
+		"authors": "Petek BJ, et al",
+		"title": "Survival Outcomes After Sudden Cardiac Arrest in Young Competitive Athletes From the United States.",
+		"journal": "J Am Coll Cardiol",
+		"year": "2025",
+		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
+		"doi": "10.1016/j.jacc.2025.03.006",
+		"pmcid": "PMC12396608"
+	},
 	"40165544": {
 		"authors": "Desmeules F, et al",
 		"title": "Rotator Cuff Tendinopathy Diagnosis, Nonsurgical Medical Care, and Rehabilitation: A Clinical Practice Guideline.",
@@ -5099,6 +5825,16 @@
 		"medline": true,
 		"doi": "10.2519/jospt.2025.13182"
 	},
+	"40180446": {
+		"authors": "Baggish AL, et al",
+		"title": "Recommendations for cardiac screening and emergency action planning in youth football: a FIFA consensus statement.",
+		"journal": "Br J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2025-109751",
+		"pmcid": "PMC12171438"
+	},
 	"40182566": {
 		"authors": "Lappen S, et al",
 		"title": "Distal Biceps Tendon Repair in Competitive Strength Athletes: A Retrospective Series of 183 Athletes.",
@@ -5107,6 +5843,16 @@
 		"types": ["Journal Article"],
 		"doi": "10.1177/23259671251322700",
 		"pmcid": "PMC11967228"
+	},
+	"40189839": {
+		"authors": "Heder Ternell K, et al",
+		"title": "A Systematic Video Analysis of Anterior Cruciate Ligament Injuries in Professional Female Basketball Players.",
+		"journal": "Am J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/03635465251330007",
+		"pmcid": "PMC12044211"
 	},
 	"40191842": {
 		"authors": "Lauf K, et al",
@@ -5125,6 +5871,16 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000001367"
+	},
+	"40469858": {
+		"authors": "Nosrat C, et al",
+		"title": "National Basketball Association Players' Return to Play and Performance After Operative Treatment of Meniscal Tears.",
+		"journal": "J Sports Sci Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.52082/jssm.2025.363",
+		"pmcid": "PMC12131145"
 	},
 	"40486656": {
 		"authors": "Hoveidaei AH, et al",
@@ -5311,6 +6067,15 @@
 		"doi": "10.1136/svn-2025-004186",
 		"pmcid": "PMC13359515"
 	},
+	"40919484": {
+		"authors": "Trikha R, et al",
+		"title": "A multicenter epidemiologic analysis of the injuries affecting female and male collegiate basketball players.",
+		"journal": "J Exp Orthop",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1002/jeo2.70414",
+		"pmcid": "PMC12409725"
+	},
 	"40923438": {
 		"authors": "Buckthorpe M, et al",
 		"title": "Systematic video analysis of ankle sprain injuries in elite male football (soccer): Injury mechanisms, situational patterns, biomechanics and neurocognitive errors study: A study on 140 consecutive players.",
@@ -5359,6 +6124,15 @@
 		"doi": "10.3390/medicina61091707",
 		"pmcid": "PMC12471779"
 	},
+	"41091317": {
+		"authors": "Stojanović E, et al",
+		"title": "Injury Incidence Rate According to Mechanism, Body Location, and Type in Basketball Players: A Systematic Review and Meta-Analysis.",
+		"journal": "Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1007/s40279-025-02334-y"
+	},
 	"41118186": {
 		"authors": "Webb CW, et al",
 		"title": "Slipped Capital Femoral Epiphysis: Rapid Evidence Review.",
@@ -5366,6 +6140,15 @@
 		"year": "2025",
 		"types": ["Journal Article", "Review"],
 		"medline": true
+	},
+	"41130415": {
+		"authors": "D'Ambrosi R, et al",
+		"title": "Anterior cruciate ligament injury is rarely the last dance for professional basketball players: High return to play with longer recovery times. A systematic review and meta-analysis.",
+		"journal": "J ISAKOS",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
+		"doi": "10.1016/j.jisako.2025.101023"
 	},
 	"41132197": {
 		"authors": "Ekstrand J, et al",
@@ -5384,6 +6167,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.3390/sports13100356",
 		"pmcid": "PMC12567576"
+	},
+	"41160244": {
+		"authors": "Siebert DM, et al",
+		"title": "Looking Under the Hood: Screening for Cardiac Abnormalities in Young Athletes.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1007/s12178-025-09995-2",
+		"pmcid": "PMC12572454"
 	},
 	"41165416": {
 		"authors": "Barton AT, et al",
@@ -5487,6 +6279,15 @@
 		"doi": "10.3390/sports13120455",
 		"pmcid": "PMC12737527"
 	},
+	"41451611": {
+		"authors": "Köyağasıoğlu O, et al",
+		"title": "Achilles tendon ruptures in National Basketball Association players: A sequential video analysis of injury mechanisms and biomechanical patterns.",
+		"journal": "Knee Surg Sports Traumatol Arthrosc",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1002/ksa.70249"
+	},
 	"41451757": {
 		"authors": "Balboni JM, et al",
 		"title": "Jones fractures in elite athletes-2025 International Foot and Ankle Sports Consensus and systematic review.",
@@ -5524,6 +6325,15 @@
 		"types": ["Journal Article", "Randomized Controlled Trial"],
 		"medline": true,
 		"doi": "10.1177/03635465251392242"
+	},
+	"41534044": {
+		"authors": "Lampert R, et al",
+		"title": "Sudden Cardiac Arrest in Athletes.",
+		"journal": "N Engl J Med",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1056/NEJMra2312555"
 	},
 	"41544646": {
 		"authors": "Ergönül Ö, et al",
@@ -5630,6 +6440,15 @@
 		"medline": true,
 		"doi": "10.1038/s41433-026-04447-8",
 		"pmcid": "PMC13341748"
+	},
+	"42024980": {
+		"authors": "Delaney K, et al",
+		"title": "A scoping review of conservative treatment approaches for volar plate injuries of the proximal interphalangeal joints in an acute health care setting.",
+		"journal": "Int J Orthop Trauma Nurs",
+		"year": "2026",
+		"types": ["Journal Article", "Scoping Review"],
+		"medline": true,
+		"doi": "10.1016/j.ijotn.2026.101284"
 	},
 	"42048303": {
 		"authors": "Rosenstock JL, et al",
@@ -5750,6 +6569,24 @@
 		"doi": "10.1007/s44197-026-00596-x",
 		"pmcid": "PMC13582670"
 	},
+	"42436963": {
+		"authors": "Maman D, et al",
+		"title": "Achilles Tendon Rupture in the NBA: Return to Play, Performance Decline, and Temporal Trends (2000-2025).",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261461403",
+		"pmcid": "PMC13354891"
+	},
+	"42453597": {
+		"authors": "Luxenburg D, et al",
+		"title": "Epidemiology and Video Analysis of Hamstring Injuries in the National Basketball Association.",
+		"journal": "J Athl Train",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-0318.25"
+	},
 	"42469843": {
 		"authors": "Fernández-Cortiñas AB, et al",
 		"title": "Postoperative outcomes after arthroscopic repair of isolated subscapularis tears: a systematic review and meta-analysis.",
@@ -5776,6 +6613,24 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1093/bmb/ldag021"
+	},
+	"42482254": {
+		"authors": "Busso C, et al",
+		"title": "Survey of underlying risk factors and epidemiology of anterior knee pain in semi-professional male basketball players.",
+		"journal": "BMC Sports Sci Med Rehabil",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1186/s13102-026-01866-8",
+		"pmcid": "PMC13673917"
+	},
+	"42502501": {
+		"authors": "Kumar V, et al",
+		"title": "Short-Term Workload Patterns Before Achilles Tendon Rupture in National Basketball Association Players: A Descriptive Epidemiology Study.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261463385",
+		"pmcid": "PMC13400939"
 	},
 	"42506584": {
 		"authors": "Burke OC Jr, et al",
@@ -5847,6 +6702,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1080/09593985.2026.2717392"
 	},
+	"42610453": {
+		"authors": "Salentijn DA, et al",
+		"title": "Self-Management Exercise Regimen Versus Supervised Hand Therapy in Patients With Dorsal Dislocation or Hyperextension Injury With a Volar Plate Avulsion of the Proximal Interphalangeal Joint: The Randomized Controlled PINOT Study.",
+		"journal": "Hand (N Y)",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/15589447261469595",
+		"pmcid": "PMC13486395"
+	},
 	"42623244": {
 		"authors": "Feller D, et al",
 		"title": "Red flags for extracranial vertebral artery dissections in patients with neck pain: a scoping review.",
@@ -5854,6 +6718,23 @@
 		"year": "2026",
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1080/10669817.2026.2720218"
+	},
+	"42633070": {
+		"authors": "Tyler JR, et al",
+		"title": "Comparison of Basketball-Related Injuries at US Emergency Departments Between High School-Aged and College-Aged Athletes: A 10-Year NEISS Analysis, 2015-2024.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1177/23259671261476937",
+		"pmcid": "PMC13498843"
+	},
+	"42644766": {
+		"authors": "Sekine Y, et al",
+		"title": "Seven-year prospective injury surveillance study of lateral ankle sprains in Japanese collegiate men's basketball: epidemiology and mechanisms.",
+		"journal": "Phys Sportsmed",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"doi": "10.1080/00913847.2026.2725556"
 	},
 	"42646895": {
 		"authors": "Morales-Rodríguez-Parets L, et al",

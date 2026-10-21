@@ -111,7 +111,8 @@ export type Diagram = z.infer<typeof diagramSchema>
 const selfCheckSchema = z
 	.array(z.strictObject({ text: z.string().min(10).max(160), urgency: z.enum(URGENCY) }))
 	.min(2)
-	.max(8)
+	// Больше восьми: в статьях о кисти, лице и паховой боли тревожных признаков столько и есть
+	.max(10)
 
 export type SelfCheck = z.infer<typeof selfCheckSchema>
 

@@ -18,7 +18,7 @@ test('без видеокарты 3D на паузе: индекс работа�
 
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
 	await expect(start).toHaveCount(0)
-	await page.getByRole('button', { name: 'Назад' }).click()
+	await page.getByRole('region', { name: 'Колено' }).getByRole('button', { name: 'Назад' }).click()
 
 	await start.click()
 	await expect(start).toHaveCount(0)
@@ -26,11 +26,11 @@ test('без видеокарты 3D на паузе: индекс работа�
 })
 
 // Ссылка со статьи открывает зону (`?region=` -> хеш), «Назад» -- общий план: без сцены на нём
-// постер и плашка, а не пустота
+// постер и плашка, а не пустота. Здесь -- стрелкой у логотипа в шапке
 test('без видеокарты после «Назад» из зоны по ссылке -- постер и кнопка «Включить 3D»', async ({ page }) => {
 	await page.goto('/?lite&region=knee')
 	await expect(page.locator('.zone__title')).toHaveText('Колено')
-	await page.getByRole('button', { name: 'Назад' }).click()
+	await page.locator('.site-header').getByRole('button', { name: 'Назад' }).click()
 
 	await expect(page.getByRole('button', { name: 'Включить 3D' })).toBeVisible()
 	await expect(page.locator('.body3d__poster-image')).toBeVisible()

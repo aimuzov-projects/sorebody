@@ -47,6 +47,18 @@ export default defineConfig({
 	// Подсветка Shiki несовместима с CSP.
 	// Маркеры `data-chart` в статьях превращаются в пиктограммы из frontmatter.
 	markdown: { syntaxHighlight: false, processor: satteri({ hastPlugins: [blocksPlugin] }) },
+	// three грузится динамическим импортом, и dev-сервер находит его, когда страница уже открыта:
+	// пересобирает зависимости, а открытые вкладки получают 504 на старые бандлы. Собираем заранее
+	vite: {
+		optimizeDeps: {
+			include: [
+				'three',
+				'three/examples/jsm/controls/OrbitControls.js',
+				'three/examples/jsm/libs/meshopt_decoder.module.js',
+				'three/examples/jsm/loaders/GLTFLoader.js',
+			],
+		},
+	},
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
 	// `frame-ancestors` в `<meta>` не работает: его ставит Caddy (infra-server, sites/wodcare.caddy),
 	// там разрешено встраивание только Метрике для вебвизора и карты кликов.

@@ -4,8 +4,8 @@ import { runInNewContext } from 'node:vm'
 
 import { SPORT_LEAVING, SPORT_RETURN, SPORT_STAY } from './sport-memory.ts'
 
-/** Главная `sport`, открытая «Назад», когда выбран `chosen`: окружение скрипта из `<head>`. */
-function homePage(sport: string, chosen: string) {
+/** Главная `sport`, открытая «Назад» (`type`), когда выбран `chosen`: окружение скрипта из `<head>`. */
+function homePage(sport: string, chosen: string, type = 'back_forward') {
 	const attributes = new Set<string>()
 	const events: string[] = []
 	const timers: (() => void)[] = []
@@ -19,7 +19,7 @@ function homePage(sport: string, chosen: string) {
 	const context = {
 		document: { documentElement: html, dispatchEvent: (event: { type: string }) => events.push(event.type) },
 		sessionStorage: { getItem: () => chosen, setItem: () => {} },
-		performance: { getEntriesByType: () => [{ type: 'back_forward' }] },
+		performance: { getEntriesByType: () => [{ type }] },
 		location: { search: '', hash: '#zone=shin:0', replace: (to: string) => replaced.push(to) },
 		setTimeout: (run: () => void) => timers.push(run),
 		Event: function (this: { type: string }, type: string) {
@@ -56,4 +56,9 @@ test('a home page of the chosen sport stays as it is', () => {
 	assert.deepEqual(page.replaced, [])
 	assert.equal(page.html.style.visibility, '')
 	assert.equal(page.timers.length, 0)
+})
+
+test('a reloaded home page of another sport leaves for the chosen one, a plain visit does not', () => {
+	assert.deepEqual(homePage('padel', 'crossfit', 'reload').replaced, ['/#zone=shin:0'])
+	assert.deepEqual(homePage('padel', 'crossfit', 'navigate').replaced, [])
 })

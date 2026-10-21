@@ -270,7 +270,7 @@ test('после «Назад» из статьи выбор спорта в з�
 
 	await reader.locator('[data-sport-switch] button').click()
 	await page.getByRole('option', { name: 'Падел' }).click()
-	await expect(page).toHaveURL(/\/padel\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/padel\/orofacial-trauma\/$/)
 	await reader.locator('.reader__back').click()
 	await page.locator('.zone__back').click()
 	await expect(page).toHaveURL(/\/padel\/$/)
@@ -293,14 +293,14 @@ test('«Разбор в …» в статье на главной меняет �
 	await page.locator('.index__zone', { hasText: 'Голова' }).click()
 	await expect(page).toHaveURL(/\/football\/#zone=head:\d$/)
 	await page.locator('.zone .zone__item', { hasText: 'Травмы лица' }).click()
-	await expect(page).toHaveURL(/\/football\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/football\/orofacial-trauma\/$/)
 
 	const reader = page.locator('.reader:not(.theme-peek *)')
 
 	await reader.locator('[data-sport-switch] button').click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
 
-	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 	await expect(reader.locator('.article__sport')).toHaveText(/в\sкроссфите/)
 	expect(await samePage(page)).toBe(true)
@@ -316,7 +316,7 @@ test('«Разбор в …» в статье на главной меняет �
 
 	await page.goForward()
 	await page.goForward()
-	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
 	await expect(reader.locator('.article__sport')).toHaveText(/в\sкроссфите/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 	expect(await samePage(page)).toBe(true)
@@ -335,7 +335,7 @@ test('«Разбор в …» в статье на главной открыва
 	await highlight(page, 'crossfit', 'padel')
 	await page.keyboard.press('Enter')
 
-	await expect(page).toHaveURL(/\/padel\/#ankle-sprain$/)
+	await expect(page).toHaveURL(/\/padel\/ankle-sprain\/$/)
 	await expect(reader.locator('.article__sport')).toHaveText(/в\sпаделе/)
 
 	await expect
@@ -636,13 +636,14 @@ test('после ухода на другую страницу «Назад» о
 
 	await reader.locator('[data-sport-switch] button').click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
-	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
-	// Обработчик unload отключает bfcache: главная при «Назад» грузится заново
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+	// Обработчик unload отключает bfcache: «Назад» грузит заново адрес статьи -- её страницу
 	await page.evaluate(() => addEventListener('unload', () => {}))
 	await page.goto('/about/')
 
 	await page.goBack()
-	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
+	await expect(page.locator('.article__sport')).toHaveText(/в\sкроссфите/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 
 	await page.goBack()

@@ -3,13 +3,49 @@ import type { Zone } from './zones.ts'
 type Injury = Zone['injuries'][number]
 
 /**
- * Где посетитель на главной, по адресу: сцена (без хеша), зона `#zone=knee:0` или
- * статья `#meniscus-tear`. Адрес -- источник правды, body-3d.svelte сверяется с ним.
+ * Где посетитель на главной, по адресу: сцена (без хеша), зона `#zone=knee:0` или статья по её
+ * пути `/crossfit/meniscus-tear/`. Адрес -- источник правды, body-3d.svelte сверяется с ним.
  */
 export type Place = { level: 0 } | { level: 1; zone: Zone; index: number } | { level: 2; zone: Zone; injury: Injury }
 
 export function zoneHash(zone: Zone, index: number) {
 	return `#zone=${zone.slug}:${index}`
+}
+
+/**
+ * Путь статьи спорта, как у её страницы (`sportArticle` в data/sports.ts): статью поверх сцены
+ * держим под ним, а не под хешем главной. Хеш не уходит на сервер, и ссылка из адресной строки
+ * отдавала превью и поисковикам мету главной спорта.
+ */
+export function articlePath(sport: string, slug: string) {
+	return `/${sport}/${slug}/`
+}
+
+/** Статья по пути `/<спорт>/<травма>/`, спорт -- из `sports`. Другой путь -- null. */
+export function articleAt(pathname: string, sports: { slug: string }[]) {
+	const match = pathname.match(/^\/([\w-]+)\/([\w-]+)\/?$/)
+
+	if (!match || !sports.some((s) => s.slug === match[1])) return null
+
+	return { sport: match[1], slug: match[2] }
+}
+
+/**
+ * Место по адресу: статья -- по пути спорта `sport`, зона и старые ссылки `#meniscus-tear` -- по
+ * хешу. Путь статьи другого спорта или травмы, которой нет в зонах, -- сцена.
+ */
+export function placeAt(
+	{ pathname, hash }: { pathname: string; hash: string },
+	sport: { slug: string },
+	zones: Zone[],
+): Place {
+	const at = articleAt(pathname, [sport])
+
+	if (!at) return parseHash(hash, zones)
+
+	const place = parseHash(at.slug, zones)
+
+	return place.level === 2 ? place : { level: 0 }
 }
 
 /** Место по хешу адреса (`location.hash`). `zones` -- все зоны спорта вместе со "Всё тело". */

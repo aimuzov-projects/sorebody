@@ -469,4 +469,13 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 	}
 
 	initBackLink()
+
+	// Страница могла встать на запись истории, которую положила сцена главной (body-3d.svelte):
+	// её соседние шаги вроде `/football/#zone=head:0` браузер открывает в этом же документе, адрес
+	// меняется, а страница -- нет. Чужой путь грузим заново
+	const path = location.pathname
+
+	addEventListener('popstate', () => {
+		if (location.pathname !== path) location.reload()
+	})
 </script>

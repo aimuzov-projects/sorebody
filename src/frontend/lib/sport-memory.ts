@@ -34,8 +34,9 @@ export function recalledSport() {
 }
 
 /**
- * Скрипт в `<head>`, до отрисовки: главная, открытая «Назад» или «Вперёд» не в выбранном спорте,
- * сразу уходит на главную выбранного с тем же хешем. До ухода документ скрыт: парсер успел бы
+ * Скрипт в `<head>`, до отрисовки: главная, открытая «Назад», «Вперёд» или перезагрузкой не в
+ * выбранном спорте, сразу уходит на главную выбранного с тем же хешем. Перезагрузкой её открывает
+ * страница статьи, вставшая на чужую запись истории (components/injury-article.astro). До ухода документ скрыт: парсер успел бы
  * показать главную прежнего спорта. Метрика на уходящей странице не включается (SPORT_LEAVING).
  * Не ушла за STAY_AFTER -- страница снова видна, а Метрика включается (SPORT_STAY).
  * Остальные страницы спорта, открытые обычным переходом, делают свой спорт выбранным. Адреса
@@ -46,7 +47,7 @@ export const SPORT_RETURN = [
 	'try{',
 	'var d=document.documentElement,s=d.dataset.sport,h=d.dataset.sportHomes,',
 	`k=${JSON.stringify(SPORT_KEY)},w=sessionStorage.getItem(k),`,
-	"n=performance.getEntriesByType('navigation')[0],b=n&&n.type==='back_forward';",
+	"n=performance.getEntriesByType('navigation')[0],b=n&&(n.type==='back_forward'||n.type==='reload');",
 	'if(s&&b&&h&&w&&w!==s){var to=JSON.parse(h)[w];',
 	`if(to){d.style.visibility='hidden';d.setAttribute(${JSON.stringify(SPORT_LEAVING)},'');`,
 	`setTimeout(function(){d.style.visibility='';d.removeAttribute(${JSON.stringify(SPORT_LEAVING)});`,

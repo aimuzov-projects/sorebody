@@ -38,7 +38,7 @@
 		matchesFilters,
 		zoneEntries,
 	} from '#frontend/scene/filters.ts'
-	import { parseHash as parsePlace, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
+	import { articleAt, articlePath, placeAt, regionPlace, sportAt, zoneHash } from '#frontend/scene/place.ts'
 	import { applySportHead, createRequestGuard, createSportLoader } from '#frontend/scene/sport-loader.ts'
 	import poster from '#frontend/scene/poster.json'
 	import { layoutMarks, MARK_SHIFT, type Mark } from '#frontend/scene/marks.ts'
@@ -424,9 +424,16 @@
 	 * пришли со ссылкой.
 	 */
 	let baseLevel = 0
+	/** Путь сцены под открытой статьёй -- главная спорта или страница движения: к нему ведёт "Назад". */
+	let scenePath = location.pathname
 
 	function parseHash() {
-		return parsePlace(location.hash, [...zones, whole])
+		return placeAt(location, sport, [...zones, whole])
+	}
+
+	/** Адрес на сцене: её путь, флаги `?…` и хеш зоны, если есть. */
+	function sceneUrl(hash = '') {
+		return `${scenePath}${location.search}${hash}`
 	}
 
 	// Текущий шаг -- на <html> и событием: по нему Telegram показывает или прячет свою кнопку «назад»
@@ -446,6 +453,12 @@
 	/** Привести экран к адресу: открыть или закрыть зону и статью. */
 	function sync() {
 		const place = parseHash()
+
+		if (!articleAt(location.pathname, sport.sports)) scenePath = location.pathname
+
+		// Старая ссылка `#meniscus-tear` -- сразу на путь статьи: его и скопируют из адресной строки
+		if (place.level === 2 && !articleAt(location.pathname, sport.sports))
+			history.replaceState(history.state, '', `${articlePath(sport.slug, place.injury.slug)}${location.search}`)
 
 		if (place.level === 0) {
 			hideArticle()
@@ -469,12 +482,12 @@
 	}
 
 	function openZone(zone: Zone, index: number) {
-		history.pushState(null, '', zoneHash(zone, index))
+		history.pushState(null, '', sceneUrl(zoneHash(zone, index)))
 		showZone(zone, index)
 	}
 
 	function openArticle(injury: Injury) {
-		history.pushState(null, '', `#${injury.slug}`)
+		history.pushState(null, '', `${articlePath(sport.slug, injury.slug)}${location.search}`)
 		showArticle(injury)
 	}
 
@@ -499,8 +512,8 @@
 		// Зону берём из адреса статьи: модель могла ещё не загрузиться и не раскрыть её
 		const parent =
 			place.level === 2 && (!movementPage || open?.zone === place.zone)
-				? zoneHash(place.zone, open?.zone === place.zone ? open.index : 0)
-				: location.pathname + location.search
+				? sceneUrl(zoneHash(place.zone, open?.zone === place.zone ? open.index : 0))
+				: sceneUrl()
 
 		history.replaceState(null, '', parent)
 		baseLevel = level - 1
@@ -626,7 +639,8 @@
 		if (reading && article?.slug === reading.slug) {
 			applySport(next, true)
 			articleSection = section
-			history.replaceState(null, '', `${home}#${reading.slug}`)
+			scenePath = home
+			history.replaceState(null, '', `${articlePath(target.slug, reading.slug)}${location.search}`)
 			sync()
 			metrikaHit(from)
 
@@ -641,17 +655,18 @@
 
 	/**
 	 * «Назад» и «Вперёд»: прошлые шаги -- в текущем спорте. Запись другого спорта осталась от
-	 * шагов до его смены (switchSport): переписываем её путь на главную текущего, хеш с зоной или
-	 * статьёй -- тот же. Зоны или статьи нет у этого спорта -- откроется общий план.
+	 * шагов до его смены (switchSport): переписываем её путь на главную текущего с тем же хешем
+	 * зоны или на ту же статью в нём. Зоны или статьи нет у этого спорта -- откроется общий план.
 	 */
 	function onHistory() {
-		const slug = movementPage ? undefined : sportAt(location.pathname, sport.sports)
+		const reading = articleAt(location.pathname, sport.sports)
+		const slug = movementPage ? undefined : (reading?.sport ?? sportAt(location.pathname, sport.sports))
 
 		sportRequests.cancel()
 		sportLoading = false
 
 		if (slug && slug !== sport.slug) {
-			history.replaceState(history.state, '', `${sport.home}${location.search}${location.hash}`)
+			history.replaceState(history.state, '', rehome(sport.slug, sport.home))
 			dropDeadHash()
 		}
 
@@ -663,8 +678,22 @@
 	 * приходит, когда спорт сменили после шага, а с ним общий план остался бы без постера.
 	 */
 	function dropDeadHash() {
-		if (parseHash().level === 0 && location.hash && !location.hash.startsWith('#tgWebApp'))
+		if (parseHash().level !== 0) return
+
+		if (articleAt(location.pathname, sport.sports)) history.replaceState(history.state, '', sceneUrl())
+		else if (location.hash && !location.hash.startsWith('#tgWebApp'))
 			history.replaceState(history.state, '', `${location.pathname}${location.search}`)
+	}
+
+	/** Текущая запись в спорте `slug` с главной `home`: та же статья или та же зона на его главной. */
+	function rehome(slug: string, home: string) {
+		const reading = articleAt(location.pathname, sport.sports)
+
+		if (!reading) return `${home}${location.search}${location.hash}`
+
+		scenePath = home
+
+		return `${articlePath(slug, reading.slug)}${location.search}`
 	}
 
 	/**
@@ -684,7 +713,7 @@
 		const from = location.href
 
 		applySport(next, !!article)
-		history.replaceState(history.state, '', `${home}${location.search}${location.hash}`)
+		history.replaceState(history.state, '', rehome(chosen!, home))
 		dropDeadHash()
 		sync()
 		metrikaHit(from)
@@ -755,6 +784,8 @@
 			wrap.addEventListener(type, stopPageZoom, { passive: false })
 
 		baseLevel = parseHash().level
+		// Хеш или путь статьи: сцена начинается не с общего плана
+		const placed = !!location.hash || baseLevel > 0
 
 		// `?scene` включает сцену и под автотестом, и на медленном WebGL. Рендер постера (`?poster`)
 		// её требует
@@ -776,13 +807,13 @@
 
 		// Постер -- только для общего плана: зона или статья по адресу начинаются с другого кадра.
 		// Без сцены кадр всегда общий: постер и плашка нужны и после «Назад» из зоны по ссылке
-		if (!location.hash || lite) {
+		if (!placed || lite) {
 			placePoster()
 			void document.fonts?.ready.then(placePoster)
 		}
 
 		// Подсказка «нажмите на зону» -- только когда фигура живая: без WebGL нажимать не на что
-		if (!location.hash && !lite && webgl !== 'none') hintShown = !movementPage && !introHintSeen()
+		if (!placed && !lite && webgl !== 'none') hintShown = !movementPage && !introHintSeen()
 
 		sync()
 		window.addEventListener('popstate', onHistory)

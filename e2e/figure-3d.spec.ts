@@ -68,7 +68,7 @@ test('в статье на главной модель закрывается, �
 	await expect(dialog).toBeVisible()
 	await page.keyboard.press('Escape')
 	await expect(dialog).toHaveCount(0)
-	await expect(page).toHaveURL(new RegExp(`#${SLUG}$`))
+	await expect(page).toHaveURL(new RegExp(`/crossfit/${SLUG}/$`))
 	await expect(reader.locator('.article__title')).toBeVisible()
 })
 

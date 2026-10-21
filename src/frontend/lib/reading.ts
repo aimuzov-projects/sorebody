@@ -1,4 +1,5 @@
 import { initFigure3d } from './figure-3d.ts'
+import { keepReadingPlace } from './reading-place.ts'
 import { initSourcesPeek } from './sources-peek.ts'
 import { initArticleTips } from './tip.ts'
 import { initTocMenu } from './toc-menu.ts'
@@ -85,12 +86,14 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 
 	root.addEventListener('click', onClick)
 
+	const stopPlace = keepReadingPlace(root, scroller, sections)
 	const stopTips = initArticleTips(root, scroller)
 	const stopTocMenu = initTocMenu(root)
 	const stopSourcesPeek = initSourcesPeek(root)
 	const stopFigure3d = initFigure3d(root)
 
 	return () => {
+		stopPlace()
 		stopTips()
 		stopTocMenu()
 		stopSourcesPeek()

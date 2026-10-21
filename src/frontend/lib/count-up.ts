@@ -15,9 +15,19 @@ export function parseStat(value: string) {
 	return { prefix, suffix, target: Number(`${whole}.${fraction || 0}`), decimals: fraction.length }
 }
 
-/** Как число выглядит на кадре: с запятой и тем же числом знаков, что в подписи. */
-export const formatStat = ({ prefix, suffix, decimals }: NonNullable<ReturnType<typeof parseStat>>, n: number) =>
-	`${prefix}${n.toFixed(decimals).replace('.', ',')}${suffix}`
+/** Цифровой пробел: шириной с цифру при `tabular-nums`. */
+const FIGURE_SPACE = ' '
+
+/**
+ * Как число выглядит на кадре: с запятой и тем же числом знаков, что в подписи.
+ * Недостающие разряды слева -- цифровыми пробелами, чтобы ширина не менялась
+ * и кольцо доли не скакало.
+ */
+export function formatStat(stat: NonNullable<ReturnType<typeof parseStat>>, n: number) {
+	const text = (x: number) => `${stat.prefix}${x.toFixed(stat.decimals).replace('.', ',')}${stat.suffix}`
+
+	return text(n).padStart(text(stat.target).length, FIGURE_SPACE)
+}
 
 /**
  * Крупная цифра (`.big-stat__value`) набегает от нуля, когда въезжает в окно: так её замечают.

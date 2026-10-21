@@ -12,7 +12,7 @@ test('a stat splits into sign, number and unit', () => {
 test('every frame keeps the look of the final value', () => {
 	const stat = parseStat('38,2%')!
 
-	assert.equal(formatStat(stat, 0), '0,0%')
+	assert.equal(formatStat(stat, 0), ' 0,0%')
 	assert.equal(formatStat(stat, 19.04), '19,0%')
 	assert.equal(formatStat(stat, 38.2), '38,2%')
 })

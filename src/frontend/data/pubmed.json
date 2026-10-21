@@ -53,6 +53,15 @@
 		"medline": true,
 		"doi": "10.1177/03635465000280021401"
 	},
+	"10891516": {
+		"authors": "Hoffman JR, et al",
+		"title": "Validity of a set of clinical criteria to rule out injury to the cervical spine in patients with blunt trauma. National Emergency X-Radiography Utilization Study Group.",
+		"journal": "N Engl J Med",
+		"year": "2000",
+		"types": ["Journal Article", "Multicenter Study", "Research Support, U.S. Gov't, P.H.S."],
+		"medline": true,
+		"doi": "10.1056/NEJM200007133430203"
+	},
 	"10959926": {
 		"authors": "Fredericson M, et al",
 		"title": "Hip abductor weakness in distance runners with iliotibial band syndrome.",
@@ -80,6 +89,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.5435/00124635-200107000-00002"
+	},
+	"11597285": {
+		"authors": "Stiell IG, et al",
+		"title": "The Canadian C-spine rule for radiography in alert and stable trauma patients.",
+		"journal": "JAMA",
+		"year": "2001",
+		"types": ["Journal Article", "Multicenter Study", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1001/jama.286.15.1841"
 	},
 	"11782645": {
 		"authors": "Labella CR, et al",
@@ -224,6 +242,15 @@
 		"medline": true,
 		"doi": "10.2106/JBJS.E.01181"
 	},
+	"16924193": {
+		"authors": "Tanaka Y, et al",
+		"title": "Cervical roots as origin of pain in the neck or scapular regions.",
+		"journal": "Spine (Phila Pa 1976)",
+		"year": "2006",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/01.brs.0000229261.02816.48"
+	},
 	"17012266": {
 		"authors": "Bisset L, et al",
 		"title": "Mobilisation with movement and exercise, corticosteroid injection, or wait and see for tennis elbow: randomised trial.",
@@ -361,6 +388,24 @@
 		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
 		"medline": true,
 		"doi": "10.1177/0363546507310073"
+	},
+	"18204403": {
+		"authors": "Carroll LJ, et al",
+		"title": "Course and prognostic factors for neck pain in the general population: results of the Bone and Joint Decade 2000-2010 Task Force on Neck Pain and Its Associated Disorders.",
+		"journal": "Spine (Phila Pa 1976)",
+		"year": "2008",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
+		"doi": "10.1097/BRS.0b013e31816445be"
+	},
+	"18565009": {
+		"authors": "Vos CJ, et al",
+		"title": "Clinical course and prognostic factors in acute neck pain: an inception cohort study in general practice.",
+		"journal": "Pain Med",
+		"year": "2008",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/j.1526-4637.2008.00456.x"
 	},
 	"19005354": {
 		"authors": "O'Connor FG, et al",
@@ -523,6 +568,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1111/j.1533-2500.2011.00458.x"
+	},
+	"21458776": {
+		"authors": "Hush JM, et al",
+		"title": "Prognosis of acute idiopathic neck pain is poor: a systematic review and meta-analysis.",
+		"journal": "Arch Phys Med Rehabil",
+		"year": "2011",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.apmr.2010.12.025"
 	},
 	"21571657": {
 		"authors": "Nakata W, et al",
@@ -1116,6 +1170,22 @@
 		"medline": true,
 		"doi": "10.1111/aos.12633"
 	},
+	"25629215": {
+		"authors": "Gross A, et al",
+		"title": "Exercises for mechanical neck disorders.",
+		"journal": "Cochrane Database Syst Rev",
+		"year": "2015",
+		"types": [
+			"Journal Article",
+			"Meta-Analysis",
+			"Research Support, N.I.H., Extramural",
+			"Research Support, Non-U.S. Gov't",
+			"Systematic Review"
+		],
+		"medline": true,
+		"doi": "10.1002/14651858.CD004250.pub5",
+		"pmcid": "PMC9508492"
+	},
 	"25636988": {
 		"authors": "Frank JM, et al",
 		"title": "Prevalence of Femoroacetabular Impingement Imaging Findings in Asymptomatic Volunteers: A Systematic Review.",
@@ -1534,6 +1604,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true
 	},
+	"26984876": {
+		"authors": "Côté P, et al",
+		"title": "Management of neck pain and associated disorders: A clinical practice guideline from the Ontario Protocol for Traffic Injury Management (OPTIMa) Collaboration.",
+		"journal": "Eur Spine J",
+		"year": "2016",
+		"types": ["Journal Article", "Practice Guideline", "Review"],
+		"medline": true,
+		"doi": "10.1007/s00586-016-4467-7"
+	},
 	"26991565": {
 		"authors": "McNamara AR, et al",
 		"title": "Hand Blisters in Major League Baseball Pitchers: Current Concepts and Management.",
@@ -1605,6 +1684,14 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2016-096031",
 		"pmcid": "PMC4912389"
+	},
+	"27175952": {
+		"authors": "Childress MA, et al",
+		"title": "Nonoperative Management of Cervical Radiculopathy.",
+		"journal": "Am Fam Physician",
+		"year": "2016",
+		"types": ["Journal Article", "Review"],
+		"medline": true
 	},
 	"27186919": {
 		"authors": "Schleich K, et al",
@@ -2038,6 +2125,15 @@
 		"doi": "10.1186/s12891-017-1690-2",
 		"pmcid": "PMC5549401"
 	},
+	"28807894": {
+		"authors": "Cohen SP, et al",
+		"title": "Advances in the diagnosis and management of neck pain.",
+		"journal": "BMJ",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1136/bmj.j3221"
+	},
 	"28888723": {
 		"authors": "Vap AR, et al",
 		"title": "Isolated Biceps Reflection Pulley Tears Treated With Subpectoral Biceps Tenodesis: Minimum 2-Year Outcomes.",
@@ -2135,6 +2231,16 @@
 		"doi": "10.1007/s12471-018-1084-6",
 		"pmcid": "PMC5818383"
 	},
+	"29472200": {
+		"authors": "Davies BM, et al",
+		"title": "Degenerative cervical myelopathy.",
+		"journal": "BMJ",
+		"year": "2018",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
+		"doi": "10.1136/bmj.k186",
+		"pmcid": "PMC6074604"
+	},
 	"29510653": {
 		"authors": "Thorborg K, et al",
 		"title": "Clinical Examination, Diagnostic Imaging, and Testing of Athletes With Groin Pain: An Evidence-Based Approach to Effective Management.",
@@ -2227,6 +2333,15 @@
 		"types": ["Journal Article", "Meta-Analysis"],
 		"medline": true,
 		"doi": "10.1002/jor.24043"
+	},
+	"29785405": {
+		"authors": "Strömbäck E, et al",
+		"title": "Prevalence and Consequences of Injuries in Powerlifting: A Cross-sectional Study.",
+		"journal": "Orthop J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"doi": "10.1177/2325967118771016",
+		"pmcid": "PMC5954586"
 	},
 	"29869890": {
 		"authors": "Riff AJ, et al",
@@ -2363,6 +2478,15 @@
 		"medline": true,
 		"doi": "10.1371/journal.pone.0204742",
 		"pmcid": "PMC6193581"
+	},
+	"30317960": {
+		"authors": "Burekhovich SA, et al",
+		"title": "Epidemiology and Trends of Weightlifting-Related Sprains and Strains that Presented to Emergency Departments in the United States.",
+		"journal": "J Long Term Eff Med Implants",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1615/JLongTermEffMedImplants.2018026168"
 	},
 	"30323059": {
 		"authors": "van Klij P, et al",
@@ -2540,6 +2664,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1016/j.jsams.2019.01.019"
+	},
+	"30889777": {
+		"authors": "DePasse JM, et al",
+		"title": "Sex- and Sport-Specific Epidemiology of Cervical Spine Injuries Sustained During Sporting Activities.",
+		"journal": "World Neurosurg",
+		"year": "2019",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wneu.2018.10.097"
 	},
 	"30949749": {
 		"authors": "Lundblad M, et al",
@@ -4811,6 +4944,15 @@
 		"medline": true,
 		"doi": "10.1080/00913847.2023.2196934"
 	},
+	"37108024": {
+		"authors": "de Carvalho Borges SC, et al",
+		"title": "Prevalence and Risk Factors of Musculoskeletal Disorders in Basketball Players: Systematic Review and Meta-Analysis.",
+		"journal": "Healthcare (Basel)",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/healthcare11081190",
+		"pmcid": "PMC10138073"
+	},
 	"37141425": {
 		"authors": "Tzeuton S, et al",
 		"title": "Outcomes and Patient Satisfaction of Delayed Distal Biceps Repairs without Graft Augmentation: A Systematic Review.",
@@ -5459,6 +5601,15 @@
 		"doi": "10.1007/s40279-024-02035-y",
 		"pmcid": "PMC11329701"
 	},
+	"38763564": {
+		"authors": "Menezes-Reis R, et al",
+		"title": "Functional capacity and risk of injury in CrossFit practitioners measured through smartphone apps.",
+		"journal": "J Bodyw Mov Ther",
+		"year": "2024",
+		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
+		"doi": "10.1016/j.jbmt.2023.09.013"
+	},
 	"38790493": {
 		"authors": "Nakayama H, et al",
 		"title": "A Perspective on the 6th International Conference on Sports Concussion.",
@@ -5984,6 +6135,25 @@
 		"doi": "10.1002/jeo2.70327",
 		"pmcid": "PMC12255933"
 	},
+	"40665902": {
+		"authors": "El-Allawy A, et al",
+		"title": "Clinical Practice Guideline: Nonspecific Neck Pain.",
+		"journal": "Dtsch Arztebl Int",
+		"year": "2025",
+		"types": ["Journal Article", "Practice Guideline", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.3238/arztebl.m2025.0119",
+		"pmcid": "PMC12620902"
+	},
+	"40673788": {
+		"authors": "Ikiz B, et al",
+		"title": "The relationship of functional movement screen score with balance, core endurance, and musculoskeletal system injuries in CrossFit athletes.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.23736/S0022-4707.25.16829-1"
+	},
 	"40677135": {
 		"authors": "Meyer HL, et al",
 		"title": "Injuries and overuse injuries in padel tennis: a retrospective epidemiological cross-sectional study of a level 1 trauma center in Germany.",
@@ -6505,6 +6675,15 @@
 		"types": ["Journal Article", "Observational Study"],
 		"medline": true,
 		"doi": "10.1016/j.jsams.2026.04.014"
+	},
+	"42137415": {
+		"authors": "Gill AK, et al",
+		"title": "Spine Injuries in the NBA: Return to Play Expectations After a Seasonal Injury.",
+		"journal": "Orthop J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671261440537",
+		"pmcid": "PMC13168729"
 	},
 	"42150363": {
 		"authors": "Hmid M, et al",

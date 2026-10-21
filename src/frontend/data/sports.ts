@@ -132,6 +132,7 @@ const CROSSFIT_FREQUENCY_ORDER = [
 	'hand-rips',
 	'stress-urinary-incontinence',
 	// Нечастые
+	'neck-strain',
 	'labral-tear-slap',
 	'subscapularis-biceps-pulley',
 	'lumbar-disc-herniation',
@@ -171,6 +172,7 @@ const PADEL_FREQUENCY_ORDER = [
 	'rotator-cuff-tendinopathy',
 	'patellofemoral-pain',
 	'low-back-strain',
+	'neck-strain',
 	// Нечастые
 	'plantar-fasciitis',
 	'achilles-tendinopathy',
@@ -260,6 +262,7 @@ const BASKETBALL_FREQUENCY_ORDER = [
 	'orofacial-trauma',
 	'achilles-tendinopathy',
 	'mcl-sprain',
+	'neck-strain',
 	'finger-sprains',
 	'meniscus-tear',
 	'hand-finger-injuries',

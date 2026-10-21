@@ -21,7 +21,7 @@ Slug — это только имя файла. Поля `slug` во frontmatter
 ---
 title: Разрыв передней крестообразной связки
 titleEn: Anterior cruciate ligament tear
-region: knee # head | shoulder | elbow | wrist-hand | lumbar | hip-groin | knee | shin | ankle-foot | other
+region: knee # head | neck | shoulder | elbow | wrist-hand | lumbar | hip-groin | knee | shin | ankle-foot | other
 images:
     - src: /injuries/<slug>-01.webp
       alt: Что изображено, для незрячих — конкретно

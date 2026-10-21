@@ -1,6 +1,7 @@
 /** Зоны тела в порядке показа на главной. Slug идёт в frontmatter статьи и в адрес фильтра. */
 export const REGIONS = [
 	{ slug: 'head', label: 'Голова' },
+	{ slug: 'neck', label: 'Шея и верх спины' },
 	{ slug: 'shoulder', label: 'Плечо' },
 	{ slug: 'elbow', label: 'Локоть' },
 	{ slug: 'wrist-hand', label: 'Запястье и кисть' },

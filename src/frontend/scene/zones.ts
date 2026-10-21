@@ -40,15 +40,20 @@ type ZoneInjury = {
  * тела на -X. Посчитаны скриптом сборки модели по костям BodyParts3D (головка плечевой, дистальный
  * эпифиз плечевой, кости запястья, L1–L5, головка бедренной, надколенник, таранная). Голова и
  * голень -- по костям фигуры `body.glb`: центр черепа с нижней челюстью и середина большеберцовой
- * и малоберцовой между коленом и лодыжкой.
+ * и малоберцовой между коленом и лодыжкой. Шея -- центр позвонков C5–T2: сфера берёт шейный отдел,
+ * верх трапеции и ромбовидные до T4.
  * Ракурсы подобраны по снимкам: плечо и таз спереди-сбоку, локоть и кисть сбоку, чтобы их
- * не закрывало туловище, поясница сзади, голеностоп чуть сверху, голова спереди, голень сзади-сбоку --
- * со стороны икры.
+ * не закрывало туловище, поясница и шея сзади, голеностоп чуть сверху, голова спереди, голень
+ * сзади-сбоку -- со стороны икры.
  */
 export const ANCHORS: Record<Exclude<Region, 'other'>, { radius: number; points: Point[] }> = {
 	head: {
 		radius: 0.12,
 		points: [{ position: [0, 1.6, 0], normal: [0, 0, 1], view: { azimuth: 20, polar: 82 } }],
+	},
+	neck: {
+		radius: 0.11,
+		points: [{ position: [0, 1.45, -0.049], normal: [0, 0, -1], view: { azimuth: 155, polar: 80 } }],
 	},
 	shoulder: { radius: 0.13, points: pair([0.165, 1.39, -0.024], 1, 0.3, { azimuth: 40, polar: 70 }) },
 	elbow: { radius: 0.06, points: pair([0.21, 1.127, -0.033], 1, -0.2, { azimuth: 95, polar: 74 }) },
@@ -225,13 +230,15 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 		normal: [-1, 0, 0.3],
 		view: { azimuth: -55, polar: 78 },
 	},
-	// Всё тело: шея
+	// Шея: сонная артерия спереди и сбоку от позвонков, зона же смотрит сзади
 	'cervical-artery-dissection': {
-		offset: [0, 0.2, -0.01],
-		normal: [0, 0, 1],
+		offset: [0.035, 0.035, 0.07],
+		normal: [0.5, 0, 1],
 		view: { azimuth: 25, polar: 80 },
-		zoom: 3,
+		zoom: 2,
 	},
+	// Растяжение -- верхняя трапеция сзади, между шеей и надплечьем
+	'neck-strain': { offset: [0.05, 0, -0.03], normal: [0.4, 0.3, -1] },
 }
 
 /**
@@ -285,6 +292,7 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	'stress-urinary-incontinence': { depth: 'muscle', muscles: ['coccygeus', 'levator ani'], peel: true },
 	'femoroacetabular-impingement': { depth: 'deep' },
 	'lumbar-disc-herniation': { depth: 'deep' },
+	'cervical-artery-dissection': { depth: 'deep' },
 	'low-back-strain': {
 		depth: 'muscle',
 		muscles: ['iliocostalis lumborum', 'longissimus thoracis', 'multifidus lumborum', 'quadratus lumborum'],
@@ -309,6 +317,11 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 		muscles: ['superior rectus', 'inferior rectus', 'medial rectus', 'lateral rectus'],
 	},
 	'tennis-leg': { depth: 'muscle', muscles: ['medial head of gastrocnemius'] },
+	// Верхняя трапеция, мышца, поднимающая лопатку, и ременные мышцы на задней поверхности шеи
+	'neck-strain': {
+		depth: 'muscle',
+		muscles: ['descending part of trapezius', 'levator scapulae', 'splenius capitis', 'splenius cervicis'],
+	},
 }
 
 /** Слой травмы: глубина и подсвечиваемые мышцы. */

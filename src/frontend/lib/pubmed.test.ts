@@ -37,7 +37,7 @@ test('schema accepts a complete article', () => {
 
 test('schema rejects an article without sources or with an unknown region', () => {
 	assert.equal(injurySchema.safeParse({ ...valid, sources: [] }).success, false)
-	assert.equal(injurySchema.safeParse({ ...valid, region: 'neck' }).success, false)
+	assert.equal(injurySchema.safeParse({ ...valid, region: 'chest' }).success, false)
 })
 
 test('the sport fields live in the lens, not in the common part', () => {

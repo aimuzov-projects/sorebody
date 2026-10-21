@@ -18,6 +18,6 @@ test('на главной ссылка из плашки прокручивае�
 	const note = page.locator('.reader').getByRole('note').filter({ hasText: 'Это справка, а не диагноз' })
 
 	await note.getByRole('link', { name: '«Когда сразу к врачу»' }).click()
-	await expect(page).toHaveURL(new RegExp(`#${SLUG}$`))
+	await expect(page).toHaveURL(new RegExp(`/crossfit/${SLUG}/#urgent$`))
 	await expect(page.locator('.reader #urgent')).toBeInViewport()
 })

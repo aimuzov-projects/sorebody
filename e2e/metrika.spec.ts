@@ -41,9 +41,9 @@ test('смена спорта без перезагрузки отправляе
 	await page.evaluate(() => (location.hash = '#ankle-sprain'))
 	await page.locator('.reader:not(.theme-peek *) [data-sport-switch] button').click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
-	await expect(page).toHaveURL(`${origin}/#ankle-sprain`)
+	await expect(page).toHaveURL(`${origin}/crossfit/ankle-sprain/`)
 	await expect.poll(hits).toHaveLength(2)
-	expect((await hits())[1][3]).toMatchObject({ referer: `${origin}/padel/#ankle-sprain` })
+	expect((await hits())[1][3]).toMatchObject({ referer: `${origin}/padel/ankle-sprain/` })
 })
 
 // Ссылка «/?region=knee» со статьи: страница сразу меняет адрес на хеш зоны, «Назад» -- на

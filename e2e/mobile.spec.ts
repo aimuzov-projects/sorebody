@@ -139,10 +139,10 @@ test('ссылка «Когда сразу к врачу» в статье по�
 
 	const reader = page.locator('.reader')
 
-	await expect(page).toHaveURL(/#acl-tear$/)
+	await expect(page).toHaveURL(/\/crossfit\/acl-tear\/$/)
 	await reader.locator('.article__disclaimer-link').tap()
 	await expect(reader.locator('#urgent')).toBeInViewport()
-	await expect(page).toHaveURL(/#acl-tear$/)
+	await expect(page).toHaveURL(/\/crossfit\/acl-tear\/#urgent$/)
 	await expect(reader).toBeVisible()
 })
 

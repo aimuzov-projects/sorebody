@@ -115,5 +115,5 @@ test('в статье на главной источники тоже свёрн
 	await expectCollapsed(sources)
 	await sources.getByRole('button', { name: /^Ещё \d+ источник/ }).click()
 	await expectExpanded(sources)
-	await expect(page).toHaveURL(new RegExp(`#${SLUG}$`))
+	await expect(page).toHaveURL(new RegExp(`/crossfit/${SLUG}/$`))
 })

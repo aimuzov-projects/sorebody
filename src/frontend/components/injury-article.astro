@@ -39,6 +39,7 @@ import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from '#frontend/lib/article-html.ts'
 import { injuryFrequencies, lensSports, relatedInjuries, type Injury, type Lens } from '#frontend/lib/catalog.ts'
+import { HASH_JUMP } from '#frontend/lib/hash-jump.ts'
 import { injuryPage } from '#frontend/lib/injury-page.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceDetails } from '#frontend/lib/source-details.ts'
@@ -130,6 +131,8 @@ const toLens =
 		: undefined
 
 if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(toLens).digest('base64')}`)
+
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).digest('base64')}`)
 ---
 
 <Base
@@ -138,6 +141,7 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 	sport={sport?.slug}
 >
 	{toLens && <script is:inline slot="head" set:html={toLens} />}
+	<script is:inline slot="head" set:html={HASH_JUMP} />
 	<div class="reading-progress" aria-hidden="true">
 		<span class="reading-progress__bar"></span>
 	</div>
@@ -469,4 +473,13 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 	}
 
 	initBackLink()
+
+	// Страница могла встать на запись истории, которую положила сцена главной (body-3d.svelte):
+	// её соседние шаги вроде `/football/#zone=head:0` браузер открывает в этом же документе, адрес
+	// меняется, а страница -- нет. Чужой путь грузим заново
+	const path = location.pathname
+
+	addEventListener('popstate', () => {
+		if (location.pathname !== path) location.reload()
+	})
 </script>

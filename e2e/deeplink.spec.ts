@@ -83,7 +83,7 @@ test('статья, открытая кликом, проявляется, а «
 	await recordFrames(page)
 	await page.goto('/#zone=shoulder:0')
 	await page.locator('.zone .zone__item').first().click()
-	await expect(page).toHaveURL(/#[\w-]+$/)
+	await expect(page).toHaveURL(/\/crossfit\/[\w-]+\/$/)
 	await expect(page.locator('.reader .article__title')).toBeVisible()
 
 	const frames = await framesOf(page)
@@ -113,4 +113,15 @@ test('переключатель спорта в статье уходит вм�
 	await expect(reader).toHaveCount(1)
 	await expect(switcher).toHaveCount(1)
 	await expect(reader).toHaveCount(0)
+})
+
+// Хеш не уходит на сервер: по старой ссылке `/basketball/#concussion` превью и поисковики видят мету
+// главной. Статья поверх модели живёт под путём своей страницы, старую ссылку адрес сразу меняет
+test('старая ссылка на статью хешем открывает её под путём статьи, «Назад» -- к её зоне', async ({ page }) => {
+	await page.goto('/basketball/#concussion')
+	await expect(page).toHaveURL(/\/basketball\/concussion\/$/)
+	await expect(page.locator('.reader .article__title')).toBeVisible()
+	await page.locator('.reader__back').click()
+	await expect(page).toHaveURL(/\/basketball\/#zone=[\w-]+:\d$/)
+	await expect(page.locator('.zone')).toBeVisible()
 })

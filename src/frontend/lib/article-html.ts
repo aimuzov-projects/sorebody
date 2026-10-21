@@ -11,6 +11,7 @@ import {
 	Dumbbell,
 	Footprints,
 	Info,
+	Link,
 	Phone,
 	Printer,
 	Repeat,
@@ -170,6 +171,15 @@ export function enhanceArticle(parts: ArticlePart[], { sources, sport, injuryHre
 				el('h2', { class: 'article-section__title', id: `${id}-title` }, [
 					icon(svg, 'article-section__icon'),
 					text(title),
+					el(
+						'button',
+						{
+							class: 'article-section__link',
+							type: 'button',
+							'aria-label': `Скопировать ссылку на раздел «${title}»`,
+						},
+						[icon(Link, 'article-section__link-icon')],
+					),
 				]),
 				...children,
 			]),

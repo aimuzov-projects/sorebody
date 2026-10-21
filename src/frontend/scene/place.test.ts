@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { parseHash, regionPlace, sportAt, zoneHash } from './place.ts'
+import { articleAt, articlePath, parseHash, placeAt, regionPlace, sportAt, zoneHash } from './place.ts'
 import type { Zone } from './zones.ts'
 
 const point = { position: [0, 0, 0], normal: [0, 0, 1], view: { azimuth: 0, polar: 0 } }
@@ -64,4 +64,35 @@ test('спорт по пути главной', () => {
 	assert.equal(sportAt('/padel', sports), 'padel')
 	assert.equal(sportAt('/padel/', sports), 'padel')
 	assert.equal(sportAt('/about/', sports), undefined)
+})
+
+test('путь статьи и обратно', () => {
+	const sports = [{ slug: 'crossfit' }, { slug: 'padel' }]
+
+	assert.equal(articlePath('padel', 'acl-tear'), '/padel/acl-tear/')
+	assert.deepEqual(articleAt('/padel/acl-tear/', sports), { sport: 'padel', slug: 'acl-tear' })
+	assert.deepEqual(articleAt('/padel/acl-tear', sports), { sport: 'padel', slug: 'acl-tear' })
+	assert.equal(articleAt('/padel/', sports), null)
+	assert.equal(articleAt('/', sports), null)
+	assert.equal(articleAt('/movements/squat/', sports), null)
+	assert.equal(articleAt('/padel/elements/smash/', sports), null)
+})
+
+test('место по адресу: статья по пути, зона и старая статья по хешу', () => {
+	const padel = { slug: 'padel' }
+	const at = (pathname: string, hash = '') => placeAt({ pathname, hash }, padel, zones)
+
+	assert.deepEqual(at('/padel/meniscus-tear/'), { level: 2, zone: knee, injury: knee.injuries[1] })
+
+	assert.deepEqual(at('/padel/meniscus-tear/', '#zone=knee:1'), {
+		level: 2,
+		zone: knee,
+		injury: knee.injuries[1],
+	})
+
+	assert.deepEqual(at('/padel/', '#zone=knee:1'), { level: 1, zone: knee, index: 1 })
+	assert.deepEqual(at('/padel/', '#acl-tear'), { level: 2, zone: knee, injury: knee.injuries[0] })
+	assert.deepEqual(at('/padel/no-such/'), { level: 0 })
+	assert.deepEqual(at('/crossfit/acl-tear/'), { level: 0 })
+	assert.deepEqual(at('/movements/squat/', '#acl-tear'), { level: 2, zone: knee, injury: knee.injuries[0] })
 })

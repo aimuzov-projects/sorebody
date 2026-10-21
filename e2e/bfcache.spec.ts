@@ -19,7 +19,9 @@ test('главная из bfcache после смены спорта на дру
 	const reader = page.locator('.reader:not(.theme-peek *)')
 
 	await expect(reader.locator('[data-sport-switch] button')).toHaveText(/в\sфутболе/)
-	await page.goto('/football/orofacial-trauma/')
+	await expect(page).toHaveURL(/\/football\/orofacial-trauma\/$/)
+	// Страница статьи -- под другим адресом: тот же путь `goto` открыл бы на месте записи главной
+	await page.goto('/football/orofacial-trauma/?static')
 	await page.locator('[data-sport-switch] astro-island:not([ssr])').waitFor({ state: 'attached' })
 	await page.getByRole('button', { name: 'Вид спорта Футбол' }).click()
 	await page.getByRole('option', { name: 'Кроссфит' }).click()
@@ -28,7 +30,7 @@ test('главная из bfcache после смены спорта на дру
 	// Страница из кеша не шлёт load, ждать его нельзя
 	await page.goBack({ waitUntil: 'commit' })
 	await expect.poll(() => page.evaluate(() => (window as unknown as { restored: boolean }).restored)).toBe(true)
-	await expect(page).toHaveURL(/\/\/[^/]+\/#orofacial-trauma$/)
+	await expect(page).toHaveURL(/\/crossfit\/orofacial-trauma\/$/)
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'crossfit')
 	await expect(reader.locator('[data-sport-switch] button')).toHaveText(/в\sкроссфите/)
 
@@ -36,5 +38,5 @@ test('главная из bfcache после смены спорта на дру
 	const origin = new URL(page.url()).origin
 
 	expect(hits).toHaveLength(1)
-	expect(hits[0][3]).toMatchObject({ referer: `${origin}/football/#orofacial-trauma` })
+	expect(hits[0][3]).toMatchObject({ referer: `${origin}/football/orofacial-trauma/` })
 })

@@ -76,10 +76,38 @@ export function compareHtml(compare: Compare, sources: Source[]) {
 }
 
 /** Крупная цифра: одно число на полэкрана и фраза, что за ним стоит. */
+/** Доля из подписи вида "27,8%". Изменение ("−51%") и всё сверх 100% долей не считаем. */
+function statShare(value: string) {
+	const match = value.match(/^(\d+(?:,\d+)?)%$/)
+	const share = match ? Number(match[1]!.replace(',', '.')) : NaN
+
+	return share > 0 && share <= 100 ? share : undefined
+}
+
+/**
+ * Кольцо доли слева от числа. Заполнение -- штрихом по окружности длиной 100:
+ * CSP не пускает инлайн-стили, а атрибут можно. 24 на 24 -- под градиент
+ * значков #brand-icon (layouts/base.astro).
+ */
+function ringSvg(share: number) {
+	const circle = (part: string, extra = '') =>
+		`<circle class="big-stat__${part}" cx="12" cy="12" r="10" pathLength="100"${extra}/>`
+
+	return (
+		`<svg class="big-stat__ring" viewBox="0 0 24 24" aria-hidden="true" focusable="false">` +
+		circle('track') +
+		circle('fill', ` stroke-dasharray="${share} 100" transform="rotate(-90 12 12)"`) +
+		`</svg>`
+	)
+}
+
 export function statHtml(stat: Stat, sources: Source[]) {
+	const share = statShare(stat.value)
+	const value = `<p class="big-stat__value">${escape(stat.value)}</p>`
+
 	return (
 		`<figure class="big-stat">` +
-		`<p class="big-stat__value">${escape(stat.value)}</p>` +
+		(share === undefined ? value : `<div class="big-stat__figure">${ringSvg(share)}${value}</div>`) +
 		`<figcaption class="big-stat__text">${escape(stat.text)}${cites(stat.cite, sources)}</figcaption>` +
 		`</figure>`
 	)

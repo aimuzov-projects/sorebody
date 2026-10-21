@@ -1789,6 +1789,36 @@
 		font-size: clamp(18px, 2vw, 21px);
 		line-height: 1.4;
 	}
+
+	/* Доля: кольцо слева от числа, высотой с цифры. Размер кольца перебивает общий у значков статьи */
+	&__figure {
+		display: flex;
+		gap: 0.16em;
+		align-items: center;
+		justify-content: center;
+		font-size: clamp(56px, 11vw, 104px);
+
+		& .big-stat__ring {
+			flex: none;
+			width: 0.76em;
+			height: 0.76em;
+			fill: none;
+			stroke-width: 3.4;
+		}
+	}
+
+	&__track {
+		stroke: color-mix(in oklab, var(--fg) 10%, transparent);
+	}
+
+	&__fill {
+		stroke: var(--accent);
+		stroke-linecap: round;
+
+		@media print {
+			stroke: var(--fg);
+		}
+	}
 }
 
 /* Подзаголовки, выноски, таблицы и раскрывашки внутри раздела */
@@ -2941,7 +2971,7 @@
 			}
 		}
 
-		& .big-stat__value {
+		& .big-stat > .big-stat__value {
 			margin-inline: auto;
 		}
 	}
@@ -2982,6 +3012,15 @@
 	/* Шеврон из рамок: при прозрачном тексте currentcolor пропал бы */
 	& :is(.article__sources-more, .article-section summary)::before {
 		border-color: var(--brand-solid);
+	}
+
+	/* Кольцо доли в системе координат значков: градиент #brand-icon ложится на него целиком */
+	& .big-stat__fill {
+		stroke: url('#brand-icon') var(--brand-solid);
+
+		@media print {
+			stroke: var(--fg);
+		}
 	}
 
 	& .article-section blockquote {

@@ -32,6 +32,14 @@ test('timeline lists the phases in order with their terms', () => {
 	assert.doesNotMatch(html, /timeline__caption/)
 })
 
+test('a share gets a ring filled to it, a change or a duration does not', () => {
+	const stat = (value: string) => statHtml({ id: 's', value, text: 'Атлетов вспомнили травму.', cite: [1] }, sources)
+
+	assert.match(stat('27,8%'), /big-stat__ring[^]*stroke-dasharray="27.8 100"[^]*big-stat__value">27,8%</)
+
+	for (const value of ['−51%', '4,7 месяца', '140%']) assert.doesNotMatch(stat(value), /big-stat__ring/)
+})
+
 test('a block cite past the sources list breaks the build', () => {
 	assert.throws(
 		() => statHtml({ id: 's', value: '−51%', text: 'Повторных травм меньше.', cite: [3] }, sources),

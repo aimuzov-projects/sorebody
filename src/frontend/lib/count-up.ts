@@ -41,6 +41,9 @@ export function initCountUp(root: Element) {
 		{ threshold: 0.6 },
 	)
 
+	// Кольцо доли (lib/article-blocks.ts) заполняется вместе с числом
+	const ringOf = (el: HTMLElement) => el.closest('.big-stat')?.querySelector('.big-stat__fill')
+
 	const run = (el: HTMLElement) => {
 		const stat = parseStat(el.dataset.countTo!)!
 		const start = performance.now()
@@ -51,6 +54,7 @@ export function initCountUp(root: Element) {
 			const eased = 1 - (1 - t) ** 4
 
 			el.textContent = formatStat(stat, stat.target * eased)
+			ringOf(el)?.setAttribute('stroke-dasharray', `${stat.target * eased} 100`)
 
 			if (t < 1) frames.add(requestAnimationFrame(tick))
 		}
@@ -66,6 +70,7 @@ export function initCountUp(root: Element) {
 
 		el.dataset.countTo = value
 		el.textContent = formatStat(stat, 0)
+		ringOf(el)?.setAttribute('stroke-dasharray', '0 100')
 		observer.observe(el)
 	}
 

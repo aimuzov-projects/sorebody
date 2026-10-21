@@ -18,6 +18,7 @@ type Props = {
 			show: string[]
 			hide: string[]
 			direction?: [number, number, number]
+			still?: string
 			note?: string
 		}
 	}
@@ -56,6 +57,7 @@ const caption = splitCaption(image.caption)
 					show: image.model.show,
 					hide: image.model.hide,
 					direction: image.model.direction,
+					still: image.model.still,
 					note: image.model.note,
 				})}
 			>

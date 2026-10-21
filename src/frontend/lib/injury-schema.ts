@@ -183,6 +183,8 @@ export const injurySchema = z.strictObject({
 					hide: z.array(z.string()).default([]),
 					// Откуда смотрит камера: x наружу у левой стороны, y вверх, z вперёд. Без него -- из описателя
 					direction: z.tuple([z.number(), z.number(), z.number()]).optional(),
+					// Кость, которая стоит на месте при движении модели из кадров расчёта. Без него -- бедро
+					still: z.string().optional(),
 					// Добавка к (i) модели: чего в ней нет или что упрощено именно для этой травмы
 					note: z.string().min(10).optional(),
 				})

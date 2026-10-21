@@ -1,201 +1,109 @@
 {
 	"title": "3D-модель колена",
-	"offset": [0.000647, 0.0781112, -0.1007677],
-	"groups": [
-		{
-			"name": "femur",
-			"bp3d": ["right femur"],
-			"ratio": 0.6,
-			"layer": "bones"
-		},
-		{
-			"name": "tibia",
-			"bp3d": ["right tibia", "right fibula"],
-			"ratio": 0.6,
+	"frames": "openknee/oks008",
+	"groups": {
+		"femur": {
 			"layer": "bones",
-			"joint": "knee"
+			"ratio": 0.3,
+			"toggle": {
+				"label": "Бедренная кость",
+				"visible": true
+			}
 		},
-		{
-			"name": "patella",
-			"bp3d": ["right patella"],
-			"ratio": 0.5,
+		"tibia": { "layer": "bones", "ratio": 0.3 },
+		"fibula": {
 			"layer": "bones",
-			"joint": "patella"
-		},
-		{
-			"name": "quadriceps",
-			"bp3d": [
-				"right rectus femoris",
-				"right vastus lateralis",
-				"right vastus medialis",
-				"right vastus intermedius"
-			],
-			"ratio": 0.07,
-			"parts": true,
-			"layer": "muscles",
-			"weighted": {
-				"joint": "knee",
-				"anchors": {
-					"femur": 0,
-					"patella": 0.65,
-					"tibia": 1
-				},
-				"falloff": [0.03, 0.07]
-			},
+			"ratio": 0.15,
 			"toggle": {
-				"label": "Четырёхглавая",
+				"label": "Малоберцовая кость",
 				"visible": true
 			}
 		},
-		{
-			"name": "hamstrings",
-			"bp3d": [
-				"long head of right biceps femoris",
-				"short head of right biceps femoris",
-				"right semitendinosus",
-				"right semimembranosus"
-			],
-			"ratio": 0.07,
-			"parts": true,
-			"layer": "muscles",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"],
-				"falloff": [0.03, 0.07]
-			},
+		"patella": {
+			"layer": "bones",
+			"ratio": 0.35,
 			"toggle": {
-				"label": "Задняя группа",
+				"label": "Надколенник",
 				"visible": true
 			}
 		},
-		{
-			"name": "gastrocnemius",
-			"bp3d": ["lateral head of right gastrocnemius", "medial head of right gastrocnemius"],
-			"ratio": 0.07,
-			"parts": true,
-			"layer": "muscles",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"],
-				"reach": 0.04
-			},
-			"toggle": {
-				"label": "Икроножная",
-				"visible": true
-			}
-		},
-		{
-			"name": "iliotibial-tract",
-			"bp3d": ["right iliotibial tract"],
-			"ratio": 0.06,
-			"parts": true,
-			"layer": "ligaments",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"],
-				"falloff": [0.03, 0.07]
-			}
-		},
-		{
-			"name": "cruciates",
-			"za": ["^right (anterior|posterior) cruciate ligament$"],
-			"ratio": 0.6,
-			"parts": true,
-			"layer": "ligaments",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"]
-			}
-		},
-		{
-			"name": "collaterals",
-			"za": [
-				"^right (superficial|deep) part of tibial collateral ligament$",
-				"^right fibular collateral ligament$"
-			],
-			"ratio": 0.6,
-			"parts": true,
-			"layer": "ligaments",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"]
-			}
-		},
-		{
-			"name": "menisci",
-			"za": [
-				"^right (medial|lateral) meniscus$",
-				"^right (anterior|posterior) meniscotibial ligament",
-				"^right transverse ligament of knee$"
-			],
-			"ratio": 0.6,
-			"parts": true,
+		"femoral-cartilage": {
 			"layer": "cartilage",
-			"joint": "knee"
-		},
-		{
-			"name": "patellar-ligament",
-			"za": ["^right patellar ligament$"],
-			"ratio": 0.6,
-			"parts": true,
-			"layer": "ligaments",
-			"weighted": {
-				"joint": "knee",
-				"anchors": {
-					"femur": 0,
-					"patella": 0.65,
-					"tibia": 1
-				}
-			}
-		},
-		{
-			"name": "capsule",
-			"za": ["^right articular capsule of knee joint$"],
-			"ratio": 0.5,
-			"parts": true,
-			"layer": "ligaments",
-			"weighted": {
-				"joint": "knee",
-				"fixed": ["femur"]
-			},
+			"ratio": 0.25,
+			"still": true,
 			"toggle": {
-				"label": "Капсула",
-				"visible": false
+				"label": "Хрящ бедра",
+				"visible": true
+			}
+		},
+		"tibial-cartilage": {
+			"layer": "cartilage",
+			"ratio": 0.12,
+			"still": true,
+			"toggle": {
+				"label": "Хрящ большеберцовой",
+				"visible": true
+			}
+		},
+		"patellar-cartilage": {
+			"layer": "cartilage",
+			"ratio": 0.15,
+			"still": true,
+			"toggle": {
+				"label": "Хрящ надколенника",
+				"visible": true
+			}
+		},
+		"menisci": {
+			"layer": "cartilage",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Мениски",
+				"visible": true
+			}
+		},
+		"cruciates": {
+			"layer": "ligaments",
+			"ratio": 0.5,
+			"toggle": {
+				"label": "Крестообразные связки",
+				"visible": true
+			}
+		},
+		"collaterals": {
+			"layer": "ligaments",
+			"ratio": 0.35,
+			"toggle": {
+				"label": "Боковые связки",
+				"visible": true
+			}
+		},
+		"patellar-ligament": {
+			"layer": "tendons",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Связка надколенника",
+				"visible": true
+			}
+		},
+		"quadriceps-tendon": {
+			"layer": "tendons",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Сухожилие четырёхглавой",
+				"visible": true
 			}
 		}
-	],
-	"joints": [
-		{
-			"name": "knee",
-			"pivot": {
-				"sphere": ["femur", "tibia"]
-			},
-			"axis": "x",
-			"probe": {
-				"lowest": "tibia"
-			},
-			"toward": "-z",
-			"share": 1
-		},
-		{
-			"name": "patella",
-			"pivot": {
-				"sphere": ["femur", "tibia"]
-			},
-			"axis": "x",
-			"probe": {
-				"lowest": "patella"
-			},
-			"toward": "-y",
-			"share": 0.65
-		}
-	],
+	},
 	"view": {
 		"focus": "menisci",
-		"toward": "knee",
 		"direction": [-0.35, 0.1, 1],
-		"distance": 7.5
+		"distance": 4.5
 	},
-	"motion": null,
-	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки, мениски и капсула: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+	"motion": {
+		"label": "Согнуть колено",
+		"verb": "сгибание колена",
+		"max": 90
+	},
+	"about": "Модель и сгибание: Open Knee(s), колено oks008 (правое, мужчина 40 лет), CC BY 4.0, doi:10.18735/b0zv-n395. Сгибание до 90° посчитано авторами методом конечных элементов в FEBio: пассивное, без сил мышц. Кости жёсткие; мениски, связки, связка надколенника и сухожилие четырёхглавой деформируются по расчёту, между кадрами через 5° положения смешиваются. Хрящи в расчёте сжимаются меньше чем на 0,3 мм, этого не видно. Мышц, капсулы, подвздошно-большеберцового тракта и менискобедренных связок в модели нет, поддерживающие связки надколенника в расчёте — пружины без формы и не показаны. Кости обрезаны у сустава"
 }

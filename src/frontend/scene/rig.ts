@@ -1,4 +1,4 @@
-import { MathUtils, Matrix4, Vector3 } from 'three'
+import { MathUtils, Matrix4, Quaternion, Vector3 } from 'three'
 
 type Vec3 = [number, number, number]
 
@@ -26,6 +26,17 @@ type RigGroup = {
 	toggle?: { label: string; visible: boolean }
 	/** Сдвиг вершин внутрь по нормали, м: корни зубов BodyParts3D местами выходят из тонкой кости. */
 	inset?: number
+	/** Кость, на которой группа едет в модели из кадров расчёта (`frames`). */
+	bone?: string
+}
+
+/**
+ * Движение из кадров расчёта (scripts/model/knee-frames.mjs): углы кадров и позы костей по кадрам,
+ * матрицы 4x4 по столбцам. Деформация тканей между позами -- в morph targets мешей, цель k -- кадр k.
+ */
+export type RigFrames = {
+	angles: number[]
+	poses: Record<string, number[][]>
 }
 
 export type ModelRig = {
@@ -37,6 +48,47 @@ export type ModelRig = {
 	/** Кадр: группа в кадре, сустав, к которому сдвинут центр, направление и дистанция в её размерах. */
 	view: { focus: string; toward?: string; direction: Vec3; distance: number }
 	about: string
+	frames?: RigFrames
+}
+
+/** Между какими кадрами лежит угол `deg` и доля второго: [i, t], 0 <= t <= 1. */
+export function frameSpan(angles: number[], deg: number): [number, number] {
+	const last = angles.length - 1
+
+	if (deg <= angles[0] || last === 0) return [0, 0]
+
+	if (deg >= angles[last]) return [last - 1, 1]
+
+	let i = 0
+
+	while (angles[i + 1] < deg) i++
+
+	return [i, (deg - angles[i]) / (angles[i + 1] - angles[i])]
+}
+
+const qa = new Quaternion()
+const qb = new Quaternion()
+const pa = new Vector3()
+const pb = new Vector3()
+const scale = new Vector3()
+
+/**
+ * Поза кости между кадрами расчёта: поворот -- slerp, сдвиг -- линейно. Матрицы не смешиваются
+ * поэлементно: так кость сжималась бы на полпути между кадрами.
+ */
+export function framePose(frames: RigFrames, bone: string, deg: number, out = new Matrix4()) {
+	const poses = frames.poses[bone]
+	const [i, t] = frameSpan(frames.angles, deg)
+
+	out.fromArray(poses[i]).decompose(pa, qa, scale)
+
+	if (t > 0) {
+		out.fromArray(poses[i + 1]).decompose(pb, qb, scale)
+		qa.slerp(qb, t)
+		pa.lerp(pb, t)
+	}
+
+	return out.compose(pa, qa, scale.set(1, 1, 1))
 }
 
 /** Поворот на `deg` градусов вокруг оси `axis`, проходящей через `center`. */

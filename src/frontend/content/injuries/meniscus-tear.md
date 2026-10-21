@@ -13,9 +13,10 @@ images:
           name: knee-right
           highlight: [medial meniscus, lateral meniscus]
           hide:
-              [femur, patella, quadriceps, hamstrings, gastrocnemius, iliotibial-tract, patellar-ligament, collaterals]
+              [femur, femoral-cartilage, patella, patellar-cartilage, patellar-ligament, quadriceps-tendon, collaterals]
           direction: [0, 1, 0.3]
-          note: 'Бедренная кость и мышцы спрятаны, чтобы было видно плато большеберцовой кости с менисками сверху'
+          still: tibia
+          note: 'Бедренная кость спрятана, чтобы было видно плато большеберцовой кости с менисками сверху, её можно включить в «Слоях». При сгибании на месте стоит большеберцовая кость'
     - src: /injuries/meniscus-tear-02.webp
       alt: 'Плато правой большеберцовой кости сверху: продольный разрыв внутреннего мениска, внутренний фрагмент смещён к центру сустава'
       caption: 'Разрыв мениска типа «ручка лейки»: оторванная полоска мениска смещается в центр сустава. Схематичная иллюстрация, сгенерирована нейросетью.'

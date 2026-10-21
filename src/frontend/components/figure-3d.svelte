@@ -105,7 +105,7 @@
 		try {
 			const { createModelViewer } = await import('#frontend/scene/model-viewer.ts')
 
-			viewer = await createModelViewer(canvas, model.url, model.highlight, model.direction)
+			viewer = await createModelViewer(canvas, model.url, model.highlight, model.direction, model.still)
 		} catch (error) {
 			console.error('3D-модель не загрузилась', error)
 			status = 'error'

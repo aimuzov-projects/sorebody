@@ -11,9 +11,10 @@ images:
           caption: 'Капсула правого коленного сустава снаружи'
       model:
           name: knee-right
-          highlight: [rectus femoris, vastus lateralis, vastus medialis, vastus intermedius, patellar ligament]
+          highlight:
+              [articular cartilage of patella, articular cartilage of femur, patellar ligament, quadriceps tendon]
           direction: [-1, 0.1, 0.35]
-          note: 'Суставного хряща надколенника и бедра в модели нет'
+          note: 'Мышц в модели нет: четырёхглавая показана только сухожилием'
 sources:
     - pmid: '30242107'
       label: Neal 2019, систематический обзор и метаанализ факторов риска пателлофеморальной боли

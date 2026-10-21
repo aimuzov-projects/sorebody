@@ -64,7 +64,7 @@ const article = injuryPage(injury.id, sports)!
 		</noscript>
 		{/* Последнее слово и стрелка -- одной строкой в set:html: форматтер не вставит между ними пробел,
 		    и при переносе стрелка уходит вместе со словом */}
-		<a class="check-page__article" href={`${article}#urgent`}>
+		<a class="check-page__article" href={`${article}#urgent`} data-back-if-from>
 			Что значит каждый признак —{' '}
 			<span
 				class="check-page__article-tail"

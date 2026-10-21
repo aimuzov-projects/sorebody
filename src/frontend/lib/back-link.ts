@@ -16,6 +16,13 @@ export function initBackLink() {
 
 	for (const back of links) back.addEventListener('click', (event) => goBack(event, back.href))
 
+	// Ссылка вперёд на страницу, откуда пришли (`[data-back-if-from]`, "в статье" у самопроверки),
+	// тоже шаг назад: иначе в истории копится статья поверх статьи
+	for (const ahead of document.querySelectorAll<HTMLAnchorElement>('[data-back-if-from]'))
+		ahead.addEventListener('click', (event) => {
+			if (document.referrer && new URL(document.referrer).pathname === ahead.pathname) goBack(event, ahead.href)
+		})
+
 	function goBack(event: MouseEvent, href: string) {
 		if (!document.referrer || new URL(document.referrer).origin !== location.origin || history.length < 2) return
 

@@ -22,6 +22,24 @@ services:
       - edge
     logging: *logging
 
+  # Публичный MCP. Caddy проксирует сюда /mcp, остальное -- в site.
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+    image: wodcare-api
+    container_name: wodcare-api
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8787/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - edge
+    logging: *logging
+
 # Переменные сборки лежат в `/srv/wodcare/.env`, образец -- `.env.example`.
 secrets:
   env:

@@ -2,13 +2,13 @@ import { expect, test, type Page } from '@playwright/test'
 
 // Ссылка на статью главной (`/#slug`) открывает её сразу: без кадров с индексом главной, списком
 // зоны и проявлением статьи. Анимации -- только у переходов, которые начал сам посетитель.
-// Кадры пишем на каждом requestAnimationFrame с монтирования сцены; копии страницы в подсмотре
-// темы (`.theme-peek`) не считаем
+// Кадры пишем на каждом requestAnimationFrame с серверного HTML сцены, статья в них -- с гидрации;
+// копии страницы в подсмотре темы (`.theme-peek`) не считаем
 const SLUG = 'rotator-cuff-tendinopathy'
 /** Сколько кадров ещё смотрим после появления статьи. */
 const SETTLE = 20
 
-type Frame = { index: boolean; zone: boolean; reader: number | null }
+type Frame = { index: boolean; zone: boolean; reader: number | null; hydrated: boolean }
 
 async function recordFrames(page: Page) {
 	await page.addInitScript(() => {
@@ -25,6 +25,8 @@ async function recordFrames(page: Page) {
 					index: shown(own('.index')),
 					zone: shown(own('.zone')),
 					reader: reader ? Number(getComputedStyle(reader).opacity) : null,
+					// Пока остров не гидрирован, у него атрибут ssr (Astro): статьи ещё нет, индекс спрятан
+					hydrated: !document.querySelector('astro-island[ssr]:has(.body3d)'),
 				})
 			}
 
@@ -73,10 +75,11 @@ test('прямой заход по ссылке на статью: статья 
 
 	const frames = await framesOf(page)
 
-	expect(frames.length).toBeGreaterThan(0)
-	expect(frames[0].reader).toBe(1)
+	const hydrated = frames.filter((f) => f.hydrated)
+
+	expect(hydrated.length).toBeGreaterThan(0)
 	expect(frames.filter((f) => f.index || f.zone)).toEqual([])
-	expect(frames.filter((f) => f.reader !== 1)).toEqual([])
+	expect(hydrated.filter((f) => f.reader !== 1)).toEqual([])
 })
 
 test('статья, открытая кликом, проявляется, а «Назад» возвращает к списку зоны', async ({ page }) => {

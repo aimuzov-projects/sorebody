@@ -7,6 +7,7 @@
 
 	import { Shapes } from 'lucide-static'
 
+	import { cssVars } from '#frontend/lib/css-vars.ts'
 	import { ALL_FREQUENCIES_HINT, FREQUENCIES, type Frequency } from '#frontend/data/frequency.ts'
 
 	let { value = $bindable('all') }: { value: 'all' | Frequency } = $props()
@@ -83,8 +84,7 @@
 	role="group"
 	aria-label="Частота"
 	bind:this={freqGroup}
-	style:--thumb-left="{thumb.left}px"
-	style:--thumb-right="{thumb.right}px"
+	{@attach cssVars({ '--thumb-left': `${thumb.left}px`, '--thumb-right': `${thumb.right}px` })}
 >
 	<span
 		bind:this={freqThumb}
@@ -221,9 +221,14 @@
 				--chip: var(--rare);
 			}
 
-			/* Фон выбранного рисует общая подложка под чипами */
+			/* Фон выбранного рисует общая подложка под чипами. В серверном HTML её ещё не поставил
+			   скрипт: до него залит сам чип */
 			&[aria-pressed='true'] {
 				color: var(--a-bg);
+
+				.index__freq:not(:has(.index__freq-thumb--placed)) & {
+					background: var(--thumb);
+				}
 			}
 
 			&:hover:not([aria-pressed='true']) {

@@ -139,8 +139,6 @@ const briefSchema = z
 	.max(4)
 	.default([])
 
-export type Brief = z.infer<typeof briefSchema>
-
 /** Статья PubMed по PMID или рекомендация по ссылке с сайта из `GUIDELINE_SITES`. */
 const sourcesSchema = z
 	.array(

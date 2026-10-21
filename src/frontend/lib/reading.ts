@@ -12,6 +12,7 @@ import { initTocMenu } from './toc-menu.ts'
 export function initReading(root: Element, scroller: HTMLElement | Window, bar: HTMLElement | null) {
 	const box = scroller instanceof Window ? document.documentElement : scroller
 	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+	const toc = root.querySelector<HTMLElement>('.article__toc')
 	const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-toc] a')]
 	const sections = links.flatMap((link) => root.querySelector(`#${CSS.escape(link.hash.slice(1))}`) ?? [])
 	// Уход заголовка в шапку: там, где CSS умеет привязать анимацию к пути заголовка, он всё делает сам
@@ -37,7 +38,13 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		const max = box.scrollHeight - box.clientHeight
 		const y = box.scrollTop
 
-		bar?.style.setProperty('transform', `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`)
+		const progress = max > 0 ? Math.min(1, y / max) : 0
+
+		bar?.style.setProperty('transform', `scaleX(${progress})`)
+
+		// Длинное оглавление проезжает за то же время, что и страница: начало видно в начале
+		// статьи, конец -- в конце. На узком экране оно скрыто, и сдвигать нечего
+		if (toc) toc.scrollTop = progress * (toc.scrollHeight - toc.clientHeight)
 
 		// Те же диапазоны, что animation-range в styles/article.css
 		if (titleByScript) {

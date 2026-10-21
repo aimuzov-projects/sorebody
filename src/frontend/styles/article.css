@@ -560,7 +560,8 @@
 	}
 
 	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет.
-	   Скроллбар скрыт: край прокрутки показывает маска, как у зон в body-3d.svelte */
+	   Своей прокрутки у длинного оглавления нет: оно едет вслед за чтением страницы (lib/reading.ts),
+	   а колесо над ним крутит саму страницу */
 	&__layout {
 		@media (width >= 1100px) {
 			display: grid;
@@ -574,11 +575,9 @@
 		display: none;
 
 		@media (width >= 1100px) {
-			scrollbar-width: none;
 			position: sticky;
 			top: var(--header-clear);
-			overflow-y: auto;
-			overscroll-behavior: contain;
+			overflow: hidden;
 			display: block;
 			max-height: calc(100dvh - var(--header-clear) - 48px);
 			padding: 12px 0;

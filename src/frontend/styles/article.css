@@ -601,6 +601,9 @@
 		font-size: 15px;
 		color: var(--muted);
 		text-decoration: none;
+		/* Перенос из заголовка релиза (\n в changelog.json): жирный активный пункт шире обычного
+		   и иначе перескакивал бы на вторую строку. В заголовке раздела \n схлопывается в пробел */
+		white-space: pre-line;
 		transition: color 0.35s var(--article-ease);
 
 		&:hover,

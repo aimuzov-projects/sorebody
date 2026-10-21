@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.19.0](https://github.com/aimuzov-projects/sorebody/compare/v1.18.0...v1.19.0) (2026-10-21)
+
+
+### Features
+
+* **article:** show a pulsing snapshot of the 3D model while it loads ([e3b10e7](https://github.com/aimuzov-projects/sorebody/commit/e3b10e7485b20c9a974e7be0fde2bfd23b9f116c))
+* **article:** show a pulsing snapshot of the 3D model while it loads ([11cf7f3](https://github.com/aimuzov-projects/sorebody/commit/11cf7f3c5bd55a7ac4e3b8e7b83ad4f9ea37279a))
+
 ## [1.18.0](https://github.com/aimuzov-projects/sorebody/compare/v1.17.0...v1.18.0) (2026-10-21)
 
 

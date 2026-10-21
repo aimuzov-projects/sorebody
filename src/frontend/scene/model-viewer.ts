@@ -21,6 +21,10 @@ const WIDE_HALF = Math.tan(MathUtils.degToRad(FOV / 2)) * (IMAGE_WIDTH / IMAGE_H
  * и тонет в пустом месте сверху и снизу; движущаяся кость при этом уходит за край.
  */
 const NARROW_SHARE = 0.5
+/** Покачивание камеры, пока модель не трогали: размах в радианах и период в мс. */
+const SWAY = MathUtils.degToRad(12)
+const SWAY_PERIOD = 6000
+const UP = new Vector3(0, 1, 0)
 /** Цвет сухожилий: белёсый, как на иллюстрациях статьи. */
 const TENDON = '#ece4d6'
 
@@ -286,6 +290,14 @@ export async function createModelViewer(
 
 	controls.addEventListener('change', () => (dirty = true))
 
+	// Пока модель не трогали, камера покачивается вокруг неё: видно, что это 3D и её можно
+	// вращать. Первое касание, перетаскивание или колесо останавливают покачивание насовсем
+	const swayFrom = camera.position.clone().sub(target)
+	const swayStart = performance.now()
+	let swaying = !matchMedia('(prefers-reduced-motion: reduce)').matches
+
+	controls.addEventListener('start', () => (swaying = false))
+
 	const stopTheme = watchTheme(() => {
 		for (const { material } of muscles) material.color.set(muscleColor())
 
@@ -293,6 +305,14 @@ export async function createModelViewer(
 	})
 
 	function loop() {
+		if (swaying) {
+			const angle = SWAY * Math.sin((2 * Math.PI * (performance.now() - swayStart)) / SWAY_PERIOD)
+
+			camera.position.copy(swayFrom).applyAxisAngle(UP, angle).add(target)
+			camera.lookAt(target)
+			dirty = true
+		}
+
 		if (!controls.update() && !dirty) return
 
 		dirty = false

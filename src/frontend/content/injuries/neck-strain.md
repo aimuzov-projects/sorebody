@@ -9,6 +9,11 @@ images:
       atlas:
           file: Gray409.png
           caption: 'Мышцы, соединяющие плечевой пояс с позвоночником'
+      model:
+          name: neck-back-center
+          highlight: [descending part of trapezius, levator scapulae, splenius capitis, splenius cervicis]
+          direction: [0.3, 0.15, -1]
+          note: 'Растяжения в модели нет: мышцы показаны целыми. Трапецию можно скрыть, чтобы увидеть мышцы под ней'
 sources:
     - pmid: '40665902'
       label: El-Allawy 2025, немецкое клиническое руководство DEGAM по неспецифической боли в шее

@@ -2,6 +2,7 @@ import { z } from 'astro/zod'
 
 import { FREQUENCY_SLUGS } from '#frontend/data/frequency.ts'
 import { REGION_SLUGS } from '#frontend/data/regions.ts'
+import { URGENCY } from '#frontend/data/urgency.ts'
 import { ATLAS_FILE } from '#frontend/lib/atlas.ts'
 import { guidelineSite } from '#frontend/lib/sources.ts'
 
@@ -30,6 +31,113 @@ export type Chart = z.infer<typeof chartSchema>
 
 /** Пиктограммы "N из 10". В тексте ставятся маркером `<div data-chart="id"></div>`. */
 const chartsSchema = z.array(chartSchema).default([])
+
+/** Сноски блока: номера источников из `sources` того же файла, как `[N]` в тексте. */
+const citeSchema = z.array(z.number().int().min(1)).default([])
+
+const blockId = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+
+/** Шкала восстановления. В тексте ставится маркером `<div data-timeline="id"></div>`. */
+export const timelineSchema = z.strictObject({
+	id: blockId,
+	title: z.string().min(3),
+	phases: z
+		.array(
+			z.strictObject({
+				/** Срок фазы: "0–2 недели", "с 9 месяцев". */
+				when: z.string().min(2).max(40),
+				title: z.string().min(3).max(60),
+				text: z.string().min(10).max(260),
+				cite: citeSchema,
+			}),
+		)
+		.min(2)
+		.max(6),
+	caption: z.string().min(10).optional(),
+})
+
+export type Timeline = z.infer<typeof timelineSchema>
+
+/** Развилка из двух-трёх вариантов. В тексте -- маркер `<div data-compare="id"></div>`. */
+export const compareSchema = z.strictObject({
+	id: blockId,
+	title: z.string().min(3),
+	options: z
+		.array(
+			z.strictObject({
+				title: z.string().min(3).max(60),
+				points: z.array(z.string().min(3).max(160)).min(1).max(5),
+				/** Ключевая доля варианта пиктограммой "N из 10": процент и что за ним. */
+				share: z
+					.strictObject({ percent: z.number().min(0).max(100), label: z.string().min(10).max(120) })
+					.optional(),
+			}),
+		)
+		.min(2)
+		.max(3),
+	caption: z.string().min(10).optional(),
+	cite: citeSchema,
+})
+
+export type Compare = z.infer<typeof compareSchema>
+
+/** Крупная цифра с фразой. В тексте -- маркер `<div data-stat="id"></div>`. */
+export const statSchema = z.strictObject({
+	id: blockId,
+	value: z.string().min(1).max(12),
+	text: z.string().min(10).max(200),
+	cite: citeSchema,
+})
+
+export type Stat = z.infer<typeof statSchema>
+
+/**
+ * Схема "опасно / безопасно" из готовых рисунков (lib/article-blocks.ts), подпись -- своя.
+ * В тексте -- маркер `<div data-diagram="id"></div>`.
+ */
+export const diagramSchema = z.strictObject({
+	id: blockId,
+	kind: z.enum(['knee-valgus']),
+	caption: z.string().min(10).max(220),
+})
+
+export type Diagram = z.infer<typeof diagramSchema>
+
+/**
+ * Самопроверка "Мне к врачу?" на своей странице `/injuries/<slug>/check/`: признаки из раздела
+ * "Когда сразу к врачу", у каждого -- его срочность. Читатель отмечает, что у него есть, и
+ * видит самую срочную. В статье на неё ведёт ссылка из того же раздела.
+ */
+const selfCheckSchema = z
+	.array(z.strictObject({ text: z.string().min(10).max(160), urgency: z.enum(URGENCY) }))
+	.min(2)
+	// Больше восьми: в статьях о кисти, лице и паховой боли тревожных признаков столько и есть
+	.max(10)
+
+export type SelfCheck = z.infer<typeof selfCheckSchema>
+
+/** Блоки, общие для общей части и линзы. */
+const blocks = {
+	timelines: z.array(timelineSchema).default([]),
+	compares: z.array(compareSchema).default([]),
+	stats: z.array(statSchema).default([]),
+	diagrams: z.array(diagramSchema).default([]),
+}
+
+/**
+ * "Коротко" в шапке общей части: три-четыре факта, которые нужны раньше всей статьи.
+ * `kind` выбирает значок: срок, врач, тревожный признак, прогноз.
+ */
+const briefSchema = z
+	.array(
+		z.strictObject({
+			kind: z.enum(['time', 'doctor', 'alert', 'outlook']),
+			label: z.string().min(2).max(24),
+			text: z.string().min(3).max(110),
+		}),
+	)
+	.max(4)
+	.default([])
 
 /** Статья PubMed по PMID или рекомендация по ссылке с сайта из `GUIDELINE_SITES`. */
 const sourcesSchema = z
@@ -84,6 +192,16 @@ export const injurySchema = z.strictObject({
 		}),
 	),
 	charts: chartsSchema,
+	...blocks,
+	brief: briefSchema,
+	/** "Что запомнить" в конце статьи: две-три мысли, с которыми читатель уходит. Без цифр -- цифры со сносками в тексте. */
+	selfCheck: selfCheckSchema.optional(),
+	takeaways: z.array(z.string().min(20).max(180)).max(3).default([]),
+	/**
+	 * Кто из врачей и когда проверил текст. Есть только у статьи без черновика: на странице --
+	 * пометка "Проверено врачом" в шапке.
+	 */
+	review: z.strictObject({ by: z.string().min(5), date: z.iso.date() }).optional(),
 	sources: sourcesSchema,
 	draft: draftSchema,
 })
@@ -99,6 +217,7 @@ export const lensSchema = z.strictObject({
 	/** Одна фраза для карточки и `meta description` в этом спорте. */
 	summary: z.string().min(20).max(220),
 	charts: chartsSchema,
+	...blocks,
 	sources: sourcesSchema,
 	draft: draftSchema,
 })

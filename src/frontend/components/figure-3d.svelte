@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, ChevronLeft, Layers, Pause, Play } from 'lucide-static'
+	import { Check, ChevronLeft, Layers, Pause, Play, RotateCcw } from 'lucide-static'
 	import { onDestroy, onMount } from 'svelte'
 
 	import type { FigureModel } from '#frontend/lib/figure-3d.ts'
@@ -8,11 +8,13 @@
 
 	type Props = {
 		model: FigureModel
+		/** Иллюстрация статьи, у которой открыли модель: её показываем, если модель не загрузилась. */
+		image?: { src: string; alt: string }
 		/** Закрыть просят: стрелка «Назад», Esc. Сам диалог закрывает lib/figure-3d.ts, вместе с историей. */
 		onclose: () => void
 	}
 
-	let { model, onclose }: Props = $props()
+	let { model, image, onclose }: Props = $props()
 
 	/** Полный цикл движения туда и обратно, мс. */
 	const CYCLE = 5000
@@ -91,8 +93,14 @@
 
 	let resizeWatch: ResizeObserver | undefined
 
-	onMount(async () => {
+	onMount(() => {
 		dialog.showModal()
+		void load()
+	})
+
+	/** Загрузить модель: при открытии и по кнопке «Попробовать ещё раз». */
+	async function load() {
+		status = 'loading'
 
 		try {
 			const { createModelViewer } = await import('#frontend/scene/model-viewer.ts')
@@ -124,7 +132,7 @@
 			playing = true
 			play()
 		}
-	})
+	}
 
 	onDestroy(() => {
 		cancelAnimationFrame(frame)
@@ -140,7 +148,24 @@
 	{#if status === 'loading'}
 		<p class="figure3d__status">Загружаем 3D-модель…</p>
 	{:else if status === 'error'}
-		<p class="figure3d__status">Не получилось загрузить 3D-модель</p>
+		<!-- Модель не пришла: вместо пустого экрана -- та же иллюстрация и что можно сделать -->
+		<div class="figure3d__failed">
+			{#if image}
+				<img class="figure3d__photo" src={image.src} alt={image.alt} />
+			{/if}
+			<div class="figure3d__note">
+				<p class="figure3d__note-title">3D-модель не загрузилась</p>
+				<p class="figure3d__note-text">
+					{image ? 'Пока можно посмотреть иллюстрацию. ' : ''}Скорее всего, сбой сети — попробуйте ещё раз.
+				</p>
+				<div class="figure3d__note-actions">
+					<button class="figure3d__retry" type="button" onclick={load}>
+						<span class="figure3d__retry-icon" aria-hidden="true">{@html RotateCcw}</span>
+						Попробовать ещё раз
+					</button>
+				</div>
+			</div>
+		</div>
 	{/if}
 
 	<button class="figure3d__back" type="button" aria-label="Назад" onclick={onclose}>{@html ChevronLeft}</button>
@@ -236,6 +261,12 @@
 		width: 100%;
 		height: 100%;
 
+		/* Пока модели нет (загрузка, ошибка), вертеть нечего: ни руки-курсора, ни перетаскивания */
+		.figure3d:not([data-status='ready']) & {
+			pointer-events: none;
+			cursor: default;
+		}
+
 		&:active {
 			cursor: grabbing;
 		}
@@ -249,6 +280,90 @@
 		margin: 0;
 		font-size: 14px;
 		color: var(--muted);
+	}
+
+	/* Модель не загрузилась: по центру иллюстрация с растворёнными краями, как в статье, под ней
+	   плашка -- что случилось и две кнопки. На телефоне всё колонкой во всю ширину */
+	.figure3d__failed {
+		position: absolute;
+		inset: 0;
+		overflow-y: auto;
+		display: grid;
+		gap: 20px;
+		place-content: center;
+		justify-items: center;
+		padding: 72px 20px 32px;
+	}
+
+	.figure3d__photo {
+		display: block;
+		width: min(100%, 560px);
+		height: auto;
+		mask-image: var(--article-image-mask);
+		mask-composite: intersect;
+	}
+
+	.figure3d__note {
+		display: grid;
+		gap: 6px;
+		width: min(100%, 440px);
+		padding: 18px 20px 20px;
+		border-radius: 20px;
+		text-align: center;
+		background: color-mix(in srgb, var(--fg) 5%, var(--bg));
+	}
+
+	.figure3d__note-title {
+		margin: 0;
+		font-size: 19px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+	}
+
+	.figure3d__note-text {
+		margin: 0;
+		font-size: 15px;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	.figure3d__note-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		justify-content: center;
+		margin-top: 10px;
+	}
+
+	.figure3d__retry {
+		cursor: pointer;
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		padding: 10px 18px;
+		border: 0;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 15px;
+		font-weight: 650;
+		color: var(--on-accent);
+		background: var(--accent-fill);
+		transition: filter 0.2s ease;
+
+		&:hover {
+			filter: brightness(1.08);
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	.figure3d__retry-icon {
+		display: inline-flex;
+		width: 16px;
+		height: 16px;
 	}
 
 	/* Стрелка как в шапке статьи (article-bar__back): акцентная «<» в круге, подложка на наведении */

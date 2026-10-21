@@ -1,7 +1,22 @@
 ---
 import { createHash } from 'node:crypto'
 
-import { ArrowRight, ChevronLeft, ChevronRight, ExternalLink, TextQuote, TriangleAlert } from 'lucide-static'
+import {
+	ArrowRight,
+	ArrowUpToLine,
+	BadgeCheck,
+	CalendarClock,
+	CircleCheck,
+	ChevronLeft,
+	ChevronRight,
+	Clock,
+	ExternalLink,
+	Lightbulb,
+	TextQuote,
+	TrendingUp,
+	TriangleAlert,
+	UserRoundSearch,
+} from 'lucide-static'
 
 import { frequencyOf } from '#frontend/data/frequency.ts'
 import { type ElementIcon, MOVEMENT_ICONS } from '#frontend/data/movement-icons.ts'
@@ -23,13 +38,14 @@ import SportSwitch from '#frontend/components/sport-switch.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
 import Base from '#frontend/layouts/base.astro'
 import { enhanceArticle, INJURY_HEADINGS, LENS_HEADINGS, type ArticlePart } from '#frontend/lib/article-html.ts'
-import { lensSports, type Injury, type Lens } from '#frontend/lib/catalog.ts'
+import { injuryFrequencies, lensSports, relatedInjuries, type Injury, type Lens } from '#frontend/lib/catalog.ts'
 import { injuryPage } from '#frontend/lib/injury-page.ts'
 import { INFO_DOT } from '#frontend/lib/icons.ts'
 import { sourceDetails } from '#frontend/lib/source-details.ts'
 import { sourcesSummary } from '#frontend/lib/sources.ts'
 import { SOURCES_PEEK } from '#frontend/lib/sources-peek.ts'
 import { plural } from '#frontend/lib/plural.ts'
+import { readingMinutes } from '#frontend/lib/reading-time.ts'
 import { splitTitle } from '#frontend/lib/title.ts'
 import '#frontend/styles/article.css'
 
@@ -54,19 +70,41 @@ const sport = lens?.sport
 const home = sport ? sportHome(sport.slug) : '/'
 // Ссылки на травмы из текста -- сразу на страницу разбора, мимо переадресаций
 const sportsByInjury = await lensSports()
+// Частота в каждом спорте -- на чипах «Разбор по видам спорта» общей страницы
+const frequencies = new Map((await injuryFrequencies(injury.id)).map((f) => [f.sport, frequencyOf(f.frequency)]))
+// Связанные травмы ведут сразу на разбор в этом же спорте, если он там есть
+const related = (await relatedInjuries(injury.id)).map((entry) => ({
+	title: splitTitle(entry.data.title).name,
+	href: injuryPage(entry.id, sportsByInjury.get(entry.id) ?? [], sport?.slug),
+}))
 const parts: ArticlePart[] = [{ kind: 'injury', html: injury.rendered?.html ?? '' }]
 
 if (lens) parts.push({ kind: 'lens', html: lens.entry.rendered?.html ?? '' })
 
-const { html, sections, sources } = enhanceArticle(parts, {
+const {
+	html,
+	sections: bodySections,
+	sources,
+} = enhanceArticle(parts, {
 	sources: [...data.sources, ...(lens?.entry.data.sources ?? [])],
 	sport,
 	injuryHref: (slug) => injuryPage(slug, sportsByInjury.get(slug) ?? [], sport?.slug),
+	checkHref: data.selfCheck && `/injuries/${injury.id}/check/`,
 })
+// Первым пунктом оглавления -- шапка статьи: до первого раздела много текста ("Коротко", пометка,
+// иллюстрация), и вернуться к нему из середины статьи иначе нечем. Подсветку пункта по прокрутке
+// и плавный переход делает lib/reading.ts, как у разделов
+const sections = [{ id: 'start', title: 'Начало', icon: ArrowUpToLine }, ...bodySections]
 // Столько источников прячет свёрнутый список, их число -- на кнопке
 const hiddenSources = Math.max(0, sources.length - SOURCES_PEEK)
 const frequency = lens && frequencyOf(lens.entry.data.frequency)
 const summary = lens?.entry.data.summary
+const brief = data.brief
+const BRIEF_ICONS = { time: CalendarClock, doctor: UserRoundSearch, alert: TriangleAlert, outlook: TrendingUp }
+const reviewDate =
+	data.review &&
+	new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(data.review.date))
+const minutes = readingMinutes(`${injury.body ?? ''}\n${lens?.entry.body ?? ''}`)
 const elements = sport ? sport.elements.filter((e) => lens.entry.data.elements.includes(e.slug)) : []
 const [image, ...moreImages] = data.images
 // Остальные иллюстрации -- в конце раздела "Что это", перед следующим разделом
@@ -114,8 +152,11 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 		/>
 		<BarLead title={name} {home} />
 	</SiteHeader>
-	<main class="article" data-article>
-		<header class="article__hero">
+	{/* data-at-start: читатель в шапке статьи, пункт «Начало» в оглавлении спрятан (lib/reading.ts снимает) */}
+	<main class="article" data-article data-at-start>
+		<header class="article__hero" id="start">
+			{/* Только на бумаге: памятка (lib/print-memo.ts) -- лист сам по себе, без сайта вокруг */}
+			<p class="memo-only memo-only--kicker">Памятка · Sorebody</p>
 			{/* Метки чипами, как фильтры раскрытой зоны: зона -- ссылка на её список, частота -- знаком в своём цвете */}
 			<p class="article__meta">
 				<a
@@ -131,6 +172,19 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 					<span class:list={['article__pill', `article__pill--${frequency.slug}`]}>
 						<span class="article__pill-icon" aria-hidden="true" set:html={frequency.icon} />
 						{frequency.pill}
+					</span>
+				)}
+				<span class="article__pill article__pill--quiet">
+					<span class="article__pill-icon" aria-hidden="true" set:html={Clock} />
+					{minutes} мин чтения
+				</span>
+				{data.review && (
+					<span
+						class="article__pill article__pill--quiet article__pill--review"
+						data-hint={`Проверил ${data.review.by}`}
+					>
+						<span class="article__pill-icon" aria-hidden="true" set:html={BadgeCheck} />
+						Проверено врачом {reviewDate}
 					</span>
 				)}
 			</p>
@@ -193,13 +247,29 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 				</noscript>
 			)}
 			{/* Коротко о травме: то же summary, что под названием в списках, но здесь -- главная мысль статьи */}
-			{summary && (
+			{/* Под ней -- факты общей части: срок, врач, тревожный признак, прогноз */}
+			{(summary || brief.length > 0) && (
 				<div class="article__summary">
 					<p class="article__summary-label">
 						<span class="article__summary-icon" aria-hidden="true" set:html={TextQuote} />
 						Коротко
 					</p>
-					<p class="article__summary-text">{summary}</p>
+					{summary && <p class="article__summary-text">{summary}</p>}
+					{brief.length > 0 && (
+						<ul class="article__brief">
+							{brief.map((fact) => (
+								<li class:list={['article__fact', `article__fact--${fact.kind}`]}>
+									<span
+										class="article__fact-icon"
+										aria-hidden="true"
+										set:html={BRIEF_ICONS[fact.kind]}
+									/>
+									<span class="article__fact-label">{fact.label}</span>
+									<span class="article__fact-text">{fact.text}</span>
+								</li>
+							))}
+						</ul>
+					)}
 				</div>
 			)}
 			{/* Пометка в каждой статье, не только на /about: из поиска приходят сразу сюда. Значок -- тот же,
@@ -238,6 +308,27 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 					<ArticleFigure image={more} id={`figure-${i + 1}`} />
 				))}
 				<Fragment set:html={bodyTail} />
+				{/* Итог для тех, кто долистал: две-три мысли, которые стоит унести с собой */}
+				{data.takeaways.length > 0 && (
+					<aside class="takeaways" aria-labelledby="takeaways-title">
+						<p class="takeaways__title" id="takeaways-title">
+							<span class="takeaways__title-icon" aria-hidden="true" set:html={Lightbulb} />
+							Что запомнить
+						</p>
+						<ul class="takeaways__list">
+							{data.takeaways.map((item) => (
+								<li class="takeaways__item">
+									<span class="takeaways__icon" aria-hidden="true" set:html={CircleCheck} />
+									{item}
+								</li>
+							))}
+						</ul>
+					</aside>
+				)}
+				{/* Низ листа памятки: что это справка и где статья целиком */}
+				<p class="memo-only memo-only--footer">
+					Это справка, а не диагноз: с травмой — к врачу. Статья целиком: {Astro.url.href}
+				</p>
 			</div>
 		</div>
 
@@ -276,6 +367,40 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 								<a class="article__chip" href={sportArticle(slug, injury.id)}>
 									<span class="article__chip-icon" aria-hidden="true" set:html={ArrowRight} />
 									{sportOf(slug).title}
+									{frequencies.get(slug) && (
+										<span
+											class:list={[
+												'article__chip-freq',
+												`article__chip-freq--${frequencies.get(slug)!.slug}`,
+											]}
+										>
+											<span
+												class="article__chip-freq-icon"
+												aria-hidden="true"
+												set:html={frequencies.get(slug)!.icon}
+											/>
+											{frequencies.get(slug)!.pill}
+										</span>
+									)}
+								</a>
+							</li>
+						))}
+					</ul>
+				</section>
+			)}
+
+			{/* Травмы, связанные с этой ссылками в текстах: по ним часто и идут дальше */}
+			{related.length > 0 && (
+				<section class="article__related" aria-labelledby="linked-title">
+					<h2 class="article__end-title" id="linked-title">
+						Связанные травмы
+					</h2>
+					<ul class="article__chips">
+						{related.map((entry) => (
+							<li>
+								<a class="article__chip" href={entry.href}>
+									<span class="article__chip-icon" aria-hidden="true" set:html={ArrowRight} />
+									{entry.title}
 								</a>
 							</li>
 						))}
@@ -332,10 +457,16 @@ if (toLens) Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(to
 <script>
 	import { initBackLink } from '#frontend/lib/back-link.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
+	import { initCountUp } from '#frontend/lib/count-up.ts'
+	import { initPrintMemo } from '#frontend/lib/print-memo.ts'
 
 	const root = document.querySelector('[data-article]')
 
-	if (root) initReading(root, window, document.querySelector('.reading-progress__bar'))
+	if (root) {
+		initReading(root, window, document.querySelector('.reading-progress__bar'))
+		initPrintMemo(root)
+		initCountUp(root)
+	}
 
 	initBackLink()
 </script>

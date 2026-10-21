@@ -138,6 +138,21 @@
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
 		}
+
+		/* "Начало" нужно, только когда шапка статьи позади: пока читатель в ней (data-at-start ставит
+		   lib/reading.ts), пункт спрятан, но место держит, и список не прыгает. Прячется сразу, без
+		   перехода -- полупрозрачный текст в момент проверки контраста не годится, -- проявляется плавно */
+		&[href='#start'] {
+			transition:
+				color 0.35s ease,
+				opacity 0.35s ease;
+
+			[data-at-start] & {
+				visibility: hidden;
+				opacity: 0;
+				transition: none;
+			}
+		}
 	}
 
 	&__icon {

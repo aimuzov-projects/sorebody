@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content'
+import { ArrowRight, ChevronLeft } from 'lucide-static'
+
+import BarLead from '#frontend/components/bar-lead.svelte'
+import SiteHeader from '#frontend/components/site-header.svelte'
+import Base from '#frontend/layouts/base.astro'
+import { selfCheckHtml } from '#frontend/lib/article-blocks.ts'
+import { sportsOf } from '#frontend/lib/catalog.ts'
+import { injuryPage } from '#frontend/lib/injury-page.ts'
+import { splitTitle } from '#frontend/lib/title.ts'
+import '#frontend/styles/article.css'
+
+/**
+ * Самопроверка "Мне к врачу?" по травме: признаки из раздела "Когда сразу к врачу" флажками
+ * и ответ, насколько срочно. Своя страница, чтобы не прерывать статью: в ней на эту страницу
+ * ведёт ссылка из того же раздела. Есть только у травм с `selfCheck` во frontmatter.
+ */
+export async function getStaticPaths() {
+	const injuries = await getCollection('injuries', (entry) => entry.data.selfCheck !== undefined)
+
+	return Promise.all(
+		injuries.map(async (injury) => ({
+			params: { slug: injury.id },
+			props: { injury, sports: await sportsOf(injury.id) },
+		})),
+	)
+}
+
+const { injury, sports } = Astro.props
+const { name } = splitTitle(injury.data.title)
+const title = 'Мне к врачу?'
+// Назад и "Вся статья" -- на разбор травмы: общая страница или единственный спорт
+const article = injuryPage(injury.id, sports)!
+---
+
+<Base title={`${title} ${name}`} description={`Проверьте себя: насколько срочно к врачу при травме «${name}».`}>
+	<SiteHeader>
+		<a
+			class="article-bar__back"
+			href={article}
+			aria-label="Назад"
+			data-hint="Назад"
+			data-back
+			set:html={ChevronLeft}
+		/>
+		<BarLead {title} home={article} />
+	</SiteHeader>
+	<main class="article check-page" data-article>
+		<header class="check-page__hero">
+			{/* Над заголовком -- к какой травме проверка. Не ссылка: назад к статье ведёт стрелка в шапке */}
+			<p class="check-page__kicker">{name}</p>
+			<h1 class="article__title check-page__title">{title}</h1>
+			<p class="check-page__lead">
+				Отметьте признаки, которые есть сейчас, — подскажем, насколько срочно показаться врачу.
+			</p>
+		</header>
+
+		<Fragment set:html={selfCheckHtml(injury.data.selfCheck!)} />
+		<noscript>
+			<p class="check-page__lead">
+				Самопроверке нужен JavaScript. Признаки и что делать — в статье, в разделе «Когда сразу к врачу».
+			</p>
+		</noscript>
+		{/* Последнее слово и стрелка -- одной строкой в set:html: форматтер не вставит между ними пробел,
+		    и при переносе стрелка уходит вместе со словом */}
+		<a class="check-page__article" href={`${article}#urgent`} data-close>
+			Что значит каждый признак —{' '}
+			<span
+				class="check-page__article-tail"
+				set:html={`в статье<span class="check-page__article-icon" aria-hidden="true">${ArrowRight}</span>`}
+			/>
+		</a>
+	</main>
+</Base>
+
+<script>
+	import { initBackLink } from '#frontend/lib/back-link.ts'
+	import { initSelfCheck } from '#frontend/lib/self-check.ts'
+
+	const root = document.querySelector('[data-article]')
+
+	if (root) initSelfCheck(root)
+
+	initBackLink()
+</script>

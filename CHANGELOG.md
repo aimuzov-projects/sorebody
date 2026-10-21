@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.17.0](https://github.com/aimuzov-projects/sorebody/compare/v1.16.2...v1.17.0) (2026-10-21)
+
+
+### Features
+
+* **article:** add 3D models to all injury articles ([554400e](https://github.com/aimuzov-projects/sorebody/commit/554400eca7819c2a20c37c1f26d976427ed407d8))
+* **article:** add a head and neck 3D model to the head and neck articles ([8158b90](https://github.com/aimuzov-projects/sorebody/commit/8158b90c8030210d12ac2283a032611b029eb933))
+* **article:** add a knee 3D model to the knee articles ([18173fa](https://github.com/aimuzov-projects/sorebody/commit/18173fa6bebcdc92322eded00953c8d993068816))
+* **article:** add a leg and foot 3D model to the lower leg and foot articles ([7d2f0ef](https://github.com/aimuzov-projects/sorebody/commit/7d2f0ef1304ffa2f9320745c9c1d949e15b8db1f))
+* **article:** add a lumbar 3D model and a clearer highlight for ligaments and nerves ([671a376](https://github.com/aimuzov-projects/sorebody/commit/671a37637b65413271bc74c4f41986f2e2e70664))
+* **article:** add a pelvis and thigh 3D model to the hip and groin articles ([283c0e2](https://github.com/aimuzov-projects/sorebody/commit/283c0e226adedb917cfac8c70407a0292f24af62))
+* **article:** add a shoulder girdle 3D model to the chest and back articles ([9a9b8e1](https://github.com/aimuzov-projects/sorebody/commit/9a9b8e1fa36eeeafd0b4e457e660e8629bd7d378))
+* **article:** add a whole-body muscle 3D model to the general muscle articles ([1fe8d52](https://github.com/aimuzov-projects/sorebody/commit/1fe8d52852cd5b335aaa9e40922f0f580bb5c73c))
+* **article:** add elbow and wrist 3D models to the arm articles ([614f7de](https://github.com/aimuzov-projects/sorebody/commit/614f7de5aa7ae18b99da794203efe52b2b1a3e88))
+* **article:** add the shoulder 3D model to every shoulder article ([5c30e42](https://github.com/aimuzov-projects/sorebody/commit/5c30e42dd824b4b6460e8e8c20ea4f527c4db4dc))
+* **article:** add the subacromial bursa to the shoulder model ([3b426e6](https://github.com/aimuzov-projects/sorebody/commit/3b426e6f8efcbdfc8348e0d2d7e115507ed27cc1))
+* **article:** come back to the same section after going back ([3a119ef](https://github.com/aimuzov-projects/sorebody/commit/3a119efa6983aa603680ac9f334bc732363f1d63))
+* **article:** fill a ring next to a big share ([08a6241](https://github.com/aimuzov-projects/sorebody/commit/08a62411ebccbed7d1d4e07cd1164eea980bee50))
+* **article:** hide the 3D model layers in a menu ([6793720](https://github.com/aimuzov-projects/sorebody/commit/6793720916fbf550bcc139046f969c164423256e))
+* **article:** roll the longread out to every injury article ([2e8d8f3](https://github.com/aimuzov-projects/sorebody/commit/2e8d8f363ea3d6014a298a33cc0a4c45fb970692))
+* **article:** rotate a 3D shoulder model from the rotator cuff illustration ([fa8d9b2](https://github.com/aimuzov-projects/sorebody/commit/fa8d9b2b40b7f05867110ff5ea3497259d90aeb7))
+* **article:** sway the 3D button icon all the time ([36907fa](https://github.com/aimuzov-projects/sorebody/commit/36907fa81dd06ef930dffd986c0fe73b0eba5a33))
+* **article:** sway the 3D model until it is touched ([44f8039](https://github.com/aimuzov-projects/sorebody/commit/44f8039efecad54520d063a56726f58c68c83e74))
+* **article:** turn injury articles into a longread ([ec960a5](https://github.com/aimuzov-projects/sorebody/commit/ec960a5863575ac09e185ab9b4a94e5dc4b88bef))
+* **article:** turn the ACL article into a longread pilot ([dfd686a](https://github.com/aimuzov-projects/sorebody/commit/dfd686a2055061815d9ff0b7e881f20ad005b174))
+
+
+### Bug Fixes
+
+* **article:** close the self-check with the article link ([5c85a64](https://github.com/aimuzov-projects/sorebody/commit/5c85a6476487995f14e0137a7b70f6e59cea2778))
+* **article:** go back to the article from the self-check ([2081b97](https://github.com/aimuzov-projects/sorebody/commit/2081b97cf6cbb82b84c1723915d984f7a9cb6cc3))
+* **article:** hide the focus ring after a mouse-opened 3D model closes ([5c19bf3](https://github.com/aimuzov-projects/sorebody/commit/5c19bf34949581442810328ac74e04719916794e))
+* **article:** keep every 3D model still ([1f48b1b](https://github.com/aimuzov-projects/sorebody/commit/1f48b1beec55157b6de7157c94122e92acd9a125))
+* **article:** keep the big number width while it counts up ([85dd988](https://github.com/aimuzov-projects/sorebody/commit/85dd988b246d9011eb9f681b79d149506c31ed77))
+* **article:** keep the scapula under the latissimus when the arm rises ([9310d8b](https://github.com/aimuzov-projects/sorebody/commit/9310d8b535f790c65032a90f92fc1578e2dd3e88))
+* **article:** keep the shoulder girdle model still and the teeth inside the jaw ([2ba974c](https://github.com/aimuzov-projects/sorebody/commit/2ba974ca1bbc8b66808381d850510d3a72be8f1d))
+* **article:** keep the thigh still when the knee bends ([8fbe364](https://github.com/aimuzov-projects/sorebody/commit/8fbe364b849f4aa76531c9335a8cba9df8341b22))
+* **dev:** prebundle three so 3D models load on the dev server ([cf9a134](https://github.com/aimuzov-projects/sorebody/commit/cf9a134afb90be1f0044413fd62b2c1237d1d49e))
+
 ## [1.16.2](https://github.com/aimuzov-projects/sorebody/compare/v1.16.1...v1.16.2) (2026-10-20)
 
 

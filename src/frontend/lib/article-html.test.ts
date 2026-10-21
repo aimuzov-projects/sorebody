@@ -222,3 +222,115 @@ test('highlights a percent range as a whole', () => {
 	assert.match(html, /мужчин <strong class="stat">5 – 7 %<\/strong>;/)
 	assert.match(html, /ещё <strong class="stat">75%–93%<\/strong>\./)
 })
+
+test('urgent signs become rows with an icon, a call for an ambulance stands out', () => {
+	const { html } = enhance({
+		urgent: '<ul><li>Не наступить на ногу</li><li>Стопа холодная — сразу скорая (103/112)</li></ul>',
+	})
+
+	assert.match(
+		html,
+		/<li class="alarm"><span class="alarm__icon" aria-hidden="true"><svg[^]*?<span class="alarm__text">Не наступить/,
+	)
+
+	assert.match(html, /<li class="alarm alarm--call">/)
+})
+
+test('first steps become a numbered list of steps, nested lists stay plain', () => {
+	const { html } = enhance({
+		'first-steps': '<ol><li><strong>Стоп.</strong> Закончить<ul><li>вложенный</li></ul></li></ol>',
+	})
+
+	assert.match(html, /<ol class="steps"><li class="step"><strong>Стоп\.<\/strong>/)
+	assert.match(html, /<ul><li>вложенный<\/li><\/ul>/)
+})
+
+test('an abbreviation gets a tip on its first mention in each section only', () => {
+	const { html } = enhance({
+		what: '<p>МРТ и снова МРТ, а <a href="/x/">МРТ</a> в ссылке</p>',
+		diagnosis: '<p>МРТ</p>',
+	})
+	const what = html.slice(html.indexOf('id="what"'), html.indexOf('id="symptoms"'))
+
+	assert.equal(what.match(/class="abbr"/g)?.length, 1)
+
+	assert.match(
+		what,
+		/<button class="abbr" type="button" aria-expanded="false" aria-controls="abbr-what-1" data-tip-for="abbr-what-1">МРТ<\/button><span class="tip" id="abbr-what-1" popover="auto">Магнитно-резонансная томография<\/span>/,
+	)
+
+	assert.match(html, /data-tip-for="abbr-diagnosis-1"/)
+})
+
+test('an abbreviation inside a longer word is left alone', () => {
+	const { html } = enhance({ what: '<p>МРТ-исследование и ДИАГНОЗ</p>' })
+
+	assert.match(html, /МРТ<\/button>/)
+	assert.doesNotMatch(html, /ДИ<\/button>/)
+})
+
+test('ambulance numbers become tel links, a study size does not', () => {
+	const { html } = enhance({ urgent: '<ul><li>Сразу скорая (103 или 112), а не 103 тяжёлых случая</li></ul>' })
+
+	assert.match(
+		html,
+		/<span class="calls"><span class="calls__icon" aria-hidden="true"><svg[^]*?<\/span>\(<a class="calls__number" href="tel:103" aria-label="Позвонить 103">103<\/a> или <a class="calls__number" href="tel:112"/,
+	)
+
+	assert.match(html, /а не 103 тяжёлых/)
+})
+
+test('a cite hint names the kind of work behind it', () => {
+	const guideline = { url: 'https://cr.minzdrav.gov.ru/view-cr/691_2', label: 'Минздрав 2024' }
+	const { html } = enhanceArticle(
+		[{ kind: 'injury', html: `<h2>Что это</h2><p>Текст (<a href="${guideline.url}">1</a>).</p>` }],
+		{ sources: [guideline] },
+	)
+
+	assert.match(html, /data-hint="Минздрав 2024 · клиническая рекомендация"/)
+})
+
+test('a cite hint does not repeat the kind of work its label already names', () => {
+	const guideline = {
+		url: 'https://cr.minzdrav.gov.ru/view-cr/691_2',
+		label: 'Минздрав 2024, клинические рекомендации',
+	}
+	const { html } = enhanceArticle(
+		[{ kind: 'injury', html: `<h2>Что это</h2><p>Текст (<a href="${guideline.url}">1</a>).</p>` }],
+		{ sources: [guideline] },
+	)
+
+	assert.match(html, /data-hint="Минздрав 2024, клинические рекомендации"/)
+})
+
+test('a medical term gets a tip in any form, once per section', () => {
+	const { html } = enhance({ what: '<p>Квадрицепса мало, квадрицепс слабый, остеоартроз и артроз</p>' })
+
+	assert.match(
+		html,
+		/<button class="abbr"[^>]*>Квадрицепса<\/button><span class="tip"[^>]*>Квадрицепс: четырёхглавая/,
+	)
+
+	assert.doesNotMatch(html, /квадрицепс<\/button>/)
+	assert.match(html, /остеоартроз<\/button>/)
+	assert.match(html, />артроз<\/button>/)
+})
+
+test('urgent care links to the self-check page when there is one', () => {
+	const html = (checkHref?: string) =>
+		enhanceArticle(parts(), { sources, sport: crossfit, ...(checkHref ? { checkHref } : {}) }).html
+
+	assert.match(
+		html('/injuries/acl-tear/check/'),
+		/<div class="check-callout">[^]*<a class="check-callout__button" href="\/injuries\/acl-tear\/check\/">/,
+	)
+
+	assert.doesNotMatch(html(), /check-callout/)
+})
+
+test('punctuation right after an explained word stays on its line', () => {
+	const { html } = enhance({ what: '<p>Включить квадрицепс. И снова МРТ, потом</p>' })
+
+	assert.match(html, /<span class="abbr-glue"><button class="abbr"[^>]*>квадрицепс<\/button>\.<\/span>/)
+	assert.match(html, /<span class="abbr-glue"><button class="abbr"[^>]*>МРТ<\/button>,<\/span>/)
+})

@@ -38,10 +38,11 @@ export function brandGradient(theme: Theme): string {
 
 /**
  * Тот же градиент без повтора: слева направо от первого цвета к последнему. Для того, что не
- * плывёт, -- кнопки меню и полосы прогресса: с повтором справа снова проступал синий.
+ * плывёт, -- кнопки меню и полосы прогресса: с повтором справа снова проступал синий. С углом 180 --
+ * сверху вниз, для вертикальной линии шкалы восстановления в статье.
  */
-export function brandLine(theme: Theme): string {
-	return `linear-gradient(90deg, ${brandStops(theme).join(', ')})`
+export function brandLine(theme: Theme, angle = 90): string {
+	return `linear-gradient(${angle}deg, ${brandStops(theme).join(', ')})`
 }
 
 /**
@@ -57,6 +58,11 @@ export function brandTint(theme: Theme): string {
 	return `linear-gradient(90deg, ${[...stops, stops[0]].join(', ')})`
 }
 
+/*
+ * Сплошной цвет бренда -- первая точка градиента. Для того, что градиентом не покрасить:
+ * рамок, шевронов из рамок и линий SVG на страницах без спорта (styles/article.css).
+ */
+
 /**
  * CSS для `<head>`: градиенты и заливки обеих тем и цвета остановок SVG-градиентов знака
  * и значков. Остановке цвет темы даёт `light-dark()` от `color-scheme` темы, перед ним --
@@ -65,6 +71,8 @@ export function brandTint(theme: Theme): string {
 export const BRAND_GRADIENT_CSS = [
 	`:root{--brand-gradient-light:${brandGradient('light')};--brand-gradient-dark:${brandGradient('dark')};` +
 		`--brand-line-light:${brandLine('light')};--brand-line-dark:${brandLine('dark')};` +
+		`--brand-column-light:${brandLine('light', 180)};--brand-column-dark:${brandLine('dark', 180)};` +
+		`--brand-solid-light:${brandStops('light')[0]};--brand-solid-dark:${brandStops('dark')[0]};` +
 		`--brand-tint-light:${brandTint('light')};--brand-tint-dark:${brandTint('dark')}}`,
 	...brandAccents().map(
 		({ light, dark }, i) => `.brand-stop-${i}{stop-color:${light};stop-color:light-dark(${light},${dark})}`,

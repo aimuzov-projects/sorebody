@@ -1,12 +1,13 @@
 ---
-import { BookOpen, ExternalLink, Sparkles } from 'lucide-static'
+import { BookOpen, ExternalLink, Rotate3d, Sparkles } from 'lucide-static'
 
 import { IMAGE_HEIGHT, IMAGE_SIZES, IMAGE_WIDTH, imageSrcset } from '#frontend/lib/article-image.ts'
 import { atlasSrc, atlasUrl, type Atlas } from '#frontend/lib/atlas.ts'
 import { splitCaption } from '#frontend/lib/caption.ts'
+import { rigUrl } from '#frontend/scene/model-url.ts'
 
 type Props = {
-	image: { src: string; alt: string; caption: string; atlas?: Atlas }
+	image: { src: string; alt: string; caption: string; atlas?: Atlas; model?: { name: string } }
 	/** Префикс id подсказок: на странице несколько иллюстраций. */
 	id: string
 }
@@ -18,17 +19,26 @@ const caption = splitCaption(image.caption)
 <figure class="article__figure">
 	{/* Размеры заранее держат место под картинку, и текст не прыгает при загрузке. Телефон
 	    берёт копию по своей ширине из srcset. Первая стоит в шапке статьи, её грузим сразу */}
-	<img
-		class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
-		src={image.src}
-		srcset={imageSrcset(image.src)}
-		sizes={IMAGE_SIZES}
-		alt={image.alt}
-		width={IMAGE_WIDTH}
-		height={IMAGE_HEIGHT}
-		loading={id === 'figure-0' ? 'eager' : 'lazy'}
-		decoding="async"
-	/>
+	<div class="article__media">
+		<img
+			class:list={['article__image', image.src.endsWith('.webp') && 'article__image--cutout']}
+			src={image.src}
+			srcset={imageSrcset(image.src)}
+			sizes={IMAGE_SIZES}
+			alt={image.alt}
+			width={IMAGE_WIDTH}
+			height={IMAGE_HEIGHT}
+			loading={id === 'figure-0' ? 'eager' : 'lazy'}
+			decoding="async"
+		/>
+		{/* Кнопку показывает lib/figure-3d.ts, если браузер умеет WebGL; модель грузится только по ней */}
+		{image.model && (
+			<button class="article__model-open" type="button" hidden data-figure-3d={rigUrl(image.model.name)}>
+				<span class="article__model-icon" aria-hidden="true" set:html={Rotate3d} />
+				Покрутить в 3D
+			</button>
+		)}
+	</div>
 	{/* Подпись: заголовок рисунка и текст, под ними строкой чипы "атлас" и "от нейросети" */}
 	<figcaption class="article__caption">
 		{caption.title && <strong class="article__caption-title">{caption.title}:</strong>} {caption.text}

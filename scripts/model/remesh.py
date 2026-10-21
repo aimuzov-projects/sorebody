@@ -3,7 +3,7 @@
 # и замкнутая, дальше её как обычно упрощает build.mjs.
 # usage: blender -b --factory-startup --python remesh.py -- <obj dir> <out dir> <voxel мм> <проходы сглаживания>
 #   <раздуть мм> <config.json> [...]
-# Берёт файлы BP3D из групп muscles всех конфигов, готовые в out не пересчитывает. Если оболочка потеряла
+# Берёт файлы BP3D из групп muscles и групп с `parts` всех конфигов, готовые в out не пересчитывает. Если оболочка потеряла
 # заметную часть площади (тонкий лист распался на вокселях), в out кладётся исходный файл.
 import bpy, bmesh, sys, os, json, shutil
 
@@ -12,7 +12,7 @@ src, out, voxel, SMOOTH, GROW, configs = a[0], a[1], float(a[2]), int(a[3]), flo
 # Доля площади, ниже которой считаем, что воксели съели лист
 MIN_AREA = 0.9
 
-files = sorted({f for c in configs for g in json.load(open(c))['groups'] if g['name'] == 'muscles'
+files = sorted({f for c in configs for g in json.load(open(c))['groups'] if g['name'] == 'muscles' or g.get('parts')
                 for f in g['files'] if os.path.exists(f'{src}/{f}.obj') and not os.path.exists(f'{out}/{f}.obj')})
 os.makedirs(out, exist_ok=True)
 

@@ -31,12 +31,35 @@ export const MUSCLE_RIM: Rim = { front: '#6b1d1d', back: '#6b1d1d' }
 export const BONE_RIM: Rim = { front: '#d8c9ae', back: '#bfae90' }
 
 /**
+ * Свой GLSL поверх материала: объявления, правка нормали и позиции вершины, правка цвета.
+ * `key` отличает программу от обычного материала, иначе three.js взял бы из кэша чужую.
+ */
+export type ShaderExtra = {
+	key: string
+	uniforms: Record<string, { value: unknown }>
+	vertexCommon?: string
+	/** После `beginnormal_vertex`: можно менять `objectNormal`. */
+	normal?: string
+	/** В конце `begin_vertex`: можно менять `transformed`, у мышц и `vFiber`. */
+	position?: string
+	fragmentCommon?: string
+	/** В конце `color_fragment`, после волокон: можно менять `diffuseColor`. */
+	color?: string
+}
+
+/**
  * Матовый "фарфор" с растворением в сфере: фрагменты ближе `uRadius` к `uCenter` отбрасываются,
  * граница рвётся 3D-шумом и подсвечивается тёплой кромкой. Внутренняя сторона оболочки темнее,
  * чтобы срез читался как толща ткани, а не как дыра. `muscle` -- мышечный слой: волокна вдоль
  * главной оси каждой мышцы (атрибут `_fiber`) и подсветка мышц по номерам (`_part`), см. build.mjs.
  */
-export function createDissolveMaterial(color: string, rim: string | Rim, roughness = 0.92, muscle = false) {
+export function createDissolveMaterial(
+	color: string,
+	rim: string | Rim,
+	roughness = 0.92,
+	muscle = false,
+	extra?: ShaderExtra,
+) {
 	const edge = typeof rim === 'string' ? { front: rim, back: rim } : rim
 
 	const uniforms = {
@@ -82,8 +105,10 @@ export function createDissolveMaterial(color: string, rim: string | Rim, roughne
 
 	if (muscle) material.defines = { MUSCLE: '' }
 
+	if (extra) material.customProgramCacheKey = () => extra.key
+
 	material.onBeforeCompile = (shader) => {
-		Object.assign(shader.uniforms, uniforms)
+		Object.assign(shader.uniforms, uniforms, extra?.uniforms)
 
 		shader.vertexShader = shader.vertexShader
 			.replace(
@@ -96,8 +121,10 @@ attribute float _part;
 attribute vec3 _fiber;
 varying float vPart;
 varying vec3 vFiber;
-#endif`,
+#endif
+${extra?.vertexCommon ?? ''}`,
 			)
+			.replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>\n${extra?.normal ?? ''}`)
 			.replace(
 				'#include <begin_vertex>',
 				`#include <begin_vertex>
@@ -105,7 +132,8 @@ transformed -= objectNormal * uInset;
 #ifdef MUSCLE
 vPart = _part;
 vFiber = _fiber;
-#endif`,
+#endif
+${extra?.position ?? ''}`,
 			)
 			.replace(
 				'#include <project_vertex>',
@@ -144,6 +172,7 @@ varying vec3 vDissolvePos;
 varying float vPart;
 varying vec3 vFiber;
 #endif
+${extra?.fragmentCommon ?? ''}
 ${NOISE}`,
 			)
 			.replace(
@@ -205,7 +234,8 @@ if (uHighlight > 0.0) {
 	float pale = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)) * 1.2 + 0.12;
 	diffuseColor.rgb = mix(diffuseColor.rgb, vec3(pale), uHighlight * (1.0 - hit));
 }
-#endif`,
+#endif
+${extra?.color ?? ''}`,
 			)
 			.replace(
 				'#include <emissivemap_fragment>',

@@ -63,6 +63,9 @@ export const injurySchema = z.strictObject({
 			alt: z.string().min(10),
 			caption: z.string().min(10),
 			atlas: z.strictObject({ file: z.string().regex(ATLAS_FILE), caption: z.string().min(10) }).optional(),
+			// 3D-модель той же области: в углу иллюстрации кнопка, по ней фото сменяет модель
+			// (public/model/rig/<name>.glb, scripts/model/rig.py)
+			model: z.strictObject({ name: z.literal('shoulder-right') }).optional(),
 		}),
 	),
 	charts: chartsSchema,

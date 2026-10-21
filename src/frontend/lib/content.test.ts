@@ -111,8 +111,16 @@ function checkDoc(name: string, { data, body, headings }: Doc, template: typeof 
 	// Ключ источника -- ссылка: каноническая на PubMed или ссылка рекомендации
 	const keys: string[] = (data.sources ?? []).map(sourceHref)
 
+	// Сноски блоков -- номера по sources файла, как [N] в тексте
+	const blockCites: number[] = [
+		...(data.timelines ?? []).flatMap((t: { phases: { cite?: number[] }[] }) =>
+			t.phases.flatMap((p) => p.cite ?? []),
+		),
+		...[...(data.compares ?? []), ...(data.stats ?? [])].flatMap((b: { cite?: number[] }) => b.cite ?? []),
+	]
+
 	test(`${name}: every cited source is listed in sources and every source is cited`, () => {
-		const cited = new Set(footnotes(body).map((f) => f.key))
+		const cited = new Set([...footnotes(body).map((f) => f.key), ...blockCites.map((n) => keys[n - 1] ?? `#${n}`)])
 		const listed = new Set(keys)
 
 		assert.deepEqual(
@@ -134,11 +142,21 @@ function checkDoc(name: string, { data, body, headings }: Doc, template: typeof 
 			assert.equal(text, String(keys.indexOf(key) + 1), `${key}: номер не совпадает с позицией в sources`)
 	})
 
-	test(`${name}: every chart marker has data and every chart is placed`, () => {
-		const placed = [...body.matchAll(/<div data-chart="([^"]+)"><\/div>/g)].map((m) => m[1])
-		const defined = (data.charts ?? []).map((c: { id: string }) => c.id)
+	test(`${name}: every block marker has data and every block is placed`, () => {
+		const fields = {
+			chart: 'charts',
+			timeline: 'timelines',
+			compare: 'compares',
+			stat: 'stats',
+			diagram: 'diagrams',
+		}
 
-		assert.deepEqual([...placed].sort(), [...defined].sort())
+		for (const [kind, field] of Object.entries(fields)) {
+			const placed = [...body.matchAll(new RegExp(`<div data-${kind}="([^"]+)"></div>`, 'g'))].map((m) => m[1])
+			const defined = (data[field] ?? []).map((c: { id: string }) => c.id)
+
+			assert.deepEqual([...placed].sort(), [...defined].sort(), field)
+		}
 	})
 }
 
@@ -157,6 +175,11 @@ for (const doc of injuries) {
 		const result = injurySchema.safeParse(data)
 
 		assert.ok(result.success, JSON.stringify(result.error?.issues))
+	})
+
+	// "Проверено врачом" на черновике -- неправда в шапке статьи
+	test(`${slug}: a reviewed article is not a draft`, () => {
+		if (data.review) assert.equal(data.draft, false)
 	})
 
 	checkDoc(slug, doc, INJURY_HEADINGS)
@@ -232,6 +255,10 @@ for (const doc of injuries) {
 		const captions = [
 			...data.images.flatMap((i: { alt: string; caption: string }) => [i.alt, i.caption]),
 			...(data.charts ?? []).flatMap((c: { title: string; caption: string }) => [c.title, c.caption]),
+			// Тексты блоков -- тоже текст статьи; сериализуем целиком, ключи слов спорта не содержат
+			...['timelines', 'compares', 'stats', 'brief', 'takeaways', 'diagrams', 'selfCheck'].map((field) =>
+				JSON.stringify(data[field] ?? []),
+			),
 		]
 
 		assert.deepEqual(sportWordsIn([prose, ...captions].join('\n')), [])

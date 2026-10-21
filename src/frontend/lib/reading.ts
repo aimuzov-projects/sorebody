@@ -53,8 +53,13 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 		const top = scroller instanceof Window ? 0 : scroller.getBoundingClientRect().top
 		const line = top + box.clientHeight * 0.3
 		const active = sections.findLast((s) => s.getBoundingClientRect().top <= line)
+		// Шапка статьи (пункт "Начало") -- не раздел: пока читатель в ней, ни один пункт не текущий,
+		// а сам пункт "Начало" прячет CSS по data-at-start
+		const atStart = active?.id === 'start'
 
-		for (const link of links) link.toggleAttribute('aria-current', link.hash === `#${active?.id}`)
+		root.toggleAttribute('data-at-start', atStart)
+
+		for (const link of links) link.toggleAttribute('aria-current', !atStart && link.hash === `#${active?.id}`)
 	}
 	const onScroll = () => {
 		frame ||= requestAnimationFrame(update)

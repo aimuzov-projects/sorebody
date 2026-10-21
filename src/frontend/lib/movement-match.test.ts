@@ -39,3 +39,18 @@ test('reads through non-breaking spaces left by the typograph', () => {
 test('returns undefined when nothing matches', () => {
 	assert.equal(movementIn('возвращения к прежним весам и объёмам'), undefined)
 })
+
+test('padel: a sprint is a dash to the ball, not a barbell lift', () => {
+	assert.equal(movementIn('рывков за каждым мячом', 'padel'), 'sprint-to-ball')
+	assert.equal(movementIn('смэша в прыжке', 'padel'), 'smash')
+	assert.equal(movementIn('мощного удара слева с доработкой кистью', 'padel'), 'backhand')
+	assert.equal(movementIn('глубоких выпадов к низкому мячу', 'padel'), 'lunge')
+})
+
+test('football: shuttle runs are a change of direction, plain running stays running', () => {
+	assert.equal(movementIn('рывков, финтов и челночного бега', 'football'), 'sprint')
+	assert.equal(movementIn('челночного бега', 'football'), 'change-of-direction')
+	assert.equal(movementIn('бег по прямой в ровном темпе', 'football'), 'running')
+	assert.equal(movementIn('борьбы за верховые мячи в прыжке', 'football'), 'tackle')
+	assert.equal(movementIn('вратарской тренировки с прыжками', 'football'), 'goalkeeping')
+})

@@ -185,7 +185,7 @@ export function initArticleTips(root: Element, scroller: HTMLElement | Window) {
 
 		return [
 			attachTip(button, tip, {
-				column: button.closest('h1, figcaption') ?? button,
+				column: button.closest('h1, figcaption, .article__body') ?? button,
 				bar,
 				scroller,
 				pinOnClick: true,

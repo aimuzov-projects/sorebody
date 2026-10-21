@@ -13,6 +13,8 @@
 	import { sportHome, sportOf, sportSwitchProps, type SportSlug } from '#frontend/data/sports.ts'
 	import { loadArticle } from '#frontend/lib/article-loader.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
+	import { initCountUp } from '#frontend/lib/count-up.ts'
+	import { initPrintMemo } from '#frontend/lib/print-memo.ts'
 	import { initReading } from '#frontend/lib/reading.ts'
 	import { currentSection } from '#frontend/lib/sport-switch.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
@@ -152,7 +154,9 @@
 			shown = slug
 			mountSwitches(root)
 			reader.scrollTo(0, 0)
-			stopReading = initReading(root, reader, progressBar ?? null)
+			const stops = [initReading(root, reader, progressBar ?? null), initPrintMemo(root), initCountUp(root)]
+
+			stopReading = () => stops.forEach((stop) => stop())
 			status = 'ready'
 			reloading = false
 			await tick()

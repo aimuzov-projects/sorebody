@@ -85,6 +85,8 @@
 	--on-accent: var(--on-accent-light);
 	--brand-gradient: var(--brand-gradient-light);
 	--brand-line: var(--brand-line-light);
+	--brand-column: var(--brand-column-light);
+	--brand-solid: var(--brand-solid-light);
 	--brand-tint: var(--brand-tint-light);
 	--surface: #f5f5f7;
 	--danger: #c4271b;
@@ -155,6 +157,8 @@
 		--on-accent: var(--on-accent-dark);
 		--brand-gradient: var(--brand-gradient-dark);
 		--brand-line: var(--brand-line-dark);
+		--brand-column: var(--brand-column-dark);
+		--brand-solid: var(--brand-solid-dark);
 		--brand-tint: var(--brand-tint-dark);
 		--surface: rgb(255 255 255 / 10%);
 		--danger: #ff453a;
@@ -175,6 +179,8 @@
 	--on-accent: var(--on-accent-dark);
 	--brand-gradient: var(--brand-gradient-dark);
 	--brand-line: var(--brand-line-dark);
+	--brand-column: var(--brand-column-dark);
+	--brand-solid: var(--brand-solid-dark);
 	--brand-tint: var(--brand-tint-dark);
 	--surface: rgb(255 255 255 / 10%);
 	--danger: #ff453a;
@@ -250,7 +256,13 @@ select {
    у ссылки под курсором, остальные не перерисовываются */
 @supports (background-clip: text) or (-webkit-background-clip: text) {
 	:root:not([data-sport], [data-telegram])
-		:is(.article-section a, .cite__link, .tip__plate-link, .article__source-link, .article__sport-link) {
+		:is(
+			.article-section a:not(.check-callout__button),
+			.cite__link,
+			.tip__plate-link,
+			.article__source-link,
+			.article__sport-link
+		) {
 		color: transparent;
 		text-decoration-color: color-mix(in srgb, var(--fg) 35%, transparent);
 		background-image: var(--brand-gradient);
@@ -327,6 +339,12 @@ select {
 	:is(
 		.article-section:not(.article-section--urgent) .article-section__icon,
 		.article__chip-icon,
+		.takeaways__title-icon,
+		.takeaways__icon,
+		.diagram__caption-icon,
+		.article__fact:not(.article__fact--alert) .article__fact-icon,
+		.article__pill--review .article__pill-icon,
+		.check-page__article-icon,
 		.article__source-icon,
 		.tip__plate-icon,
 		.article-bar__back

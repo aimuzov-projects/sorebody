@@ -44,9 +44,15 @@ export function initFigure3d(root: Element) {
 		metrikaGoal('figure-3d')
 
 		const { default: Figure3d } = await import('#frontend/components/figure-3d.svelte')
+		// Иллюстрация, у которой нажали кнопку: если модель не загрузится, диалог покажет её
+		const photo = button.parentElement!.querySelector<HTMLImageElement>('img')
 		const component = mount(Figure3d, {
 			target: button.parentElement!,
-			props: { model: JSON.parse(button.getAttribute('data-figure-3d')!) as FigureModel, onclose: requestClose },
+			props: {
+				model: JSON.parse(button.getAttribute('data-figure-3d')!) as FigureModel,
+				image: photo ? { src: photo.currentSrc || photo.src, alt: photo.alt } : undefined,
+				onclose: requestClose,
+			},
 		})
 
 		history.pushState({ ...history.state, figure3d: true }, '')

@@ -36,6 +36,12 @@
 	--rhythm-section: 38px;
 	--rhythm-heading: 26px;
 	--rhythm-block: 0.7em;
+	/* Колонка маркера: у всех списков статьи слева одна и та же колонка под точку, значок,
+	   номер шага или точку шкалы, за ней зазор, и текст пунктов начинается с одного отступа.
+	   С того же отступа и текст заголовков разделов: их значок стоит в той же колонке */
+	--marker: 28px;
+	--marker-gap: 12px;
+	--indent: calc(var(--marker) + var(--marker-gap));
 
 	width: 100%;
 	max-width: calc(var(--article-column) + 260px + 64px + 48px);
@@ -50,7 +56,42 @@
 		padding: 28px 20px 72px;
 	}
 
+	/* Оглавление -- с самого верха страницы, а не с первого раздела: на широком экране сетка
+	   из двух колонок у всей статьи, а не только у текста. Обёртка оглавления и текста
+	   (.article__layout) растворяется в этой сетке, оглавление занимает левую колонку во всю
+	   высоту, справа по порядку шапка, текст и конец статьи. Липнет к шапке сайта, как раньше */
+	@media (width >= 1100px) {
+		&:has(> .article__layout) {
+			display: grid;
+			grid-template-columns: 260px minmax(0, var(--article-column));
+			grid-template-rows: auto auto auto;
+			column-gap: 64px;
+			align-items: start;
+
+			& > * {
+				grid-column: 2;
+			}
+
+			& > .article__layout {
+				display: contents;
+			}
+
+			& > :is(.article__hero, .article__end) {
+				max-width: none;
+				margin-inline: 0;
+			}
+
+			& .article__toc {
+				grid-column: 1;
+				grid-row: 1 / -1;
+			}
+		}
+	}
+
 	&__hero {
+		/* Пункт "Начало" в оглавлении ведёт сюда: отступ больше любой высоты над шапкой, поэтому
+		   браузер докручивает до самого верха страницы, а не до края шапки */
+		scroll-margin-top: 100vh;
 		display: grid;
 		gap: 20px;
 		max-width: var(--article-column);
@@ -333,21 +374,12 @@
 		letter-spacing: -0.015em;
 	}
 
-	/* Пометка "справка, а не диагноз" -- единственная плашка в статье: тёплый тинт и полоса слева
-	   в цвет раздела "Когда сразу к врачу", куда ведёт ссылка. Текст -- обычного размера и цвета,
-	   а тинт слабее красноватого пятна самого раздела: плашку видно, но она не кричит громче */
+	/* Пометка "справка, а не диагноз" -- плашка цвета раздела "Когда сразу к врачу", куда ведёт
+	   ссылка. Вид -- общий с подписью схемы, правила ниже у .article__disclaimer, .diagram__caption */
 	&__disclaimer {
-		display: flex;
-		gap: 12px;
-		align-items: flex-start;
+		--note: var(--danger);
+
 		margin: 4px 0 0;
-		padding: 14px 18px 14px 16px;
-		border-left: 3px solid color-mix(in srgb, var(--danger) 75%, transparent);
-		border-radius: 4px 14px 14px 4px;
-		font-size: 16px;
-		line-height: 1.5;
-		color: var(--fg);
-		background: color-mix(in srgb, var(--danger) 7%, transparent);
 	}
 
 	&__disclaimer-lead {
@@ -373,15 +405,6 @@
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
 		}
-	}
-
-	&__disclaimer-icon {
-		display: inline-flex;
-		flex: none;
-		width: 20px;
-		height: 20px;
-		margin-top: 2px;
-		color: var(--danger);
 	}
 
 	/* Иллюстрация шире колонки на десктопе, края растворяются в фон маской, а не обрезаются */
@@ -415,7 +438,8 @@
 		font-size: 14px;
 		font-weight: 600;
 		color: var(--bg);
-		background: var(--accent);
+		/* Заливка как у кнопки меню разделов: на страницах без спорта -- градиент бренда, а не графит */
+		background: var(--accent-fill);
 		box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 28%, transparent);
 		transition:
 			translate 0.3s var(--article-ease),
@@ -590,6 +614,21 @@
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
 		}
+
+		/* "Начало" нужно, только когда шапка статьи позади: пока читатель в ней (data-at-start ставит
+		   lib/reading.ts), пункт спрятан, но место держит, и список не прыгает. Прячется сразу, без
+		   перехода -- полупрозрачный текст в момент проверки контраста не годится, -- проявляется плавно */
+		&[href='#start'] {
+			transition:
+				color 0.35s var(--article-ease),
+				opacity 0.35s var(--article-ease);
+
+			[data-at-start] & {
+				visibility: hidden;
+				opacity: 0;
+				transition: none;
+			}
+		}
 	}
 
 	&__toc-icon,
@@ -711,20 +750,33 @@
 		display: block;
 	}
 
-	/* Раскрыть список -- действие, а не переход: ссылка цвета акцента, а не чипс, как у движений.
-	   Без шеврона: он у селекта "Разбор в ...", и кнопку путали бы с ним */
+	/* Раскрыть список -- как раскрывашка в тексте статьи (summary): жирная строка цвета акцента
+	   с шевроном вправо. С селектом "Разбор в ..." не путается: у того шеврон вниз */
 	&__sources-more {
 		cursor: pointer;
 		position: relative;
+		display: flex;
+		gap: 8px;
+		align-items: baseline;
 		margin-top: 4px;
 		padding: 0;
 		border: 0;
 		border-radius: 4px;
 		font: inherit;
-		font-size: 15px;
-		font-weight: 500;
+		font-size: 16px;
+		font-weight: 650;
 		color: var(--accent);
 		background: none;
+
+		&::before {
+			content: '';
+			transform: translateY(-0.12em) rotate(-45deg);
+			flex: none;
+			width: 0.45em;
+			height: 0.45em;
+			border-right: 2px solid currentcolor;
+			border-bottom: 2px solid currentcolor;
+		}
 
 		&:focus-visible {
 			outline: 2px solid var(--accent);
@@ -805,7 +857,7 @@
 
 	&__title {
 		display: flex;
-		gap: 14px;
+		gap: var(--marker-gap);
 		align-items: center;
 		margin: 0 0 var(--rhythm-heading);
 		font-size: clamp(24px, 2.4vw, 28px);
@@ -817,8 +869,8 @@
 	&__icon {
 		display: inline-flex;
 		flex: none;
-		width: 28px;
-		height: 28px;
+		width: var(--marker);
+		height: var(--marker);
 		color: var(--accent);
 	}
 
@@ -855,11 +907,26 @@
 		display: grid;
 		gap: calc(var(--rhythm-block) * 0.65);
 		margin: 0 0 var(--rhythm-block);
-		padding-left: 1.25em;
+		padding-left: 0;
+		list-style: none;
 	}
 
-	& li::marker {
-		color: var(--muted);
+	/* Пункт из Markdown -- без класса: у пунктов со значком, шагов и пар своя разметка. Точка
+	   своя, а не маркер браузера: тот не встаёт по центру колонки и уезжал от значков */
+	& li:not([class]) {
+		position: relative;
+		padding-left: var(--indent);
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0.68em;
+			left: calc(var(--marker) / 2 - 3px);
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: color-mix(in srgb, var(--muted) 70%, transparent);
+		}
 	}
 
 	/* Тонкое подчёркивание, как у ссылок на источники: в тёмной теме одного цвета мало,
@@ -937,7 +1004,6 @@
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 	gap: 16px;
 	align-items: start;
-	margin-left: -1.25em;
 	list-style: none;
 
 	@media (width < 600px) {
@@ -1283,3 +1349,1651 @@
 		rotate: y 40deg;
 	}
 }
+
+/* ---------- Блоки лонгрида: "Коротко", тревожные признаки, шаги, шкала, развилка, цифра ----------
+   Тот же язык, что у статьи: без рамок и карточек. Блок отделяет от текста воздух и мягкое
+   пятно цвета, гаснущее к краям, а иерархию держат размер и вес шрифта */
+
+/* Время чтения -- тише остальных меток: факт о статье, а не о травме */
+.article__pill--quiet {
+	color: var(--muted);
+	background: transparent;
+
+	& .article__pill-icon {
+		width: 14px;
+		height: 14px;
+		color: currentcolor;
+	}
+
+	/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+	& .article__pill-icon svg {
+		fill: none;
+	}
+}
+
+/* Факты под "Коротко": значок, подпись мелко, сам факт -- текстом. На широком экране в две колонки */
+.article__brief {
+	display: grid;
+	gap: 14px 28px;
+	margin: 6px 0 0;
+	padding: 0;
+	list-style: none;
+
+	@media (--sm) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.article__fact {
+	display: grid;
+	grid-template-columns: var(--marker) minmax(0, 1fr);
+	gap: 2px var(--marker-gap);
+	align-content: start;
+	align-items: start;
+	font-size: 16.5px;
+	line-height: 1.4;
+}
+
+.article__fact-icon {
+	display: inline-flex;
+	grid-row: span 2;
+	justify-self: center;
+	width: 22px;
+	height: 22px;
+	margin-top: 2px;
+	color: var(--accent);
+
+	.article__fact--alert & {
+		color: var(--danger);
+	}
+}
+
+.article__fact-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--muted);
+	letter-spacing: 0.02em;
+}
+
+/* Тревожные признаки -- строками со значком вместо маркеров списка */
+.alarm {
+	display: grid;
+	grid-template-columns: var(--marker) minmax(0, 1fr);
+	gap: var(--marker-gap);
+	align-items: start;
+	list-style: none;
+
+	&__icon {
+		display: inline-flex;
+		justify-self: center;
+		width: 22px;
+		height: 22px;
+		margin-top: 0.2em;
+		color: var(--danger);
+	}
+
+	/* Повод для скорой -- главный пункт раздела: крупнее, жирнее и на своём красном пятне */
+	&--call {
+		isolation: isolate;
+		position: relative;
+		margin-block: 4px 10px;
+		font-weight: 650;
+
+		&::before {
+			pointer-events: none;
+			content: '';
+			position: absolute;
+			z-index: -1;
+			inset: -14px -24px;
+			background: radial-gradient(
+				closest-side,
+				color-mix(in srgb, var(--danger) 16%, transparent),
+				color-mix(in srgb, var(--danger) 7%, transparent) 65%,
+				transparent
+			);
+		}
+	}
+
+	&--call &__icon {
+		width: 26px;
+		height: 26px;
+		margin-top: 0;
+	}
+}
+
+/* "Первые шаги" -- по порядку, как шкала восстановления: номер в круге на всю колонку маркера,
+   круги связаны линией, жирное начало пункта -- заголовок шага */
+.steps {
+	--step-size: var(--marker);
+
+	counter-reset: step;
+	gap: calc(var(--rhythm-block) * 1.4);
+	padding-left: 0;
+	list-style: none;
+}
+
+.step {
+	counter-increment: step;
+	position: relative;
+	padding-left: var(--indent);
+
+	&::before {
+		content: counter(step);
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: grid;
+		place-items: center;
+		width: var(--step-size);
+		height: var(--step-size);
+		border-radius: 50%;
+		font-size: 14px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--on-accent);
+		background: var(--accent);
+	}
+
+	/* Линия от круга до следующего: тянется через промежуток между шагами */
+	&:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		top: calc(var(--step-size) + 6px);
+		bottom: calc(var(--rhythm-block) * -1.4 + 6px);
+		left: calc(var(--step-size) / 2 - 1px);
+		width: 2px;
+		border-radius: 2px;
+		background: color-mix(in srgb, var(--accent) 30%, transparent);
+	}
+
+	/* stylelint-disable-next-line selector-max-type -- разметка из Markdown приходит без классов */
+	& > strong:first-child {
+		display: block;
+		margin-bottom: 2px;
+		font-size: 1.05em;
+		font-weight: 700;
+	}
+}
+
+/* Общее у вставных блоков: воздух сверху и снизу больше, чем между абзацами */
+:is(.timeline, .compare, .big-stat) {
+	margin: calc(var(--rhythm-section) * 0.9) 0;
+	padding: 0;
+}
+
+/* Заголовок блока -- подзаголовком, как h3 в разделе: мелкий серый капс прилипал к блоку и терялся */
+.timeline__heading,
+.compare__heading {
+	margin: 0 0 18px;
+	font-size: 1.12em;
+	font-weight: 700;
+	line-height: 1.3;
+	color: var(--fg);
+	letter-spacing: -0.015em;
+}
+
+.timeline__caption,
+.compare__caption {
+	margin-top: 14px;
+	font-size: 14.5px;
+	line-height: 1.45;
+	color: var(--muted);
+}
+
+/* Шкала восстановления: фазы сверху вниз по линии, которая наливается цветом к концу пути */
+.timeline {
+	&__phases {
+		position: relative;
+		display: grid;
+		gap: 22px;
+		margin: 0;
+		padding: 0 0 0 var(--indent);
+		list-style: none;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 8px;
+			bottom: 8px;
+			left: calc(var(--marker) / 2 - 1px);
+			width: 2px;
+			border-radius: 2px;
+			background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 25%, transparent), var(--accent));
+		}
+	}
+
+	&__phase {
+		position: relative;
+
+		/* Точка фазы на линии; последняя -- залитая: цель пути */
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0.45em;
+			left: calc(var(--marker) / 2 - 7px - var(--indent));
+			box-sizing: border-box;
+			width: 14px;
+			height: 14px;
+			border: 2px solid var(--accent);
+			border-radius: 50%;
+			background: var(--bg);
+		}
+
+		&:last-child::before {
+			background: var(--accent);
+		}
+	}
+
+	&__when {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		color: var(--accent);
+	}
+
+	&__title {
+		margin: 2px 0 4px;
+		font-size: 1.05em;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+
+	&__text {
+		margin: 0;
+	}
+}
+
+/* Развилка: варианты рядом, у каждого своё мягкое пятно цвета, на телефоне -- друг под другом */
+/* Развилка: узел с названием сверху, от него линии расходятся к вариантам-карточкам. Линии
+   рисуют псевдоэлементы: ствол от узла, перекладина, ножки к карточкам. На телефоне варианты
+   друг под другом, и линий нет -- там они только путали бы */
+.compare {
+	/* Точки пунктов в карточке ближе к тексту: колонка уже, чем у списков статьи */
+	--marker: 16px;
+	--marker-gap: 8px;
+	/* --indent считается там, где объявлен: в статье -- от её колонки, здесь пересчитываем */
+	--indent: calc(var(--marker) + var(--marker-gap));
+	/* Непрозрачный: в стыке ствола и дуг полупрозрачный цвет ложился сам на себя тёмной точкой */
+	--fork: color-mix(in srgb, var(--fg) 18%, var(--bg));
+
+	/* Линия развилки -- одна, с плавными поворотами: ствол от узла, поворот в сторону, поворот вниз
+	   к карточке. Только у двух вариантов рядом. Каждую сторону рисуют две дуги у своей карточки:
+	   внутренняя от ствола (::after) и внешняя к карточке (::before), радиус у них общий --fork-r,
+	   стык -- на одной высоте. Зазор между карточками 20px: ствол ровно посередине, в 10px от каждой */
+	@media (--sm) {
+		&__options--2 {
+			--fork-r: 14px;
+
+			padding-top: 28px;
+
+			/* Ствол: от узла до начала внутренних дуг */
+			&::before {
+				content: '';
+				position: absolute;
+				top: -18px;
+				left: calc(50% - 1px);
+				width: 2px;
+				height: 20px;
+				background: var(--fork);
+			}
+		}
+
+		&__options--2 &__option {
+			&::before,
+			&::after {
+				content: '';
+				position: absolute;
+				border: 0 solid var(--fork);
+			}
+
+			/* Внешняя дуга: от середины карточки вверх и вбок, до стыка с внутренней */
+			&::before {
+				top: -14px;
+				height: 14px;
+				border-top-width: 2px;
+			}
+
+			/* Внутренняя дуга: от стыка к стволу */
+			&::after {
+				top: calc(-12px - var(--fork-r));
+				width: var(--fork-r);
+				height: var(--fork-r);
+				border-bottom-width: 2px;
+			}
+
+			&:first-child::before {
+				right: calc(var(--fork-r) - 11px);
+				left: calc(50% - 1px);
+				border-left-width: 2px;
+				border-top-left-radius: var(--fork-r);
+			}
+
+			&:first-child::after {
+				left: calc(100% + 11px - var(--fork-r));
+				border-right-width: 2px;
+				border-bottom-right-radius: var(--fork-r);
+			}
+
+			&:last-child::before {
+				right: calc(50% - 1px);
+				left: calc(var(--fork-r) - 11px);
+				border-right-width: 2px;
+				border-top-right-radius: var(--fork-r);
+			}
+
+			&:last-child::after {
+				left: -11px;
+				border-left-width: 2px;
+				border-bottom-left-radius: var(--fork-r);
+			}
+		}
+	}
+
+	&__heading {
+		text-align: center;
+	}
+
+	&__node {
+		display: inline-block;
+		padding: 8px 18px;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--fg) 7%, var(--bg));
+	}
+
+	&__options {
+		position: relative;
+		display: grid;
+		gap: 12px;
+
+		@media (--sm) {
+			grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+			gap: 20px;
+		}
+	}
+
+	&__option {
+		position: relative;
+		padding: 18px 20px 20px;
+		border-radius: 18px;
+		background: color-mix(in srgb, var(--fg) 4%, var(--bg));
+	}
+
+	&__title {
+		margin: 0 0 10px;
+		font-size: 1.1em;
+		font-weight: 700;
+		line-height: 1.25;
+		color: var(--accent);
+	}
+
+	&__points {
+		display: grid;
+		gap: 6px;
+		margin: 0;
+		font-size: 0.94em;
+	}
+
+	/* Ключевая доля варианта: ряд фигурок и подпись, как пиктограмма "N из 10" */
+	&__share {
+		display: grid;
+		gap: 8px;
+		margin: 14px 0 0;
+		padding-top: 14px;
+		border-top: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+	}
+
+	&__share .icon-array__icons {
+		display: block;
+		width: 100%;
+		max-width: 240px;
+		height: auto;
+	}
+
+	&__share-text {
+		font-size: 14.5px;
+		line-height: 1.4;
+		color: var(--muted);
+
+		/* stylelint-disable-next-line selector-max-type -- число внутри подписи без своего класса */
+		& strong {
+			font-weight: 700;
+			color: var(--fg);
+		}
+	}
+}
+
+/* Отступ абзаца раздела сильнее класса подписи доли */
+.article-section .compare__share {
+	margin: 14px 0 0;
+}
+
+/* Крупная цифра: число на полэкрана, под ним фраза обычным текстом */
+.big-stat {
+	text-align: center;
+
+	&__value {
+		margin: 0;
+		font-size: clamp(56px, 11vw, 104px);
+		font-weight: 750;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--accent);
+		letter-spacing: -0.05em;
+	}
+
+	&__text {
+		max-width: 30ch;
+		margin: 10px auto 0;
+		font-size: clamp(18px, 2vw, 21px);
+		line-height: 1.4;
+	}
+}
+
+/* Подзаголовки, выноски, таблицы и раскрывашки внутри раздела */
+/* stylelint-disable selector-max-type -- разметка из Markdown приходит без классов */
+.article-section {
+	& h3 {
+		margin: calc(var(--rhythm-heading) * 1.1) 0 8px;
+		font-size: 1.12em;
+		font-weight: 700;
+		line-height: 1.3;
+		letter-spacing: -0.015em;
+	}
+
+	/* Выноска -- главная мысль раздела: крупнее текста, цветная черта слева вместо кавычек */
+	& blockquote {
+		margin: calc(var(--rhythm-section) * 0.7) 0;
+		padding: 2px 0 2px 20px;
+		border-left: 3px solid var(--accent);
+		font-size: clamp(20px, 2.2vw, 24px);
+		font-weight: 600;
+		line-height: 1.38;
+		letter-spacing: -0.015em;
+
+		& p {
+			margin: 0;
+		}
+	}
+
+	& table {
+		border-collapse: collapse;
+		width: 100%;
+		margin: 0 0 var(--rhythm-block);
+		font-size: 0.9em;
+		font-variant-numeric: tabular-nums;
+	}
+
+	& th {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--muted);
+		text-align: left;
+	}
+
+	& :is(th, td) {
+		padding: 8px 12px 8px 0;
+		border-bottom: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+		vertical-align: top;
+	}
+
+	/* Подробности для тех, кому нужны: заголовок -- строкой со стрелкой, содержимое -- обычным текстом */
+	& details {
+		margin: 0 0 var(--rhythm-block);
+	}
+
+	& summary {
+		cursor: pointer;
+		display: flex;
+		gap: 8px;
+		align-items: baseline;
+		font-weight: 650;
+		color: var(--accent);
+		list-style: none;
+
+		&::-webkit-details-marker {
+			display: none;
+		}
+
+		&::before {
+			content: '';
+			transform: translateY(-0.12em) rotate(-45deg);
+			flex: none;
+			width: 0.45em;
+			height: 0.45em;
+			border-right: 2px solid currentcolor;
+			border-bottom: 2px solid currentcolor;
+			transition: transform 0.25s var(--article-ease);
+		}
+	}
+
+	& details[open] > summary::before {
+		transform: translateY(-0.2em) rotate(45deg);
+	}
+
+	& details > :not(summary) {
+		margin-top: 10px;
+	}
+}
+/* stylelint-enable selector-max-type */
+
+/* Блоки проявляются, когда въезжают в окно: там, где CSS умеет привязать анимацию к прокрутке.
+   Без поддержки или при reduced motion блоки просто стоят на месте */
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		:is(.timeline, .compare, .big-stat, .icon-array) {
+			animation: article-block-in linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 60%;
+		}
+	}
+}
+
+@keyframes article-block-in {
+	from {
+		transform: translateY(24px);
+		opacity: 0;
+	}
+}
+
+/* Отступы абзацев и списков раздела (`.article-section p`, `ul`, `ol`) сильнее классов блоков:
+   внутри раздела блокам возвращаем свои */
+.article-section {
+	& :is(.big-stat__value, .timeline__when, .timeline__text) {
+		margin-bottom: 0;
+	}
+
+	& :is(.compare__heading, .timeline__heading) {
+		margin: 0 0 18px;
+	}
+
+	& .timeline__title {
+		margin: 2px 0 4px;
+	}
+
+	& .compare__title {
+		margin: 0 0 8px;
+	}
+
+	& .timeline__phases {
+		gap: 22px;
+		margin: 0;
+		padding-left: var(--indent);
+	}
+
+	& .steps {
+		gap: calc(var(--rhythm-block) * 1.4);
+		padding-left: 0;
+	}
+
+	& .compare__points {
+		margin: 0;
+	}
+}
+
+/* Аббревиатура с расшифровкой: пунктир под буквами, как у <abbr>, по нажатию -- подсказка */
+.abbr {
+	cursor: help;
+	padding: 0;
+	border: 0;
+	font: inherit;
+	color: inherit;
+	text-decoration: underline dotted;
+	text-decoration-color: color-mix(in srgb, currentcolor 55%, transparent);
+	text-decoration-thickness: 1.5px;
+	text-underline-offset: 3px;
+	letter-spacing: inherit;
+	background: none;
+
+	&:hover,
+	&[aria-expanded='true'] {
+		text-decoration-color: currentcolor;
+	}
+
+	&:focus-visible {
+		border-radius: 3px;
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+}
+
+/* Подсвеченное слово и знак за ним (lib/article-html.ts) -- без переноса между ними */
+.abbr-glue {
+	white-space: nowrap;
+}
+
+/* Номера скорой -- одной группой с трубкой впереди: скобка и номер не расходятся по строкам */
+.calls {
+	font-weight: 650;
+	white-space: nowrap;
+
+	&__icon {
+		display: inline-flex;
+		width: 0.9em;
+		height: 0.9em;
+		margin-right: 4px;
+		color: var(--danger);
+		vertical-align: -0.1em;
+	}
+}
+
+/* Проверено врачом -- значок цвета спорта: это знак доверия, а не просто справка о статье */
+.article__pill--review .article__pill-icon {
+	color: var(--accent);
+}
+
+/* "Что запомнить": итог в конце статьи -- карточкой, как плашка самопроверки, но на заливке
+   цвета спорта: без неё три пункта с галочками терялись среди обычных списков. Значок заголовка
+   и галочки -- в колонке маркера, текст -- с общего отступа. В тёмной теме заливка гуще: 7% на
+   тёмном фоне почти не видно */
+.takeaways {
+	margin: calc(var(--rhythm-section) * 1.2) 0 0;
+	padding: 22px 24px 24px;
+	border-radius: 20px;
+	background: light-dark(
+		color-mix(in srgb, var(--accent) 7%, var(--bg)),
+		color-mix(in srgb, var(--accent) 14%, var(--bg))
+	);
+
+	@media (width < 600px) {
+		padding: 18px 18px 20px;
+	}
+
+	&__title {
+		display: grid;
+		grid-template-columns: var(--marker) minmax(0, 1fr);
+		gap: var(--marker-gap);
+		align-items: center;
+		margin: 0 0 16px;
+		font-size: clamp(22px, 2.4vw, 26px);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+	}
+
+	&__title-icon {
+		display: inline-flex;
+		justify-self: center;
+		width: var(--marker);
+		height: var(--marker);
+		color: var(--accent);
+	}
+
+	&__list {
+		display: grid;
+		gap: 12px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		display: grid;
+		grid-template-columns: var(--marker) minmax(0, 1fr);
+		gap: var(--marker-gap);
+		align-items: start;
+		font-weight: 550;
+	}
+
+	&__icon {
+		display: inline-flex;
+		justify-self: center;
+		width: 22px;
+		height: 22px;
+		margin-top: 0.2em;
+		color: var(--accent);
+	}
+}
+
+/* Страница без спорта: заливка -- тот же едва заметный градиент бренда, что у плашек ссылок */
+:root:not([data-sport], [data-telegram]) .takeaways {
+	background: var(--brand-tint), var(--bg);
+}
+
+/* Частота в чипе спорта на общей странице: знак и подпись в цвете уровня, как метка в шапке разбора */
+.article__chip-freq {
+	--pill: var(--common);
+
+	display: inline-flex;
+	gap: 5px;
+	align-items: center;
+	margin-left: 4px;
+	font-size: 13px;
+	color: var(--muted);
+
+	&--uncommon {
+		--pill: var(--uncommon);
+	}
+
+	&--rare {
+		--pill: var(--rare);
+	}
+}
+
+.article__chip-freq-icon {
+	display: inline-flex;
+	width: 9px;
+	height: 9px;
+	color: var(--pill);
+
+	/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+	& svg {
+		fill: currentcolor;
+	}
+}
+
+/* Схема "опасно / безопасно": два рисунка рядом. Опасная сторона -- цветом тревожных признаков,
+   безопасная -- цветом спорта; пунктир от бедра к стопе показывает, ушло ли колено с линии */
+.diagram {
+	margin: calc(var(--rhythm-section) * 0.9) 0;
+
+	&__sides {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	&__side {
+		--diagram-color: var(--accent);
+
+		display: grid;
+		justify-items: center;
+		text-align: center;
+
+		&--bad {
+			--diagram-color: var(--danger);
+		}
+	}
+
+	&__figure {
+		width: min(100%, 180px);
+		height: auto;
+	}
+
+	&__leg {
+		fill: none;
+		stroke: var(--diagram-color);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 7;
+	}
+
+	&__pelvis {
+		stroke: color-mix(in srgb, var(--fg) 30%, transparent);
+		stroke-linecap: round;
+		stroke-width: 7;
+	}
+
+	&__guide {
+		stroke: color-mix(in srgb, var(--fg) 35%, transparent);
+		stroke-dasharray: 3 5;
+		stroke-linecap: round;
+		stroke-width: 1.5;
+	}
+
+	&__joint {
+		fill: var(--bg);
+		stroke: var(--diagram-color);
+		stroke-width: 3;
+	}
+
+	&__label {
+		margin: 8px 0 0;
+		font-size: 15px;
+		font-weight: 650;
+		line-height: 1.3;
+		color: var(--diagram-color);
+	}
+
+	/* Подпись -- не пояснение к картинке, а то, что надо делать: плашкой, как пометка в шапке */
+	&__caption {
+		--note: var(--accent);
+
+		margin-top: 20px;
+	}
+}
+
+/* Плашка-пометка: пометка "справка, а не диагноз" в шапке и подпись схемы. Тинт и черта слева
+   в цвет --note, значок в колонке маркера, текст обычного размера. Тинт слабый: плашку видно,
+   но она не кричит громче раздела вокруг. Слева углы прямые: черта -- ровная линия, скругление
+   превращало её в край капсулы */
+:is(.article__disclaimer, .diagram__caption) {
+	display: grid;
+	grid-template-columns: var(--marker) minmax(0, 1fr);
+	gap: var(--marker-gap);
+	align-items: start;
+	padding: 14px 18px 14px 12px;
+	border-left: 3px solid color-mix(in srgb, var(--note) 75%, transparent);
+	border-radius: 0 14px 14px 0;
+	font-size: 16px;
+	line-height: 1.5;
+	color: var(--fg);
+	background: color-mix(in srgb, var(--note) 7%, transparent);
+}
+
+:is(.article__disclaimer-icon, .diagram__caption-icon) {
+	display: inline-flex;
+	justify-self: center;
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+	color: var(--note);
+}
+
+/* Страница без спорта: акцент графит, у подписи схемы -- синий бренда */
+:root:not([data-sport], [data-telegram]) .diagram__caption {
+	--note: var(--brand-solid);
+}
+
+/* Подпись стороны -- абзац внутри раздела: его отступ сильнее класса */
+.article-section .diagram__label {
+	margin: 8px 0 0;
+}
+
+/* Кнопка памятки -- тихая строка под тревожными признаками: значок принтера и подпись */
+.memo-print {
+	cursor: pointer;
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	margin-top: 6px;
+	padding: 0;
+	border: 0;
+	border-radius: 4px;
+	font: inherit;
+	font-size: 15px;
+	font-weight: 650;
+	color: var(--danger);
+	background: none;
+
+	&[hidden] {
+		display: none;
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--danger);
+		outline-offset: 4px;
+	}
+
+	&__icon {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
+	}
+}
+
+/* Строки только для листа памятки: на экране их нет */
+.memo-only {
+	display: none;
+}
+
+/* stylelint-disable selector-max-type -- на листе тэги body, a, li и svg без своих классов */
+/* Памятка на печать -- один лист A4, чёрно-белый, чтобы вышел на любом принтере: название,
+   скорая в рамке, тревожные признаки с пустыми квадратиками для отметки ручкой, первые шаги,
+   "Что запомнить" и внизу адрес статьи. Фоны браузер не печатает, поэтому всё рамками */
+@media print {
+	@page {
+		size: a4;
+		margin: 14mm 16mm;
+	}
+
+	.memo-print {
+		display: none;
+	}
+
+	/* Сайт вокруг, оглавление, иллюстрации и всё, что нажимают, на листе не нужны */
+	:root[data-print='memo']
+		:is(.site-header, .footer, .corner-link, .theme-toggle, .reading-progress, .toc-menu, .body3d),
+	:root[data-print='memo'] :is(.article__toc, .article__end, .article__meta, .article__sport),
+	:root[data-print='memo'] :is(.article__summary, .article__disclaimer, .article__figure, .article__alias),
+	:root[data-print='memo'] :is(.self-check, .check-callout, .cite, .tip, .calls__icon),
+	:root[data-print='memo'] .article__body > :not(#urgent, #first-steps, .takeaways, .memo-only) {
+		display: none !important;
+	}
+
+	:root[data-print='memo'] {
+		--rhythm-section: 10pt;
+		--rhythm-heading: 8pt;
+		--rhythm-block: 4pt;
+
+		& body {
+			font-size: 9.5pt;
+			color: #000000;
+		}
+
+		& .article {
+			max-width: none;
+			padding: 0;
+			font-size: 9.5pt;
+			line-height: 1.35;
+		}
+
+		& .article__body {
+			font-size: inherit;
+		}
+
+		& .memo-only {
+			display: block;
+		}
+
+		& .memo-only--kicker {
+			margin: 0;
+			font-size: 9pt;
+			font-weight: 600;
+			color: #555555;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+
+		& .memo-only--footer {
+			margin: 14pt 0 0;
+			padding-top: 6pt;
+			border-top: 0.75pt solid #999999;
+			font-size: 8.5pt;
+			color: #555555;
+		}
+
+		/* Заголовок статьи на экране уходит под шапку анимацией: на бумаге -- в полный цвет */
+		& .article__hero {
+			gap: 4pt;
+			margin: 0 0 12pt;
+		}
+
+		& .article__title {
+			transform: none !important;
+			font-size: 18pt;
+			color: #000000;
+			opacity: 1 !important;
+			animation: none !important;
+		}
+
+		/* Текст, а не ссылки: подчёркиваний, пунктира и цвета у слов на листе нет */
+		& :is(a, .abbr) {
+			color: inherit;
+			text-decoration: none;
+			background: none;
+		}
+
+		& .article-section__title {
+			margin-bottom: 5pt;
+			font-size: 12pt;
+		}
+
+		/* Значки на листе только пестрят: заголовки и пункты держатся на шрифте */
+		& :is(.article-section__icon, .alarm--call .alarm__icon, .takeaways__icon, .takeaways__title-icon) {
+			display: none;
+		}
+
+		& .article-section__title,
+		& .takeaways__title {
+			display: block;
+		}
+
+		& .article-section--urgent {
+			margin: 0;
+			padding: 0;
+			background: none;
+		}
+
+		/* Скорая -- в рамке, номера крупно: это ищут глазами первым */
+		& .alarm--call {
+			grid-template-columns: minmax(0, 1fr);
+			margin: 0 0 8pt;
+			padding: 5pt 8pt;
+			border: 1pt solid #000000;
+
+			&::before {
+				display: none;
+			}
+		}
+
+		& .calls {
+			font-size: 1.2em;
+		}
+
+		/* Остальные признаки -- пустой квадратик вместо значка: отметить ручкой */
+		& .alarm:not(.alarm--call) .alarm__icon {
+			width: 9pt;
+			height: 9pt;
+			margin-top: 2.5pt;
+			border: 1pt solid #000000;
+			border-radius: 1.5pt;
+
+			& svg {
+				display: none;
+			}
+		}
+
+		& .alarm--call .alarm__icon {
+			color: #000000;
+		}
+
+		/* Номер шага -- просто жирной цифрой у текста, без круга */
+		& .steps {
+			--step-size: auto;
+		}
+
+		& .step {
+			padding-left: 14pt;
+		}
+
+		& .step::before {
+			display: block;
+			width: auto;
+			height: auto;
+			font-size: 1em;
+			line-height: inherit;
+			color: #000000;
+			background: none;
+		}
+
+		& .step::after {
+			display: none;
+		}
+
+		& .takeaways {
+			margin-top: 12pt;
+			padding: 0;
+			background: none;
+		}
+
+		/* Мысли "Что запомнить" -- обычным списком с тире вместо галочек */
+		& .takeaways__item {
+			display: block;
+			padding-left: 14pt;
+			font-weight: 400;
+			text-indent: -10pt;
+
+			&::before {
+				content: '— ';
+			}
+		}
+
+		& .takeaways__title {
+			margin-bottom: 5pt;
+			font-size: 12pt;
+		}
+
+		& :is(li, .step, .alarm, .takeaways) {
+			break-inside: avoid;
+		}
+	}
+}
+
+/* stylelint-enable selector-max-type */
+
+/* Самопроверка в "Когда сразу к врачу": значок, вопрос крупно, пояснение мельче, справа кнопка
+   цвета тревожных признаков. Раздел и так на красноватом пятне, поэтому плашка не красная, а
+   карточкой поверх пятна. В светлой теме -- чисто белой, с волосяной линией по краю и мягкой
+   тенью: серая на розовом выходила грязной. В тёмной тени не видно, карточку отделяет фон чуть
+   светлее страницы. На телефоне кнопка уходит под текст на всю ширину */
+.check-callout {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr) auto;
+	gap: 16px;
+	align-items: center;
+	margin: calc(var(--rhythm-section) * 1.2) 0 0;
+	padding: 20px 22px;
+	border-radius: 20px;
+	background: light-dark(var(--bg), color-mix(in srgb, var(--fg) 4%, var(--bg)));
+	box-shadow:
+		0 0 0 1px light-dark(rgb(0 0 0 / 5%), transparent),
+		0 2px 4px rgb(0 0 0 / 3%),
+		0 10px 28px rgb(0 0 0 / 6%);
+
+	@media (width < 600px) {
+		grid-template-columns: 28px minmax(0, 1fr);
+		padding: 18px;
+	}
+
+	&__icon {
+		display: inline-flex;
+		align-self: start;
+		width: 32px;
+		height: 32px;
+		margin-top: 2px;
+		color: var(--danger);
+
+		@media (width < 600px) {
+			width: 28px;
+			height: 28px;
+		}
+	}
+
+	&__text {
+		display: grid;
+		gap: 4px;
+	}
+
+	&__title {
+		font-size: clamp(22px, 2.4vw, 26px);
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+	}
+
+	&__lead {
+		font-size: 15px;
+		line-height: 1.4;
+		color: var(--muted);
+	}
+
+	&__button {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		justify-content: center;
+		padding: 12px 16px 12px 20px;
+		border-radius: 999px;
+		font-size: 16px;
+		font-weight: 650;
+		white-space: nowrap;
+		transition:
+			background-color 0.3s var(--article-ease),
+			scale 0.2s ease;
+
+		@media (width < 600px) {
+			grid-column: 1 / -1;
+		}
+
+		&:active {
+			scale: 0.97;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--danger);
+			outline-offset: 2px;
+		}
+	}
+
+	&__arrow {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
+		transition: transform 0.3s var(--article-ease);
+	}
+
+	&__button:hover &__arrow {
+		transform: translateX(2px);
+	}
+}
+
+/* Абзацы и ссылки раздела оформлены сильнее классов плашки: отступы, плашка ссылки на страницу
+   сайта (`a[href^='/']`) -- возвращаем свои */
+.article-section {
+	& :is(.check-callout__title, .check-callout__lead) {
+		margin: 0;
+	}
+
+	& .check-callout__button[href] {
+		padding: 12px 16px 12px 20px;
+		border-radius: 999px;
+		color: #ffffff;
+		text-decoration: none;
+		background: color-mix(in srgb, var(--danger) 80%, #000000);
+
+		&:hover {
+			color: #ffffff;
+			background: color-mix(in srgb, var(--danger) 68%, #000000);
+		}
+	}
+}
+
+/* Страница самопроверки "Мне к врачу?" (pages/injuries/[slug]/check.astro). На широком экране
+   две колонки: слева признаки, справа ответ, прилипает при прокрутке. На телефоне одна колонка,
+   а ответ прилипает к низу экрана: его видно всё время, пока отмечаешь признаки */
+.check-page {
+	max-width: 1040px;
+
+	&__hero {
+		display: grid;
+		gap: 14px;
+		justify-items: start;
+		max-width: var(--article-column);
+		margin: 0 0 36px;
+	}
+
+	/* Травма над заголовком: подпись, а не ссылка -- назад ведёт стрелка в шапке */
+	&__kicker {
+		margin: 0;
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	&__title {
+		margin: 0;
+		font-size: clamp(36px, 6vw, 56px);
+		font-weight: 700;
+		line-height: 1.05;
+		letter-spacing: -0.035em;
+	}
+
+	&__lead {
+		max-width: 34ch;
+		margin: 0;
+		font-size: clamp(18px, 2vw, 21px);
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	/* Обычной строкой, а не flex: у flex текст при переносе занимал всю ширину и отталкивал
+	   стрелку к правому краю */
+	&__article {
+		display: inline-block;
+		margin-top: 32px;
+		font-weight: 650;
+		color: var(--accent);
+		text-decoration: none;
+	}
+
+	&__article-tail {
+		white-space: nowrap;
+	}
+
+	&__article-icon {
+		display: inline-block;
+		width: 18px;
+		height: 18px;
+		margin-left: 6px;
+		vertical-align: -0.15em;
+
+		/* Ссылка жирная: тонкая обводка значков статьи (1.6) рядом с ней выглядела чужой */
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& svg {
+			stroke-width: 2.4;
+		}
+	}
+}
+
+.self-check {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	&__title {
+		margin: 0 0 16px;
+		padding: 0;
+		font-size: 20px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+	}
+
+	&__layout {
+		display: grid;
+		gap: 20px;
+
+		@media (width >= 900px) {
+			grid-template-columns: minmax(0, 1fr) 340px;
+			gap: 32px;
+			align-items: start;
+		}
+	}
+
+	&__items {
+		display: grid;
+		gap: 10px;
+	}
+
+	/* Признак -- карточка-переключатель: нажимается целиком, отмеченная подсвечивается */
+	&__item {
+		cursor: pointer;
+		display: grid;
+		grid-template-columns: 26px minmax(0, 1fr);
+		gap: 14px;
+		align-items: start;
+		padding: 15px 17px;
+		border: 1px solid transparent;
+		border-radius: 16px;
+		font-size: 17px;
+		line-height: 1.4;
+		background: color-mix(in srgb, var(--fg) 5%, var(--bg));
+		transition:
+			background 0.2s var(--article-ease),
+			border-color 0.2s var(--article-ease);
+
+		&:hover {
+			background: color-mix(in srgb, var(--fg) 8%, var(--bg));
+		}
+
+		/* Отмеченный -- тинт и рамка одного цвета. Кольцо внутренней тенью поверх скругления
+		   читалось как вторая обводка */
+		&:has(:checked) {
+			border-color: color-mix(in srgb, var(--danger) 45%, var(--bg));
+			background: color-mix(in srgb, var(--danger) 8%, var(--bg));
+		}
+
+		/* Кольцо -- только с клавиатуры: нажатие по карточке фокусирует спрятанный флажок, и браузер
+		   рисовал кольцо и после пальца. data-pointer ставит lib/self-check.ts */
+		.self-check:not([data-pointer]) &:has(:focus-visible) {
+			outline: 2px solid var(--accent);
+			outline-offset: 2px;
+		}
+	}
+
+	/* Настоящий флажок спрятан, но остаётся в доступности; рисуем свой квадрат с галочкой */
+	&__box {
+		pointer-events: none;
+		position: absolute;
+		opacity: 0;
+	}
+
+	&__mark {
+		display: grid;
+		place-items: center;
+		width: 26px;
+		height: 26px;
+		border: 2px solid color-mix(in srgb, var(--fg) 30%, transparent);
+		border-radius: 8px;
+		color: transparent;
+		background: var(--bg);
+		transition:
+			background 0.2s var(--article-ease),
+			border-color 0.2s var(--article-ease);
+
+		/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+		& svg {
+			width: 16px;
+			height: 16px;
+			stroke-width: 3;
+		}
+	}
+
+	&__item:has(:checked) &__mark {
+		border-color: var(--danger);
+		color: #ffffff;
+		background: var(--danger);
+	}
+
+	/* Ответ: на десктопе прилипает сверху рядом с признаками, на телефоне стоит обычным блоком
+	   под ними -- прилипшая к низу карточка закрывала признаки. Вместо неё там полоска (__bar) */
+	&__result {
+		scroll-margin: 24px;
+		display: grid;
+		gap: 10px;
+
+		@media (width >= 900px) {
+			position: sticky;
+			top: calc(var(--header-clear) + 16px);
+		}
+	}
+
+	/* Полоска с выводом у низа экрана телефона, пока карточка ответа не видна */
+	&__bar {
+		position: fixed;
+		z-index: 15;
+		right: 16px;
+		bottom: max(16px, env(safe-area-inset-bottom));
+		left: 16px;
+
+		@media (width >= 900px) {
+			display: none;
+		}
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	&__note {
+		margin: 0;
+		padding: 0 4px;
+		font-size: 14px;
+		line-height: 1.4;
+		color: var(--muted);
+
+		@media (width < 900px) {
+			display: none;
+		}
+	}
+}
+
+/* Полоска вывода: одна строка, тон -- как у карточки ответа */
+.verdict-bar {
+	--verdict: var(--accent);
+
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	padding: 14px 18px;
+	border-radius: 999px;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--fg);
+	text-decoration: none;
+	background: color-mix(in srgb, var(--verdict) 14%, var(--bg));
+	backdrop-filter: blur(12px);
+	box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+
+	&[hidden] {
+		display: none;
+	}
+
+	&__icon {
+		display: inline-flex;
+		flex: none;
+		width: 22px;
+		height: 22px;
+		color: var(--verdict);
+	}
+
+	&__title {
+		flex: 1;
+	}
+
+	/* Стрелка вниз: к полной карточке */
+	&::after {
+		content: '↓';
+		font-weight: 600;
+		color: var(--muted);
+	}
+
+	&--call {
+		color: #ffffff;
+		background: color-mix(in srgb, var(--danger) 80%, #000000);
+	}
+
+	&--call &__icon,
+	&--call::after {
+		color: #ffffff;
+	}
+
+	&--today {
+		--verdict: var(--danger);
+	}
+}
+
+/* Карточка ответа: тон по срочности. Скорая -- красная заливка и кнопки звонка, сегодня --
+   красный тинт, в ближайшие дни -- тинт цвета спорта, без признаков -- спокойная. Без тени:
+   карточка стоит в потоке страницы, а не лежит поверх неё */
+.verdict {
+	--verdict: var(--accent);
+
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr);
+	gap: 4px 14px;
+	padding: 20px;
+	border-radius: 20px;
+	color: var(--fg);
+	background: color-mix(in srgb, var(--verdict) 10%, var(--bg));
+
+	&[hidden] {
+		display: none;
+	}
+
+	&__icon {
+		display: inline-flex;
+		grid-row: span 2;
+		width: 32px;
+		height: 32px;
+		color: var(--verdict);
+	}
+
+	&__title {
+		margin: 0;
+		font-size: 22px;
+		font-weight: 700;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+	}
+
+	&__text {
+		margin: 0;
+		font-size: 16px;
+		line-height: 1.45;
+	}
+
+	&__calls {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+		margin-top: 12px;
+	}
+
+	&__call {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
+		padding: 12px;
+		border-radius: 999px;
+		font-size: 22px;
+		font-weight: 750;
+		font-variant-numeric: tabular-nums;
+		color: var(--danger-deep);
+		text-decoration: none;
+		letter-spacing: -0.01em;
+		background: #ffffff;
+
+		&:active {
+			scale: 0.97;
+		}
+	}
+
+	&__call-icon {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
+	}
+
+	&--call {
+		--danger-deep: color-mix(in srgb, var(--danger) 80%, #000000);
+
+		color: #ffffff;
+		background: var(--danger-deep);
+	}
+
+	&--call &__icon {
+		color: #ffffff;
+	}
+
+	&--today {
+		--verdict: var(--danger);
+	}
+}
+
+/* Страницы без спорта: акцент там графит, а цвет даёт градиент бренда, как у ссылок и кнопки
+   меню (global.css). Блоки лонгрида берут его же: круги шагов и последняя точка шкалы --
+   заливкой, линия шкалы -- вертикальным градиентом, контур точек -- градиентом под фоном,
+   крупная цифра и сроки фаз -- текстом. В Telegram цвета из темы клиента, там графит */
+:root:not([data-sport], [data-telegram]) {
+	& .step::before {
+		background: var(--brand-line);
+	}
+
+	/* Связка между кругами -- тот же градиент сверху вниз, бледнее кругов, как цветная у спорта */
+	& .step:not(:last-child)::after {
+		opacity: 0.35;
+		background: var(--brand-column);
+	}
+
+	& .timeline__phases::before {
+		background: var(--brand-column);
+	}
+
+	/* Контур градиентом: прозрачная рамка, под ней градиент, поверх -- фон в границах padding */
+	& .timeline__phase::before {
+		border-color: transparent;
+		background:
+			linear-gradient(var(--bg), var(--bg)) padding-box,
+			var(--brand-line) border-box;
+	}
+
+	& .timeline__phase:last-child::before {
+		background: var(--brand-line) border-box;
+	}
+
+	/* Градиент по ширине самого числа, а не всей строки: иначе цифре достались бы только середины */
+	@supports (background-clip: text) or (-webkit-background-clip: text) {
+		& :is(.big-stat__value, .timeline__when) {
+			width: fit-content;
+			color: transparent;
+			background-image: var(--brand-line);
+			-webkit-background-clip: text;
+			background-clip: text;
+
+			@media print {
+				color: var(--fg);
+				background: none;
+			}
+		}
+
+		& .big-stat__value {
+			margin-inline: auto;
+		}
+	}
+}
+
+/* stylelint-disable selector-max-type -- summary и blockquote из Markdown приходят без классов */
+/* Страницы без спорта: --accent там графит, цвет бренда даёт только градиент (global.css). Всё,
+   что в статье акцентом, перекрашиваем: текст -- градиентом по тексту, как ссылки, рамки, шевроны
+   и линии схемы -- сплошным цветом бренда, градиентом их не покрасить. Значки -- в global.css,
+   обводкой #brand-icon */
+:root:not([data-sport], [data-telegram]) {
+	@supports (background-clip: text) or (-webkit-background-clip: text) {
+		&
+			:is(
+				.compare__title,
+				.article__sources-more,
+				.self-check__verdict--none,
+				.check-page__article,
+				.article-section summary
+			) {
+			color: transparent;
+			background-image: var(--brand-line);
+			-webkit-background-clip: text;
+			background-clip: text;
+
+			@media print {
+				color: var(--fg);
+				background: none;
+			}
+		}
+
+		/* Градиент по ширине текста, а не всей строки: иначе короткому заголовку достаётся только синий */
+		& :is(.compare__title, .self-check__verdict--none) {
+			width: fit-content;
+		}
+	}
+
+	/* Шеврон из рамок: при прозрачном тексте currentcolor пропал бы */
+	& :is(.article__sources-more, .article-section summary)::before {
+		border-color: var(--brand-solid);
+	}
+
+	& .article-section blockquote {
+		border-left-color: var(--brand-solid);
+	}
+
+	& .diagram__side--good {
+		--diagram-color: var(--brand-solid);
+	}
+
+	& :is(.verdict, .verdict-bar) {
+		--verdict: var(--brand-solid);
+	}
+}
+/* stylelint-enable selector-max-type */

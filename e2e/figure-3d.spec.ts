@@ -93,3 +93,26 @@ test('после Esc фокус на кнопке, но рамка -- тольк
 	await expect(open).toBeFocused()
 	expect(await outline()).toBe('solid')
 })
+
+test('пока модель грузится, вместо неё её снимок, а с моделью снимок уходит', async ({ page }) => {
+	let release = () => {}
+	const held = new Promise<void>((resolve) => (release = resolve))
+
+	await page.route('**/model/rig/*.glb*', async (route) => {
+		await held
+		await route.continue()
+	})
+
+	await page.goto(`/injuries/${SLUG}/`)
+	await page.getByRole('button', { name: 'Покрутить в 3D' }).click()
+
+	const poster = page.locator('.figure3d__poster')
+
+	await expect(poster).toBeVisible()
+	await expect(poster).toHaveCSS('background-image', /rig\/poster\/.+\.webp/)
+	await expect(page.locator('.figure3d__status')).toHaveCount(0)
+
+	release()
+	await expect(page.locator('.figure3d')).toHaveAttribute('data-status', 'ready')
+	await expect(poster).toHaveCSS('opacity', '0')
+})

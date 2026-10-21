@@ -151,6 +151,19 @@ blender -b Startup.blend --python z_anatomy_export.py -- za-export --wide
 поворачивает вершину вокруг центра сустава на его угол, умноженный на вес: сухожилие на головке сохраняет радиус. Модели
 не хешируются вместе с фигурой, у каждой своя версия в адресе (`rigUrl()` в `scene/model-url.ts`).
 
+### Снимки для загрузки
+
+Пока модель грузится, под ней лежит её снимок в том же кадре камеры, как постер фигуры на главной:
+`public/model/rig/poster/<иллюстрация>-<тема>-<кадр>.webp`. Тема -- светлая и тёмная (цвет мышц
+разный), кадр -- широкий и узкий (окна съёмки -- в `posters.mjs`, порог узкого кадра -- `NARROW_BELOW` в `src/frontend/scene/model-frame.ts`):
+в узком окне камера видит по вертикали больше. Снимки пересобирать после смены модели, кадра
+или полей `model` статьи, по собранному сайту:
+
+```bash
+npm run build && npx astro preview --port 4321 &
+node scripts/model/posters.mjs http://localhost:4321 [slug...]
+```
+
 ### Колено из расчёта Open Knee(s)
 
 `knee-right` собирается не из BodyParts3D, а из [Open Knee(s)](https://simtk.org/projects/openknee): FE-модели колена

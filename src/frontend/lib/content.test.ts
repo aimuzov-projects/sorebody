@@ -194,6 +194,21 @@ for (const doc of injuries) {
 		}
 	})
 
+	// Без снимков вместо модели, пока она грузится, -- только подпись: node scripts/model/posters.mjs
+	test(`${slug}: 3D models have their loading posters`, () => {
+		for (const { src, model } of data.images) {
+			if (!model) continue
+
+			const key = src
+				.split('/')
+				.pop()!
+				.replace(/\.[^.]+$/, '')
+
+			for (const kind of ['light-wide', 'light-narrow', 'dark-wide', 'dark-narrow'])
+				assert.ok(existsSync(new URL(`./model/rig/poster/${key}-${kind}.webp`, `${PUBLIC}/`)), `${key}-${kind}`)
+		}
+	})
+
 	// Опечатка в show или hide молча ничего бы не показала и не спрятала
 	test(`${slug}: groups the article shows or hides are in its 3D model`, () => {
 		for (const { model } of data.images) {

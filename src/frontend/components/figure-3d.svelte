@@ -4,6 +4,7 @@
 
 	import type { FigureModel } from '#frontend/lib/figure-3d.ts'
 	import { INFO_DOT } from '#frontend/lib/icons.ts'
+	import { NARROW_BELOW } from '#frontend/scene/model-frame.ts'
 	import type { ModelViewer } from '#frontend/scene/model-viewer.ts'
 
 	type Props = {
@@ -15,6 +16,13 @@
 	}
 
 	let { model, image, onclose }: Props = $props()
+
+	// Снимок в теме страницы (цвет мышц у сцены в тёмной теме другой: scene/studio.ts, muscleColor)
+	// и в кадре окна: в узком камера видит по вертикали больше (scene/model-frame.ts)
+	const theme = document.documentElement.dataset.theme
+	const dark = theme ? theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+	const shape = innerWidth / innerHeight < NARROW_BELOW ? 'narrow' : 'wide'
+	const poster = $derived(model.poster?.[`${dark ? 'dark' : 'light'}-${shape}`])
 
 	/** Полный цикл движения туда и обратно, мс. */
 	const CYCLE = 5000
@@ -145,7 +153,17 @@
 <dialog class="figure3d" bind:this={dialog} data-status={status} aria-label={title} onkeydown={onKey}>
 	<canvas bind:this={canvas} class="figure3d__canvas" aria-label={`${title}. Перетащите, чтобы повернуть`}></canvas>
 
-	{#if status === 'loading'}
+	<!-- Пока модель грузится, под ней её снимок в том же кадре, как постер фигуры на главной:
+	     появится первый кадр -- снимок растворится. Без снимка -- подпись -->
+	{#if poster && status !== 'error'}
+		<div
+			class="figure3d__poster"
+			class:figure3d__poster--gone={status === 'ready'}
+			data-shape={shape}
+			style:background-image="url({poster})"
+			aria-hidden="true"
+		></div>
+	{:else if status === 'loading'}
 		<p class="figure3d__status">Загружаем 3D-модель…</p>
 	{:else if status === 'error'}
 		<!-- Модель не пришла: вместо пустого экрана -- та же иллюстрация и что можно сделать -->
@@ -269,6 +287,40 @@
 
 		&:active {
 			cursor: grabbing;
+		}
+	}
+
+	/* Снимок модели в кадре камеры (scene/model-frame.ts): фоном во всё окно, центр снимка -- центр
+	   окна, как цель орбиты. Широкий снимок -- во всю высоту окна, узкий -- во всю ширину; что шире
+	   окна, обрезается, а не прокручивается */
+	.figure3d__poster {
+		pointer-events: none;
+		position: absolute;
+		inset: 0;
+		background: no-repeat center / auto 100%;
+		transition: opacity 0.4s var(--article-ease);
+		/* Пока модель грузится, снимок мерцает: видно, что идёт загрузка, а не всё застыло.
+		   Мерцание -- фильтром, исчезновение -- opacity: одно не сбивает другое */
+		animation: figure3d-loading 1.6s ease-in-out infinite;
+
+		@media (--reduced-motion) {
+			filter: opacity(0.55);
+			transition: none;
+			animation: none;
+		}
+
+		&[data-shape='narrow'] {
+			background-size: 100% auto;
+		}
+	}
+
+	.figure3d__poster--gone {
+		opacity: 0;
+	}
+
+	@keyframes figure3d-loading {
+		50% {
+			filter: opacity(0.45);
 		}
 	}
 

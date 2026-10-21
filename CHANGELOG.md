@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.21.0](https://github.com/aimuzov-projects/sorebody/compare/v1.20.0...v1.21.0) (2026-10-21)
+
+
+### Features
+
+* add basketball as the fifth sport ([edc47fa](https://github.com/aimuzov-projects/sorebody/commit/edc47fa3eee577d610759b51640f6da71b0d47e3))
+* add basketball as the fifth sport ([224d018](https://github.com/aimuzov-projects/sorebody/commit/224d018f176bbd115dd961fa02b2b3cef3f37f29))
+
 ## [1.20.0](https://github.com/aimuzov-projects/sorebody/compare/v1.19.0...v1.20.0) (2026-10-21)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/aimuzov-projects/sorebody/compare/v1.17.0...v1.18.0) (2026-10-21)
+
+
+### Features
+
+* **article:** bend the knee 3D model by the Open Knee(s) FE computation ([75992eb](https://github.com/aimuzov-projects/sorebody/commit/75992ebcaa0eeb048e8bea333645573d2cee1e81))
+
 ## [1.17.0](https://github.com/aimuzov-projects/sorebody/compare/v1.16.2...v1.17.0) (2026-10-21)
 
 

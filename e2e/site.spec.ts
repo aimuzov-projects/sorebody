@@ -1,16 +1,21 @@
 import {
 	expectAccessible,
 	expectHealthyPage,
+	expectNoTapHighlight,
+	expectStableWidth,
 	siteChecks,
 	sitemapPaths,
 } from '@aimuzov-projects/infra-site-kit/playwright/checks'
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 // Проверки, общие для всех сайтов: кнопка темы с подсмотром другой схемы и 404 из кита.
-// Метрики в сборке для e2e нет, её хит проверяет metrika.spec.ts.
+// Метрики в сборке для e2e нет, её хит проверяет metrika.spec.ts. Ширину с полосой прокрутки
+// и подсветку касания кит тоже проверяет одним обходом sitemap, их обход -- по частям ниже
 siteChecks({
 	pages: false,
 	a11y: false,
+	gutter: false,
+	tapHighlight: false,
 	theme: { button: (page) => page.getByRole('button', { name: /^Тема:/ }) },
 	notFound: true,
 })
@@ -43,7 +48,28 @@ test.describe('sitemap', () => {
 				await test.step(path, async () => {
 					await expectHealthyPage(page, path)
 					await expectAccessible(page)
+					await expectNoTapHighlight(page, [path])
 				})
+			}
+		})
+
+		// Полосу прокрутки headless Chromium прячет на весь воркер, поэтому браузер свой, как у кита.
+		// Каждая часть сравнивает свои страницы с главной, так ширина у всех одна, а 404 -- в первой
+		test(`pages ${part} keep their width with or without a scrollbar`, async ({
+			playwright,
+			browserName,
+			request,
+			baseURL,
+			viewport,
+		}) => {
+			const browser = await playwright[browserName].launch({ ignoreDefaultArgs: ['--hide-scrollbars'] })
+
+			try {
+				const paths = ['/', ...(await shardPaths(request, shard)), ...(shard === 0 ? ['/kit-404-probe'] : [])]
+
+				await expectStableWidth(await browser.newPage({ baseURL, viewport }), paths)
+			} finally {
+				await browser.close()
 			}
 		})
 

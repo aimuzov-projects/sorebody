@@ -2571,6 +2571,13 @@
 				line-height: 1.25;
 			}
 
+			/* С шеей зон у кроссфита и падела десять: на ноутбуке 1280×720 с шрифтом шире SF им
+			   не хватало 12px */
+			@container zones (height < 303px) {
+				padding: 1px 0;
+				line-height: 1.2;
+			}
+
 			@media (width < 700px) {
 				padding: 3px 0;
 				font-size: 17px;

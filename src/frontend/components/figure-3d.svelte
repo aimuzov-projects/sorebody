@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronLeft, Pause, Play } from 'lucide-static'
+	import { Check, ChevronLeft, Layers, Pause, Play } from 'lucide-static'
 	import { onDestroy, onMount } from 'svelte'
 
 	import type { FigureModel } from '#frontend/lib/figure-3d.ts'
@@ -145,6 +145,27 @@
 
 	<button class="figure3d__back" type="button" aria-label="Назад" onclick={onclose}>{@html ChevronLeft}</button>
 
+	{#if info?.toggles.length}
+		<!-- Слои -- в меню: с десятком тумблеров панель закрывала полэкрана на телефоне -->
+		<button class="figure3d__layers" type="button" popovertarget="figure3d-layers">
+			<span class="figure3d__icon" aria-hidden="true">{@html Layers}</span>
+			Слои
+		</button>
+		<div class="figure3d__menu" id="figure3d-layers" popover="auto">
+			{#each info.toggles as t (t.name)}
+				<button
+					class="figure3d__layer"
+					type="button"
+					aria-pressed={visible[t.name]}
+					onclick={() => (visible[t.name] = !visible[t.name])}
+				>
+					<span class="figure3d__check" aria-hidden="true">{@html Check}</span>
+					{t.label}
+				</button>
+			{/each}
+		</div>
+	{/if}
+
 	{#if info}
 		<button class="figure3d__info" type="button" aria-label="О модели" popovertarget="figure3d-about">
 			{@html INFO_DOT}
@@ -154,43 +175,31 @@
 		</p>
 	{/if}
 
-	{#if info && (info.motion || info.toggles.length)}
+	{#if info?.motion}
 		<div class="figure3d__bottom">
 			<div class="figure3d__controls">
-				{#if info.motion}
-					<button
-						class="figure3d__play"
-						type="button"
-						aria-label={playing ? `Остановить: ${info.motion.verb}` : info.motion.label}
-						aria-pressed={playing}
-						onclick={toggle}
-					>
-						<span class="figure3d__icon" aria-hidden="true">{@html playing ? Pause : Play}</span>
-					</button>
-					<label class="figure3d__range" style:--fill="{(angle / max) * 100}%">
-						<span class="figure3d__visually-hidden">{info.motion.verb}, градусы</span>
-						<input
-							class="figure3d__slider"
-							type="range"
-							min="0"
-							{max}
-							step="1"
-							bind:value={angle}
-							oninput={drag}
-						/>
-						<span class="figure3d__degrees" aria-hidden="true">{Math.round(angle)}°</span>
-					</label>
-				{/if}
-				{#each info.toggles as t (t.name)}
-					<button
-						class="figure3d__chip"
-						type="button"
-						aria-pressed={visible[t.name]}
-						onclick={() => (visible[t.name] = !visible[t.name])}
-					>
-						{t.label}
-					</button>
-				{/each}
+				<button
+					class="figure3d__play"
+					type="button"
+					aria-label={playing ? `Остановить: ${info.motion.verb}` : info.motion.label}
+					aria-pressed={playing}
+					onclick={toggle}
+				>
+					<span class="figure3d__icon" aria-hidden="true">{@html playing ? Pause : Play}</span>
+				</button>
+				<label class="figure3d__range" style:--fill="{(angle / max) * 100}%">
+					<span class="figure3d__visually-hidden">{info.motion.verb}, градусы</span>
+					<input
+						class="figure3d__slider"
+						type="range"
+						min="0"
+						{max}
+						step="1"
+						bind:value={angle}
+						oninput={drag}
+					/>
+					<span class="figure3d__degrees" aria-hidden="true">{Math.round(angle)}°</span>
+				</label>
 			</div>
 		</div>
 	{/if}
@@ -301,6 +310,96 @@
 		}
 	}
 
+	/* «Слои» -- тихая таблетка слева от (i): подложка поверхности, как у панели снизу */
+	.figure3d__layers {
+		cursor: pointer;
+		position: absolute;
+		top: max(12px, env(safe-area-inset-top));
+		right: calc(max(12px, env(safe-area-inset-right)) + 44px);
+		display: inline-flex;
+		gap: 6px;
+		align-items: center;
+		height: 40px;
+		padding: 0 14px 0 12px;
+		border: 0;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--fg);
+		background: color-mix(in srgb, var(--bg) 72%, transparent);
+		backdrop-filter: blur(12px);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
+		transition: background 0.3s var(--article-ease);
+
+		&:hover {
+			background: color-mix(in srgb, var(--fg) 7%, var(--bg));
+		}
+	}
+
+	/* Меню слоёв -- карточка под кнопкой, как подсказка (i) */
+	.figure3d__menu {
+		inset: auto;
+		top: calc(max(12px, env(safe-area-inset-top)) + 44px);
+		right: max(12px, env(safe-area-inset-right));
+		display: none;
+		flex-direction: column;
+		min-width: 200px;
+		max-width: calc(100% - 24px);
+		max-height: calc(100% - 120px);
+		margin: 0;
+		padding: 6px;
+		border: 0;
+		border-radius: 16px;
+		font-size: 14px;
+		color: var(--fg);
+		background: var(--bg);
+		box-shadow:
+			0 8px 24px rgb(0 0 0 / 14%),
+			inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
+
+		&:popover-open {
+			display: flex;
+		}
+	}
+
+	/* Строка слоя: галочка у показанного, без неё -- слой спрятан */
+	.figure3d__layer {
+		cursor: pointer;
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		padding: 9px 12px 9px 10px;
+		border: 0;
+		border-radius: 10px;
+		font: inherit;
+		color: var(--fg);
+		text-align: left;
+		white-space: nowrap;
+		background: none;
+		transition: background 0.3s var(--article-ease);
+
+		&:hover {
+			background: color-mix(in srgb, var(--fg) 7%, transparent);
+		}
+
+		&[aria-pressed='false'] {
+			color: var(--muted);
+		}
+	}
+
+	.figure3d__check {
+		display: inline-flex;
+		flex: none;
+		width: 16px;
+		height: 16px;
+		color: var(--accent);
+
+		[aria-pressed='false'] > & {
+			visibility: hidden;
+		}
+	}
+
 	.figure3d__about {
 		inset: auto;
 		top: calc(max(12px, env(safe-area-inset-top)) + 44px);
@@ -340,7 +439,6 @@
 		gap: 4px;
 		align-items: center;
 		justify-content: center;
-		/* У модели бывает с десяток тумблеров: они переносятся на следующую строку, а не за край */
 		max-width: min(100%, 860px);
 		padding: 4px;
 		border-radius: 22px;
@@ -349,8 +447,7 @@
 		backdrop-filter: blur(12px);
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
 
-		/* В одну строку на телефоне панель не влезает: сверху запуск и ползунок во всю ширину,
-		   под ними чип */
+		/* На телефоне ползунок во всю ширину */
 		@media (--below-sm) {
 			width: 100%;
 		}
@@ -444,43 +541,11 @@
 		text-align: right;
 	}
 
-	/* Чип как в переключателе частоты: нажатый залит акцентом */
-	.figure3d__chip {
-		cursor: pointer;
-		display: inline-flex;
-		gap: 6px;
-		align-items: center;
-		padding: 8px 14px;
-		border: 0;
-		border-radius: 999px;
-		font: inherit;
-		font-weight: 500;
-		color: var(--fg);
-		white-space: nowrap;
-		background: transparent;
-		transition:
-			color 0.3s var(--article-ease),
-			background 0.3s var(--article-ease);
-
-		&:hover:not(:disabled, [aria-pressed='true']) {
-			background: color-mix(in srgb, var(--fg) 8%, transparent);
-		}
-
-		&[aria-pressed='true'] {
-			color: var(--bg);
-			background: var(--accent);
-		}
-
-		&:disabled {
-			cursor: default;
-			opacity: 0.5;
-		}
-	}
-
 	.figure3d__back,
 	.figure3d__info,
+	.figure3d__layers,
+	.figure3d__layer,
 	.figure3d__play,
-	.figure3d__chip,
 	.figure3d__slider {
 		&:focus-visible {
 			outline: 2px solid var(--accent);

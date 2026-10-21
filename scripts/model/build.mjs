@@ -262,7 +262,29 @@ if (cfg.rig) {
 
 	console.log('rig', JSON.stringify(joints, null, 1))
 
+	const share = (anchors) => Object.entries(anchors).map(([bone, share]) => ({ points: points[bone], share }))
+
 	for (const [name, group] of Object.entries(cfg.rig.groups)) {
+		// Мышца между неподвижной грудной клеткой и лопаткой (широчайшая над нижним углом): `_FOLLOW` --
+		// насколько вершина идёт за суставом `follow.joint` целиком, от 0 у рёбер до 1 у лопатки
+		if (group.follow) {
+			const { weight } = anchorWeights(points[name], share(group.follow.anchors))
+			// Частичный вес смешивает два положения и уводит вершину под рёбра: между `edge` [lo, hi]
+			// вес сжимается к 0 или 1, и смешанной остаётся узкая полоса
+			const [lo, hi] = group.follow.edge ?? [0, 1]
+
+			for (let i = 0; i < weight.length; i++) {
+				const t = Math.min(1, Math.max(0, (weight[i] - lo) / (hi - lo)))
+
+				weight[i] = t * t * (3 - 2 * t)
+			}
+
+			prims[name].setAttribute(
+				'_FOLLOW',
+				doc.createAccessor().setType('SCALAR').setArray(weight).setBuffer(buffer),
+			)
+		}
+
 		if (!group.weighted) continue
 
 		// Подвижная -- кости, которые идут за суставом; неподвижная -- те, от которых мышца начинается
@@ -271,10 +293,7 @@ if (cfg.rig) {
 			Object.keys(cfg.rig.groups).filter((g) => cfg.rig.groups[g].joint === group.weighted.joint)
 		const { anchors } = group.weighted
 		const { weight, tendon } = anchors
-			? anchorWeights(
-					points[name],
-					Object.entries(anchors).map(([bone, share]) => ({ points: points[bone], share })),
-				)
+			? anchorWeights(points[name], share(anchors))
 			: muscleWeights(points[name], merge(group.weighted.fixed), merge(moving), group.weighted.reach)
 		// Связка между двумя подвижными костями (надколенника: надколенник идёт на 2/3 угла колена,
 		// большеберцовая -- на весь): вес от доли одной кости до доли другой

@@ -112,6 +112,27 @@ varying float vTendon;`,
 }
 
 /**
+ * Мышцы между неподвижной грудной клеткой и подвижной лопаткой (`_FOLLOW`, scripts/model/build.mjs):
+ * вершина смешивает покой и положение сустава. Идёт после `rigShader`: у плечевой кости вершина
+ * сначала поворачивается в плечевом суставе, потом едет с лопаткой. `uFollow` -- положение сустава
+ * в координатах меша.
+ */
+function followShader(): ShaderExtra {
+	return {
+		key: 'follow',
+		uniforms: { uFollow: { value: new Matrix4() } },
+		vertexCommon: `
+attribute float _follow;
+uniform mat4 uFollow;`,
+		normal: 'objectNormal = normalize(mix(objectNormal, mat3(uFollow) * objectNormal, _follow));',
+		position: `transformed = mix(transformed, (uFollow * vec4(transformed, 1.0)).xyz, _follow);
+#ifdef MUSCLE
+vFiber = normalize(mix(vFiber, mat3(uFollow) * vFiber, _follow));
+#endif`,
+	}
+}
+
+/**
  * 3D-модель в статье по описателю из GLB (scripts/model/rigs/<name>.json): кости, мышцы, связки,
  * сосуды и нервы. Модель крутят мышью или пальцем, `setMotion()` двигает суставы (scene/rig.ts).
  * `highlight` -- названия структур травмы: они остаются цветными, остальные бледнеют. `direction` --
@@ -157,6 +178,7 @@ export async function createModelViewer(
 	const muscles: ReturnType<typeof createDissolveMaterial>[] = []
 	const named: ReturnType<typeof createDissolveMaterial>[] = []
 	const rigged: { extra: ShaderExtra; joint: string }[] = []
+	const followers: { extra: ShaderExtra; joint: string; mesh: Mesh }[] = []
 	const joints = new Map(rig.joints.map((joint) => [joint.name, joint]))
 
 	// Кости и мышцы -- в группах суставов: группа несёт поворот, а узел внутри -- свой сдвиг
@@ -192,6 +214,13 @@ export async function createModelViewer(
 				)
 
 				rigged.push({ extra, joint: weighted.name })
+			}
+
+			if (group?.follow && frames.has(group.follow.joint)) {
+				const follow = followShader()
+
+				extra = joinShaders(extra, follow)
+				followers.push({ extra: follow, joint: group.follow.joint, mesh })
 			}
 
 			const color = layer === 'muscles' ? muscleColor() : (LAYERS[layer] ?? LAYERS.bones)
@@ -308,6 +337,14 @@ export async function createModelViewer(
 
 			for (const { extra, joint } of rigged)
 				extra.uniforms.uRigAngle.value = MathUtils.degToRad(jointAngle(rig, joints.get(joint)!, deg))
+
+			// Положение сустава в координатах меша: узел несёт сдвиг и масштаб квантования
+			for (const { extra, joint, mesh } of followers)
+				(extra.uniforms.uFollow.value as Matrix4)
+					.copy(mesh.matrix)
+					.invert()
+					.multiply(pose.get(joint)!)
+					.multiply(mesh.matrix)
 
 			dirty = true
 		},

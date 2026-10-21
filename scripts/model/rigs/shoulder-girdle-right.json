@@ -173,6 +173,16 @@
 			"toggle": {
 				"label": "Большая грудная",
 				"visible": true
+			},
+			"follow": {
+				"joint": "ac",
+				"anchors": {
+					"thorax": 0,
+					"clavicle": 0.25,
+					"scapula": 1,
+					"humerus": 1
+				},
+				"edge": [0.4, 0.8]
 			}
 		},
 		{
@@ -181,10 +191,18 @@
 			"ratio": 0.15,
 			"parts": true,
 			"layer": "muscles",
-			"joint": "ac",
 			"toggle": {
 				"label": "Малая грудная",
 				"visible": true
+			},
+			"follow": {
+				"joint": "ac",
+				"anchors": {
+					"thorax": 0,
+					"clavicle": 0.25,
+					"scapula": 1
+				},
+				"edge": [0.4, 0.8]
 			}
 		},
 		{
@@ -201,6 +219,16 @@
 			"toggle": {
 				"label": "Широчайшая",
 				"visible": true
+			},
+			"follow": {
+				"joint": "ac",
+				"anchors": {
+					"thorax": 0,
+					"clavicle": 0.25,
+					"scapula": 1,
+					"humerus": 1
+				},
+				"edge": [0.4, 0.8]
 			}
 		},
 		{
@@ -227,6 +255,15 @@
 			"toggle": {
 				"label": "Артерии",
 				"visible": false
+			},
+			"follow": {
+				"joint": "ac",
+				"anchors": {
+					"thorax": 0,
+					"clavicle": 0.25,
+					"scapula": 1,
+					"humerus": 1
+				}
 			}
 		},
 		{
@@ -242,6 +279,15 @@
 			"toggle": {
 				"label": "Вены",
 				"visible": false
+			},
+			"follow": {
+				"joint": "ac",
+				"anchors": {
+					"thorax": 0,
+					"clavicle": 0.25,
+					"scapula": 1,
+					"humerus": 1
+				}
 			}
 		}
 	],

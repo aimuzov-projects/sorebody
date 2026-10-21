@@ -21,6 +21,8 @@ type RigGroup = {
 	layer: string
 	joint?: string
 	weighted?: { joint: string; fixed: string[] }
+	/** Вершины идут за суставом целиком с весом `_FOLLOW`: мышца от рёбер к лопатке. */
+	follow?: { joint: string }
 	toggle?: { label: string; visible: boolean }
 }
 

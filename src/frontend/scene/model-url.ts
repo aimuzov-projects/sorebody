@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
-import { readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { basename, extname, join } from 'node:path'
 
 const DIR = join(process.cwd(), 'public/model')
 
@@ -25,10 +25,33 @@ export function modelUrl() {
 	return url
 }
 
-/** Адрес 3D-модели для статьи (`public/model/rig/`) с версией по её файлу, как у фигуры. */
-export function rigUrl(name: string) {
-	const file = `rig/${name}.glb`
+/** Адрес файла `public/model/<file>` с версией по его содержимому. */
+function versioned(file: string) {
 	const hash = createHash('sha256').update(readFileSync(join(DIR, file)))
 
 	return `/model/${file}?v=${hash.digest('hex').slice(0, 12)}`
+}
+
+/** Адрес 3D-модели для статьи (`public/model/rig/`) с версией по её файлу, как у фигуры. */
+export function rigUrl(name: string) {
+	return versioned(`rig/${name}.glb`)
+}
+
+const POSTERS = ['light-wide', 'light-narrow', 'dark-wide', 'dark-narrow'] as const
+
+/**
+ * Снимки модели иллюстрации (scripts/model/posters.mjs): светлая и тёмная тема, широкий и узкий
+ * кадр. Лежат под моделью, пока она грузится. Ключ -- имя файла иллюстрации; хоть одного снимка
+ * нет -- `undefined`.
+ */
+export function posterUrls(imageSrc: string) {
+	const key = basename(imageSrc, extname(imageSrc))
+	const file = (kind: string) => `rig/poster/${key}-${kind}.webp`
+
+	if (!POSTERS.every((kind) => existsSync(join(DIR, file(kind))))) return undefined
+
+	return Object.fromEntries(POSTERS.map((kind) => [kind, versioned(file(kind))])) as Record<
+		(typeof POSTERS)[number],
+		string
+	>
 }

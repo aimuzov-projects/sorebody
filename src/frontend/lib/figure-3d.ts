@@ -23,6 +23,8 @@ export type FigureModel = {
 	show: string[]
 	hide: string[]
 	direction?: [number, number, number]
+	/** Снимки модели по теме и кадру: лежат под ней, пока она грузится. */
+	poster?: Record<'light-wide' | 'light-narrow' | 'dark-wide' | 'dark-narrow', string>
 	still?: string
 	note?: string
 }

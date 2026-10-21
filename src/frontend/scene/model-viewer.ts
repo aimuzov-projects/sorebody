@@ -3,24 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-import { IMAGE_HEIGHT, IMAGE_WIDTH } from '#frontend/lib/article-image.ts'
-
 import { LAYERS, partIds } from './detail.ts'
 import { BONE_RIM, createDissolveMaterial, MUSCLE_RIM, type ShaderExtra } from './dissolve.ts'
+import { FOV, NARROW_SHARE, WIDE_HALF } from './model-frame.ts'
 import { framePose, frameSpan, jointAngle, rigPose, type ModelRig } from './rig.ts'
 import { createRenderer, createStudioLights, disposeTree, muscleColor, watchTheme } from './studio.ts'
 
 export type ModelViewer = Awaited<ReturnType<typeof createModelViewer>>
-
-/** Угол камеры по вертикали в кадре иллюстрации, градусы. */
-const FOV = 28
-/** Тангенс половины угла по горизонтали в том же кадре. */
-const WIDE_HALF = Math.tan(MathUtils.degToRad(FOV / 2)) * (IMAGE_WIDTH / IMAGE_HEIGHT)
-/**
- * Доля ширины широкого кадра, которая влезает в узкий (телефон). Не вся: иначе модель мелкая
- * и тонет в пустом месте сверху и снизу; движущаяся кость при этом уходит за край.
- */
-const NARROW_SHARE = 0.5
 /** Покачивание камеры, пока модель не трогали: размах в радианах и период в мс. */
 const SWAY = MathUtils.degToRad(12)
 const SWAY_PERIOD = 6000

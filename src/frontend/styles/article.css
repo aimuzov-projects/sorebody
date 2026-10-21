@@ -559,7 +559,9 @@
 		height: 12px;
 	}
 
-	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет */
+	/* Оглавление сбоку на широком экране: липкое, края гаснут маской; на телефоне его нет.
+	   Своей прокрутки у длинного оглавления нет: оно шагает по пунктам вслед за чтением страницы (lib/reading.ts),
+	   а колесо над ним крутит саму страницу */
 	&__layout {
 		@media (width >= 1100px) {
 			display: grid;
@@ -575,10 +577,11 @@
 		@media (width >= 1100px) {
 			position: sticky;
 			top: var(--header-clear);
-			overflow-y: auto;
+			overflow: hidden;
 			display: block;
 			max-height: calc(100dvh - var(--header-clear) - 48px);
-			padding: 12px 0;
+			/* --toc-tail -- добавка снизу, чтобы последний шаг тоже пришёлся на начало пункта */
+			padding: 12px 0 calc(12px + var(--toc-tail, 0px));
 			mask-image: linear-gradient(to bottom, transparent, #000000 12px, #000000 calc(100% - 24px), transparent);
 		}
 	}
@@ -599,6 +602,9 @@
 		font-size: 15px;
 		color: var(--muted);
 		text-decoration: none;
+		/* Перенос из заголовка релиза (\n в changelog.json): жирный активный пункт шире обычного
+		   и иначе перескакивал бы на вторую строку. В заголовке раздела \n схлопывается в пробел */
+		white-space: pre-line;
 		transition: color 0.35s var(--article-ease);
 
 		&:hover,

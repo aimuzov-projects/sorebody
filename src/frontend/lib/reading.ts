@@ -12,6 +12,7 @@ import { initTocMenu } from './toc-menu.ts'
 export function initReading(root: Element, scroller: HTMLElement | Window, bar: HTMLElement | null) {
 	const box = scroller instanceof Window ? document.documentElement : scroller
 	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+	const toc = root.querySelector<HTMLElement>('.article__toc')
 	const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-toc] a')]
 	const sections = links.flatMap((link) => root.querySelector(`#${CSS.escape(link.hash.slice(1))}`) ?? [])
 	// Уход заголовка в шапку: там, где CSS умеет привязать анимацию к пути заголовка, он всё делает сам
@@ -32,12 +33,43 @@ export function initReading(root: Element, scroller: HTMLElement | Window, bar: 
 	}
 	const span = (p: number, from: number, to: number) => Math.min(1, Math.max(0, (p - from) / (to - from)))
 
+	// Длинное оглавление проезжает за то же время, что и страница: начало видно в начале статьи,
+	// конец -- в конце. Шагает целыми пунктами, поровну на каждый отрезок страницы, чтобы у края
+	// не висела половина строки. На узком экране оно скрыто, и сдвигать нечего
+	let tocStep = -1
+	const moveToc = (progress: number) => {
+		if (!toc) return
+
+		const tail = parseFloat(toc.style.getPropertyValue('--toc-tail')) || 0
+		const max = toc.scrollHeight - toc.clientHeight - tail
+		const items = [...toc.querySelectorAll<HTMLElement>('li')]
+		const first = items[0]?.offsetTop ?? 0
+		const tops = items.map((li) => li.offsetTop - first)
+		// Низ списка редко приходится на начало пункта: место под последним пунктом добирается до
+		// ближайшего, и в конце у верхнего края тоже целая строка
+		const end = tops.find((top) => top >= max) ?? max
+		const steps = tops.filter((top) => top <= end)
+		const step = Math.round(progress * (steps.length - 1))
+
+		toc.style.setProperty('--toc-tail', `${end - max}px`)
+
+		if (step === tocStep) return
+
+		// Первый шаг -- сразу на место: открытая с середины страница не прокручивает оглавление на глазах
+		toc.scrollTo({ top: steps[step], behavior: tocStep < 0 || reduceMotion ? 'instant' : 'smooth' })
+		tocStep = step
+	}
+
 	const update = () => {
 		frame = 0
 		const max = box.scrollHeight - box.clientHeight
 		const y = box.scrollTop
 
-		bar?.style.setProperty('transform', `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`)
+		const progress = max > 0 ? Math.min(1, y / max) : 0
+
+		bar?.style.setProperty('transform', `scaleX(${progress})`)
+
+		moveToc(progress)
 
 		// Те же диапазоны, что animation-range в styles/article.css
 		if (titleByScript) {

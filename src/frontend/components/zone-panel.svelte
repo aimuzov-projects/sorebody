@@ -98,9 +98,13 @@
 		display: flex;
 		flex-direction: column;
 		width: min(440px, calc(50vw - 32px - 4vw));
-		/* backwards, а не both: анимация прозрачности, которая держится после конца, делает
-		   колонку корнем для backdrop-filter, и подложка размывала бы только саму себя */
-		animation: fade-in 0.5s var(--a-ease) backwards;
+
+		/* Проявляются подложка и дети, а не сама колонка: колонка с прозрачностью меньше 1 --
+		   корень для backdrop-filter, и всю анимацию подложка размывала бы только саму себя */
+		&::before,
+		& > :global(*) {
+			animation: fade-in 0.5s var(--a-ease) backwards;
+		}
 
 		&::before {
 			pointer-events: none;

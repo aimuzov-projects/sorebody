@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.16.2](https://github.com/aimuzov-projects/sorebody/compare/v1.16.1...v1.16.2) (2026-10-20)
+
+
+### Bug Fixes
+
+* **scene:** blur the phone index backdrop over the model ([6c3e5bd](https://github.com/aimuzov-projects/sorebody/commit/6c3e5bd736274dd913ab205c04f9c78a16b54398))
+* **scene:** blur the phone index backdrop over the model ([07b0875](https://github.com/aimuzov-projects/sorebody/commit/07b0875e3e5da7a8f6e623732e8bb47d57e7e8e4))
+* **scene:** blur the zone panel backdrop from the first frame ([bd52d72](https://github.com/aimuzov-projects/sorebody/commit/bd52d7265bac9b8cea7d988b1d4c3051166d5a9b))
+* **scene:** blur the zone panel backdrop from the first frame ([c311b51](https://github.com/aimuzov-projects/sorebody/commit/c311b51653170d70277a663ac9f442831d9eecf3))
+* **scene:** render the figure poster in the server HTML ([30586fc](https://github.com/aimuzov-projects/sorebody/commit/30586fce6ced4522e61bdaa9601ec5e507021c15))
+* **scene:** render the figure poster in the server HTML ([bdcfcc8](https://github.com/aimuzov-projects/sorebody/commit/bdcfcc80178349e88a4e73b373ef77d23b78ccd7))
+* **scene:** render the figure poster in the server HTML on phone home pages ([24332bd](https://github.com/aimuzov-projects/sorebody/commit/24332bd620d11a3056af34dfe42ca887f350a484))
+* **scene:** render the figure poster in the server HTML on phone home pages ([3efc471](https://github.com/aimuzov-projects/sorebody/commit/3efc471cc3d3ced401772c54190a0a3f564407e7))
+
+## [1.16.1](https://github.com/aimuzov-projects/sorebody/compare/v1.16.0...v1.16.1) (2026-10-20)
+
+
+### Bug Fixes
+
+* **deps:** move to infra-site-kit v2 with base.css ([1f62b89](https://github.com/aimuzov-projects/sorebody/commit/1f62b899046cb9cb78b20d58e706997946d79a3a))
+* **deps:** move to infra-site-kit v2 with base.css ([156950c](https://github.com/aimuzov-projects/sorebody/commit/156950c62c2a982bf58b3a59a499f65a3255db7a))
+* **scene:** line the phone zone header up with the article bar ([f47eef2](https://github.com/aimuzov-projects/sorebody/commit/f47eef2a9703c3a6cf0fecd808307ad8f985b4a7))
+* **scene:** line the phone zone header up with the article bar ([a30d8e5](https://github.com/aimuzov-projects/sorebody/commit/a30d8e526ea18c6cd9eec8b5fc43898e6461976c))
+* **scene:** preload the figure poster with the page ([3376767](https://github.com/aimuzov-projects/sorebody/commit/337676778d03a455033247c907c0dc1d4008c111))
+* **scene:** preload the figure poster with the page ([b7419f6](https://github.com/aimuzov-projects/sorebody/commit/b7419f66c43914f11c2e8b4f85c0ea390f591c8a))
+
 ## [1.16.0](https://github.com/aimuzov-projects/sorebody/compare/v1.15.1...v1.16.0) (2026-10-20)
 
 

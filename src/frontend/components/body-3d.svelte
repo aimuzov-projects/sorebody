@@ -285,6 +285,14 @@
 	let posterRect = $state<{ left: number; top: number; width: number; height: number } | null>(null)
 	/** Постер ещё в DOM: после первого кадра он гаснет и уходит. */
 	let posterShown = $state(true)
+	/**
+	 * Стартовый кадр из серверного HTML (components/scene-poster.astro): постер стоит там ещё до JS
+	 * сцены. С монтированием сцена ставит кадр к себе и дальше ведёт постер по posterRect.
+	 */
+	const startEl = document.querySelector<HTMLElement>('.body3d__start')
+	const posterEl = startEl?.querySelector<HTMLElement>('.body3d__poster')
+	/** Полоса фигуры на телефоне главной: есть только там (scene-poster.astro). */
+	const bandEl = startEl?.querySelector<HTMLElement>('.body3d__start-band')
 
 	/** `?poster` -- рендер постера скриптом: кадр POSTER_SHIFT, фигура не вертится. */
 	/** Флаги адреса (`?poster`, `?scene`, `?lite`) на входе: openRegion заменит адрес хешем зоны. */
@@ -292,11 +300,18 @@
 	const posterMode = flags.has('poster')
 
 	/**
-	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой: её высота
-	 * зависит от экрана и от того, что в шторке, поэтому меряем по месту. offsetTop, а не
-	 * getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
+	 * Сдвиг кадра главной. На телефоне фигура заполняет полосу между шапкой и шторкой. На главной
+	 * полоса -- из CSS серверного постера: по ней он стоит до JS, и модель встаёт туда же. На
+	 * странице движения высота шторки зависит от его травм, поэтому меряем по месту. offsetTop, а
+	 * не getBoundingClientRect: шторка, уходящая при раскрытой зоне, сдвинута transform
 	 */
 	function startShift(width: number, height: number) {
+		if (width < 700 && bandEl) {
+			const band = bandEl.getBoundingClientRect()
+
+			return fitShift(poster.box as never, width, height, band.top, band.bottom)
+		}
+
 		const header = wrap?.querySelector<HTMLElement>('.site-header')
 		const index = wrap?.querySelector<HTMLElement>('.index')
 
@@ -306,7 +321,7 @@
 	}
 
 	function placePoster() {
-		// По сцене, как и живая модель: окно шире на место под полосу прокрутки (scrollbar.css из infra-site-kit)
+		// По сцене, как и живая модель: окно шире на место под полосу прокрутки (base.css из infra-site-kit)
 		const width = wrap?.clientWidth || innerWidth
 		const height = wrap?.clientHeight || innerHeight
 		const shift = startShift(width, height)
@@ -686,8 +701,37 @@
 	/** Компонент смонтирован: статья, открытая с этого момента, проявляется (`fadeUp`). */
 	let mounted = $state(false)
 
+	// Постер на месте фигуры, пока канвас прозрачный: без места (зона или статья по адресу) и без
+	// WebGL его нет, с первым кадром модели он уходит из DOM
+	$effect(() => {
+		if (!posterEl || !mounted) return
+
+		if (!posterShown) {
+			posterEl.remove()
+
+			return
+		}
+
+		posterEl.hidden = !posterRect || status === 'error'
+
+		if (posterRect) {
+			const { style } = posterEl.querySelector('img')!
+
+			style.left = `${posterRect.left}px`
+			style.top = `${posterRect.top}px`
+			style.width = `${posterRect.width}px`
+			style.height = `${posterRect.height}px`
+		}
+	})
+
 	onMount(() => {
 		mounted = true
+
+		// Серверный кадр с постером -- в сцену сразу за канвасом: под индексом и шапкой, как и фигура
+		if (startEl) {
+			canvas.after(startEl)
+			startEl.classList.add('body3d__start--placed')
+		}
 
 		// Щипок трекпада (wheel с ctrlKey) и жесты Safari над сценой масштабируют модель, а не
 		// страницу: иначе вне канваса и у предела зума начинала расти вся вкладка
@@ -1307,21 +1351,7 @@
 >
 	<canvas class="body3d__canvas" bind:this={canvas} aria-label="Фигура человека: выберите зону тела"></canvas>
 
-	<!-- Пока грузится модель, на месте фигуры -- её постер; с первым кадром он уступает канвасу -->
-	{#if posterShown && posterRect && status !== 'error'}
-		<picture class="body3d__poster" aria-hidden="true">
-			<source srcset="/model/poster.webp" type="image/webp" />
-			<img
-				class="body3d__poster-image"
-				src="/model/poster.png"
-				alt=""
-				style:left="{posterRect.left}px"
-				style:top="{posterRect.top}px"
-				style:width="{posterRect.width}px"
-				style:height="{posterRect.height}px"
-			/>
-		</picture>
-	{/if}
+	<!-- Здесь, сразу за канвасом, до первого кадра модели стоит постер из components/scene-poster.astro -->
 
 	<!-- Место -- placeHint (scene/frame.ts): справа от головы или под ногами -->
 	{#if hintShown && posterRect}
@@ -1636,18 +1666,6 @@
 		&__spot[hidden],
 		&__mark[hidden] {
 			display: none;
-		}
-
-		/* Постер стоит на месте фигуры, пока канвас прозрачный, и уходит с её первым кадром */
-		&__poster {
-			pointer-events: none;
-			position: absolute;
-			inset: 0;
-		}
-
-		&__poster-image {
-			position: absolute;
-			max-width: none;
 		}
 
 		&--open &__spot {
@@ -2080,10 +2098,25 @@
 			width: auto;
 			max-height: 56dvh;
 			padding: 20px 20px calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom));
+			/* Гаснут подложка и дети, а не сама шторка: шторка с прозрачностью меньше 1 -- корень
+			   для backdrop-filter, и пока шёл переход, подложка размывала бы только саму себя */
+			transition: transform 0.45s var(--a-ease);
 
 			/* Под строками место под остров поиска: он висит над нижним краем поверх шторки */
 			&:has(:global(.index__tools)) {
 				padding-bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--tg-bottom) + 64px);
+			}
+
+			/* Подложка лежит в слое позиционированных, а строки шапки и зон -- в обычном потоке,
+			   под ней. Относительное позиционирование поднимает их над подложкой. Остров
+			   поиска не трогаем: он прибит к низу экрана */
+			& > :global(:not(.index__tools)) {
+				position: relative;
+			}
+
+			&::before,
+			& > :global(*) {
+				transition: opacity 0.45s var(--a-ease);
 			}
 		}
 
@@ -2096,6 +2129,9 @@
 				&::before {
 					inset: -96px 0 0;
 					background: linear-gradient(to top, var(--a-bg) calc(100% - 96px), transparent);
+					-webkit-backdrop-filter: none;
+					backdrop-filter: none;
+					mask-image: none;
 				}
 			}
 		}
@@ -2112,10 +2148,26 @@
 			background: linear-gradient(to right, var(--a-bg) 60%, transparent);
 
 			/* Переопределения для телефона -- здесь, а не в блоке шторки выше: там их перебивало это
-			   правило, и шторка получала боковую подложку с резким верхним краем поперёк ореола */
+			   правило, и шторка получала боковую подложку с резким верхним краем поперёк ореола.
+			   Подложка та же, что у раскрытой зоны: поверх модели, полупрозрачная, с размытием,
+			   к фигуре растворяется по smoothstep -- прозрачная за 48 px до шторки. С z-index -1
+			   она уходила под canvas сцены, и ноги фигуры лежали прямо на заголовке */
 			@media (width < 700px) {
-				inset: -40px 0 0;
-				background: linear-gradient(to top, var(--a-bg) 70%, transparent);
+				z-index: auto;
+				inset: -48px 0 0;
+				background: color-mix(in srgb, var(--a-bg) 72%, transparent);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				mask-image: linear-gradient(
+					to bottom,
+					rgb(0 0 0 / 0%) 0px,
+					rgb(0 0 0 / 7%) 12px,
+					rgb(0 0 0 / 26%) 24px,
+					rgb(0 0 0 / 50%) 36px,
+					rgb(0 0 0 / 74%) 48px,
+					rgb(0 0 0 / 93%) 60px,
+					rgb(0 0 0 / 100%) 72px
+				);
 			}
 		}
 
@@ -2126,6 +2178,12 @@
 
 			@media (width < 700px) {
 				transform: translateY(16px);
+				opacity: 1;
+
+				&::before,
+				& > :global(*) {
+					opacity: 0;
+				}
 			}
 
 			@media (--reduced-motion) {

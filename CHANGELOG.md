@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.20.0](https://github.com/aimuzov-projects/sorebody/compare/v1.19.0...v1.20.0) (2026-10-21)
+
+
+### Features
+
+* add running as the fourth sport ([4d9572d](https://github.com/aimuzov-projects/sorebody/commit/4d9572d7e133e7758766a717ce381fc2fe6fdfe3))
+* add running as the fourth sport ([392dfce](https://github.com/aimuzov-projects/sorebody/commit/392dfcebb3e193f4621e24ee5fc09a9895ba32bd))
+
+
+### Bug Fixes
+
+* **article:** add 3D model posters for the new running articles ([17ce022](https://github.com/aimuzov-projects/sorebody/commit/17ce022f581e7ec51ab7a4c8653963cc2f1d0f85))
+
 ## [1.19.0](https://github.com/aimuzov-projects/sorebody/compare/v1.18.0...v1.19.0) (2026-10-21)
 
 

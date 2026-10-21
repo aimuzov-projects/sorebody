@@ -18,7 +18,7 @@ import {
 } from '@gltf-transform/functions'
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer'
 
-import { anchorWeights, buildRig, muscleWeights } from './rig.mjs'
+import { anchorWeights, buildRig, createNearest, muscleWeights } from './rig.mjs'
 import { createSkinTest } from './skin-test.mjs'
 
 const [cfgPath, outPath] = process.argv.slice(2)
@@ -300,6 +300,23 @@ if (cfg.rig) {
 		const [lo, hi] = group.weighted.range ?? [0, 1]
 
 		for (let i = 0; i < weight.length; i++) weight[i] = lo + (hi - lo) * weight[i]
+
+		// Брюшко лежит на неподвижной кости, а за суставом идёт только конец у подвижной: дальше
+		// `falloff` [от, до] метров от подвижных костей вес гаснет. Иначе поверхностный слой мышцы
+		// в паре сантиметров от бедра получал частичный вес по всей длине, и четырёхглавая
+		// с подвздошно-большеберцовым трактом сгибались посреди бедра
+		if (group.weighted.falloff) {
+			const [from, to] = group.weighted.falloff
+			const bones = anchors ? Object.keys(anchors).filter((bone) => anchors[bone] > 0) : moving
+			const near = createNearest(merge(bones))
+			const p = points[name]
+
+			for (let i = 0; i < weight.length; i++) {
+				const t = Math.min(1, Math.max(0, (near(p[i * 3], p[i * 3 + 1], p[i * 3 + 2]) - from) / (to - from)))
+
+				weight[i] *= 1 - t * t * (3 - 2 * t)
+			}
+		}
 
 		const prim = prims[name]
 

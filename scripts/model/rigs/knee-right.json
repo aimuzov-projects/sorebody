@@ -39,7 +39,8 @@
 					"femur": 0,
 					"patella": 0.65,
 					"tibia": 1
-				}
+				},
+				"falloff": [0.03, 0.07]
 			},
 			"toggle": {
 				"label": "Четырёхглавая",
@@ -59,7 +60,8 @@
 			"layer": "muscles",
 			"weighted": {
 				"joint": "knee",
-				"fixed": ["femur"]
+				"fixed": ["femur"],
+				"falloff": [0.03, 0.07]
 			},
 			"toggle": {
 				"label": "Задняя группа",
@@ -90,7 +92,8 @@
 			"layer": "ligaments",
 			"weighted": {
 				"joint": "knee",
-				"fixed": ["femur"]
+				"fixed": ["femur"],
+				"falloff": [0.03, 0.07]
 			}
 		},
 		{

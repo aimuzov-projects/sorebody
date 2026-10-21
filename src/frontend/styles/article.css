@@ -399,8 +399,7 @@
 	}
 
 	/* Кнопка действия, а не пометка: залита акцентом и лежит на фото, подпись -- глагол.
-	   Значок 3D один раз поворачивается, когда кнопка появляется, и снова на наведении:
-	   подсказывает, что модель можно вращать */
+	   Значок 3D всё время покачивается туда-сюда: подсказывает, что модель можно вращать */
 	&__model-open {
 		cursor: pointer;
 		position: absolute;
@@ -450,7 +449,7 @@
 		display: inline-flex;
 		width: 18px;
 		height: 18px;
-		animation: model-turn 1.2s var(--article-ease) 0.8s;
+		animation: model-sway 3.2s ease-in-out infinite;
 
 		@media (--reduced-motion) {
 			animation: none;
@@ -460,14 +459,6 @@
 		& svg {
 			width: 100%;
 			height: 100%;
-		}
-	}
-
-	&__model-open:hover &__model-icon {
-		animation: model-turn-hover 0.9s var(--article-ease);
-
-		@media (--reduced-motion) {
-			animation: none;
 		}
 	}
 
@@ -1283,19 +1274,12 @@
 	}
 }
 
-@keyframes model-turn {
-	50% {
-		rotate: y 180deg;
+@keyframes model-sway {
+	25% {
+		rotate: y -40deg;
 	}
 
-	to {
-		rotate: y 360deg;
-	}
-}
-
-/* Та же анимация под другим именем: иначе на наведении она бы не запустилась заново */
-@keyframes model-turn-hover {
-	to {
-		rotate: y 360deg;
+	75% {
+		rotate: y 40deg;
 	}
 }

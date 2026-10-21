@@ -140,7 +140,8 @@ vFiber = normalize(mix(vFiber, mat3(uFollow) * vFiber, _follow));
  * 3D-модель в статье по описателю из GLB (scripts/model/rigs/<name>.json): кости, мышцы, связки,
  * сосуды и нервы. Модель крутят мышью или пальцем, `setMotion()` двигает суставы (scene/rig.ts).
  * `highlight` -- названия структур травмы: они остаются цветными, остальные бледнеют. `direction` --
- * откуда смотреть, если не так, как в описателе: с той же стороны, что иллюстрация статьи.
+ * откуда смотреть, если не так, как в описателе: с той же стороны, что иллюстрация статьи. `still` --
+ * кость, которая стоит на месте в модели из кадров расчёта; без него на месте бедро.
  * Кадр рисуется, только когда что-то сдвинулось.
  */
 export async function createModelViewer(
@@ -148,6 +149,7 @@ export async function createModelViewer(
 	modelUrl: string,
 	highlight: string[] = [],
 	direction?: [number, number, number],
+	still?: string,
 ) {
 	const renderer = createRenderer(canvas)
 	const scene = new Scene()
@@ -194,6 +196,7 @@ export async function createModelViewer(
 			: rig.joints.map((joint) => [joint.name, new Group()]),
 	)
 	const morphed: Mesh[] = []
+	const stillPose = new Matrix4()
 
 	for (const frame of frames.values()) {
 		frame.matrixAutoUpdate = false
@@ -365,8 +368,16 @@ export async function createModelViewer(
 			if (rig.frames) {
 				const [i, t] = frameSpan(rig.frames.angles, deg)
 
+				// Кадры записаны в системе бедра. Если статья держит на месте другую кость (плато с менисками),
+				// все позы делятся на её позу
+				const anchor =
+					still && rig.frames.poses[still] ? framePose(rig.frames, still, deg, stillPose).invert() : null
+
 				for (const [bone, frame] of frames) {
 					framePose(rig.frames, bone, deg, frame.matrix)
+
+					if (anchor) frame.matrix.premultiply(anchor)
+
 					frame.matrixWorldNeedsUpdate = true
 				}
 

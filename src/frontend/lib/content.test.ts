@@ -182,6 +182,13 @@ for (const doc of injuries) {
 
 			for (const name of [...(model.show ?? []), ...(model.hide ?? [])])
 				assert.ok(groups.includes(name), `${model.name}: ${name}`)
+
+			// Неизвестная неподвижная кость молча оставила бы на месте бедро
+			if (model.still) {
+				const bones = Object.keys(json.scenes[0].extras.rig.frames?.poses ?? {})
+
+				assert.ok(bones.includes(model.still), `${model.name}: still ${model.still}`)
+			}
 		}
 	})
 

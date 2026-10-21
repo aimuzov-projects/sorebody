@@ -2,20 +2,108 @@
 	"title": "3D-модель колена",
 	"frames": "openknee/oks008",
 	"groups": {
-		"femur": { "layer": "bones", "ratio": 0.3 },
+		"femur": {
+			"layer": "bones",
+			"ratio": 0.3,
+			"toggle": {
+				"label": "Бедренная кость",
+				"visible": true
+			}
+		},
 		"tibia": { "layer": "bones", "ratio": 0.3 },
-		"fibula": { "layer": "bones", "ratio": 0.15 },
-		"patella": { "layer": "bones", "ratio": 0.35 },
-		"femoral-cartilage": { "layer": "cartilage", "ratio": 0.25, "still": true },
-		"tibial-cartilage": { "layer": "cartilage", "ratio": 0.12, "still": true },
-		"patellar-cartilage": { "layer": "cartilage", "ratio": 0.15, "still": true },
-		"menisci": { "layer": "cartilage", "ratio": 0.15 },
-		"cruciates": { "layer": "ligaments", "ratio": 0.5 },
-		"collaterals": { "layer": "ligaments", "ratio": 0.35 },
-		"patellar-ligament": { "layer": "tendons", "ratio": 0.15 },
-		"quadriceps-tendon": { "layer": "tendons", "ratio": 0.15 }
+		"fibula": {
+			"layer": "bones",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Малоберцовая кость",
+				"visible": true
+			}
+		},
+		"patella": {
+			"layer": "bones",
+			"ratio": 0.35,
+			"toggle": {
+				"label": "Надколенник",
+				"visible": true
+			}
+		},
+		"femoral-cartilage": {
+			"layer": "cartilage",
+			"ratio": 0.25,
+			"still": true,
+			"toggle": {
+				"label": "Хрящ бедра",
+				"visible": true
+			}
+		},
+		"tibial-cartilage": {
+			"layer": "cartilage",
+			"ratio": 0.12,
+			"still": true,
+			"toggle": {
+				"label": "Хрящ большеберцовой",
+				"visible": true
+			}
+		},
+		"patellar-cartilage": {
+			"layer": "cartilage",
+			"ratio": 0.15,
+			"still": true,
+			"toggle": {
+				"label": "Хрящ надколенника",
+				"visible": true
+			}
+		},
+		"menisci": {
+			"layer": "cartilage",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Мениски",
+				"visible": true
+			}
+		},
+		"cruciates": {
+			"layer": "ligaments",
+			"ratio": 0.5,
+			"toggle": {
+				"label": "Крестообразные связки",
+				"visible": true
+			}
+		},
+		"collaterals": {
+			"layer": "ligaments",
+			"ratio": 0.35,
+			"toggle": {
+				"label": "Боковые связки",
+				"visible": true
+			}
+		},
+		"patellar-ligament": {
+			"layer": "tendons",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Связка надколенника",
+				"visible": true
+			}
+		},
+		"quadriceps-tendon": {
+			"layer": "tendons",
+			"ratio": 0.15,
+			"toggle": {
+				"label": "Сухожилие четырёхглавой",
+				"visible": true
+			}
+		}
 	},
-	"view": { "focus": "menisci", "direction": [-0.35, 0.1, 1], "distance": 4.5 },
-	"motion": { "label": "Согнуть колено", "verb": "сгибание колена", "max": 90 },
+	"view": {
+		"focus": "menisci",
+		"direction": [-0.35, 0.1, 1],
+		"distance": 4.5
+	},
+	"motion": {
+		"label": "Согнуть колено",
+		"verb": "сгибание колена",
+		"max": 90
+	},
 	"about": "Модель и сгибание: Open Knee(s), колено oks008 (правое, мужчина 40 лет), CC BY 4.0, doi:10.18735/b0zv-n395. Сгибание до 90° посчитано авторами методом конечных элементов в FEBio: пассивное, без сил мышц. Кости жёсткие; мениски, связки, связка надколенника и сухожилие четырёхглавой деформируются по расчёту, между кадрами через 5° положения смешиваются. Хрящи в расчёте сжимаются меньше чем на 0,3 мм, этого не видно. Мышц, капсулы, подвздошно-большеберцового тракта и менискобедренных связок в модели нет, поддерживающие связки надколенника в расчёте — пружины без формы и не показаны. Кости обрезаны у сустава"
 }

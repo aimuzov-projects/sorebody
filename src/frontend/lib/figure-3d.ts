@@ -15,7 +15,7 @@ import { probeWebGL } from '#frontend/scene/gpu.ts'
  */
 /**
  * Модель у иллюстрации: адрес GLB, структуры травмы для подсветки, группы, видимые и спрятанные
- * сразу, откуда смотреть (как на иллюстрации) и пометка статьи для (i).
+ * сразу, откуда смотреть (как на иллюстрации), какая кость стоит на месте и пометка статьи для (i).
  */
 export type FigureModel = {
 	url: string
@@ -23,6 +23,7 @@ export type FigureModel = {
 	show: string[]
 	hide: string[]
 	direction?: [number, number, number]
+	still?: string
 	note?: string
 }
 

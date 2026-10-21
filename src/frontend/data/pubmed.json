@@ -1,4 +1,22 @@
 {
+	"8734891": {
+		"authors": "Orchard JW, et al",
+		"title": "Biomechanics of iliotibial band friction syndrome in runners.",
+		"journal": "Am J Sports Med",
+		"year": "1996",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
+		"doi": "10.1177/036354659602400321"
+	},
+	"8996464": {
+		"authors": "Jones DL, et al",
+		"title": "Diagnosis of trochanteric bursitis versus femoral neck stress fracture.",
+		"journal": "Phys Ther",
+		"year": "1997",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.1093/ptj/77.1.58"
+	},
 	"10434080": {
 		"authors": "Noonan TJ, et al",
 		"title": "Muscle strain injury: diagnosis and treatment.",
@@ -137,6 +155,15 @@
 		"doi": "10.1136/bjsm.2003.009357",
 		"pmcid": "PMC1724962"
 	},
+	"15829535": {
+		"authors": "Almond CS, et al",
+		"title": "Hyponatremia among runners in the Boston Marathon.",
+		"journal": "N Engl J Med",
+		"year": "2005",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Research Support, U.S. Gov't, P.H.S."],
+		"medline": true,
+		"doi": "10.1056/NEJMoa043901"
+	},
 	"15851777": {
 		"authors": "Järvinen TA, et al",
 		"title": "Muscle injuries: biology and treatment.",
@@ -220,6 +247,24 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD000380.pub2"
 	},
+	"17465608": {
+		"authors": "Clarkson PM",
+		"title": "Exertional rhabdomyolysis and acute renal failure in marathon runners.",
+		"journal": "Sports Med",
+		"year": "2007",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.2165/00007256-200737040-00022"
+	},
+	"17473783": {
+		"authors": "Armstrong LE, et al",
+		"title": "American College of Sports Medicine position stand. Exertional heat illness during training and competition.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2007",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1249/MSS.0b013e31802fa199"
+	},
 	"17538084": {
 		"authors": "Peul WC, et al",
 		"title": "Surgery versus prolonged conservative treatment for sciatica.",
@@ -234,6 +279,25 @@
 		],
 		"medline": true,
 		"doi": "10.1056/NEJMoa064039"
+	},
+	"17678660": {
+		"authors": "Segal NA, et al",
+		"title": "Greater trochanteric pain syndrome: epidemiology and associated factors.",
+		"journal": "Arch Phys Med Rehabil",
+		"year": "2007",
+		"types": ["Journal Article", "Multicenter Study", "Research Support, N.I.H., Extramural"],
+		"medline": true,
+		"doi": "10.1016/j.apmr.2007.04.014",
+		"pmcid": "PMC2907104"
+	},
+	"18059987": {
+		"authors": "Casa DJ, et al",
+		"title": "Validity of devices that assess body temperature during outdoor exercise in the heat.",
+		"journal": "J Athl Train",
+		"year": "2007",
+		"types": ["Comparative Study", "Journal Article", "Validation Study"],
+		"medline": true,
+		"pmcid": "PMC1978469"
 	},
 	"18059999": {
 		"authors": "Beam JW",
@@ -270,6 +334,15 @@
 		"medline": true,
 		"doi": "10.4085/1062-6050-43.6.600",
 		"pmcid": "PMC2582552"
+	},
+	"19530750": {
+		"authors": "Moen MH, et al",
+		"title": "Medial tibial stress syndrome: a critical review.",
+		"journal": "Sports Med",
+		"year": "2009",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.2165/00007256-200939070-00002"
 	},
 	"19589822": {
 		"authors": "Hupperets MD, et al",
@@ -326,6 +399,16 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD007612.pub2",
 		"pmcid": "PMC12161166"
+	},
+	"20581720": {
+		"authors": "Heiderscheit BC, et al",
+		"title": "Effects of step rate manipulation on joint mechanics during running.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2011",
+		"types": ["Journal Article", "Research Support, N.I.H., Extramural"],
+		"medline": true,
+		"doi": "10.1249/MSS.0b013e3181ebedf4",
+		"pmcid": "PMC3022995"
 	},
 	"20675643": {
 		"authors": "Chiodo CP, et al",
@@ -458,6 +541,34 @@
 		"doi": "10.1136/bmj.e787",
 		"pmcid": "PMC3282676"
 	},
+	"22464032": {
+		"authors": "Moen MH, et al",
+		"title": "The treatment of medial tibial stress syndrome in athletes; a randomized clinical trial.",
+		"journal": "Sports Med Arthrosc Rehabil Ther Technol",
+		"year": "2012",
+		"types": ["Journal Article"],
+		"doi": "10.1186/1758-2555-4-12",
+		"pmcid": "PMC3352296"
+	},
+	"22735197": {
+		"authors": "Salzler MJ, et al",
+		"title": "Injuries observed in minimalist runners.",
+		"journal": "Foot Ankle Int",
+		"year": "2012",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.3113/FAI.2012.0262"
+	},
+	"22827721": {
+		"authors": "Lopes AD, et al",
+		"title": "What are the main running-related musculoskeletal injuries? A Systematic Review.",
+		"journal": "Sports Med",
+		"year": "2012",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1007/BF03262301",
+		"pmcid": "PMC4269925"
+	},
 	"22926296": {
 		"authors": "Sonnery-Cottet B, et al",
 		"title": "Proximal hamstring avulsion in a professional soccer player.",
@@ -484,6 +595,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.2165/11635400-000000000-00000"
+	},
+	"23016001": {
+		"authors": "Mohseni M, et al",
+		"title": "Prevalence of hyponatremia, renal dysfunction, and other electrolyte abnormalities among runners before and after completing a marathon or half marathon.",
+		"journal": "Sports Health",
+		"year": "2011",
+		"types": ["Journal Article"],
+		"doi": "10.1177/1941738111400561",
+		"pmcid": "PMC3445140"
 	},
 	"23220802": {
 		"authors": "Scaia V, et al",
@@ -540,6 +660,15 @@
 		"doi": "10.1016/j.jus.2007.09.007",
 		"pmcid": "PMC3553076"
 	},
+	"23439417": {
+		"authors": "Ridge ST, et al",
+		"title": "Foot bone marrow edema after a 10-wk transition to minimalist running shoes.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2013",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1249/MSS.0b013e3182874769"
+	},
 	"23467966": {
 		"authors": "Ekstrand J, et al",
 		"title": "Fifth metatarsal fractures among male professional footballers: a potential career-ending disease.",
@@ -566,6 +695,14 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1016/j.fas.2012.12.006"
+	},
+	"23593555": {
+		"authors": "Nielsen RO, et al",
+		"title": "Classifying running-related injuries based upon etiology, with emphasis on volume and pace.",
+		"journal": "Int J Sports Phys Ther",
+		"year": "2013",
+		"types": ["Journal Article"],
+		"pmcid": "PMC3625796"
 	},
 	"23624324": {
 		"authors": "Lundblad M, et al",
@@ -612,6 +749,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2013-092383"
 	},
+	"23979968": {
+		"authors": "Winters M, et al",
+		"title": "Treatment of medial tibial stress syndrome: a systematic review.",
+		"journal": "Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1007/s40279-013-0087-0"
+	},
 	"24065456": {
 		"authors": "Lenza M, et al",
 		"title": "Magnetic resonance imaging, magnetic resonance arthrography and ultrasonography for assessing rotator cuff tears in people with shoulder pain for whom surgery is being considered.",
@@ -644,6 +790,24 @@
 		"year": "2013",
 		"types": ["Journal Article"],
 		"doi": "10.1519/JSC.0000000000000318"
+	},
+	"24357642": {
+		"authors": "Ryan M, et al",
+		"title": "Examining injury risk and pain perception in runners using minimalist footwear.",
+		"journal": "Br J Sports Med",
+		"year": "2014",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2012-092061"
+	},
+	"24379729": {
+		"authors": "Newman P, et al",
+		"title": "Risk factors associated with medial tibial stress syndrome in runners: a systematic review and meta-analysis.",
+		"journal": "Open Access J Sports Med",
+		"year": "2013",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2147/OAJSM.S39331",
+		"pmcid": "PMC3873798"
 	},
 	"24570615": {
 		"authors": "Tatar Y, et al",
@@ -708,6 +872,16 @@
 		"doi": "10.3109/17453674.2014.920991",
 		"pmcid": "PMC4062801"
 	},
+	"24923269": {
+		"authors": "Nielsen RO, et al",
+		"title": "A prospective study on time to recovery in 254 injured novice runners.",
+		"journal": "PLoS One",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1371/journal.pone.0099877",
+		"pmcid": "PMC4055729"
+	},
 	"24982707": {
 		"authors": "Tietze DC, et al",
 		"title": "Exertional rhabdomyolysis in the athlete: a clinical review.",
@@ -716,6 +890,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.1177/1941738114523544",
 		"pmcid": "PMC4065559"
+	},
+	"24983342": {
+		"authors": "Demartini JK, et al",
+		"title": "Effectiveness of cold water immersion in the treatment of exertional heat stroke at the Falmouth Road Race.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2015",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1249/MSS.0000000000000409"
 	},
 	"25035175": {
 		"authors": "Nawabi DH, et al",
@@ -735,6 +918,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2013-093246"
 	},
+	"25155475": {
+		"authors": "Nielsen RØ, et al",
+		"title": "Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2014",
+		"types": ["Journal Article", "Observational Study", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.2519/jospt.2014.5164"
+	},
 	"25157180": {
 		"authors": "Ardern CL, et al",
 		"title": "Fifty-five per cent return to competitive sport following anterior cruciate ligament reconstruction surgery: an updated systematic review and meta-analysis including aspects of physical functioning and contextual factors.",
@@ -743,6 +935,15 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2013-093398"
+	},
+	"25185588": {
+		"authors": "Hamstra-Wright KL, et al",
+		"title": "Risk factors for medial tibial stress syndrome in physically active individuals such as runners and military personnel: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2014-093462"
 	},
 	"25280620": {
 		"authors": "Haley CA, et al",
@@ -844,6 +1045,16 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2014-094414"
 	},
+	"25851584": {
+		"authors": "Kluitenberg B, et al",
+		"title": "What are the Differences in Injury Proportions Between Different Populations of Runners? A Systematic Review and Meta-Analysis.",
+		"journal": "Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Research Support, Non-U.S. Gov't", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1007/s40279-015-0331-x",
+		"pmcid": "PMC4513221"
+	},
 	"25900943": {
 		"authors": "Olds M, et al",
 		"title": "Risk factors which predispose first-time traumatic anterior shoulder dislocations to recurrent instability in adults: a systematic review and meta-analysis.",
@@ -881,6 +1092,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1097/JSA.0000000000000065"
+	},
+	"25969366": {
+		"authors": "Grimaldi A, et al",
+		"title": "Gluteal Tendinopathy: A Review of Mechanisms, Assessment and Management.",
+		"journal": "Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
+		"medline": true,
+		"doi": "10.1007/s40279-015-0336-5"
 	},
 	"26018970": {
 		"authors": "Beyer R, et al",
@@ -926,6 +1146,20 @@
 		"medline": true,
 		"doi": "10.1111/edt.12187"
 	},
+	"26070646": {
+		"authors": "Lenhart RL, et al",
+		"title": "Influence of step rate and quadriceps load distribution on patellofemoral cartilage contact pressures during running.",
+		"journal": "J Biomech",
+		"year": "2015",
+		"types": [
+			"Journal Article",
+			"Research Support, N.I.H., Extramural",
+			"Research Support, U.S. Gov't, Non-P.H.S."
+		],
+		"medline": true,
+		"doi": "10.1016/j.jbiomech.2015.04.036",
+		"pmcid": "PMC4536167"
+	},
 	"26188245": {
 		"authors": "Prather H, et al",
 		"title": "Are Elite Female Soccer Athletes at Risk for Disordered Eating Attitudes, Menstrual Dysfunction, and Stress Fractures?",
@@ -944,6 +1178,16 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1177/0363546515598995"
+	},
+	"26381473": {
+		"authors": "Casa DJ, et al",
+		"title": "National Athletic Trainers' Association Position Statement: Exertional Heat Illnesses.",
+		"journal": "J Athl Train",
+		"year": "2015",
+		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-50.9.07",
+		"pmcid": "PMC4639891"
 	},
 	"26463119": {
 		"authors": "Lankhorst NE, et al",
@@ -991,6 +1235,15 @@
 		"medline": true,
 		"doi": "10.1186/s12891-015-0808-7",
 		"pmcid": "PMC4647699"
+	},
+	"26582192": {
+		"authors": "Wright AA, et al",
+		"title": "Risk factors associated with lower extremity stress fractures in runners: a systematic review with meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2015",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2015-094828"
 	},
 	"26614466": {
 		"authors": "Martetschläger F, et al",
@@ -1063,6 +1316,24 @@
 		"types": ["Journal Article"],
 		"doi": "10.1177/2325967115623212",
 		"pmcid": "PMC4710128"
+	},
+	"26818150": {
+		"authors": "Luedke LE, et al",
+		"title": "Influence of Step Rate on Shin Injury and Anterior Knee Pain in High School Runners.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1249/MSS.0000000000000890"
+	},
+	"26887415": {
+		"authors": "Edouard P, et al",
+		"title": "Muscle injury is the principal injury type and hamstring muscle injury is the first injury diagnosis during top-level international athletics championships between 2007 and 2015.",
+		"journal": "Br J Sports Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2015-095559"
 	},
 	"26888072": {
 		"authors": "Pollock N, et al",
@@ -1172,6 +1443,15 @@
 		"doi": "10.1136/bjsports-2016-096106",
 		"pmcid": "PMC5136353"
 	},
+	"27265356": {
+		"authors": "Neubauer T, et al",
+		"title": "Stress fractures of the femoral neck in runners: a review.",
+		"journal": "Res Sports Med",
+		"year": "2016",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1080/15438627.2016.1191489"
+	},
 	"27301374": {
 		"authors": "Chavez LO, et al",
 		"title": "Beyond muscle destruction: a systematic review of rhabdomyolysis for clinical practice.",
@@ -1256,6 +1536,16 @@
 		"doi": "10.4103/2229-5151.190648",
 		"pmcid": "PMC5051056"
 	},
+	"27729482": {
+		"authors": "Reinking MF, et al",
+		"title": "Medial Tibial Stress Syndrome in Active Individuals: A Systematic Review and Meta-analysis of Risk Factors.",
+		"journal": "Sports Health",
+		"year": "2017",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1177/1941738116673299",
+		"pmcid": "PMC5435145"
+	},
 	"27732325": {
 		"authors": "Moreira CA, et al",
 		"title": "Stress Fractures: Concepts and Therapeutics.",
@@ -1318,6 +1608,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546516676062"
 	},
+	"28179260": {
+		"authors": "Winters M, et al",
+		"title": "Medial tibial stress syndrome can be diagnosed reliably using history and physical examination.",
+		"journal": "Br J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2016-097037"
+	},
 	"28188545": {
 		"authors": "Bachoura A, et al",
 		"title": "A review of mallet finger and jersey finger injuries in the athlete.",
@@ -1372,6 +1671,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1016/j.csm.2016.11.006"
+	},
+	"28316971": {
+		"authors": "Hew-Butler T, et al",
+		"title": "Exercise-Associated Hyponatremia: 2017 Update.",
+		"journal": "Front Med (Lausanne)",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3389/fmed.2017.00021",
+		"pmcid": "PMC5334560"
 	},
 	"28353415": {
 		"authors": "Carruthers KH, et al",
@@ -1566,6 +1874,20 @@
 		"doi": "10.1007/s10029-017-1668-x",
 		"pmcid": "PMC5809582"
 	},
+	"29336710": {
+		"authors": "Belval LN, et al",
+		"title": "Consensus Statement- Prehospital Care of Exertional Heat Stroke.",
+		"journal": "Prehosp Emerg Care",
+		"year": "2018",
+		"types": [
+			"Journal Article",
+			"Research Support, Non-U.S. Gov't",
+			"Research Support, U.S. Gov't, Non-P.H.S.",
+			"Consensus Statement"
+		],
+		"medline": true,
+		"doi": "10.1080/10903127.2017.1392666"
+	},
 	"29510653": {
 		"authors": "Thorborg K, et al",
 		"title": "Clinical Examination, Diagnostic Imaging, and Testing of Athletes With Groin Pain: An Evidence-Based Approach to Effective Management.",
@@ -1622,6 +1944,16 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2017-097796"
 	},
+	"29720374": {
+		"authors": "Mellor R, et al",
+		"title": "Education plus exercise versus corticosteroid injection use versus a wait and see approach on global outcome and pain from gluteal tendinopathy: prospective, single blinded, randomised clinical trial.",
+		"journal": "BMJ",
+		"year": "2018",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1136/bmj.k1662",
+		"pmcid": "PMC5930290"
+	},
 	"29734573": {
 		"authors": "Mendes AF Jr, et al",
 		"title": "Hyperbaric oxygen therapy as treatment for bilateral arm compartment syndrome after CrossFit: case report and literature review.",
@@ -1656,6 +1988,15 @@
 		"types": ["Journal Article", "Randomized Controlled Trial"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2017-098937"
+	},
+	"29895234": {
+		"authors": "Ramskov D, et al",
+		"title": "Progression in Running Intensity or Running Volume and the Development of Specific Injuries in Recreational Runners: Run Clever, a Randomized Trial Using Competing Risks.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2018",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.2519/jospt.2018.8062"
 	},
 	"29936432": {
 		"authors": "Kavaja L, et al",
@@ -1728,6 +2069,15 @@
 		"medline": true,
 		"doi": "10.1111/edt.12437"
 	},
+	"30193080": {
+		"authors": "Bramah C, et al",
+		"title": "Is There a Pathological Gait Associated With Common Soft Tissue Running Injuries?",
+		"journal": "Am J Sports Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/0363546518793657"
+	},
 	"30242107": {
 		"authors": "Neal BS, et al",
 		"title": "Risk factors for patellofemoral pain: a systematic review and meta-analysis.",
@@ -1746,6 +2096,16 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD005654.pub4",
 		"pmcid": "PMC6516955"
+	},
+	"30312310": {
+		"authors": "Mulvad B, et al",
+		"title": "Diagnoses and time to recovery among injured recreational runners in the RUN CLEVER trial.",
+		"journal": "PLoS One",
+		"year": "2018",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1371/journal.pone.0204742",
+		"pmcid": "PMC6193581"
 	},
 	"30323059": {
 		"authors": "van Klij P, et al",
@@ -1855,6 +2215,15 @@
 		"medline": true,
 		"doi": "10.1136/bmj.l294"
 	},
+	"30787648": {
+		"authors": "Francis P, et al",
+		"title": "The Proportion of Lower Limb Running Injuries by Gender, Anatomical Location and Specific Pathology: A Systematic Review.",
+		"journal": "J Sports Sci Med",
+		"year": "2019",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"pmcid": "PMC6370968"
+	},
 	"30788227": {
 		"authors": "Goffin JS, et al",
 		"title": "Return to sport following scaphoid fractures: A systematic review and meta-analysis.",
@@ -1935,6 +2304,15 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD004962.pub4",
 		"pmcid": "PMC6510174"
+	},
+	"31098646": {
+		"authors": "Winters M",
+		"title": "The diagnosis and management of medial tibial stress syndrome : An evidence update.",
+		"journal": "Unfallchirurg",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1007/s00113-019-0667-z"
 	},
 	"31171515": {
 		"authors": "López-Valenciano A, et al",
@@ -2109,6 +2487,15 @@
 		"medline": true,
 		"doi": "10.1097/JSM.0000000000000543"
 	},
+	"31722935": {
+		"authors": "Edouard P, et al",
+		"title": "Injury frequency and characteristics (location, type, cause and severity) differed significantly among athletics ('track and field') disciplines during 14 international championships (2007-2018): implications for medical service planning.",
+		"journal": "Br J Sports Med",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2019-100717"
+	},
 	"31775556": {
 		"authors": "Saraceni N, et al",
 		"title": "To Flex or Not to Flex? Is There a Relationship Between Lumbar Spine Flexion During Lifting and Low Back Pain? A Systematic Review With Meta-analysis.",
@@ -2143,6 +2530,15 @@
 		"medline": true,
 		"doi": "10.1097/MEJ.0000000000000658"
 	},
+	"31892510": {
+		"authors": "Lagas IF, et al",
+		"title": "Incidence of Achilles tendinopathy and associated risk factors in recreational runners: A large prospective cohort study.",
+		"journal": "J Sci Med Sport",
+		"year": "2020",
+		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2019.12.013"
+	},
 	"31910838": {
 		"authors": "Krastman P, et al",
 		"title": "Diagnostic accuracy of history taking, physical examination and imaging for phalangeal, metacarpal and carpal fractures: a systematic review update.",
@@ -2161,6 +2557,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1016/j.apmr.2019.12.017"
+	},
+	"32044213": {
+		"authors": "Bennett BL, et al",
+		"title": "Wilderness Medical Society Clinical Practice Guidelines for the Management of Exercise-Associated Hyponatremia: 2019 Update.",
+		"journal": "Wilderness Environ Med",
+		"year": "2020",
+		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2019.11.003"
 	},
 	"32100894": {
 		"authors": "Vedung F, et al",
@@ -2206,6 +2611,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1007/s00167-020-05930-9"
+	},
+	"32202487": {
+		"authors": "Rojas-Valverde D, et al",
+		"title": "Exertional rhabdomyolysis and acute kidney injury in endurance sports: A systematic review.",
+		"journal": "Eur J Sport Sci",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1080/17461391.2020.1746837"
 	},
 	"32253193": {
 		"authors": "Crossley KM, et al",
@@ -2334,6 +2748,16 @@
 		"medline": true,
 		"doi": "10.23736/S0022-4707.20.10364-5"
 	},
+	"32493481": {
+		"authors": "Maselli F, et al",
+		"title": "Prevalence and incidence of low back pain among runners: a systematic review.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1186/s12891-020-03357-4",
+		"pmcid": "PMC7271446"
+	},
 	"32548012": {
 		"authors": "Holschen M, et al",
 		"title": "Traumatic Tear of the Latissimus Dorsi Tendon in a CrossFit Athlete: Surgical Management.",
@@ -2397,6 +2821,36 @@
 		"doi": "10.2147/OAJSM.S262990",
 		"pmcid": "PMC7490067"
 	},
+	"32987646": {
+		"authors": "Szymanski MR, et al",
+		"title": "Emergency Medical Service Directors' Protocols for Exertional Heat Stroke.",
+		"journal": "Medicina (Kaunas)",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.3390/medicina56100494",
+		"pmcid": "PMC7598696"
+	},
+	"32993700": {
+		"authors": "Danielsson A, et al",
+		"title": "The mechanism of hamstring injuries - a systematic review.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1186/s12891-020-03658-8",
+		"pmcid": "PMC7526261"
+	},
+	"33037592": {
+		"authors": "Bontemps B, et al",
+		"title": "Downhill Running: What Are The Effects and How Can We Adapt? A Narrative Review.",
+		"journal": "Sports Med",
+		"year": "2020",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1007/s40279-020-01355-z",
+		"pmcid": "PMC7674385"
+	},
 	"33038045": {
 		"authors": "Cassoudesalle H, et al",
 		"title": "Video analysis of concussion mechanisms and immediate management in French men's professional football (soccer) from 2015 to 2019.",
@@ -2413,6 +2867,16 @@
 		"year": "2020",
 		"types": ["Journal Article", "Review"],
 		"medline": true
+	},
+	"33066291": {
+		"authors": "Menéndez C, et al",
+		"title": "Medial Tibial Stress Syndrome in Novice and Recreational Runners: A Systematic Review.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.3390/ijerph17207457",
+		"pmcid": "PMC7602098"
 	},
 	"33069905": {
 		"authors": "Björnsson Hallgren HC, et al",
@@ -2459,6 +2923,16 @@
 		"medline": true,
 		"doi": "10.1007/s00167-020-06345-2"
 	},
+	"33167534": {
+		"authors": "Filep EM, et al",
+		"title": "Exertional Heat Stroke, Modality Cooling Rate, and Survival Outcomes: A Systematic Review.",
+		"journal": "Medicina (Kaunas)",
+		"year": "2020",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.3390/medicina56110589",
+		"pmcid": "PMC7694459"
+	},
 	"33188561": {
 		"authors": "de Souza BC, et al",
 		"title": "Occurrence and patterns of orofacial injury in CrossFit practitioners.",
@@ -2493,6 +2967,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1177/1071100720969633"
+	},
+	"33298373": {
+		"authors": "Milgrom C, et al",
+		"title": "Medial tibial stress fracture diagnosis and treatment guidelines.",
+		"journal": "J Sci Med Sport",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2020.11.015"
 	},
 	"33312709": {
 		"authors": "Begum FA, et al",
@@ -2548,6 +3031,16 @@
 		"doi": "10.5312/wjo.v11.i12.534",
 		"pmcid": "PMC7745493"
 	},
+	"33371206": {
+		"authors": "Stearns RL, et al",
+		"title": "Incidence of Recurrent Exertional Heat Stroke in a Warm-Weather Road Race.",
+		"journal": "Medicina (Kaunas)",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.3390/medicina56120720",
+		"pmcid": "PMC7766530"
+	},
 	"33414454": {
 		"authors": "Millar NL, et al",
 		"title": "Tendinopathy.",
@@ -2566,6 +3059,16 @@
 		"medline": true,
 		"doi": "10.1177/1941738120973674",
 		"pmcid": "PMC8167353"
+	},
+	"33433864": {
+		"authors": "Hollander K, et al",
+		"title": "Sex-Specific Differences in Running Injuries: A Systematic Review with Meta-Analysis and Meta-Regression.",
+		"journal": "Sports Med",
+		"year": "2021",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s40279-020-01412-7",
+		"pmcid": "PMC8053184"
 	},
 	"33450741": {
 		"authors": "Lu VM, et al",
@@ -2601,6 +3104,15 @@
 		"medline": true,
 		"doi": "10.1177/1941738120970976",
 		"pmcid": "PMC8083151"
+	},
+	"33538997": {
+		"authors": "Viljoen CT, et al",
+		"title": "Epidemiology of Injury and Illness Among Trail Runners: A Systematic Review.",
+		"journal": "Sports Med",
+		"year": "2021",
+		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1007/s40279-020-01418-1"
 	},
 	"33543727": {
 		"authors": "Coleman MM, et al",
@@ -2638,6 +3150,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1080/00913847.2021.1892468"
+	},
+	"33632663": {
+		"authors": "Edouard P, et al",
+		"title": "Lower limb muscle injury location shift from posterior lower leg to hamstring muscles with increasing discipline-related running velocity in international athletics championships.",
+		"journal": "J Sci Med Sport",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2021.02.006"
 	},
 	"33646025": {
 		"authors": "Biggs A, et al",
@@ -2723,6 +3244,15 @@
 		"doi": "10.1177/23247096211003263",
 		"pmcid": "PMC7983469"
 	},
+	"33756522": {
+		"authors": "Breslow RG, et al",
+		"title": "Exertional Heat Stroke at the Boston Marathon: Demographics and the Environment.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2021",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1249/MSS.0000000000002652"
+	},
 	"33774464": {
 		"authors": "Netterström-Wedin F, et al",
 		"title": "Diagnostic accuracy of clinical tests assessing ligamentous injury of the ankle syndesmosis: A systematic review with meta-analysis.",
@@ -2778,6 +3308,16 @@
 		"types": ["Journal Article"],
 		"doi": "10.7759/cureus.13818",
 		"pmcid": "PMC8038891"
+	},
+	"33862272": {
+		"authors": "Kakouris N, et al",
+		"title": "A systematic review of running-related musculoskeletal injuries in runners.",
+		"journal": "J Sport Health Sci",
+		"year": "2021",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.jshs.2021.04.001",
+		"pmcid": "PMC8500811"
 	},
 	"33904911": {
 		"authors": "Bretzin AC, et al",
@@ -2841,6 +3381,15 @@
 		"types": ["Journal Article", "Consensus Statement"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2021-104087"
+	},
+	"34158938": {
+		"authors": "Pianka MA, et al",
+		"title": "Greater trochanteric pain syndrome: Evaluation and management of a wide spectrum of pathology.",
+		"journal": "SAGE Open Med",
+		"year": "2021",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/20503121211022582",
+		"pmcid": "PMC8182177"
 	},
 	"34161743": {
 		"authors": "Serner A, et al",
@@ -3015,6 +3564,15 @@
 		"doi": "10.1177/23259671211053833",
 		"pmcid": "PMC8649106"
 	},
+	"34905425": {
+		"authors": "Ross BJ, et al",
+		"title": "Sex-related differences in hip and groin injuries in adult runners: a systematic review.",
+		"journal": "Phys Sportsmed",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1080/00913847.2021.2016355"
+	},
 	"34911509": {
 		"authors": "Bahns C, et al",
 		"title": "Occupational risk factors for meniscal lesions: a systematic review and meta-analysis.",
@@ -3136,6 +3694,16 @@
 		"medline": true,
 		"doi": "10.1002/ajim.23337"
 	},
+	"35197248": {
+		"authors": "Cloosterman KLA, et al",
+		"title": "Educational online prevention programme (the SPRINT study) has no effect on the number of running-related injuries in recreational runners: a randomised-controlled trial.",
+		"journal": "Br J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2021-104539",
+		"pmcid": "PMC9163714"
+	},
 	"35278328": {
 		"authors": "Knapik JJ",
 		"title": "Injuries During High-Intensity Functional Training: Systematic Review and Meta-Analysis.",
@@ -3172,6 +3740,16 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1016/j.jse.2022.02.027"
+	},
+	"35384779": {
+		"authors": "Sewry N, et al",
+		"title": "Medical Encounters Among 94,033 Race Starters During a 16.1-km Running Event Over 3 Years in the Netherlands: SAFER XXVI.",
+		"journal": "Sports Health",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/19417381221083594",
+		"pmcid": "PMC9950983"
 	},
 	"35409836": {
 		"authors": "Demeco A, et al",
@@ -3303,6 +3881,16 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1186/s40634-022-00493-9",
 		"pmcid": "PMC9378805"
+	},
+	"36150754": {
+		"authors": "Racinais S, et al",
+		"title": "IOC consensus statement on recommendations and regulations for sport events in the heat.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2022-105942",
+		"pmcid": "PMC9811094"
 	},
 	"36151550": {
 		"authors": "Gomes YE, et al",
@@ -3480,6 +4068,15 @@
 		"medline": true,
 		"doi": "10.1177/03635465221140923"
 	},
+	"36720584": {
+		"authors": "Hoenig T, et al",
+		"title": "Return to sport following low-risk and high-risk bone stress injuries: a systematic review and meta-analysis.",
+		"journal": "Br J Sports Med",
+		"year": "2023",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2022-106328"
+	},
 	"36728770": {
 		"authors": "Silber ZS, et al",
 		"title": "Return to Activity After Arthroscopically Assisted Triangular Fibrocartilage Complex Repair: A Systematic Review.",
@@ -3609,6 +4206,15 @@
 		"doi": "10.3389/fsurg.2023.916694",
 		"pmcid": "PMC10050355"
 	},
+	"37036463": {
+		"authors": "Roberts WO, et al",
+		"title": "ACSM Expert Consensus Statement on Exertional Heat Illness: Recognition, Management, and Return to Activity.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2023",
+		"types": ["Journal Article", "Consensus Statement"],
+		"medline": true,
+		"doi": "10.1249/JSR.0000000000001058"
+	},
 	"37039409": {
 		"authors": "Salehi Omran S",
 		"title": "Cervical Artery Dissection.",
@@ -3682,6 +4288,24 @@
 		"medline": true,
 		"doi": "10.1055/s-0043-1766098"
 	},
+	"37275836": {
+		"authors": "Disantis A, et al",
+		"title": "The 2022 International Society for Hip Preservation (ISHA) physiotherapy agreement on assessment and treatment of greater trochanteric pain syndrome (GTPS): an international consensus statement.",
+		"journal": "J Hip Preserv Surg",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1093/jhps/hnac050",
+		"pmcid": "PMC10234389"
+	},
+	"37314093": {
+		"authors": "Ertman B, et al",
+		"title": "Alterations in Achilles tendon stress and strain across a range of running velocities.",
+		"journal": "J Sports Sci",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1080/02640414.2023.2225015"
+	},
 	"37316183": {
 		"authors": "Putukian M, et al",
 		"title": "Clinical recovery from concussion-return to school and sport: a systematic review and meta-analysis.",
@@ -3754,6 +4378,15 @@
 		"doi": "10.7759/cureus.41211",
 		"pmcid": "PMC10387331"
 	},
+	"37561820": {
+		"authors": "Kinsella R, et al",
+		"title": "Diagnostic Accuracy of Clinical Tests for Assessing Greater Trochanteric Pain Syndrome: A Systematic Review With Meta-analysis.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2024",
+		"types": ["Meta-Analysis", "Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.2519/jospt.2023.11890"
+	},
 	"37615643": {
 		"authors": "Han CS, et al",
 		"title": "Red flags to screen for vertebral fracture in people presenting with low back pain.",
@@ -3768,6 +4401,25 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD014461.pub2",
 		"pmcid": "PMC10448864"
+	},
+	"37655801": {
+		"authors": "Stearns RL, et al",
+		"title": "Exertional Heat Stroke Survival at the Falmouth Road Race: 180 New Cases With Expanded Analysis.",
+		"journal": "J Athl Train",
+		"year": "2024",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.4085/1062-6050-0065.23",
+		"pmcid": "PMC10976335"
+	},
+	"37655940": {
+		"authors": "Roche M, et al",
+		"title": "Higher Triad Risk Scores Are Associated With Increased Risk for Trabecular-Rich Bone Stress Injuries in Female Runners.",
+		"journal": "Clin J Sport Med",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/JSM.0000000000001180"
 	},
 	"37678659": {
 		"authors": "Hoexum F, et al",
@@ -3951,6 +4603,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2023-107490"
 	},
+	"38295551": {
+		"authors": "Kjeldsen T, et al",
+		"title": "Exercise compared to a control condition or other conservative treatment options in patients with Greater Trochanteric Pain Syndrome: a systematic review and meta-analysis of randomized controlled trials.",
+		"journal": "Physiotherapy",
+		"year": "2024",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.physio.2024.01.001"
+	},
 	"38353018": {
 		"authors": "Lefèvre N, et al",
 		"title": "Predictors of Early Return to Sport After Surgical Repair of Proximal Hamstring Complex Injuries in Professional Athletes: A Prospective Study.",
@@ -3970,6 +4631,15 @@
 		"medline": true,
 		"doi": "10.1186/s12891-024-07247-x",
 		"pmcid": "PMC10880309"
+	},
+	"38389144": {
+		"authors": "Van Hooren B, et al",
+		"title": "Per-step and cumulative load at three common running injury locations: The effect of speed, surface gradient, and cadence.",
+		"journal": "Scand J Med Sci Sports",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/sms.14570"
 	},
 	"38395699": {
 		"authors": "Magaña-Ramírez M, et al",
@@ -4043,6 +4713,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1111/sms.14611"
+	},
+	"38562153": {
+		"authors": "McGrath TM, et al",
+		"title": "Injury patterns and healthcare utilisation by runners of the New York City Marathon.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2023-001766",
+		"pmcid": "PMC10982772"
 	},
 	"38641923": {
 		"authors": "de Lima LGH, et al",
@@ -4138,6 +4817,15 @@
 		"doi": "10.1186/s13018-024-04860-3",
 		"pmcid": "PMC11193892"
 	},
+	"38963954": {
+		"authors": "Hansoulle T, et al",
+		"title": "Do we underestimate the frequency of ankle sprains in running? A systematic review and meta-analysis.",
+		"journal": "Phys Ther Sport",
+		"year": "2024",
+		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1016/j.ptsp.2024.06.009"
+	},
 	"39015942": {
 		"authors": "Zerman N",
 		"title": "Replantation After Dental Avulsion: A Scoping Review and Proposal of a Flow Chart.",
@@ -4217,6 +4905,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1186/s40798-024-00769-7",
 		"pmcid": "PMC11427649"
+	},
+	"39345935": {
+		"authors": "Armstrong LE, et al",
+		"title": "Hyperthermia and Exertional Heatstroke During Running, Cycling, Open Water Swimming, and Triathlon Events.",
+		"journal": "Open Access J Sports Med",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2147/OAJSM.S482959",
+		"pmcid": "PMC11438465"
 	},
 	"39401870": {
 		"authors": "Neal BS, et al",
@@ -4420,6 +5117,15 @@
 		"doi": "10.1136/bmjsem-2025-002468",
 		"pmcid": "PMC11969615"
 	},
+	"40298898": {
+		"authors": "Brillhart A, et al",
+		"title": "Exertional Heat Stroke at the Vermont City Marathon, 2012 to 2023: High Incidence Despite Spring Season in the Northern United States.",
+		"journal": "Clin J Sport Med",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/JSM.0000000000001367"
+	},
 	"40486656": {
 		"authors": "Hoveidaei AH, et al",
 		"title": "Stress fracture risk factors in soccer players: A systematic review.",
@@ -4493,6 +5199,25 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1038/s41572-025-00631-4"
+	},
+	"40623829": {
+		"authors": "Schuster Brandt Frandsen J, et al",
+		"title": "How much running is too much? Identifying high-risk running sessions in a 5200-person cohort study.",
+		"journal": "Br J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/bjsports-2024-109380",
+		"pmcid": "PMC12421110"
+	},
+	"40633262": {
+		"authors": "Marques TBT, et al",
+		"title": "Preventive interventions for medial tibial stress syndrome: Systematic review and meta-analysis.",
+		"journal": "Gait Posture",
+		"year": "2025",
+		"types": ["Journal Article", "Systematic Review", "Meta-Analysis"],
+		"medline": true,
+		"doi": "10.1016/j.gaitpost.2025.07.312"
 	},
 	"40655246": {
 		"authors": "Thamrongskulsiri N, et al",
@@ -4716,6 +5441,15 @@
 		"doi": "10.7759/cureus.97420",
 		"pmcid": "PMC12638039"
 	},
+	"41280657": {
+		"authors": "Armstrong LE, et al",
+		"title": "Exercise-Associated Hyponatremia: Serum Sodium, Symptomatology, Severity, and Sport Specificity.",
+		"journal": "Open Access J Sports Med",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.2147/OAJSM.S556848",
+		"pmcid": "PMC12630018"
+	},
 	"41362474": {
 		"authors": "Degener BJ, et al",
 		"title": "Shoulder dislocations in professional male football (soccer) do not negatively affect long-term quantitative and qualitative performance parameters: A retrospective analysis of 30 in-match injuries of the German Bundesliga.",
@@ -4781,6 +5515,15 @@
 		"medline": true,
 		"doi": "10.1186/s13018-025-06566-6",
 		"pmcid": "PMC12866152"
+	},
+	"41476413": {
+		"authors": "Abran G, et al",
+		"title": "Minimalist Footwear and Softer Running Technique Alter Injury Location but Not Incidence in Recreational Endurance Runners.",
+		"journal": "Am J Sports Med",
+		"year": "2026",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1177/03635465251392242"
 	},
 	"41544646": {
 		"authors": "Ergönül Ö, et al",
@@ -4887,6 +5630,16 @@
 		"medline": true,
 		"doi": "10.1038/s41433-026-04447-8",
 		"pmcid": "PMC13341748"
+	},
+	"42048303": {
+		"authors": "Rosenstock JL, et al",
+		"title": "Rhabdomyolysis and Acute Kidney Injury after the New York City Marathon.",
+		"journal": "Nephron",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1159/000552131",
+		"pmcid": "PMC13299126"
 	},
 	"42063301": {
 		"authors": "Korakakis V, et al",

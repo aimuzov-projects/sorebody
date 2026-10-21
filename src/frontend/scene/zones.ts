@@ -161,6 +161,12 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'inguinal-hernia': { offset: [-0.055, 0, 0.085], normal: [0, 0, 1], view: { azimuth: 10, polar: 76 } },
 	'meralgia-paresthetica': { offset: [0.03, -0.07, 0.07], normal: [0.5, 0, 1], view: { azimuth: 35, polar: 76 } },
 	'hamstring-strain': { offset: [0, -0.15, -0.07], normal: [0, 0, -1], view: { azimuth: 155, polar: 76 } },
+	// Большой вертел -- снаружи и чуть ниже тазобедренного сустава, сюда крепятся средняя и малая ягодичные
+	'greater-trochanteric-pain-syndrome': {
+		offset: [0.06, -0.03, 0],
+		normal: [1, 0, 0],
+		view: { azimuth: 85, polar: 78 },
+	},
 	// Приводящие начинаются от лобковой кости и идут по внутренней стороне бедра
 	'adductor-groin-pain': { offset: [-0.07, -0.07, 0.06], normal: [-0.4, 0, 1], view: { azimuth: 0, polar: 78 } },
 	'stress-urinary-incontinence': {
@@ -210,6 +216,13 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'tennis-leg': { offset: [-0.02, 0.03, -0.075], normal: [-0.3, 0, -1], view: { azimuth: 175, polar: 78 } },
 	'lower-leg-fracture': { offset: [0.04, 0, 0], normal: [1, 0, -0.3] },
 	'lower-limb-stress-fractures': { offset: [0.035, -0.08, -0.005], normal: [1, 0, -0.2] },
+	// «Расколотые голени» -- внутренний край большеберцовой в нижней половине: изнутри, напротив
+	// стрессового перелома малоберцовой
+	'medial-tibial-stress-syndrome': {
+		offset: [-0.03, -0.06, 0.01],
+		normal: [-1, 0, 0.3],
+		view: { azimuth: -55, polar: 78 },
+	},
 	// Всё тело: шея
 	'cervical-artery-dissection': {
 		offset: [0, 0.2, -0.01],
@@ -255,6 +268,11 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	},
 	'meralgia-paresthetica': { depth: 'deep' },
 	'iliotibial-band-syndrome': { depth: 'muscle', muscles: ['iliotibial tract'] },
+	'greater-trochanteric-pain-syndrome': {
+		depth: 'muscle',
+		muscles: ['gluteus medius', 'gluteus minimus'],
+		peel: true,
+	},
 	'hamstring-strain': { depth: 'muscle', muscles: ['biceps femoris', 'semitendinosus', 'semimembranosus'] },
 	'adductor-groin-pain': {
 		depth: 'muscle',
@@ -279,6 +297,8 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	'shoulder-dislocation': { depth: 'deep' },
 	'lower-leg-fracture': { depth: 'deep' },
 	'lower-limb-stress-fractures': { depth: 'deep' },
+	// Надкостница по краю большеберцовой, где крепятся камбаловидная и задняя большеберцовая
+	'medial-tibial-stress-syndrome': { depth: 'deep' },
 	'ankle-sprain': { depth: 'deep' },
 	// Глазного яблока в BodyParts3D нет: глазницу показывают прямые мышцы глаза вокруг него
 	'eye-injury': {

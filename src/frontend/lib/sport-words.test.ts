@@ -46,6 +46,27 @@ test('catches football gear and the tackle, but not the same letters elsewhere',
 		assert.deepEqual(sportWordsIn(text), [], text)
 })
 
+test('catches running workouts and shoes, but not running itself', () => {
+	for (const text of [
+		'после пробежки',
+		'на пробежках',
+		'марафон',
+		'на полумарафоне',
+		'интервальная работа',
+		'в кроссовках',
+	])
+		assert.notDeepEqual(sportWordsIn(text), [], text)
+
+	for (const text of [
+		'боль при беге',
+		'бег под гору',
+		'бегуны в исследовании',
+		'интервал между приёмами',
+		'кросс-тренинг',
+	])
+		assert.deepEqual(sportWordsIn(text), [], text)
+})
+
 test('lets medical and everyday words through', () => {
 	for (const text of [
 		'толчок стопой',

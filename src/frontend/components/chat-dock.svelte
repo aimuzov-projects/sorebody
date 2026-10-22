@@ -1,6 +1,6 @@
 <!--
-	Чат по статье: поле вопроса прилеплено к низу экрана шириной в колонку текста, под ним
-	размытая подложка. Фокус в поле накрывает статью размытием, поверх в той же колонке идёт
+	Чат по статье: поле вопроса в нижней строке статьи (.article__dock в article.css), которая
+	липнет к низу экрана шириной в колонку текста, под ним размытая подложка. Фокус в поле накрывает статью размытием, поверх в той же колонке идёт
 	диалог. Переписка живёт только в памяти страницы, а вебвизор её не видит: в ней симптомы
 -->
 <script lang="ts">
@@ -18,33 +18,32 @@
 	let {
 		injury,
 		sport,
-		column,
+		host,
 		enabled = typeof document !== 'undefined' && document.documentElement.dataset.chat === 'on',
 	}: {
 		/** Статья, которую читают: ассистент знает, о чём вопрос. */
 		injury: { slug: string; title: string }
 		/** Спорт страницы, slug. */
 		sport?: string
-		/** Колонка текста, по ней строка берёт ширину; без неё -- `.article__body` страницы. */
-		column?: () => HTMLElement | null | undefined
+		/** Нижняя строка статьи в ридере главной: поле встаёт в неё перед кнопкой оглавления. */
+		host?: () => HTMLElement | null | undefined
 		/**
 		 * Чат включён всем (`CHAT=on`): строка есть уже в разметке страницы и видна с первого
-		 * кадра, до скрипта. Включённый только по метке `?chat=1` выясняется в браузере.
+		 * кадра, а поле до скрипта выключено. Включённый только по метке `?chat=1` выясняется
+		 * в браузере.
 		 */
 		enabled?: boolean
 	} = $props()
 
 	const EXAMPLES = ['Как понять, что это у меня?', 'К какому врачу идти?', 'Когда можно тренироваться?']
 
-	let available = $state(enabled)
+	/** Скрипт запущен и чат здесь доступен: до этого поле видно, но выключено. */
+	let available = $state(false)
 	let open = $state(false)
 	let draft = $state('')
 	let field = $state<HTMLTextAreaElement>()
 	let feed = $state<HTMLElement>()
 	let bar = $state<HTMLElement>()
-	let place = $state({ left: 0, width: 0 })
-	/** Строка уже встала по колонке: с этого кадра ширина и край меняются плавно. */
-	let placed = $state(false)
 
 	const busy = $derived(chat.turns.at(-1)?.pending ?? false)
 	const over = $derived(chat.left <= 0)
@@ -57,107 +56,23 @@
 			storage = sessionStorage
 		} catch {}
 
-		const root = document.documentElement
-
-		available = chatAvailable({ root, search: location.search, storage })
-
-		// Кнопка оглавления статьи ждёт строку (styles/toc-menu.css). Чата нет -- ждать нечего
-		if (!available) root.dataset.chatDock = ''
-
-		return () => delete root.dataset.chatDock
+		available = chatAvailable({ root: document.documentElement, search: location.search, storage })
 	})
 
-	/** Кнопка оглавления статьи на узком экране, как в styles/toc-menu.css: той же величины, что отправка. */
-	const TOC_SIZE = 36
-	const TOC_GAP = 8
+	// В ридере главной строка статьи пришла из её страницы без скрипта: поле переезжает в неё
+	const portal = (node: HTMLElement) => {
+		host?.()?.prepend(node)
+	}
 
-	// Ширина и край -- как у колонки текста: на десктопе её сдвигает оглавление,
-	// на телефоне она во всю ширину. Где есть кнопка оглавления, свёрнутая строка
-	// уступает ей место справа, и кнопка встаёт в одну линию с полем
-	$effect(() => {
-		if (!available) return
-
-		const target = column?.() ?? document.querySelector<HTMLElement>('.article__body')
-
-		if (!target) return
-
-		const root = document.documentElement
-		const toc = () => {
-			const menu = document.querySelector<HTMLElement>('.toc-menu')
-
-			return Boolean(menu && getComputedStyle(menu).display !== 'none')
-		}
-		const measure = () => {
-			const rect = target.getBoundingClientRect()
-			const menu = toc()
-
-			place = { left: rect.left, width: rect.width - (menu && !open ? TOC_SIZE + TOC_GAP : 0) }
-
-			// Первый замер -- без анимации, иначе строка при открытии статьи доезжала бы
-			// от левого края. Два кадра: в первом браузер ставит строку на место
-			if (!placed) requestAnimationFrame(() => requestAnimationFrame(() => (placed = true)))
-
-			if (!menu || !bar) return clear()
-
-			// Кнопку ставим и при открытом чате: высота и правый край колонки те же, и под размытием
-			// она остаётся на месте, а не прыгает к углу по умолчанию
-
-			// Центр кнопки -- на середине строки
-			const bottom = innerHeight - bar.offsetTop - bar.offsetHeight + (bar.offsetHeight - TOC_SIZE) / 2
-
-			root.style.setProperty('--chat-dock-toc-right', `${root.clientWidth - rect.right}px`)
-			root.style.setProperty('--chat-dock-toc-bottom', `${bottom}px`)
-			root.dataset.chatDock = ''
-		}
-		const clear = () => {
-			for (const name of ['--chat-dock-toc-right', '--chat-dock-toc-bottom']) root.style.removeProperty(name)
-
-			root.dataset.chatDock = ''
-		}
-		const observer = new ResizeObserver(measure)
-
-		measure()
-		observer.observe(target)
-
-		if (bar) observer.observe(bar)
-
-		addEventListener('resize', measure)
-		visualViewport?.addEventListener('resize', measure)
-
-		return () => {
-			observer.disconnect()
-			removeEventListener('resize', measure)
-			visualViewport?.removeEventListener('resize', measure)
-			clear()
-			delete root.dataset.chatDock
-		}
-	})
-
-	// Под строкой страница освобождает место: низ статьи не прячется
-	$effect(() => {
-		if (!available || !bar) return
-
-		const root = document.documentElement
-		const observer = new ResizeObserver(() =>
-			root.style.setProperty('--chat-dock-lift', `${bar!.offsetHeight + 8}px`),
-		)
-
-		observer.observe(bar)
-
-		return () => {
-			observer.disconnect()
-			root.style.removeProperty('--chat-dock-lift')
-		}
-	})
-
-	// Клавиатура телефона: строка поднимается над ней, а не прячется под неё
+	// Клавиатура телефона: строка статьи поднимается над ней, а не прячется под неё
 	$effect(() => {
 		const viewport = window.visualViewport
+		const row = bar?.closest<HTMLElement>('.article__dock')
 
-		if (!available || !viewport) return
+		if (!available || !viewport || !row) return
 
 		const lift = () =>
-			bar?.style.setProperty('--keyboard', `${Math.max(0, innerHeight - viewport.height - viewport.offsetTop)}px`)
+			row.style.setProperty('--keyboard', `${Math.max(0, innerHeight - viewport.height - viewport.offsetTop)}px`)
 
 		viewport.addEventListener('resize', lift)
 		viewport.addEventListener('scroll', lift)
@@ -165,6 +80,7 @@
 		return () => {
 			viewport.removeEventListener('resize', lift)
 			viewport.removeEventListener('scroll', lift)
+			row.style.removeProperty('--keyboard')
 		}
 	})
 
@@ -173,8 +89,17 @@
 		if (!open) return
 
 		// Прокручивается ридер главной, а на отдельной странице -- сам документ
-		const root = column?.()?.closest<HTMLElement>('.reader') ?? document.documentElement
+		const root = bar?.closest<HTMLElement>('.reader') ?? document.documentElement
+		const row = bar?.closest<HTMLElement>('.article__dock')
 		const overflow = root.style.overflow
+
+		// В конце статьи строка стоит на своём месте, выше низа экрана, и поле висело бы посреди
+		// диалога. Статью под размытием чуть откатываем назад: строка снова липнет к низу
+		if (row) {
+			const rest = innerHeight - parseFloat(getComputedStyle(row).bottom) - row.getBoundingClientRect().bottom
+
+			if (rest > 1) root.scrollBy({ top: -rest })
+		}
 
 		root.style.overflow = 'hidden'
 		chatStatus().then((status) => (chat.closed = !status.open))
@@ -354,14 +279,8 @@
 
 <svelte:window onkeydowncapture={escape} />
 
-{#if available}
-	<div
-		class="dock"
-		class:dock--open={open}
-		class:dock--placed={placed}
-		style:--dock-left={place.width ? `${place.left}px` : undefined}
-		style:--dock-width={place.width ? `${place.width}px` : undefined}
-	>
+{#if enabled || available}
+	<div class="dock" class:dock--open={open} {@attach portal}>
 		<div class="dock__veil">
 			<!-- Шапка та же, что у статьи: стрелка "Назад" сворачивает чат обратно в строку -->
 			<SiteHeader>
@@ -423,11 +342,12 @@
 			<!-- ym-disable-keys: вебвизор пишет звёздочки вместо набранного, в нём симптомы -->
 			<textarea
 				class="dock__input ym-disable-keys"
+				class:dock__input--waiting={!available}
 				rows="1"
 				maxlength="1000"
 				placeholder={chat.closed ? 'Ассистент вернётся завтра' : 'Спросите о боли'}
 				aria-label="Вопрос по справочнику"
-				disabled={chat.closed || over}
+				disabled={!available || chat.closed || over}
 				bind:value={draft}
 				bind:this={field}
 				onfocus={() => (open = true)}
@@ -437,7 +357,7 @@
 				class="dock__send"
 				type="submit"
 				aria-label="Отправить"
-				disabled={!draft.trim() || busy || chat.closed || over}
+				disabled={!available || !draft.trim() || busy || chat.closed || over}
 				><span class="dock__send-icon" aria-hidden="true">{@html CornerDownLeft}</span></button
 			>
 		</form>
@@ -445,18 +365,18 @@
 {/if}
 
 <style>
+	/* Сам блок в раскладке не участвует: поле -- в ряду строки статьи рядом с кнопкой оглавления,
+	   размытие и подложка -- fixed поверх. Слои -- внутри строки статьи (z-index 40 в article.css) */
 	.dock {
-		/* Над шапкой сайта (10), оглавлением (20) и ридером главной */
-		--dock-z: 40;
-		/* Отступ снизу -- как у панели просмотрщика 3D */
-		--dock-gap: 16px;
-		/* Край и ширина строки до первого замера -- по сетке статьи из article.css: колонка 680px
-		   с полями страницы, на узком экране за вычетом кнопки оглавления (36 + 8), на широком --
-		   правее бокового оглавления. Проценты -- от окна: строка fixed. Потом их задаёт замер */
+		/* Колонка диалога -- та же, что у текста статьи (article.css): 680px с полями страницы,
+		   на широком экране правее бокового оглавления. Проценты -- от окна: размытие fixed */
 		--dock-column: min(680px, 100% - 48px);
 		--dock-left: calc((100% - var(--dock-column)) / 2);
-		--dock-width: calc(var(--dock-column) - 44px);
+		--dock-width: var(--dock-column);
+		/* Строка поля высотой 44px над отступом снизу: под ней подложка, над ней конец ленты */
+		--dock-clear: calc(max(16px, env(safe-area-inset-bottom)) + 44px);
 
+		display: contents;
 		font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
 		color: var(--fg);
 
@@ -466,7 +386,6 @@
 
 		@media (width >= 1100px) {
 			--dock-left: calc((100% - 1052px) / 2 + 348px);
-			--dock-width: 680px;
 		}
 
 		@media print {
@@ -481,7 +400,7 @@
 		/* Размытая статья под диалогом: видна, но не мешает читать ответ */
 		&__veil {
 			position: fixed;
-			z-index: var(--dock-z);
+			z-index: 1;
 			inset: 0;
 			visibility: hidden;
 			opacity: 0;
@@ -565,7 +484,7 @@
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			width: var(--dock-width);
-			padding: 8px 0 calc(var(--chat-dock-lift, 80px) + 24px);
+			padding: 8px 0 calc(var(--dock-clear) + 32px);
 			font-size: 16px;
 			line-height: 1.45;
 		}
@@ -671,15 +590,13 @@
 		}
 
 		/* Подложка под строкой: статья под ней размывается и гаснет, текст не спорит с полем.
-		   Ниже кнопки оглавления (20): её подложка размывала бы, а она стоит рядом со строкой */
+		   Едет вместе со строкой статьи: от неё вверх на 24px, вниз до края экрана, вширь -- на всё
+		   окно. Ниже поля и кнопки оглавления: её подложка размывала бы их */
 		&__shade {
 			pointer-events: none;
-			position: fixed;
-			z-index: 19;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			height: calc(var(--chat-dock-lift, 80px) + 24px);
+			position: absolute;
+			z-index: -1;
+			inset: -24px calc(50% - 50vw) calc(-1 * var(--dock-bottom, 16px));
 			background: linear-gradient(to top, var(--bg) 35%, color-mix(in srgb, var(--bg) 0%, transparent));
 			backdrop-filter: blur(6px);
 			mask-image: linear-gradient(to top, #000000 55%, transparent);
@@ -690,32 +607,22 @@
 		}
 
 		/* Строка -- таблетка, как панель просмотрщика 3D (figure-3d.svelte): стеклянная подложка,
-		   тонкая обводка, круглая кнопка цветом акцента. Ширина меняется плавно: свёрнутая строка
-		   уступает место кнопке оглавления, в открытом чате она во всю колонку */
+		   тонкая обводка, круглая кнопка цветом акцента. Ширину даёт ряд: свёрнутая строка
+		   уступает место кнопке оглавления, в открытом чате та уходит (styles/toc-menu.css).
+		   Над размытием открытого чата */
 		&__bar {
-			position: fixed;
-			z-index: calc(var(--dock-z) + 1);
-			bottom: calc(var(--keyboard, 0px) + max(var(--dock-gap), env(safe-area-inset-bottom)));
-			left: var(--dock-left);
+			position: relative;
+			z-index: 2;
 			display: flex;
+			flex: 1;
 			gap: 4px;
 			align-items: flex-end;
-			width: var(--dock-width);
+			min-width: 0;
 			padding: 4px;
 			border-radius: 22px;
 			background: color-mix(in srgb, var(--bg) 72%, transparent);
 			backdrop-filter: blur(12px);
 			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
-
-			.dock--placed & {
-				transition:
-					width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-					left 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-
-				@media (--reduced-motion) {
-					transition: none;
-				}
-			}
 		}
 
 		&__input {
@@ -736,7 +643,8 @@
 				outline: none;
 			}
 
-			&:disabled {
+			/* До скрипта поле выключено, но выглядит как обычно: иначе оно мигало бы при включении */
+			&:disabled:not(&--waiting) {
 				opacity: 0.6;
 			}
 		}

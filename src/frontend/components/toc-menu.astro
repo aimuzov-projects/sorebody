@@ -4,18 +4,18 @@ import { TableOfContents } from 'lucide-static'
 import '#frontend/styles/toc-menu.css'
 
 /**
- * Разделы статьи из lib/article-html.ts или свои, как у /changelog. `chat` -- на странице есть
- * строка чата: кнопка встаёт рядом с ней и до того ждёт (styles/toc-menu.css).
+ * Разделы статьи из lib/article-html.ts или свои, как у /changelog. `inline` -- кнопка стоит
+ * в нижней строке статьи рядом с полем чата (.article__dock), а не в углу экрана.
  */
-type Props = { sections: { id: string; title: string; icon: string }[]; label?: string; chat?: boolean }
+type Props = { sections: { id: string; title: string; icon: string }[]; label?: string; inline?: boolean }
 
-const { sections, label = 'Разделы статьи', chat = false } = Astro.props
+const { sections, label = 'Разделы статьи', inline = false } = Astro.props
 ---
 
 {/* Оглавление для узкого экрана, где боковое скрыто: круглая кнопка справа снизу и меню над
     ней. Esc, тап мимо и возврат фокуса на кнопку -- от popover="auto", подсветку раздела и
     плавный переход берёт на себя lib/reading.ts по data-toc, закрытие по пункту -- lib/toc-menu.ts */}
-<div class="toc-menu" data-toc-menu data-chat-wait={chat || undefined}>
+<div class:list={['toc-menu', { 'toc-menu--inline': inline }]} data-toc-menu>
 	<button
 		class="toc-menu__button"
 		type="button"

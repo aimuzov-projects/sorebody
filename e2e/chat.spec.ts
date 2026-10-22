@@ -223,8 +223,14 @@ test.describe('телефон', () => {
 		await input(page).tap()
 		await expect.poll(async () => Math.round((await box()).width)).toBe(Math.round(column.width))
 
-		// Кнопка оглавления под размытием не прыгает и не меняет размер
-		expect(await page.locator('.toc-menu__button').boundingBox()).toEqual(toc)
+		// Место кнопки оглавления отдано строке
+		await expect(page.locator('.toc-menu__button')).toBeHidden()
+
+		// Строка уходит из чата туда же, откуда пришла: ряд статьи, без замеров
+		await page.getByRole('button', { name: 'Назад к статье' }).tap()
+		await expect.poll(async () => (await page.locator('.toc-menu__button').boundingBox())!).toEqual(toc)
+		await expect.poll(box).toEqual(bar)
+		await input(page).tap()
 
 		await input(page).fill('подвернул ногу')
 		await page.getByRole('button', { name: 'Отправить' }).tap()

@@ -1,19 +1,15 @@
-/* Меню разделов статьи на узком экране (components/toc-menu.astro). Со строкой чата
-   (components/chat-dock.svelte) кнопка встаёт рядом с ней, в одну линию: высоту и отступ справа
-   задаёт строка переменными --chat-dock-toc-*. Размер один на всём сайте -- как у кнопки
+/* Меню разделов статьи на узком экране (components/toc-menu.astro). В статье кнопка стоит в её
+   нижней строке, рядом с полем чата, на других страницах -- в углу. Размер один на всём сайте -- как у кнопки
    отправки чата и кнопок просмотрщика 3D. Отдельным файлом: им же
    пользуется статья поверх модели на главной, куда стили компонента сами не попадают.
    Порог тот же, что у бокового оглавления в article.css: где оно есть, кнопки нет */
 .toc-menu {
 	/* Отступ снизу: вырез экрана и системные кнопки Mini App Telegram (переменные ставит SDK) */
-	--toc-menu-bottom: var(
-		--chat-dock-toc-bottom,
-		calc(
-			max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
-				var(--tg-content-safe-area-inset-bottom, 0px)
-		)
+	--toc-menu-bottom: calc(
+		max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
+			var(--tg-content-safe-area-inset-bottom, 0px)
 	);
-	--toc-menu-right: var(--chat-dock-toc-right, 16px);
+	--toc-menu-right: 16px;
 	--toc-menu-size: 36px;
 
 	display: none;
@@ -22,26 +18,35 @@
 		display: block;
 	}
 
-	/* Со строкой чата, включённого всем, кнопка с первого кадра стоит рядом с ней: правый край
-	   колонки и середина строки высотой 44px. Те же числа, что у строки до замера */
-	:root[data-chat='on'] &[data-chat-wait] {
-		--toc-menu-right: var(--chat-dock-toc-right, calc((100% - min(680px, 100% - 48px)) / 2));
-		--toc-menu-bottom: var(--chat-dock-toc-bottom, calc(max(16px, env(safe-area-inset-bottom)) + 4px));
+	/* В нижней строке статьи (.article__dock в article.css) кнопка -- в одном ряду с полем чата,
+	   по центру его высоты 44px. Ряд липнет к низу экрана сам, кнопке позиция не нужна. В открытом
+	   чате кнопка уходит, и поле занимает всю колонку: минус отступ гасит зазор ряда */
+	&--inline {
+		--toc-menu-right: calc((100% - min(680px, 100% - 48px)) / 2);
+		--toc-menu-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 4px);
+
+		flex: none;
+		width: var(--toc-menu-size);
+		margin: 0 0 4px auto;
+		transition:
+			width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+			margin 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+			opacity 0.25s ease;
 
 		@media (width < 600px) {
-			--toc-menu-right: var(--chat-dock-toc-right, 20px);
+			--toc-menu-right: 20px;
 		}
-	}
 
-	:root[data-chat='on'][data-telegram] &[data-chat-wait] {
-		--toc-menu-right: var(--chat-dock-toc-right, 16px);
-		--toc-menu-bottom: var(
-			--chat-dock-toc-bottom,
-			calc(
-				max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
-					var(--tg-content-safe-area-inset-bottom, 0px)
-			)
-		);
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
+
+		.article__dock:has(.dock--open) & {
+			width: 0;
+			margin-left: -8px;
+			visibility: hidden;
+			opacity: 0;
+		}
 	}
 
 	&__button {
@@ -72,10 +77,9 @@
 			transition: none;
 		}
 
-		/* Чат по метке ?chat=1 выясняется в браузере: до того кнопка ждёт строку
-		   (components/chat-dock.svelte), иначе вставала бы в угол и через миг прыгала к ней */
-		:root[data-chat='preview']:not([data-chat-dock]) [data-chat-wait] > & {
-			visibility: hidden;
+		.toc-menu--inline > & {
+			position: static;
+			anchor-name: --toc-menu;
 		}
 
 		&[aria-expanded='true'] {
@@ -109,6 +113,15 @@
 	&__panel {
 		position: fixed;
 		inset: auto var(--toc-menu-right) calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
+
+		/* У кнопки в строке статьи -- прямо над ней. Без привязки к якорю (Firefox) -- по тем же
+		   числам, что у колонки: у правого края, над строкой */
+		@supports (anchor-name: --toc-menu) {
+			.toc-menu--inline > & {
+				inset: auto anchor(right) calc(anchor(top) + 12px) auto;
+				position-anchor: --toc-menu;
+			}
+		}
 		translate: 0 12px;
 		overflow-y: auto;
 		overscroll-behavior: contain;

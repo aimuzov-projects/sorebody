@@ -455,15 +455,17 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).dig
 			</section>
 		</footer>
 
-		<TocMenu {sections} chat />
+		{/* Ридер главной берёт main целиком, но строку чата ставит в эту строку свою */}
+		<div class="article__dock">
+			<ChatDock
+				client:load
+				injury={{ slug: injury.id, title: name }}
+				sport={sport?.slug}
+				enabled={process.env.CHAT === 'on'}
+			/>
+			<TocMenu {sections} inline />
+		</div>
 	</main>
-	{/* Вне main: ридер главной берёт из страницы только main и ставит строку чата сам */}
-	<ChatDock
-		client:load
-		injury={{ slug: injury.id, title: name }}
-		sport={sport?.slug}
-		enabled={process.env.CHAT === 'on'}
-	/>
 </Base>
 
 <script>

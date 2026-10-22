@@ -139,8 +139,10 @@
 
 			if (!main) throw new Error('no <main> in article page')
 
-			// Чипы зоны и частоты в полноэкранной статье лишние
+			// Чипы зоны и частоты в полноэкранной статье лишние. Строка чата из страницы -- без
+			// скрипта: на её место ниже встаёт своя
 			main.querySelector('.article__meta')?.remove()
+			main.querySelector('.article__dock astro-island')?.remove()
 			await tick()
 
 			if (token !== loadToken || destroyed || !body || !reader) return
@@ -269,7 +271,7 @@
 			<ChatDock
 				injury={{ slug: injury.slug, title: splitTitle(injury.title).name }}
 				{sport}
-				column={() => body?.querySelector<HTMLElement>('.article__body')}
+				host={() => body?.querySelector<HTMLElement>('.article__dock')}
 			/>
 		{/if}
 	</div>
@@ -492,8 +494,6 @@
 		   из скрипта выше): там только поля, а раскладка та же, что у отдельной страницы */
 		&__page {
 			margin-right: calc(-1 * var(--reader-bar, 0px));
-			/* Под строкой чата (chat-dock.svelte) низ статьи не прячется */
-			padding-bottom: var(--chat-dock-lift, 0px);
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой

@@ -75,25 +75,17 @@
 	/** Спорт, к которому барабан уже провёрнут; до первого прогона эффекта -- нет. */
 	let shown: string | undefined
 
-	// Первый показ за визит -- барабан докручивается на грань снизу: видно, что спорт можно сменить.
-	// Пришли сюда выбором спорта в статье -- фразу уже провёл переход между страницами
-	// (lib/sport-switch.ts); где переходов нет (Firefox), барабан докручивается сам
+	// При заходе барабан стоит. Пришли выбором спорта в статье -- фразу провёл
+	// переход между страницами (lib/sport-switch.ts). Где их нет (Firefox) -- докручиваем сами
 	$effect(() => {
-		if (still()) return
-
 		try {
 			const chosen = Number(sessionStorage.getItem(ROLL_KEY))
 
 			sessionStorage.removeItem(ROLL_KEY)
 
-			if (chosen) {
-				if (!('onpagereveal' in window)) roll = chosen
-			} else if (!sessionStorage.getItem('sport-switch-spun')) roll = 1
-
-			sessionStorage.setItem('sport-switch-spun', '1')
+			if (chosen && !still() && !('onpagereveal' in window)) roll = chosen
 		} catch {
-			// Хранилище закрыто: крутим каждый раз
-			roll = 1
+			// Хранилище закрыто: докручивать нечего
 		}
 	})
 

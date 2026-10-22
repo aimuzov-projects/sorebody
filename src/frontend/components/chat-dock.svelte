@@ -61,7 +61,7 @@
 	}
 
 	/** Кнопка оглавления статьи на узком экране -- той же величины, что кнопка отправки. */
-	const TOC_SIZE = 44
+	const TOC_SIZE = 36
 	const TOC_GAP = 8
 
 	// Ширина и край -- как у колонки текста: на десктопе её сдвигает оглавление,
@@ -294,7 +294,7 @@
 	const grow = (node: HTMLTextAreaElement) => {
 		const fit = () => {
 			node.style.height = 'auto'
-			node.style.height = `${Math.min(node.scrollHeight, 4 * 22 + 22)}px`
+			node.style.height = `${Math.min(node.scrollHeight, 4 * 22 + 14)}px`
 		}
 
 		node.addEventListener('input', fit)
@@ -422,7 +422,7 @@
 				type="submit"
 				aria-label="Отправить"
 				disabled={!draft.trim() || busy || chat.closed || over}
-				><span class="dock__icon" aria-hidden="true">{@html CornerDownLeft}</span></button
+				><span class="dock__send-icon" aria-hidden="true">{@html CornerDownLeft}</span></button
 			>
 		</form>
 	</div>
@@ -432,7 +432,8 @@
 	.dock {
 		/* Над шапкой сайта (10), оглавлением (20) и ридером главной */
 		--dock-z: 40;
-		--dock-gap: 12px;
+		/* Отступ снизу -- как у панели просмотрщика 3D */
+		--dock-gap: 16px;
 
 		font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
 		color: var(--fg);
@@ -652,27 +653,37 @@
 			}
 		}
 
+		/* Строка -- таблетка, как панель просмотрщика 3D (figure-3d.svelte): стеклянная подложка,
+		   тонкая обводка, круглая кнопка цветом акцента. Ширина меняется плавно: свёрнутая строка
+		   уступает место кнопке оглавления, в открытом чате она во всю колонку */
 		&__bar {
 			position: fixed;
 			z-index: calc(var(--dock-z) + 1);
 			bottom: calc(var(--keyboard, 0px) + max(var(--dock-gap), env(safe-area-inset-bottom)));
 			left: var(--dock-left);
 			display: flex;
-			gap: 8px;
+			gap: 4px;
 			align-items: flex-end;
 			width: var(--dock-width);
-			padding: 6px;
-			border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
-			border-radius: 26px;
-			background: var(--bg);
-			box-shadow: 0 8px 28px rgb(0 0 0 / 10%);
+			padding: 4px;
+			border-radius: 22px;
+			background: color-mix(in srgb, var(--bg) 72%, transparent);
+			backdrop-filter: blur(12px);
+			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
+			transition:
+				width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+				left 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
 		}
 
 		&__input {
 			resize: none;
 			flex: 1;
-			min-height: 40px;
-			padding: 9px 4px 9px 12px;
+			min-height: 36px;
+			padding: 7px 4px 7px 12px;
 			border: 0;
 
 			/* 16px и больше: иначе iOS увеличивает страницу при фокусе */
@@ -697,16 +708,33 @@
 			flex: none;
 			align-items: center;
 			justify-content: center;
-			width: 44px;
-			height: 44px;
+			width: 36px;
+			height: 36px;
 			border: 0;
 			border-radius: 50%;
-			color: var(--on-accent);
+			color: var(--bg);
 			background: var(--accent);
+			transition: opacity 0.3s ease;
+
+			&:hover:not(:disabled) {
+				opacity: 0.85;
+			}
 
 			&:disabled {
 				cursor: default;
 				opacity: 0.3;
+			}
+		}
+
+		&__send-icon {
+			display: inline-flex;
+			width: 16px;
+			height: 16px;
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
 			}
 		}
 

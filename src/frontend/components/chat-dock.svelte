@@ -334,7 +334,7 @@
 			</section>
 		</div>
 
-		<div class="dock__shade" class:dock__shade--hidden={open} aria-hidden="true"></div>
+		<div class="dock__shade" aria-hidden="true"></div>
 
 		<form
 			class="dock__bar"
@@ -630,8 +630,9 @@
 				--shade-side: 48px;
 			}
 
-			&--hidden {
-				display: none;
+			/* В открытом чате -- поверх размытия статьи: лента так же гаснет под полем, как статья */
+			.dock--open & {
+				z-index: 1;
 			}
 		}
 

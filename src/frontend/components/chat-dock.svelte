@@ -596,16 +596,39 @@
 		}
 
 		/* Подложка под строкой: статья под ней размывается и гаснет, текст не спорит с полем.
-		   Едет вместе со строкой статьи: от неё вверх на 24px, вниз до края экрана, вширь -- на всё
-		   окно. Ниже поля и кнопки оглавления: её подложка размывала бы их */
+		   Едет вместе со строкой статьи: от неё вверх на 24px, вниз до края экрана, вбок -- на поля
+		   страницы, как картинки статьи (article.css), и не дальше: иначе страница ездила бы вбок.
+		   На телефоне поле во всю ширину экрана, шире -- края гаснут. Ниже поля и кнопки
+		   оглавления: её подложка размывала бы их */
 		&__shade {
+			--shade-side: 20px;
+
 			pointer-events: none;
 			position: absolute;
 			z-index: -1;
-			inset: -24px calc(50% - 50vw) calc(-1 * var(--dock-bottom, 16px));
+			inset: -24px calc(-1 * var(--shade-side)) calc(-1 * var(--dock-bottom, 16px));
 			background: linear-gradient(to top, var(--bg) 35%, color-mix(in srgb, var(--bg) 0%, transparent));
 			backdrop-filter: blur(6px);
 			mask-image: linear-gradient(to top, #000000 55%, transparent);
+
+			@media (width >= 600px) {
+				--shade-side: 24px;
+
+				mask-image:
+					linear-gradient(to top, #000000 55%, transparent),
+					linear-gradient(
+						to right,
+						transparent,
+						#000000 var(--shade-side),
+						#000000 calc(100% - var(--shade-side)),
+						transparent
+					);
+				mask-composite: intersect;
+			}
+
+			@media (width >= 900px) {
+				--shade-side: 48px;
+			}
 
 			&--hidden {
 				display: none;

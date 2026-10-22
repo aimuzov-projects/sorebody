@@ -43,9 +43,6 @@
 	--marker-gap: 12px;
 	--indent: calc(var(--marker) + var(--marker-gap));
 
-	/* Подложки срочных признаков (.alarm--call) выходят за колонку на 24px, а поле страницы на
-	   телефоне -- 20px: без обрезки страница ездила вбок. clip, а не hidden: липкое не ломается */
-	overflow-x: clip;
 	width: 100%;
 	max-width: calc(var(--article-column) + 260px + 64px + 48px);
 	margin: 0 auto;
@@ -1524,6 +1521,11 @@
 				color-mix(in srgb, var(--danger) 7%, transparent) 65%,
 				transparent
 			);
+
+			/* Не дальше поля страницы на телефоне (20px), иначе страница ездила бы вбок */
+			@media (width < 600px) {
+				inset-inline: -20px;
+			}
 		}
 	}
 

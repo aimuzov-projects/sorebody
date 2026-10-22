@@ -41,7 +41,9 @@
 			transition: none;
 		}
 
+		/* Сжатая обёртка режет кнопку: иначе та торчала бы за край экрана и страница ездила вбок */
 		.article__dock:has(.dock--open) & {
+			overflow: clip;
 			width: 0;
 			margin-left: -8px;
 			visibility: hidden;

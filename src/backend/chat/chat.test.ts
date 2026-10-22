@@ -9,6 +9,7 @@ import { diskKnowledge } from '#frontend/lib/knowledge-disk.ts'
 
 import { dailyCounter } from './daily.ts'
 import { chatHandler, QUOTA } from './http.ts'
+import { keepKnownLinks } from './links.ts'
 import { maskContacts } from './mask.ts'
 import { OpenRouterError, type AssistantMessage, type Complete, type Message } from './openrouter.ts'
 import { chatSystem, RED_FLAGS_REMINDER } from './prompt.ts'
@@ -365,4 +366,35 @@ test('http: новые диалоги на сегодня кончились -- 
 
 	assert.equal((await post({ message: 'плечо' })).status, 503)
 	assert.equal((await post({ session: id, message: 'а ещё?' })).status, 200)
+})
+
+test('keepKnownLinks: сайт и адреса из инструментов остаются, чужие -- текстом или прочь', () => {
+	const known = new Set(['https://pubmed.ncbi.nlm.nih.gov/123/'])
+	const keep = (text: string) => keepKnownLinks(text, { site: 'sorebody.aimuzov.online', known })
+
+	assert.equal(
+		keep('[ПКС](https://sorebody.aimuzov.online/injuries/acl-tear/) и [акция](https://evil.example/promo)'),
+		'[ПКС](https://sorebody.aimuzov.online/injuries/acl-tear/) и акция',
+	)
+
+	assert.equal(
+		keep('Источник: https://pubmed.ncbi.nlm.nih.gov/123/, ещё https://evil.example/x.'),
+		'Источник: https://pubmed.ncbi.nlm.nih.gov/123/, ещё .',
+	)
+
+	assert.equal(keep('[битая](не-адрес)'), 'битая')
+})
+
+test('chat: чужая ссылка из ответа модели не доходит до виджета', async () => {
+	const { complete } = scripted([
+		calls(['get_red_flags', { region: 'ankle-foot' }]),
+		say(
+			'Читайте https://evil.example/promo и [статью](https://sorebody.aimuzov.online/injuries/achilles-tendinopathy/)',
+		),
+	])
+	const { events } = await turn(complete, 'болит ахилл')
+	const text = (events.at(-1) as { text: string }).text
+
+	assert.ok(!text.includes('evil.example'))
+	assert.ok(text.includes('https://sorebody.aimuzov.online/injuries/achilles-tendinopathy/'))
 })

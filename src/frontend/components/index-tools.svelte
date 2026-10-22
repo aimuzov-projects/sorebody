@@ -15,6 +15,7 @@
 
 	import FrequencySwitch from '#frontend/components/frequency-switch.svelte'
 	import MovementSelect from '#frontend/components/movement-select.svelte'
+	import ChatEntry from '#frontend/components/chat-entry.svelte'
 	import SearchField from '#frontend/components/search-field.svelte'
 	import ZoneGlyph from '#frontend/components/zone-glyph.svelte'
 
@@ -135,6 +136,7 @@
 				><span class="index__island-icon" aria-hidden="true">{@html ChevronDown}</span></button
 			>
 		</div>
+		<ChatEntry {sport} />
 		<div class="index__filters">
 			<FrequencySwitch bind:value={frequency} />
 			<MovementSelect options={movements} bind:value={movement} label={elementLabel} empty="любое" />
@@ -190,6 +192,7 @@
 								{/each}
 							</ul>
 						{/if}
+						<ChatEntry {sport} variant="empty" />
 					</li>
 				{/each}
 			</ul>

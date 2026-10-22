@@ -73,5 +73,8 @@ export function chatTools(tools: Tools) {
 		}
 	}
 
-	return { definitions, run }
+	/** Хост сайта: ссылки на него в ответе разрешены всегда. */
+	const site = new URL(tools.catalog().site).host
+
+	return { definitions, run, site }
 }

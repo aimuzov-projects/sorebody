@@ -1,3 +1,4 @@
+import { keepKnownLinks, urlsIn } from './links.ts'
 import { maskContacts } from './mask.ts'
 import type { Complete, Message } from './openrouter.ts'
 import { RED_FLAGS_REMINDER } from './prompt.ts'
@@ -108,8 +109,15 @@ export async function chatTurn({ complete, system, tools, session, message, note
 		}
 
 		const text = reply.content?.trim()
+		const known = new Set(session.messages.flatMap((m) => (m.role === 'tool' ? urlsIn(m.content) : [])))
 
-		emit({ type: 'text', text: text && finish_reason !== 'content_filter' ? text : FALLBACK })
+		emit({
+			type: 'text',
+			text:
+				text && finish_reason !== 'content_filter'
+					? keepKnownLinks(text, { site: tools.site, known })
+					: FALLBACK,
+		})
 
 		return
 	}

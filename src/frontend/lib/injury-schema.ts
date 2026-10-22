@@ -164,6 +164,11 @@ export const injurySchema = z.strictObject({
 	title: z.string().min(3),
 	titleEn: z.string().min(3),
 	region: z.enum(REGION_SLUGS),
+	/**
+	 * Вопросы от лица читателя для пустого поля чата (components/chat-dock.svelte): поле само
+	 * набирает их, чтобы было проще начать. Короткие -- в одну строку поля на телефоне.
+	 */
+	prompts: z.array(z.string().min(8).max(32)).min(3).max(4),
 	images: z.array(
 		z.object({
 			// .webp -- иллюстрация с прозрачным фоном, без подложки

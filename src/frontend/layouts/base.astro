@@ -65,12 +65,18 @@ Astro.csp?.insertStyleHash(`sha256-${createHash('sha256').update(BRAND_GRADIENT_
 const metrika = import.meta.env.PROD && process.env.METRIKA !== 'off'
 const metrikaHost = process.env.METRIKA === 'any-host' ? '' : new URL(Astro.site!).hostname
 
+/**
+ * Чат со справочником (components/chat-entry.svelte): `CHAT=on` -- всем, `CHAT=preview` -- только
+ * открывшим сайт с `?chat=1`. Без переменной кнопки чата нет: бэкенд чата включается отдельно.
+ */
+const chat = ['on', 'preview'].includes(process.env.CHAT ?? '') ? process.env.CHAT : undefined
+
 const fullTitle = pageTitle(title)
 const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.site)
 ---
 
 <!doctype html>
-<html lang="ru" data-sport={sport} data-sport-homes={sportHomes && JSON.stringify(sportHomes)}>
+<html lang="ru" data-sport={sport} data-sport-homes={sportHomes && JSON.stringify(sportHomes)} data-chat={chat}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />

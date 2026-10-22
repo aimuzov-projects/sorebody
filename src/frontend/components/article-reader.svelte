@@ -9,6 +9,7 @@
 
 	import BarLead from '#frontend/components/bar-lead.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
+	import ChatDock from '#frontend/components/chat-dock.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import { sportHome, sportOf, sportSwitchProps, type SportSlug } from '#frontend/data/sports.ts'
 	import { loadArticle } from '#frontend/lib/article-loader.ts'
@@ -138,8 +139,10 @@
 
 			if (!main) throw new Error('no <main> in article page')
 
-			// Чипы зоны и частоты в полноэкранной статье лишние
+			// Чипы зоны и частоты в полноэкранной статье лишние. Строка чата из страницы -- без
+			// скрипта: на её место ниже встаёт своя
 			main.querySelector('.article__meta')?.remove()
+			main.querySelector('.article__dock astro-island')?.remove()
 			await tick()
 
 			if (token !== loadToken || destroyed || !body || !reader) return
@@ -264,6 +267,13 @@
 		{/if}
 		<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
 		{#if footer && status === 'ready'}{@render footer()}{/if}
+		{#if status === 'ready'}
+			<ChatDock
+				injury={{ slug: injury.slug, title: splitTitle(injury.title).name }}
+				{sport}
+				host={() => body?.querySelector<HTMLElement>('.article__dock')}
+			/>
+		{/if}
 	</div>
 </article>
 

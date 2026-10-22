@@ -22,7 +22,7 @@ services:
       - edge
     logging: *logging
 
-  # Публичный MCP. Caddy проксирует сюда /mcp, остальное -- в site.
+  # Публичный MCP и чат на сайте. Caddy проксирует сюда /mcp и /api/chat, остальное -- в site.
   api:
     build:
       context: ..
@@ -30,6 +30,11 @@ services:
     image: wodcare-api
     container_name: wodcare-api
     restart: unless-stopped
+    # Ключ OpenRouter и настройки чата, образец -- `api.env.example`. Файла нет -- чат
+    # выключен, MCP работает как раньше.
+    env_file:
+      - path: ../api.env
+        required: false
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8787/api/health']
       interval: 30s
@@ -40,7 +45,8 @@ services:
       - edge
     logging: *logging
 
-# Переменные сборки лежат в `/srv/wodcare/.env`, образец -- `.env.example`.
+# Переменные сборки лежат в `/srv/wodcare/.env`, образец -- `.env.example`. Переменные
+# бэкенда -- в `/srv/wodcare/api.env`, образец -- `api.env.example`.
 secrets:
   env:
     file: ../.env

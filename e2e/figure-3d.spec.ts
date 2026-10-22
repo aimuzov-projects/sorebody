@@ -116,3 +116,36 @@ test('пока модель грузится, вместо неё её сним�
 	await expect(page.locator('.figure3d')).toHaveAttribute('data-status', 'ready')
 	await expect(poster).toHaveCSS('opacity', '0')
 })
+
+// Картинка с моделью на широком экране выходит за колонку текста, кнопка -- у её правого края.
+// Статья не должна её обрезать, а на телефоне страница при этом не ездит вбок
+for (const width of [375, 800, 1000, 1100, 1280]) {
+	test(`кнопка «Покрутить в 3D» видна целиком и страница не шире экрана, ${width}px`, async ({ page }) => {
+		await page.setViewportSize({ width, height: 800 })
+		await page.goto(`/injuries/${SLUG}/`)
+
+		const open = page.getByRole('button', { name: 'Покрутить в 3D' })
+
+		await open.scrollIntoViewIfNeeded()
+
+		// В каждом углу кнопки (с отступом от скругления) -- сама кнопка, а не то, что под обрезкой
+		const corners = await open.evaluate((el) => {
+			const r = el.getBoundingClientRect()
+			const inset = r.height / 2
+
+			return [
+				[r.left + inset, r.top + 2],
+				[r.right - inset, r.top + 2],
+				[r.left + inset, r.bottom - 2],
+				[r.right - inset, r.bottom - 2],
+				[r.right - 2, r.top + r.height / 2],
+			].map(([x, y]) => document.elementFromPoint(x!, y!)?.closest('.article__model-open') === el)
+		})
+
+		expect(corners).toEqual([true, true, true, true, true])
+
+		expect(
+			await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
+		).toBeLessThanOrEqual(0)
+	})
+}

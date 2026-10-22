@@ -60,6 +60,7 @@ export default defineConfig({
 		...server,
 		command: `astro build && astro preview --port ${port} --ignore-lock`,
 		url: baseURL,
-		env: { METRIKA: 'off' },
+		// Чат -- в режиме тихого запуска: кнопка только с ?chat=1, остальным тестам не мешает
+		env: { METRIKA: 'off', CHAT: 'preview' },
 	},
 })

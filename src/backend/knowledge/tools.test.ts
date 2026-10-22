@@ -120,6 +120,19 @@ test('getRedFlags: по травме и по зоне, срочность сло
 	assert.throws(() => tools.getRedFlags({ slug: 'acl-tear', region: 'knee' }), /что-то одно/)
 })
 
+test('getRedFlags: brief -- те же признаки без текста раздела', () => {
+	const full = tools.getRedFlags({ region: 'hip-groin' })
+	const brief = tools.getRedFlags({ region: 'hip-groin', brief: true })
+
+	assert.deepEqual(
+		brief.map((flag) => flag.alarms),
+		full.map((flag) => flag.alarms),
+	)
+
+	assert.ok(brief.every((flag) => !('urgent' in flag)))
+	assert.ok(JSON.stringify(brief).length < JSON.stringify(full).length / 2)
+})
+
 test('listInjuries: со спортом -- частота', () => {
 	const list = tools.listInjuries({ sport: 'padel' })
 

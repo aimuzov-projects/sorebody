@@ -1,4 +1,6 @@
-/* Меню разделов статьи на узком экране (components/toc-menu.astro). Отдельным файлом: им же
+/* Меню разделов статьи на узком экране (components/toc-menu.astro). В статье кнопка стоит в её
+   нижней строке, рядом с полем чата, на других страницах -- в углу. Размер один на всём сайте -- как у кнопки
+   отправки чата и кнопок просмотрщика 3D. Отдельным файлом: им же
    пользуется статья поверх модели на главной, куда стили компонента сами не попадают.
    Порог тот же, что у бокового оглавления в article.css: где оно есть, кнопки нет */
 .toc-menu {
@@ -7,7 +9,8 @@
 		max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
 			var(--tg-content-safe-area-inset-bottom, 0px)
 	);
-	--toc-menu-size: 52px;
+	--toc-menu-right: 16px;
+	--toc-menu-size: 36px;
 
 	display: none;
 
@@ -15,11 +18,44 @@
 		display: block;
 	}
 
+	/* В нижней строке статьи (.article__dock в article.css) кнопка -- в одном ряду с полем чата,
+	   по центру его высоты 44px. Ряд липнет к низу экрана сам, кнопке позиция не нужна. В открытом
+	   чате кнопка уходит, и поле занимает всю колонку: минус отступ гасит зазор ряда */
+	&--inline {
+		--toc-menu-right: calc((100% - min(680px, 100% - 48px)) / 2);
+		--toc-menu-bottom: calc(max(16px, env(safe-area-inset-bottom)) + 4px);
+
+		flex: none;
+		width: var(--toc-menu-size);
+		margin: 0 0 4px auto;
+		transition:
+			width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+			margin 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+			opacity 0.25s ease;
+
+		@media (width < 600px) {
+			--toc-menu-right: 20px;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
+
+		/* Сжатая обёртка режет кнопку: иначе та торчала бы за край экрана и страница ездила вбок */
+		.article__dock:has(.dock--open) & {
+			overflow: clip;
+			width: 0;
+			margin-left: -8px;
+			visibility: hidden;
+			opacity: 0;
+		}
+	}
+
 	&__button {
 		cursor: pointer;
 		position: fixed;
 		z-index: 20;
-		right: 16px;
+		right: var(--toc-menu-right);
 		bottom: var(--toc-menu-bottom);
 		display: grid;
 		place-items: center;
@@ -29,7 +65,8 @@
 		border: 0;
 		border-radius: 50%;
 		/* Закрытое меню -- заливка цветом спорта, чтобы кнопка не терялась на тексте и картинках;
-		   открытое -- серое стекло, как у панели меню. Без спорта акцент графитовый (global.css) */
+		   открытое -- стекло с тонким кольцом, как у строки чата: без кольца на светлой подложке
+		   строки кнопка пропадала. Без спорта акцент графитовый (global.css) */
 		color: var(--on-accent);
 		background: var(--accent-fill);
 		box-shadow: 0 6px 24px rgb(0 0 0 / 16%);
@@ -42,11 +79,19 @@
 			transition: none;
 		}
 
+		.toc-menu--inline > & {
+			position: static;
+			anchor-name: --toc-menu;
+		}
+
 		&[aria-expanded='true'] {
 			color: var(--accent);
-			background: color-mix(in srgb, var(--fg) 6%, color-mix(in srgb, var(--bg) 80%, transparent));
+			background: color-mix(in srgb, var(--bg) 72%, transparent);
 			-webkit-backdrop-filter: blur(12px);
 			backdrop-filter: blur(12px);
+			box-shadow:
+				inset 0 0 0 1px color-mix(in srgb, var(--fg) 12%, transparent),
+				0 6px 24px rgb(0 0 0 / 16%);
 		}
 
 		&:active {
@@ -62,14 +107,23 @@
 	/* Обёртка задаёт размер: SVG в статье тянется под контейнер (article.css) */
 	&__button-icon {
 		display: inline-flex;
-		width: 22px;
-		height: 22px;
+		width: 16px;
+		height: 16px;
 	}
 
 	/* Над кнопкой, прижато к правому краю. Фон и тень -- как у подсказок (.tip в global.css) */
 	&__panel {
 		position: fixed;
-		inset: auto 16px calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
+		inset: auto var(--toc-menu-right) calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
+
+		/* У кнопки в строке статьи -- прямо над ней. Без привязки к якорю (Firefox) -- по тем же
+		   числам, что у колонки: у правого края, над строкой */
+		@supports (anchor-name: --toc-menu) {
+			.toc-menu--inline > & {
+				inset: auto anchor(right) calc(anchor(top) + 12px) auto;
+				position-anchor: --toc-menu;
+			}
+		}
 		translate: 0 12px;
 		overflow-y: auto;
 		overscroll-behavior: contain;

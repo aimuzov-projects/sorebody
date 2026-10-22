@@ -2,6 +2,11 @@
 title: Гипонатриемия при нагрузке
 titleEn: Exercise-associated hyponatremia
 region: other
+prompts:
+    - 'После забега тошнит и мутит'
+    - 'Много пил, а теперь плохо'
+    - 'Голова болит после марафона'
+    - 'Сколько пить на длинном забеге?'
 images: []
 sources:
     - pmid: '32044213'

@@ -116,6 +116,26 @@ const BASKETBALL_ELEMENTS = [
 export type BasketballElement = (typeof BASKETBALL_ELEMENTS)[number]['slug']
 
 /**
+ * Ситуации и нагрузки хайкинга по docs/research/hiking-injuries-pubmed.md, раздел «Элементы». Как
+ * у бега, элемент -- не техника шага, а то, что происходит на маршруте: рельеф, рюкзак, погода,
+ * высота, обувь. Треккинговые палки -- не элемент, а профилактика в линзах.
+ */
+const HIKING_ELEMENTS = [
+	{ slug: 'descent', title: 'Долгий спуск', titleEn: 'Long descent' },
+	{ slug: 'ascent', title: 'Крутой подъём', titleEn: 'Steep ascent' },
+	{ slug: 'backpack', title: 'Тяжёлый рюкзак', titleEn: 'Heavy backpack' },
+	{ slug: 'rocky-terrain', title: 'Камни, осыпь, неровная тропа', titleEn: 'Rocky and uneven terrain' },
+	{ slug: 'fall', title: 'Поскользнулся или упал', titleEn: 'Slip or fall' },
+	{ slug: 'multi-day', title: 'Многодневный поход', titleEn: 'Multi-day trek' },
+	{ slug: 'altitude', title: 'Высота выше 2500 м', titleEn: 'Altitude above 2500 m' },
+	{ slug: 'heat', title: 'Жара', titleEn: 'Heat' },
+	{ slug: 'cold', title: 'Холод, ветер и дождь', titleEn: 'Cold, wind and rain' },
+	{ slug: 'new-boots', title: 'Новые или неподходящие ботинки', titleEn: 'New or ill-fitting boots' },
+] as const
+
+export type HikingElement = (typeof HIKING_ELEMENTS)[number]['slug']
+
+/**
  * Все травмы кроссфита от самой частой к самой редкой: в этом порядке они стоят в списках зон.
  * Уровень и порядок -- из таблицы диагнозов в docs/research/crossfit-injuries-pubmed.md:
  * частые -- там "очень часто" и "часто", нечастые -- "нередко" и "нечасто", редкие -- только
@@ -279,10 +299,39 @@ const BASKETBALL_FREQUENCY_ORDER = [
 	'sudden-cardiac-arrest',
 ]
 
+/**
+ * Травмы хайкинга от частых к редким по двухтрековому правилу в docs/research/hiking-injuries-pubmed.md:
+ * опросы туристов (частые -- от 10% туристов в двух когортах) и регистр Альпийской полиции Австрии
+ * (частые -- от 25% локализаций или типов травм, нечастые -- от 5%). Редкие -- смерти, спасения,
+ * медпункты парков и военные данные. Внутри уровня сначала цифра по самому диагнозу или месту, потом
+ * по широкой категории; высотная болезнь -- последней среди частых, она про ночёвки выше 2500 м.
+ */
+const HIKING_FREQUENCY_ORDER = [
+	// Частые
+	'foot-blisters',
+	'ankle-sprain',
+	'fall-contusions',
+	'acute-altitude-illness',
+	// Нечастые
+	'concussion',
+	'lower-leg-fracture',
+	'meralgia-paresthetica',
+	'low-back-strain',
+	'wrist-sprain',
+	'patellofemoral-pain',
+	// Редкие
+	'sudden-cardiac-arrest',
+	'hypothermia',
+	'exertional-heat-illness',
+	'exercise-associated-hyponatremia',
+	'frostbite',
+	'rucksack-palsy',
+]
+
 type SportElement = { slug: string; title: string; titleEn: string }
 
 /** Slug спортов списком: новый спорт добавляется сюда и в `SPORTS`. */
-export type SportSlug = 'crossfit' | 'padel' | 'football' | 'running' | 'basketball'
+export type SportSlug = 'crossfit' | 'padel' | 'football' | 'running' | 'basketball' | 'hiking'
 
 export type Sport = {
 	slug: SportSlug
@@ -393,6 +442,23 @@ export const SPORTS = [
 		// тёмный -- почти 10:1 на фоне тёмной темы, цифры на нём тёмные. От индиго нечастых и пурпура
 		// редких отходит дальше 0.09 в OKLab, от синего кроссфита -- на 0.15
 		accent: { light: '#6d28d9', dark: '#c4b5fd', onLight: '#ffffff', onDark: '#161617', glow: '#a855f7' },
+	},
+	{
+		slug: 'hiking',
+		title: 'Хайкинг',
+		phrase: 'в хайкинге',
+		elementLabel: 'Ситуация или нагрузка',
+		elementsTitle: 'Ситуации и нагрузки',
+		elementOn: 'в ситуации',
+		description:
+			'Справочник боли в хайкинге и горных походах: как часто случается, симптомы, когда к врачу и как изменить поход — со ссылками на исследования.',
+		mechanismTitle: 'Механизм и ситуации',
+		elements: HIKING_ELEMENTS,
+		frequencyOrder: HIKING_FREQUENCY_ORDER,
+		// Землисто-коричневый, цвет тропы. Светлый -- 9:1 на белом и 8.3:1 на серой заливке чипов,
+		// тёмный -- 7.7:1 на фоне тёмной темы, цифры на нём тёмные. От оранжевого бега отходит на 0.12
+		// в OKLab в светлой теме и на 0.095 в тёмной, от красного «опасно» -- на 0.15
+		accent: { light: '#78350f', dark: '#c9a27e', onLight: '#ffffff', onDark: '#161617', glow: '#a3622a' },
 	},
 ] as const satisfies readonly Sport[]
 

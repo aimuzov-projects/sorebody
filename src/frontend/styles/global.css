@@ -38,6 +38,13 @@
 	--on-accent-dark: #161617;
 }
 
+:root[data-sport='hiking'] {
+	--accent-light: #78350f;
+	--accent-dark: #c9a27e;
+	--on-accent-light: #ffffff;
+	--on-accent-dark: #161617;
+}
+
 :root[data-sport='basketball'] {
 	--accent-light: #6d28d9;
 	--accent-dark: #c4b5fd;

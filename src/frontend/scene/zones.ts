@@ -163,6 +163,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 		normal: [0.4, -0.2, 1],
 		view: { azimuth: 25, polar: 76 },
 	},
+	// Стволы плечевого сплетения над ключицей, где на них давит лямка: медиальнее и глубже подключичной
+	// вены, по нервам в shoulder-left.nerves.glb
+	'rucksack-palsy': { offset: [-0.09, 0.045, 0.014], normal: [0, 0.6, 1], view: { azimuth: 15, polar: 66 } },
 	'upper-limb-stress-fractures': {
 		offset: [-0.06, -0.03, -0.09],
 		normal: [0, 0, -1],
@@ -276,6 +279,7 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 	},
 	'pectoralis-major-rupture': { depth: 'muscle', muscles: ['pectoralis major'] },
 	'paget-schroetter-syndrome': { depth: 'deep' },
+	'rucksack-palsy': { depth: 'deep' },
 	'latissimus-dorsi-tear': { depth: 'muscle', muscles: ['latissimus dorsi'] },
 	'upper-limb-stress-fractures': { depth: 'deep' },
 	'inguinal-hernia': {

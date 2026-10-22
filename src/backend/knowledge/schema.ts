@@ -4,7 +4,7 @@ import * as z from 'zod/v4'
  * Как пользоваться базой: публичный MCP отдаёт это модели клиента вместе со списком
  * инструментов, чат на сайте кладёт в системный промпт. Справка, а не диагноз.
  */
-export const INSTRUCTIONS = `Sorebody -- справочник спортивных травм на русском: кроссфит, падел, футбол, бег, баскетбол.
+export const INSTRUCTIONS = `Sorebody -- справочник спортивных травм на русском: кроссфит, падел, футбол, бег, баскетбол, хайкинг.
 Статьи написаны по исследованиям PubMed и клиническим рекомендациям. Это справка, а не диагноз.
 
 Когда человек описывает боль или травму:
@@ -20,7 +20,7 @@ const region = z.string().optional().describe('Зона тела, slug из get_
 const sport = z
 	.string()
 	.optional()
-	.describe('Спорт, slug из get_catalog: crossfit, padel, football, running, basketball')
+	.describe('Спорт, slug из get_catalog: crossfit, padel, football, running, basketball, hiking')
 
 /**
  * Названия, описания и схемы аргументов инструментов базы: одни для MCP и чата,

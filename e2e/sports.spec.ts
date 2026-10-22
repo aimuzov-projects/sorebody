@@ -7,6 +7,7 @@ const PADEL = sportOf('padel')
 const FOOTBALL = sportOf('football')
 const RUNNING = sportOf('running')
 const BASKETBALL = sportOf('basketball')
+const HIKING = sportOf('hiking')
 
 /** `#0066cc` -> `rgb(0, 102, 204)`: так цвет отдаёт getComputedStyle. */
 const rgb = (hex: string) => `rgb(${(hex.slice(1).match(/../g) ?? []).map((pair) => parseInt(pair, 16)).join(', ')})`
@@ -223,6 +224,28 @@ test('страница ситуации баскетбола собирает е
 	await expect(page.locator('.index__title')).toHaveText('Приземление на стопу соперника')
 	await expect(page.locator('html')).toHaveAttribute('data-sport', 'basketball')
 	await expect(page.locator('a[href="/basketball/ankle-sprain/"]').first()).toBeAttached()
+})
+
+// Шестой спорт: из баскетбола в хайкинг на месте, фиолетовый перетекает в коричневый. У хайкинга есть
+// плечо (рюкзачный паралич), которого у баскетбола нет
+test('из баскетбола в хайкинг -- на месте, со своим цветом и своими зонами', async ({ page }) => {
+	await page.goto('/basketball/')
+	await markPage(page)
+	await chooseSport(page, 'Баскетбол', 'Хайкинг')
+
+	await expect(page).toHaveURL(/\/hiking\/$/)
+	await expect(page.locator('h1')).toHaveText('Боль в хайкинге')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'hiking')
+	await expect(sportButton(page, 'Хайкинг')).toHaveCSS('color', rgb(HIKING.accent.light))
+	await expect(page.locator('.index__zone-label', { hasText: 'Плечо' })).toHaveCount(1)
+	expect(await samePage(page)).toBe(true)
+})
+
+test('страница ситуации хайкинга собирает её травмы', async ({ page }) => {
+	await page.goto('/hiking/elements/altitude/')
+	await expect(page.locator('.index__title')).toHaveText('Высота выше 2500 м')
+	await expect(page.locator('html')).toHaveAttribute('data-sport', 'hiking')
+	await expect(page.locator('a[href="/hiking/acute-altitude-illness/"]').first()).toBeAttached()
 })
 
 // Адрес главной кроссфита: `/` без пути, `/padel/` под /\/$/ тоже подходит

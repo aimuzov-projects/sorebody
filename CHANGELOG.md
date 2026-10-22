@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.1](https://github.com/aimuzov-projects/sorebody/compare/v1.26.0...v1.26.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* **sport-switch:** keep the drum still on arrival ([0805559](https://github.com/aimuzov-projects/sorebody/commit/0805559ca55aee007d52abeef2999003f31ebb2f))
+* **sport-switch:** keep the drum still on arrival ([ae06d38](https://github.com/aimuzov-projects/sorebody/commit/ae06d3873182fa4ff19edfe3b732d0e7b9b5a448))
+
 ## [1.26.0](https://github.com/aimuzov-projects/sorebody/compare/v1.25.0...v1.26.0) (2026-10-22)
 
 

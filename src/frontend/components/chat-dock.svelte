@@ -51,7 +51,14 @@
 			storage = sessionStorage
 		} catch {}
 
-		available = chatAvailable({ root: document.documentElement, search: location.search, storage })
+		const root = document.documentElement
+
+		available = chatAvailable({ root, search: location.search, storage })
+
+		// Кнопка оглавления статьи ждёт строку (styles/toc-menu.css). Чата нет -- ждать нечего
+		if (!available) root.dataset.chatDock = ''
+
+		return () => delete root.dataset.chatDock
 	})
 
 	/** Кнопка оглавления статьи на узком экране, как в styles/toc-menu.css: той же величины, что отправка. */
@@ -94,9 +101,12 @@
 
 			root.style.setProperty('--chat-dock-toc-right', `${root.clientWidth - rect.right}px`)
 			root.style.setProperty('--chat-dock-toc-bottom', `${bottom}px`)
+			root.dataset.chatDock = ''
 		}
 		const clear = () => {
 			for (const name of ['--chat-dock-toc-right', '--chat-dock-toc-bottom']) root.style.removeProperty(name)
+
+			root.dataset.chatDock = ''
 		}
 		const observer = new ResizeObserver(measure)
 
@@ -113,6 +123,7 @@
 			removeEventListener('resize', measure)
 			visualViewport?.removeEventListener('resize', measure)
 			clear()
+			delete root.dataset.chatDock
 		}
 	})
 

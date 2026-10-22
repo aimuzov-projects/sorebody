@@ -50,6 +50,12 @@
 			transition: none;
 		}
 
+		/* В статье с чатом кнопка ждёт его строку (components/chat-dock.svelte), иначе вставала бы
+		   в угол и через миг прыгала к строке. data-chat-dock ставит строка, когда встала */
+		:root:is([data-chat='on'], [data-chat='preview']):not([data-chat-dock]) [data-chat-wait] > & {
+			visibility: hidden;
+		}
+
 		&[aria-expanded='true'] {
 			color: var(--accent);
 			background: color-mix(in srgb, var(--bg) 72%, transparent);

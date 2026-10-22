@@ -455,10 +455,10 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).dig
 			</section>
 		</footer>
 
-		<TocMenu {sections} />
+		<TocMenu {sections} chat />
 	</main>
 	{/* Вне main: ридер главной берёт из страницы только main и ставит строку чата сам */}
-	<ChatDock client:idle injury={{ slug: injury.id, title: name }} sport={sport?.slug} />
+	<ChatDock client:load injury={{ slug: injury.id, title: name }} sport={sport?.slug} />
 </Base>
 
 <script>

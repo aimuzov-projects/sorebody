@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.28.0](https://github.com/aimuzov-projects/sorebody/compare/v1.27.1...v1.28.0) (2026-10-22)
+
+
+### Features
+
+* add hiking as the sixth sport ([fb3f779](https://github.com/aimuzov-projects/sorebody/commit/fb3f779c53b40b0d81f3c1400293bdaa73ba577b))
+* add hiking as the sixth sport ([39bd707](https://github.com/aimuzov-projects/sorebody/commit/39bd7076b714dbf0cc8ccd13cd601b1e24038a23))
+
+
+### Bug Fixes
+
+* **hiking:** apply review fixes to content, icons and the marker ([bbee1cc](https://github.com/aimuzov-projects/sorebody/commit/bbee1cc0c9ebbda1811204bb607dcbbb57b704a0))
+
 ## [1.27.1](https://github.com/aimuzov-projects/sorebody/compare/v1.27.0...v1.27.1) (2026-10-22)
 
 

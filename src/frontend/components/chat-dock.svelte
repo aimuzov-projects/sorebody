@@ -528,7 +528,6 @@
 
 		&__welcome {
 			padding-bottom: 16px;
-			border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
 		}
 
 		&__para {

@@ -31,6 +31,8 @@
 	const EXAMPLES = ['Как понять, что это у меня?', 'К какому врачу идти?', 'Когда можно тренироваться?']
 
 	let available = $state(false)
+	/** Строка уже выехала: до этого она внизу за краем экрана, вместе с кнопкой оглавления. */
+	let shown = $state(false)
 	let open = $state(false)
 	let draft = $state('')
 	let field = $state<HTMLTextAreaElement>()
@@ -59,6 +61,30 @@
 
 		return () => node.remove()
 	}
+
+	/** Через сколько после открытия статьи строка и кнопка оглавления выезжают снизу. */
+	const ENTER_DELAY = 2000
+
+	// Статья проявляется в своём темпе: в ридере главной -- по частям. Строка с кнопкой
+	// оглавления выезжают позже, когда статья уже на месте. Кнопка -- часть статьи,
+	// ей сигнал -- атрибутом на <html> (styles/toc-menu.css)
+	$effect(() => {
+		if (!available) return
+
+		const root = document.documentElement
+
+		root.dataset.chatDock = 'hidden'
+
+		const timer = setTimeout(() => {
+			shown = true
+			root.dataset.chatDock = 'shown'
+		}, ENTER_DELAY)
+
+		return () => {
+			clearTimeout(timer)
+			delete root.dataset.chatDock
+		}
+	})
 
 	// Подложка под строкой -- в одном слое со статьёй. Ридер главной -- свой слой (z-index 2),
 	// и подложка из <body> накрыла бы его целиком, вместе с кнопкой оглавления внутри
@@ -99,9 +125,9 @@
 			// Кнопку ставим и при открытом чате: высота и правый край колонки те же, и под размытием
 			// она остаётся на месте, а не прыгает к углу по умолчанию
 
-			const line = bar.getBoundingClientRect()
-			// Центр кнопки -- на середине строки
-			const bottom = innerHeight - line.bottom + (line.height - TOC_SIZE) / 2
+			// Центр кнопки -- на середине строки. offset*, а не getBoundingClientRect: строка
+			// может быть ещё за краем экрана до выезда, а кнопка встаёт туда, где строка будет
+			const bottom = innerHeight - bar.offsetTop - bar.offsetHeight + (bar.offsetHeight - TOC_SIZE) / 2
 
 			root.style.setProperty('--chat-dock-toc-right', `${root.clientWidth - rect.right}px`)
 			root.style.setProperty('--chat-dock-toc-bottom', `${bottom}px`)
@@ -403,10 +429,17 @@
 			</section>
 		</div>
 
-		<div class="dock__shade" class:dock__shade--hidden={open} aria-hidden="true" {@attach underlay}></div>
+		<div
+			class="dock__shade"
+			class:dock__shade--hidden={open}
+			class:dock__shade--away={!shown}
+			aria-hidden="true"
+			{@attach underlay}
+		></div>
 
 		<form
 			class="dock__bar"
+			class:dock__bar--away={!shown}
 			bind:this={bar}
 			onsubmit={(event) => {
 				event.preventDefault()
@@ -656,14 +689,14 @@
 			background: linear-gradient(to top, var(--bg) 35%, color-mix(in srgb, var(--bg) 0%, transparent));
 			backdrop-filter: blur(6px);
 			mask-image: linear-gradient(to top, #000000 55%, transparent);
-			animation: dock-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) backwards;
-
-			@media (--reduced-motion) {
-				animation: none;
-			}
+			transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 
 			&--hidden {
 				display: none;
+			}
+
+			&--away {
+				opacity: 0;
 			}
 		}
 
@@ -686,15 +719,23 @@
 			box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 8%, transparent);
 			transition:
 				width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
-				left 0.35s cubic-bezier(0.25, 1, 0.5, 1);
-			/* Проявляется вместе со статьёй: в ридере главной её содержимое после загрузки
-			   проявляется так же (article-reader.svelte), иначе строка выскакивала раньше текста.
-			   Задержка -- как у самого ридера (lib/fade-up.ts): строка живёт вне него */
-			animation: dock-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.12s backwards;
+				left 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+				translate 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+				opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 
 			@media (--reduced-motion) {
-				transition: none;
-				animation: none;
+				transition: opacity 0.3s ease;
+			}
+
+			/* До выезда -- под нижним краем экрана: высота строки и ещё отступ снизу */
+			&--away {
+				pointer-events: none;
+				translate: 0 calc(100% + 2 * var(--dock-gap));
+				opacity: 0;
+
+				@media (--reduced-motion) {
+					translate: none;
+				}
 			}
 		}
 
@@ -760,12 +801,6 @@
 		&__bar:has(&__input:focus-visible) {
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
-		}
-	}
-
-	@keyframes dock-in {
-		from {
-			opacity: 0;
 		}
 	}
 </style>

@@ -59,6 +59,12 @@ const answer = (route: Route) =>
 const input = (page: Page) => page.getByRole('textbox', { name: 'Вопрос по справочнику' })
 const feed = (page: Page) => page.getByRole('region', { name: 'Вопрос по статье' })
 
+/** Строка с кнопкой оглавления выезжают через 2 с после открытия статьи: ждём их на месте. */
+async function settled(page: Page) {
+	await expect(page.locator('html')).toHaveAttribute('data-chat-dock', 'shown', { timeout: 5000 })
+	await page.waitForTimeout(600)
+}
+
 test('без метки ?chat=1 строки чата нет', async ({ page }) => {
 	await page.goto('/crossfit/acl-tear/')
 	await expect(page.locator('.article__body')).toBeVisible()
@@ -71,6 +77,7 @@ test('строка внизу шириной с колонку текста, ф�
 	const posts = await mockChat(page, answer)
 
 	await page.goto(ARTICLE)
+	await settled(page)
 	await expect(input(page)).toBeVisible()
 
 	const column = (await page.locator('.article__body').boundingBox())!
@@ -129,6 +136,7 @@ test('шапка с «Назад», пояснение слева, нажати�
 	const posts = await mockChat(page, answer)
 
 	await page.goto(ARTICLE)
+	await settled(page)
 	await input(page).click()
 
 	// На широком экране слева, на месте оглавления, -- дисклеймер; что умеет и примеры -- справа, в ленте
@@ -162,6 +170,7 @@ test('чат на сегодня закрыт -- «вернётся завтра
 	)
 
 	await page.goto(ARTICLE)
+	await settled(page)
 	await input(page).click()
 	await expect(feed(page)).toContainText('вернётся завтра')
 	await expect(input(page)).toBeDisabled()
@@ -171,6 +180,7 @@ test('сервис не ответил -- понятный текст, а не �
 	await mockChat(page, (route) => route.fulfill({ status: 502, body: 'Bad gateway' }))
 
 	await page.goto(ARTICLE)
+	await settled(page)
 	await input(page).fill('болит плечо')
 	await page.getByRole('button', { name: 'Отправить' }).click()
 	await expect(feed(page).getByRole('alert')).toContainText('Не получилось ответить')
@@ -191,6 +201,7 @@ test('статья поверх модели главной: строка чат
 
 	await expect(page.getByRole('heading', { level: 1, name: /Травмы лица и зубов/ })).toBeVisible()
 	await expect(input(page)).toBeVisible()
+	await settled(page)
 })
 
 test.describe('телефон', () => {
@@ -201,6 +212,7 @@ test.describe('телефон', () => {
 	}) => {
 		await mockChat(page, answer)
 		await page.goto(ARTICLE)
+		await settled(page)
 
 		const column = (await page.locator('.article__body').boundingBox())!
 		const box = async () => (await page.locator('.dock__bar').boundingBox())!
@@ -251,6 +263,7 @@ test('ссылка на раздел этой статьи: чат сворач�
 	await page.setViewportSize({ width: 1280, height: 800 })
 	await mockChat(page, linked('Разрыв ПКС — когда сразу к врачу', '/injuries/acl-tear/#urgent'))
 	await page.goto(ARTICLE)
+	await settled(page)
 
 	await input(page).fill('когда к врачу?')
 	await page.keyboard.press('Enter')
@@ -277,6 +290,7 @@ test('ссылка на другую статью на главной: откр�
 		.first()
 		.click()
 
+	await settled(page)
 	await page.evaluate(() => ((window as unknown as { marker: number }).marker = 1))
 	await input(page).fill('а мениск?')
 	await page.keyboard.press('Enter')
@@ -317,6 +331,7 @@ test('статья поверх модели на узком экране: кн�
 
 	await page.setViewportSize({ width: 375, height: 667 })
 	await expect(input(page)).toBeVisible()
+	await settled(page)
 
 	const toc = page.locator('.reader .toc-menu__button')
 	const box = (await toc.boundingBox())!
@@ -326,4 +341,21 @@ test('статья поверх модели на узком экране: кн�
 	)
 
 	expect(top).toBe(true)
+})
+
+test.describe('выезд строки', () => {
+	test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true })
+
+	test('строка и кнопка оглавления выезжают снизу через 2 секунды, а не вместе со статьёй', async ({ page }) => {
+		await mockChat(page, answer)
+		await page.goto(ARTICLE)
+
+		await expect(page.locator('html')).toHaveAttribute('data-chat-dock', 'hidden')
+		await expect(page.locator('.dock__bar')).not.toBeInViewport()
+		await expect(page.locator('.toc-menu__button')).not.toBeInViewport()
+
+		await settled(page)
+		await expect(page.locator('.dock__bar')).toBeInViewport()
+		await expect(page.locator('.toc-menu__button')).toBeInViewport()
+	})
 })

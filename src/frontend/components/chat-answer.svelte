@@ -28,6 +28,7 @@
 		{#if part.type === 'strong'}<strong>{part.text}</strong>
 		{:else if part.type === 'link'}<a
 				class="answer__link"
+				class:answer__link--site={!external(part.href)}
 				href={part.href}
 				onclick={(event) => onlink?.(event, part.href)}
 				target={external(part.href) ? '_blank' : undefined}
@@ -190,8 +191,39 @@
 			padding-left: 20px;
 		}
 
+		/* Ссылки -- как в тексте статьи (styles/article.css): на источник -- тонкое подчёркивание,
+		   на статью или раздел сайта -- плашкой, при наведении цвета меняются местами */
 		&__link {
 			color: var(--accent);
+			text-decoration: underline;
+			text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+			text-decoration-thickness: 1px;
+			text-underline-offset: 3px;
+			transition: text-decoration-color 0.3s ease;
+
+			&:hover {
+				text-decoration-color: currentcolor;
+			}
+
+			&--site {
+				padding: 0 0.4em;
+				border-radius: 0.3em;
+				text-decoration: none;
+				background-image: linear-gradient(
+					color-mix(in srgb, var(--accent) 8%, transparent),
+					color-mix(in srgb, var(--accent) 8%, transparent)
+				);
+				-webkit-box-decoration-break: clone;
+				box-decoration-break: clone;
+				transition:
+					color 0.2s ease,
+					background-color 0.2s ease;
+
+				&:hover {
+					color: var(--on-accent);
+					background-color: var(--accent);
+				}
+			}
 		}
 
 		&__thinking {

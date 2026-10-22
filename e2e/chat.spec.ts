@@ -306,6 +306,33 @@ test('ссылка на другую статью на главной: откр�
 	await expect(feed(page).locator('.answer__question')).toHaveText('а мениск?')
 })
 
+test('ссылка на статью другого спорта с главной: обычный переход на её страницу, а не на главную', async ({ page }) => {
+	await mockChat(page, linked('Тендинопатия подколенной мышцы', '/running/popliteus-tendinopathy/'))
+	await page.goto('/crossfit/?chat=1')
+
+	await page
+		.getByRole('button', { name: /Колено/ })
+		.first()
+		.click()
+
+	await page
+		.getByRole('link', { name: /крестообразной/ })
+		.first()
+		.click()
+
+	await input(page).fill('болит под коленом')
+	await page.keyboard.press('Enter')
+
+	const link = feed(page).getByRole('link', { name: 'Тендинопатия подколенной мышцы' })
+
+	// Ссылка на сайт -- плашкой, как в тексте статьи
+	await expect(link).toHaveClass(/answer__link--site/)
+	await link.click()
+
+	await expect(page).toHaveURL(/\/running\/popliteus-tendinopathy\//)
+	await expect(page.getByRole('heading', { level: 1, name: /подколенной/ })).toBeVisible()
+})
+
 test.describe('кнопка оглавления', () => {
 	test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true })
 

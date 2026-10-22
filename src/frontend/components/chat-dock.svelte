@@ -189,7 +189,11 @@
 			return
 		}
 
-		if (document.documentElement.dataset.step && !url.pathname.startsWith('/injuries/')) {
+		// Ридер главной открывает только статьи своего спорта: со статьёй другого спорта сцена
+		// не находила её и уходила на главную. Её и общую /injuries/ -- обычным переходом
+		const sport = (path: string) => path.split('/').find(Boolean)
+
+		if (document.documentElement.dataset.step && sport(url.pathname) === sport(location.pathname)) {
 			history.pushState(null, '', `${url.pathname}${location.search}`)
 			dispatchEvent(new PopStateEvent('popstate'))
 

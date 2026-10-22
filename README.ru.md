@@ -35,6 +35,7 @@
 - **Статья** (`/<sport>/<injury>/`): общая часть травмы и разбор для спорта. Общая часть без спорта — `/injuries/<injury>/`.
 - **О справочнике**, **Что нового** и **404** — страницы без спорта, их акцент графитовый.
 - **Бренд**: знак «точка боли» в [`logo.svelte`](src/frontend/components/logo.svelte), фавикон, иконки, OG-картинку и баннер README собирает [`scripts/brand/render.mjs`](scripts/brand/render.mjs). Название и дескриптор — в [`site.ts`](src/frontend/data/site.ts).
+- **Публичный MCP** на `/mcp` (Streamable HTTP без сессий, только чтение): поиск по статьям, статья по разделам, тревожные признаки, каталог. База — `/knowledge.json`, её собирает сборка сайта; сервер — [`src/backend/mcp.ts`](src/backend/mcp.ts).
 - **Футер**: подпись автора из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) со ссылкой на исходный код, `repo` в [`site.ts`](src/frontend/data/site.ts).
 
 ## Как устроено
@@ -42,7 +43,7 @@
 Всё лежит в `src/`:
 
 - [`src/frontend`](src/frontend): сайт на Astro, это `srcDir` в `astro.config.mjs`. Импорты — через `#frontend/*`.
-- Если проекту нужен свой API, он встаёт рядом с сайтом, как в shkatova-psychologist и prestige-logist: сервис в `src/backend` (`#backend/*`, голый Node без сборки), общий для обеих сторон код в `src/shared` (`#shared/*`), образ в `deploy/backend.Dockerfile` и второй сервис в `deploy/docker-compose.yml`. Сайт из `src/backend` ничего не импортирует.
+- [`src/backend`](src/backend): API рядом с сайтом, как в shkatova-psychologist и prestige-logist: голый Node без сборки, импорты через `#backend/*`. Общий для обеих сторон код — в [`src/shared`](src/shared) (`#shared/*`), образ — [`deploy/backend.Dockerfile`](deploy/backend.Dockerfile), сервис `api` в `deploy/docker-compose.yml`. Сайт из `src/backend` ничего не импортирует.
 
 Всё про сервер — в [`deploy`](deploy): Dockerfile, compose и nginx. Скрипт выкладки общий для всех сайтов и лежит в [infra-server](https://github.com/aimuzov-projects/infra-server).
 
@@ -68,6 +69,12 @@ E2E-тесты в [`e2e`](e2e) собирают сайт и открывают �
 
 ```sh
 npm run test:e2e
+```
+
+API и MCP работают на Node без сборки, базу берут из `dist/knowledge.json`, поэтому сначала собрать сайт. `npm run api` отдаёт `/mcp` на порту 8787, `npm run mcp:stdio` — тот же сервер по stdio, для Claude Desktop или `npx @modelcontextprotocol/inspector`.
+
+```sh
+npm run build && npm run api
 ```
 
 ## Мобильная версия

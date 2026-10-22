@@ -37,6 +37,7 @@ The site is in Russian, so the names below are translated.
 - **Article** (`/<sport>/<injury>/`): the shared part of an injury plus the take for the sport. The shared part on its own is at `/injuries/<injury>/`.
 - **About**, **What's new** and **404** have no sport, their accent is graphite.
 - **Brand**: the "pain point" mark in [`logo.svelte`](src/frontend/components/logo.svelte); the favicon, icons, OG image and README banner are rendered by [`scripts/brand/render.mjs`](scripts/brand/render.mjs). The name and descriptor live in [`site.ts`](src/frontend/data/site.ts).
+- **Public MCP** at `/mcp` (Streamable HTTP, no sessions, read-only): search over the articles, an article by sections, red flags, the catalog. The base is `/knowledge.json`, which the site build emits; the server is [`src/backend/mcp.ts`](src/backend/mcp.ts).
 - **Footer**: the author credit from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) with a link to the source code, `repo` in [`site.ts`](src/frontend/data/site.ts).
 
 ## How it is built
@@ -44,7 +45,7 @@ The site is in Russian, so the names below are translated.
 Everything lives in `src/`:
 
 - [`src/frontend`](src/frontend): the Astro site, it is the `srcDir` in `astro.config.mjs`. Imports go through `#frontend/*`.
-- When the project needs its own API, it goes next to the site, the way shkatova-psychologist and prestige-logist do it: the service in `src/backend` (`#backend/*`, plain Node running TypeScript, no build), code both sides need in `src/shared` (`#shared/*`), the image in `deploy/backend.Dockerfile` and a second service in `deploy/docker-compose.yml`. The site never imports from `src/backend`.
+- [`src/backend`](src/backend): the API next to the site, the way shkatova-psychologist and prestige-logist do it: plain Node running TypeScript, no build, imports through `#backend/*`. Code both sides need is in [`src/shared`](src/shared) (`#shared/*`), the image is [`deploy/backend.Dockerfile`](deploy/backend.Dockerfile), the `api` service in `deploy/docker-compose.yml`. The site never imports from `src/backend`.
 
 Everything about the server is in [`deploy`](deploy): the Dockerfile, compose and nginx. The deploy script is shared by all sites and lives in [infra-server](https://github.com/aimuzov-projects/infra-server).
 
@@ -70,6 +71,12 @@ E2E tests in [`e2e`](e2e) build the site and open it in Chromium: every sitemap 
 
 ```sh
 npm run test:e2e
+```
+
+The API and MCP run on Node without a build, the base comes from `dist/knowledge.json`, so build the site first. `npm run api` serves `/mcp` on port 8787; `npm run mcp:stdio` is the same server over stdio, for Claude Desktop or `npx @modelcontextprotocol/inspector`.
+
+```sh
+npm run build && npm run api
 ```
 
 ## Mobile

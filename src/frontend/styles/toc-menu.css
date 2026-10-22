@@ -44,23 +44,10 @@
 		transition:
 			color 0.3s ease,
 			background-color 0.3s ease,
-			scale 0.2s ease,
-			translate 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-			opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+			scale 0.2s ease;
 
 		@media (prefers-reduced-motion: reduce) {
-			transition: opacity 0.3s ease;
-		}
-
-		/* Со строкой чата кнопка выезжает снизу вместе с ней (components/chat-dock.svelte) */
-		:root[data-chat-dock='hidden'] & {
-			pointer-events: none;
-			translate: 0 calc(100% + 32px);
-			opacity: 0;
-
-			@media (prefers-reduced-motion: reduce) {
-				translate: none;
-			}
+			transition: none;
 		}
 
 		&[aria-expanded='true'] {

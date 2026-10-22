@@ -60,7 +60,7 @@
 		return () => node.remove()
 	}
 
-	/** Кнопка оглавления статьи на узком экране -- той же величины, что кнопка отправки. */
+	/** Кнопка оглавления статьи на узком экране, как в styles/toc-menu.css: той же величины, что отправка. */
 	const TOC_SIZE = 36
 	const TOC_GAP = 8
 
@@ -82,23 +82,24 @@
 		}
 		const measure = () => {
 			const rect = target.getBoundingClientRect()
-			const reserve = toc() && !open ? TOC_SIZE + TOC_GAP : 0
+			const menu = toc()
 
-			place = { left: rect.left, width: rect.width - reserve }
+			place = { left: rect.left, width: rect.width - (menu && !open ? TOC_SIZE + TOC_GAP : 0) }
 
-			if (!reserve || !bar) return clear()
+			if (!menu || !bar) return clear()
+
+			// Кнопку ставим и при открытом чате: высота и правый край колонки те же, и под размытием
+			// она остаётся на месте, а не прыгает к углу по умолчанию
 
 			const line = bar.getBoundingClientRect()
 			// Центр кнопки -- на середине строки
 			const bottom = innerHeight - line.bottom + (line.height - TOC_SIZE) / 2
 
-			root.style.setProperty('--chat-dock-toc-size', `${TOC_SIZE}px`)
 			root.style.setProperty('--chat-dock-toc-right', `${root.clientWidth - rect.right}px`)
 			root.style.setProperty('--chat-dock-toc-bottom', `${bottom}px`)
 		}
 		const clear = () => {
-			for (const name of ['--chat-dock-toc-size', '--chat-dock-toc-right', '--chat-dock-toc-bottom'])
-				root.style.removeProperty(name)
+			for (const name of ['--chat-dock-toc-right', '--chat-dock-toc-bottom']) root.style.removeProperty(name)
 		}
 		const observer = new ResizeObserver(measure)
 

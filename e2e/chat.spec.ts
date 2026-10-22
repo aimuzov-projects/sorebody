@@ -218,6 +218,9 @@ test.describe('телефон', () => {
 		await input(page).tap()
 		await expect.poll(async () => Math.round((await box()).width)).toBe(Math.round(column.width))
 
+		// Кнопка оглавления под размытием не прыгает и не меняет размер
+		expect(await page.locator('.toc-menu__button').boundingBox()).toEqual(toc)
+
 		await input(page).fill('подвернул ногу')
 		await page.getByRole('button', { name: 'Отправить' }).tap()
 		await expect(feed(page).getByRole('list', { name: 'Статьи' })).toBeVisible()
@@ -285,4 +288,16 @@ test('ссылка на другую статью на главной: откр�
 
 	await input(page).click()
 	await expect(feed(page).locator('.answer__question')).toHaveText('а мениск?')
+})
+
+test.describe('кнопка оглавления', () => {
+	test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true })
+
+	test('одного размера везде: и на странице «Что нового», где чата нет', async ({ page }) => {
+		await page.goto('/changelog')
+
+		const button = (await page.locator('.toc-menu__button').boundingBox())!
+
+		expect([button.width, button.height]).toEqual([36, 36])
+	})
 })

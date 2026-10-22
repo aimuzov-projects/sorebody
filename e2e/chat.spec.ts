@@ -232,9 +232,14 @@ test.describe('телефон', () => {
 		await expect.poll(box).toEqual(bar)
 		await input(page).tap()
 
-		await input(page).fill('подвернул ногу')
-		await page.getByRole('button', { name: 'Отправить' }).tap()
+		// Enter отправляет и на телефоне, перенос строки -- Shift+Enter
+		await input(page).fill('подвернул')
+		await page.keyboard.press('Shift+Enter')
+		await page.keyboard.type('ногу')
+		await expect(input(page)).toHaveValue('подвернул\nногу')
+		await page.keyboard.press('Enter')
 		await expect(feed(page).getByRole('list', { name: 'Статьи' })).toBeVisible()
+		await expect(input(page)).toHaveValue('')
 		await expect(page.getByRole('button', { name: 'Отправить' })).toBeInViewport()
 
 		// innerWidth растягивается вместе со страницей, поэтому сравниваем с clientWidth

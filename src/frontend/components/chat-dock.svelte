@@ -224,8 +224,9 @@
 	}
 
 	function keydown(event: KeyboardEvent) {
-		// На телефоне Enter -- перенос строки, отправка кнопкой; с клавиатурой Enter отправляет
-		if (event.key === 'Enter' && !event.shiftKey && matchMedia('(hover: hover)').matches) {
+		// Enter отправляет и на телефоне, перенос строки -- Shift+Enter. Enter, которым набор
+		// иероглифов или подсказка клавиатуры подтверждают слово, -- не отправка
+		if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
 			event.preventDefault()
 			send()
 		}
@@ -345,6 +346,7 @@
 				class:dock__input--waiting={!available}
 				rows="1"
 				maxlength="1000"
+				enterkeyhint="send"
 				placeholder={chat.closed ? 'Ассистент вернётся завтра' : 'Спросите о боли'}
 				aria-label="Вопрос по справочнику"
 				disabled={!available || chat.closed || over}

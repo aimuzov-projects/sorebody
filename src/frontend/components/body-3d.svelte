@@ -10,6 +10,7 @@
 	import { prefetchArticles } from '#frontend/lib/article-loader.ts'
 	import { cssVars } from '#frontend/lib/css-vars.ts'
 	import { fadeUp } from '#frontend/lib/fade-up.ts'
+	import { appear, drop, move, smoothHeight } from '#frontend/lib/zone-motion.ts'
 	import { plural } from '#frontend/lib/plural.ts'
 	import { BACK_EVENT, STEP_EVENT } from '#frontend/lib/telegram-events.ts'
 	import IndexTools from '#frontend/components/index-tools.svelte'
@@ -1565,7 +1566,7 @@
 					aria-busy={sportLoading}
 					{@attach prefetchSports}
 				>
-					<span aria-hidden="true">Боль </span>{#if sport.sports.length > 1}<SportSwitch
+					<span class="index__pain" aria-hidden="true">Боль</span>{#if sport.sports.length > 1}<SportSwitch
 							sports={sport.sports}
 							value={sport.slug}
 							size="title"
@@ -1598,27 +1599,40 @@
 				onpick={onItemClick}
 			/>
 			<!-- Под запросом на десктопе зоны уступают место результатам, на телефоне результаты в острове -->
-			<ul class="index__zones" class:index__zones--searching={query.trim()} bind:this={zonesList}>
-				{#each allZones as zone (zone.slug)}
+			<ul
+				class="index__zones"
+				class:index__zones--searching={query.trim()}
+				bind:this={zonesList}
+				{@attach (list) => smoothHeight(list, reduceMotion)}
+			>
+				<!-- При смене спорта строки волной проявляются, оставшиеся доезжают до своих мест, лишние
+				     гаснут; при смене фильтров проявляются изменившиеся счётчики. Высота списка -- плавно -->
+				{#each allZones as zone, i (zone.slug)}
 					{@const count = counts.get(zone) ?? 0}
-					<li class="index__zone-row">
-						<button
-							class="index__zone"
-							type="button"
-							disabled={count === 0}
-							onclick={() => openZone(zone, 0)}
-							onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
-							onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
-							onfocus={() => previewZone(zone, false)}
-							onblur={() => previewZone(null, false)}
-						>
-							<span class="index__count">{count}</span>
-							<span class="index__zone-label">{zone.label}</span>
-							<!-- «Всё тело» -- такая же строка, человечек после названия тихо помечает её -->
-							{#if zone === whole}<span class="index__icon" aria-hidden="true"
-									>{@html PersonStanding}</span
-								>{/if}
-						</button>
+					<li
+						class="index__zone-row"
+						animate:move={{ reduceMotion }}
+						in:appear={{ delay: i * 45, reduceMotion }}
+						out:drop={{ reduceMotion }}
+					>
+						{#key sport.slug}<button
+								in:appear={{ delay: i * 45, reduceMotion }}
+								class="index__zone"
+								type="button"
+								disabled={count === 0}
+								onclick={() => openZone(zone, 0)}
+								onpointerenter={(event) => event.pointerType !== 'touch' && previewZone(zone)}
+								onpointerleave={(event) => event.pointerType !== 'touch' && previewZone(null)}
+								onfocus={() => previewZone(zone, false)}
+								onblur={() => previewZone(null, false)}
+							>
+								{#key count}<span class="index__count" in:appear={{ reduceMotion }}>{count}</span>{/key}
+								<span class="index__zone-label">{zone.label}</span>
+								<!-- «Всё тело» -- такая же строка, человечек после названия тихо помечает её -->
+								{#if zone === whole}<span class="index__icon" aria-hidden="true"
+										>{@html PersonStanding}</span
+									>{/if}
+							</button>{/key}
 					</li>
 				{/each}
 			</ul>
@@ -2558,6 +2572,12 @@
 			@media (width < 700px) {
 				font-size: 26px;
 			}
+		}
+
+		/* Отступ вместо пробела: при 39px "в" фразы спорта встаёт ровно под "b" логотипа.
+		   Боковой отступ у "в" в шрифте на 2px шире, чем у "b" */
+		&__pain {
+			padding-right: 0.13em;
 		}
 
 		/* Фраза спорта в заголовке, когда спорт один и выбирать не из чего */

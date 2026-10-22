@@ -38,8 +38,14 @@ test('список движений в раскрытом острове не у
 	const list = page.getByRole('listbox')
 
 	await expect(list).toBeVisible()
-	// Мерим, когда остров дорос: посреди анимации сжат и сам список
-	await page.waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'))
+
+	// Мерим, когда остров дорос: посреди анимации сжат и сам список. Бесконечные анимации
+	// (покачивание барабана спорта) не кончаются никогда, их не ждём
+	await page.waitForFunction(() =>
+		document
+			.getAnimations()
+			.every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity),
+	)
 
 	const box = (await list.boundingBox())!
 

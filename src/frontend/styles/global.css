@@ -631,3 +631,76 @@ img {
 		color: var(--muted);
 	}
 }
+
+/* Переход между страницами -- при смене спорта на отдельной странице статьи (lib/sport-switch.ts
+   пропускает остальные). Страница перетекает, фраза спорта (sport-switch.svelte) уезжает туда же,
+   куда крутили барабан: тип roll-next -- новый спорт пришёл снизу, roll-prev -- сверху */
+@media (prefers-reduced-motion: no-preference) {
+	@view-transition {
+		navigation: auto;
+	}
+
+	::view-transition-group(root) {
+		animation-duration: 0.4s;
+	}
+
+	::view-transition-group(sport-drum) {
+		animation-duration: 1s;
+		animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+	}
+
+	::view-transition-old(sport-drum),
+	::view-transition-new(sport-drum) {
+		height: 100%;
+		animation-duration: 1s;
+		animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+	}
+
+	:root:active-view-transition-type(roll-next) {
+		&::view-transition-old(sport-drum) {
+			animation-name: drum-out-up;
+		}
+
+		&::view-transition-new(sport-drum) {
+			animation-name: drum-in-up;
+		}
+	}
+
+	:root:active-view-transition-type(roll-prev) {
+		&::view-transition-old(sport-drum) {
+			animation-name: drum-out-down;
+		}
+
+		&::view-transition-new(sport-drum) {
+			animation-name: drum-in-down;
+		}
+	}
+}
+
+@keyframes drum-out-up {
+	to {
+		transform: translateY(-0.9em);
+		opacity: 0;
+	}
+}
+
+@keyframes drum-in-up {
+	from {
+		transform: translateY(0.9em);
+		opacity: 0;
+	}
+}
+
+@keyframes drum-out-down {
+	to {
+		transform: translateY(0.9em);
+		opacity: 0;
+	}
+}
+
+@keyframes drum-in-down {
+	from {
+		transform: translateY(-0.9em);
+		opacity: 0;
+	}
+}

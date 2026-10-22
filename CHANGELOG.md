@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/aimuzov-projects/sorebody/compare/v1.24.0...v1.25.0) (2026-10-22)
+
+
+### Features
+
+* **running:** add popliteus tendinopathy and foot blisters ([15b9f90](https://github.com/aimuzov-projects/sorebody/commit/15b9f90fe4ea8bd1d4a18f8562b0c3d7c4148b2f))
+
 ## [1.24.0](https://github.com/aimuzov-projects/sorebody/compare/v1.23.0...v1.24.0) (2026-10-22)
 
 

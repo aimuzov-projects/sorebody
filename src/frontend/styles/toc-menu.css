@@ -22,6 +22,28 @@
 		display: block;
 	}
 
+	/* Со строкой чата, включённого всем, кнопка с первого кадра стоит рядом с ней: правый край
+	   колонки и середина строки высотой 44px. Те же числа, что у строки до замера */
+	:root[data-chat='on'] &[data-chat-wait] {
+		--toc-menu-right: var(--chat-dock-toc-right, calc((100% - min(680px, 100% - 48px)) / 2));
+		--toc-menu-bottom: var(--chat-dock-toc-bottom, calc(max(16px, env(safe-area-inset-bottom)) + 4px));
+
+		@media (width < 600px) {
+			--toc-menu-right: var(--chat-dock-toc-right, 20px);
+		}
+	}
+
+	:root[data-chat='on'][data-telegram] &[data-chat-wait] {
+		--toc-menu-right: var(--chat-dock-toc-right, 16px);
+		--toc-menu-bottom: var(
+			--chat-dock-toc-bottom,
+			calc(
+				max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
+					var(--tg-content-safe-area-inset-bottom, 0px)
+			)
+		);
+	}
+
 	&__button {
 		cursor: pointer;
 		position: fixed;
@@ -50,9 +72,9 @@
 			transition: none;
 		}
 
-		/* В статье с чатом кнопка ждёт его строку (components/chat-dock.svelte), иначе вставала бы
-		   в угол и через миг прыгала к строке. data-chat-dock ставит строка, когда встала */
-		:root:is([data-chat='on'], [data-chat='preview']):not([data-chat-dock]) [data-chat-wait] > & {
+		/* Чат по метке ?chat=1 выясняется в браузере: до того кнопка ждёт строку
+		   (components/chat-dock.svelte), иначе вставала бы в угол и через миг прыгала к ней */
+		:root[data-chat='preview']:not([data-chat-dock]) [data-chat-wait] > & {
 			visibility: hidden;
 		}
 

@@ -19,6 +19,7 @@
 		injury,
 		sport,
 		column,
+		enabled = typeof document !== 'undefined' && document.documentElement.dataset.chat === 'on',
 	}: {
 		/** Статья, которую читают: ассистент знает, о чём вопрос. */
 		injury: { slug: string; title: string }
@@ -26,11 +27,16 @@
 		sport?: string
 		/** Колонка текста, по ней строка берёт ширину; без неё -- `.article__body` страницы. */
 		column?: () => HTMLElement | null | undefined
+		/**
+		 * Чат включён всем (`CHAT=on`): строка есть уже в разметке страницы и видна с первого
+		 * кадра, до скрипта. Включённый только по метке `?chat=1` выясняется в браузере.
+		 */
+		enabled?: boolean
 	} = $props()
 
 	const EXAMPLES = ['Как понять, что это у меня?', 'К какому врачу идти?', 'Когда можно тренироваться?']
 
-	let available = $state(false)
+	let available = $state(enabled)
 	let open = $state(false)
 	let draft = $state('')
 	let field = $state<HTMLTextAreaElement>()
@@ -353,8 +359,8 @@
 		class="dock"
 		class:dock--open={open}
 		class:dock--placed={placed}
-		style:--dock-left="{place.left}px"
-		style:--dock-width="{place.width}px"
+		style:--dock-left={place.width ? `${place.left}px` : undefined}
+		style:--dock-width={place.width ? `${place.width}px` : undefined}
 	>
 		<div class="dock__veil">
 			<!-- Шапка та же, что у статьи: стрелка "Назад" сворачивает чат обратно в строку -->
@@ -444,11 +450,31 @@
 		--dock-z: 40;
 		/* Отступ снизу -- как у панели просмотрщика 3D */
 		--dock-gap: 16px;
+		/* Край и ширина строки до первого замера -- по сетке статьи из article.css: колонка 680px
+		   с полями страницы, на узком экране за вычетом кнопки оглавления (36 + 8), на широком --
+		   правее бокового оглавления. Проценты -- от окна: строка fixed. Потом их задаёт замер */
+		--dock-column: min(680px, 100% - 48px);
+		--dock-left: calc((100% - var(--dock-column)) / 2);
+		--dock-width: calc(var(--dock-column) - 44px);
 
 		font-family: -apple-system, blinkmacsystemfont, 'SF Pro Text', system-ui, sans-serif;
 		color: var(--fg);
 
+		@media (width < 600px) {
+			--dock-column: calc(100% - 40px);
+		}
+
+		@media (width >= 1100px) {
+			--dock-left: calc((100% - 1052px) / 2 + 348px);
+			--dock-width: 680px;
+		}
+
 		@media print {
+			display: none;
+		}
+
+		/* В Mini App Telegram чата нет: признак ставит скрипт в <head> (layouts/base.astro) */
+		:global(:root[data-telegram]) & {
 			display: none;
 		}
 

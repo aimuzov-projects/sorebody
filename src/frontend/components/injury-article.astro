@@ -458,7 +458,12 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).dig
 		<TocMenu {sections} chat />
 	</main>
 	{/* Вне main: ридер главной берёт из страницы только main и ставит строку чата сам */}
-	<ChatDock client:load injury={{ slug: injury.id, title: name }} sport={sport?.slug} />
+	<ChatDock
+		client:load
+		injury={{ slug: injury.id, title: name }}
+		sport={sport?.slug}
+		enabled={process.env.CHAT === 'on'}
+	/>
 </Base>
 
 <script>

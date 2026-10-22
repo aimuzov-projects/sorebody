@@ -146,8 +146,11 @@ export function knowledgeTools(knowledge: Knowledge) {
 		/**
 		 * Когда сразу к врачу: раздел статьи и признаки самопроверки со срочностью. Для одной травмы
 		 * или для всех травм зоны -- когда ясно только, где болит.
+		 *
+		 * `brief` -- без текста раздела: чату на сайте хватает признаков и ссылки, а раздел по всей
+		 * зоне -- самый дорогой ответ базы в токенах.
 		 */
-		getRedFlags({ slug, region }: { slug?: string; region?: string }) {
+		getRedFlags({ slug, region, brief = false }: { slug?: string; region?: string; brief?: boolean }) {
 			if (!slug === !region) throw new KnowledgeError('Нужна травма (slug) или зона (region), что-то одно')
 
 			check({ region })
@@ -158,7 +161,7 @@ export function knowledgeTools(knowledge: Knowledge) {
 				slug: injury.slug,
 				title: injury.title,
 				url: `${urlOf(injury)}#urgent`,
-				urgent: injury.sections.find((s) => s.id === 'urgent')?.text ?? '',
+				...(!brief && { urgent: injury.sections.find((s) => s.id === 'urgent')?.text ?? '' }),
 				alarms: injury.selfCheck.map((a) => ({ ...a, action: URGENCY_LABEL[a.urgency] })),
 			}))
 		},

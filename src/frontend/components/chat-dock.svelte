@@ -656,6 +656,11 @@
 			background: linear-gradient(to top, var(--bg) 35%, color-mix(in srgb, var(--bg) 0%, transparent));
 			backdrop-filter: blur(6px);
 			mask-image: linear-gradient(to top, #000000 55%, transparent);
+			animation: dock-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) backwards;
+
+			@media (--reduced-motion) {
+				animation: none;
+			}
 
 			&--hidden {
 				display: none;
@@ -682,9 +687,14 @@
 			transition:
 				width 0.35s cubic-bezier(0.25, 1, 0.5, 1),
 				left 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+			/* Проявляется вместе со статьёй: в ридере главной её содержимое после загрузки
+			   проявляется так же (article-reader.svelte), иначе строка выскакивала раньше текста.
+			   Задержка -- как у самого ридера (lib/fade-up.ts): строка живёт вне него */
+			animation: dock-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.12s backwards;
 
 			@media (--reduced-motion) {
 				transition: none;
+				animation: none;
 			}
 		}
 
@@ -750,6 +760,12 @@
 		&__bar:has(&__input:focus-visible) {
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
+		}
+	}
+
+	@keyframes dock-in {
+		from {
+			opacity: 0;
 		}
 	}
 </style>

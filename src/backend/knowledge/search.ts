@@ -17,6 +17,26 @@ const PREFIX_WEIGHT = 0.6
 /** Короче начало слишком многое находит: по "бол" -- и боль, и болезнь, и большой. */
 const MIN_PREFIX = 4
 
+/**
+ * Симптомы, которые люди и статьи называют разными словами: "хрустнуло" в вопросе --
+ * это "хлопок" и "щелчок" в статье, "опухло" -- "отёк". Группа -- начала основ: слово
+ * запроса с таким началом ищется по всем словам базы с любым началом группы.
+ */
+const SYMPTOMS = [
+	['хлоп', 'хруст', 'щелк', 'щелч', 'треск', 'тресн'],
+	['отек', 'опух', 'припух'],
+	['онеме', 'немее', 'немел'],
+]
+
+/** Синоним из группы весит меньше слова самого запроса, но больше совпадения по началу. */
+const SYNONYM_WEIGHT = 0.8
+
+/**
+ * Во сколько раз поднять травмы зоны, которую запрос назвал словом из справочника:
+ * "щелчок в колене" -- про колено, хотя щелчок бывает и в паху, и в плече.
+ */
+const REGION_BOOST = 2
+
 // Насыщение частоты слова как обычно в BM25, а поправка на длину статьи
 // слабее обычных 0.75: длинные статьи у нас о серьёзном (сотрясение,
 // тепловой удар), их нельзя топить за длину
@@ -24,6 +44,9 @@ const K1 = 1.2
 const B = 0.5
 
 type Doc = { injury: KnowledgeInjury; tf: Map<string, number>; length: number }
+
+/** Слово словаря для слова запроса: вес совпадения и редкость слова (IDF). */
+type Variant = [word: string, weight: number, rarity: number]
 
 type Hit = { injury: KnowledgeInjury; score: number }
 
@@ -76,6 +99,8 @@ export function searchIndex(knowledge: Knowledge): SearchIndex {
 		return { injury, tf, length }
 	})
 
+	// Слова названий зон: "Таз, бедро и пах" -- таз, бедр, пах
+	const regionTerms = new Map(knowledge.regions.map((r) => [r.slug, terms(r.label)]))
 	const average = docs.reduce((sum, d) => sum + d.length, 0) / docs.length
 	const vocabulary = [...new Set(docs.flatMap((d) => [...d.tf.keys()]))]
 	const frequency = new Map<string, number>()
@@ -88,17 +113,43 @@ export function searchIndex(knowledge: Knowledge): SearchIndex {
 		return Math.log(1 + (docs.length - n + 0.5) / (n + 0.5))
 	}
 
-	/** Слова словаря, на которые похоже слово запроса: само оно и те, что с него начинаются. */
-	const expand = (term: string): [string, number][] =>
-		term.length < MIN_PREFIX
-			? [[term, 1]]
-			: vocabulary.flatMap((word): [string, number][] =>
-					word === term ? [[word, 1]] : word.startsWith(term) ? [[word, PREFIX_WEIGHT]] : [],
-				)
+	/**
+	 * Редкость синонимов -- одна на всю группу: по статьям, где есть хоть одно из них.
+	 * Иначе редкое "щелкающ" из статьи о бедре весило бы больше "колена".
+	 */
+	const groupIdf = (words: string[]) => {
+		const n = docs.filter((doc) => words.some((word) => doc.tf.has(word))).length
+
+		return Math.log(1 + (docs.length - n + 0.5) / (n + 0.5))
+	}
+
+	/**
+	 * Слова словаря, на которые похоже слово запроса, с весом и редкостью: само оно, те,
+	 * что с него начинаются, и синонимы симптома из `SYMPTOMS`.
+	 */
+	const expand = (term: string): Variant[] => {
+		if (term.length < MIN_PREFIX) return [[term, 1, idf(term)]]
+
+		const group = SYMPTOMS.find((g) => g.some((start) => term.startsWith(start))) ?? []
+		const own = vocabulary.filter((word) => word.startsWith(term))
+		const synonyms = vocabulary.filter(
+			(word) => !word.startsWith(term) && group.some((start) => word.startsWith(start)),
+		)
+		const shared = groupIdf(synonyms)
+
+		return [
+			...own.map((word): Variant => [word, word === term ? 1 : PREFIX_WEIGHT, idf(word)]),
+			...synonyms.map((word): Variant => [word, SYNONYM_WEIGHT, shared]),
+		]
+	}
 
 	return {
 		search(query, filter = () => true) {
-			const expanded = [...new Set(terms(query))].map(expand)
+			const words = [...new Set(terms(query))]
+			const expanded = words.map(expand)
+			const named = new Set(
+				[...regionTerms].filter(([, list]) => list.some((t) => words.includes(t))).map(([slug]) => slug),
+			)
 
 			return docs
 				.filter((doc) => filter(doc.injury))
@@ -107,12 +158,11 @@ export function searchIndex(knowledge: Knowledge): SearchIndex {
 					const score = expanded.reduce((sum, variants) => {
 						const best = Math.max(
 							0,
-							...variants.map(([term, weight]) => {
+							...variants.map(([term, weight, rarity]) => {
 								const tf = doc.tf.get(term) ?? 0
 
 								return (
-									(weight * idf(term) * tf * (K1 + 1)) /
-									(tf + K1 * (1 - B + (B * doc.length) / average))
+									(weight * rarity * tf * (K1 + 1)) / (tf + K1 * (1 - B + (B * doc.length) / average))
 								)
 							}),
 						)
@@ -120,7 +170,7 @@ export function searchIndex(knowledge: Knowledge): SearchIndex {
 						return sum + best
 					}, 0)
 
-					return { injury: doc.injury, score }
+					return { injury: doc.injury, score: named.has(doc.injury.region) ? score * REGION_BOOST : score }
 				})
 				.filter((hit) => hit.score > 0)
 				.sort((a, b) => b.score - a.score)

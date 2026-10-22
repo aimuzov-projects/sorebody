@@ -40,6 +40,47 @@ test('searchInjuries: живые вопросы находят свою трав
 		assert.ok(top(query, 5, filter).includes(slug), `«${query}»: ${top(query, 5, filter).join(', ')}`)
 })
 
+test('searchInjuries: острая травма с хлопком и отёком выше перегрузки', () => {
+	const acute = ['acl-tear', 'meniscus-tear', 'mcl-sprain']
+	const overuse = ['iliotibial-band-syndrome', 'patellofemoral-pain']
+	const cases: [string, object?][] = [
+		['в кроссфите после прыжка на тумбу хрустнуло колено и опухло', { sport: 'crossfit' }],
+		['хрустнуло колено и опухло'],
+		['щелкнуло в колене на развороте, отекло', { sport: 'football' }],
+		['хлопок в колене, потом припухло', { sport: 'basketball' }],
+	]
+
+	for (const [query, filter] of cases) {
+		const order = top(query, 10, filter)
+		const firstAcute = Math.min(...acute.map((s) => order.indexOf(s)).filter((i) => i >= 0))
+		const firstOveruse = Math.min(...overuse.map((s) => order.indexOf(s)).filter((i) => i >= 0))
+
+		assert.equal(firstAcute, 0, `«${query}»: ${order.join(', ')}`)
+		assert.ok(firstAcute < firstOveruse, `«${query}»: ${order.join(', ')}`)
+	}
+})
+
+test('searchInjuries: названная зона тела поднимает свои травмы', () => {
+	// Щелчок и хлопок бывают в паху, плече и бедре, но вопрос -- про колено
+	for (const query of ['хлопнуло в колене', 'щелчок в колене']) {
+		const hits = tools.searchInjuries({ query, limit: 3 })
+
+		assert.equal(hits[0]!.slug, 'acl-tear', `«${query}»: ${hits.map((h) => h.slug).join(', ')}`)
+
+		assert.ok(
+			hits.filter((h) => h.region === 'knee').length >= 2,
+			`«${query}»: ${hits.map((h) => h.slug).join(', ')}`,
+		)
+	}
+})
+
+test('searchInjuries: синонимы симптомов -- хруст как хлопок, опух как отёк', () => {
+	assert.equal(top('подвернул голеностоп, хрустнуло, опух', 1)[0], 'ankle-sprain')
+	assert.equal(top('хлопок в икре, как будто ударили сзади', 1)[0], 'achilles-tendon-rupture')
+	// Перегрузку синонимы не перебивают: где нет хлопка и отёка, наверху перегрузочные
+	assert.ok(top('ноет колено снаружи при беге', 2, { sport: 'running' }).includes('iliotibial-band-syndrome'))
+})
+
 test('searchInjuries: фильтры сужают, адрес -- разбор спорта', () => {
 	const hits = tools.searchInjuries({ query: 'колено', region: 'knee', sport: 'crossfit' })
 

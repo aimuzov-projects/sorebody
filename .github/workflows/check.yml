@@ -11,20 +11,50 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  # Форматирование, линтеры, типы, юнит-тесты, сборка и ченжлог: браузер не нужен
+  static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: aimuzov-projects/infra-site-kit/check@v2
+      # knip: неиспользуемые файлы, экспорты и зависимости. Исключения в knip.json.
+      - run: npm run knip
+
+  # e2e из infra-site-kit -- три четверти всего времени, поэтому параллельно по шардам.
+  # Тесты раскладывает e2e/shard.ts: обход sitemap делится поровну. Сайт собирается в каждом
+  # шарде заново: сборка идёт секунды, артефакт с dist и ожидание его выйдут дольше
+  e2e:
     runs-on: ubuntu-latest
     # Chromium и его системные библиотеки уже в образе Playwright: без apt прогон
     # не зависит от зеркала Ubuntu, которое однажды отдавало пакеты 9 минут.
     # Тег образа совпадает с @playwright/test, Renovate обновляет их одним PR.
     container: mcr.microsoft.com/playwright:v1.64.1-noble
-    timeout-minutes: 15
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    name: e2e (${{ matrix.shard }}/4)
     steps:
-      - uses: aimuzov-projects/infra-site-kit/check@v2
-      # knip: неиспользуемые файлы, экспорты и зависимости. Исключения в knip.json.
-      - run: npm run knip
-      # e2e из infra-site-kit: сборка в Chromium. Разошлись образ и @playwright/test:
-      # в образе нет браузера нужной ревизии, падаем сразу, а не после сборки сайта.
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm ci
+      # Разошлись образ и @playwright/test: в образе нет браузера нужной ревизии,
+      # падаем сразу, а не после сборки сайта.
       - run: |
           browser=$(node -p "require('@playwright/test').chromium.executablePath()")
           test -x "$browser" || { echo "::error::Нет $browser: подними тег образа Playwright до версии @playwright/test"; exit 1; }
-      - run: npm run test:e2e
+      - run: npx playwright test --shard=${{ matrix.shard }}/4
+
+  # Обязательная проверка веток в ruleset -- `check`: итог всех джоб под прежним именем
+  check:
+    if: always()
+    needs: [static, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1

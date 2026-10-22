@@ -98,7 +98,7 @@ test('строка внизу шириной с колонку текста, ф�
 
 	const alarms = feed(page).locator('.answer__alarms')
 
-	await expect(alarms.locator('summary')).toHaveText('Когда сразу к врачу · 3')
+	await expect(alarms.locator('summary')).toHaveText('Когда сразу к врачу3 признака')
 	await expect(alarms.getByText('Стопа холодная и бледная')).toBeHidden()
 
 	await alarms.locator('summary').click()

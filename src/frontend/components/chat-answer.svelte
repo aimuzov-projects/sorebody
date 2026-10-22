@@ -3,11 +3,12 @@
 	инструмента -- подходящие к описанию модель называет сама, полный список под рукой -- и статьи
 -->
 <script lang="ts">
-	import { FileText, Siren, Sparkles } from 'lucide-static'
+	import { ChevronDown, FileText, Siren, Sparkles } from 'lucide-static'
 
 	import { mergeAlarms } from '#frontend/lib/chat-client.ts'
 	import { chatMarkdown, type ChatInline } from '#frontend/lib/chat-markdown.ts'
 	import { CHAT_FAILURES, CHAT_STEPS, CHAT_URGENCY, type ChatTurn } from '#frontend/lib/chat-texts.ts'
+	import { plural } from '#frontend/lib/plural.ts'
 
 	let {
 		turn,
@@ -66,8 +67,14 @@
 
 	{#if alarms.length && !turn.pending}
 		<details class="answer__alarms">
+			<!-- Свёрнут: что внутри -- число признаков, что раскрывается -- шеврон справа, как у
+			     раскрывашек статьи -->
 			<summary class="answer__alarms-toggle"
-				><span class="answer__icon" aria-hidden="true">{@html Siren}</span>Когда сразу к врачу · {alarms.length}</summary
+				><span class="answer__icon" aria-hidden="true">{@html Siren}</span>Когда сразу к врачу<span
+					class="answer__alarms-count"
+					>{alarms.length}
+					{plural(alarms.length, ['признак', 'признака', 'признаков'])}</span
+				><span class="answer__alarms-chevron" aria-hidden="true">{@html ChevronDown}</span></summary
 			>
 			<ul class="answer__alarms-list">
 				{#each alarms as alarm (alarm.text)}
@@ -142,6 +149,11 @@
 			border-radius: 12px;
 			font-size: 15px;
 			background: color-mix(in srgb, var(--fg) 4%, transparent);
+			transition: background-color 0.2s ease;
+
+			&:has(> .answer__alarms-toggle:hover) {
+				background: color-mix(in srgb, var(--fg) 7%, transparent);
+			}
 		}
 
 		&__alarms-toggle {
@@ -150,8 +162,48 @@
 			gap: 8px;
 			align-items: center;
 			padding: 10px 12px;
+			border-radius: 12px;
 			font-weight: 600;
 			color: var(--danger);
+			list-style: none;
+
+			&::-webkit-details-marker {
+				display: none;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+		}
+
+		&__alarms-count {
+			font-weight: 400;
+			color: var(--muted);
+		}
+
+		&__alarms-chevron {
+			display: inline-flex;
+			flex: none;
+			width: 18px;
+			height: 18px;
+			margin-left: auto;
+			color: var(--muted);
+			transition: rotate 0.25s ease;
+
+			@media (--reduced-motion) {
+				transition: none;
+			}
+
+			.answer__alarms[open] & {
+				rotate: 180deg;
+			}
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+			}
 		}
 
 		&__alarms-list {

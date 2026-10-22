@@ -143,6 +143,12 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	// Медиальная коллатеральная связка -- изнутри и выше суставной щели, у медиального надмыщелка: так её
 	// кружок не ложится на мениск, а ракурс смотрит мимо другого колена
 	'mcl-sprain': { offset: [-0.055, 0.015, 0.02], normal: [-0.6, 0, 0.8], view: { azimuth: -30, polar: 78 } },
+	// Подколенная мышца -- сухожилие у наружного мыщелка бедра сзади, по вершинам мышцы в knee-left.glb
+	'popliteus-tendinopathy': {
+		offset: [0.024, 0.005, -0.054],
+		normal: [0.3, 0, -1],
+		view: { azimuth: 160, polar: 78 },
+	},
 	// Плечо: манжета и акромион сверху, ключица и подключичная вена спереди, лопатка сзади
 	'subacromial-impingement': { offset: [0, 0.045, 0.005], normal: [0.4, 1, 0.3] },
 	'rotator-cuff-tendinopathy': { offset: [-0.02, 0.05, -0.015], normal: [0.2, 1, -0.2] },
@@ -208,6 +214,8 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 	'ankle-sprain': { offset: [0.03, -0.01, -0.005], normal: [1, 0, 0], view: { azimuth: 85, polar: 70 } },
 	'plantar-fasciitis': { offset: [0, -0.055, -0.035], normal: [0, -0.6, -1], view: { azimuth: 160, polar: 95 } },
 	'achilles-tendinopathy': { offset: [0, 0.035, -0.06], normal: [0, 0, -1], view: { azimuth: 165, polar: 80 } },
+	// Мозоли и «чёрный ноготь» -- пальцы, по костям стопы в ankle-foot-left.glb; ближе к большому пальцу
+	'foot-blisters': { offset: [0.025, -0.035, 0.1], normal: [0, 0.4, 1], view: { azimuth: 20, polar: 65 } },
 	// Пятая плюсневая -- наружный край стопы впереди лодыжки
 	'fifth-metatarsal-fracture': {
 		offset: [0.04, -0.05, 0.06],
@@ -317,6 +325,8 @@ export const INJURY_LAYER: Record<string, { depth: 'muscle' | 'deep'; muscles?: 
 		muscles: ['superior rectus', 'inferior rectus', 'medial rectus', 'lateral rectus'],
 	},
 	'tennis-leg': { depth: 'muscle', muscles: ['medial head of gastrocnemius'] },
+	// Подколенная лежит под головками икроножной: малая сфера снимает их
+	'popliteus-tendinopathy': { depth: 'muscle', muscles: ['popliteus'], peel: true },
 	// Верхняя трапеция, мышца, поднимающая лопатку, и ременные мышцы на задней поверхности шеи
 	'neck-strain': {
 		depth: 'muscle',

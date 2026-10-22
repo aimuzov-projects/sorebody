@@ -1,4 +1,13 @@
 {
+	"848633": {
+		"authors": "Mayfield GW",
+		"title": "Popliteus tendon tenosynovitis.",
+		"journal": "Am J Sports Med",
+		"year": "1977",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/036354657700500106"
+	},
 	"7786216": {
 		"authors": "Zagelbaum BM, et al",
 		"title": "The National Basketball Association eye injury study.",
@@ -7,6 +16,24 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
 		"medline": true,
 		"doi": "10.1001/archopht.1995.01100060075035"
+	},
+	"8289145": {
+		"authors": "Olson WR, et al",
+		"title": "Popliteus tendinitis.",
+		"journal": "J Am Podiatr Med Assoc",
+		"year": "1993",
+		"types": ["Case Reports", "Journal Article"],
+		"medline": true,
+		"doi": "10.7547/87507315-83-9-537"
+	},
+	"8570998": {
+		"authors": "Knapik JJ, et al",
+		"title": "Friction blisters. Pathophysiology, prevention and treatment.",
+		"journal": "Sports Med",
+		"year": "1995",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.2165/00007256-199520030-00002"
 	},
 	"8734891": {
 		"authors": "Orchard JW, et al",
@@ -218,6 +245,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Research Support, U.S. Gov't, P.H.S."],
 		"medline": true,
 		"doi": "10.1056/NEJMoa043901"
+	},
+	"15839310": {
+		"authors": "Nyland J, et al",
+		"title": "Anatomy, function, and rehabilitation of the popliteus musculotendinous complex.",
+		"journal": "J Orthop Sports Phys Ther",
+		"year": "2005",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.2519/jospt.2005.35.3.165"
 	},
 	"15851777": {
 		"authors": "Järvinen TA, et al",
@@ -463,6 +499,14 @@
 		"medline": true,
 		"doi": "10.1249/JSR.0b013e3181cd2c04"
 	},
+	"20086537": {
+		"authors": "Petsche TS, et al",
+		"title": "Popliteus tendinitis: tips for diagnosis and management.",
+		"journal": "Phys Sportsmed",
+		"year": "2002",
+		"types": ["Journal Article"],
+		"doi": "10.3810/psm.2002.08.401"
+	},
 	"20439679": {
 		"authors": "Wijdicks CA, et al",
 		"title": "Injuries to the medial collateral ligament and associated medial structures of the knee.",
@@ -541,6 +585,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
 		"medline": true,
 		"doi": "10.1111/j.1600-0838.2010.01171.x"
+	},
+	"21063493": {
+		"authors": "English S, et al",
+		"title": "Posterior knee pain.",
+		"journal": "Curr Rev Musculoskelet Med",
+		"year": "2010",
+		"types": ["Journal Article"],
+		"doi": "10.1007/s12178-010-9057-4",
+		"pmcid": "PMC2941578"
 	},
 	"21084657": {
 		"authors": "Silbernagel KG, et al",
@@ -664,6 +717,15 @@
 		"medline": true,
 		"doi": "10.1136/bmj.e787",
 		"pmcid": "PMC3282676"
+	},
+	"22360060": {
+		"authors": "Brennan FH Jr, et al",
+		"title": "Blisters on the battlefield: the prevalence of and factors associated with foot friction blisters during Operation Iraqi Freedom I.",
+		"journal": "Mil Med",
+		"year": "2012",
+		"types": ["Journal Article", "Research Support, U.S. Gov't, Non-P.H.S."],
+		"medline": true,
+		"doi": "10.7205/milmed-d-11-00325"
 	},
 	"22415208": {
 		"authors": "Longo UG, et al",
@@ -1070,6 +1132,16 @@
 		"medline": true,
 		"doi": "10.1177/0363546514540271"
 	},
+	"25054745": {
+		"authors": "Purim KS, et al",
+		"title": "Sports-related dermatoses among road runners in Southern Brazil.",
+		"journal": "An Bras Dermatol",
+		"year": "2014",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1590/abd1806-4841.20142792",
+		"pmcid": "PMC4148272"
+	},
 	"25138980": {
 		"authors": "Mallee WH, et al",
 		"title": "Surgical versus conservative treatment for high-risk stress fractures of the lower leg (anterior tibial cortex, navicular and fifth metatarsal base): a systematic review.",
@@ -1105,6 +1177,15 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2014-093462"
+	},
+	"25275735": {
+		"authors": "Scheer BV, et al",
+		"title": "The enemy of the feet: blisters in ultraendurance runners.",
+		"journal": "J Am Podiatr Med Assoc",
+		"year": "2014",
+		"types": ["Journal Article", "Observational Study"],
+		"medline": true,
+		"doi": "10.7547/0003-0538-104.5.473"
 	},
 	"25280620": {
 		"authors": "Haley CA, et al",
@@ -1142,6 +1223,15 @@
 		"medline": true,
 		"doi": "10.3174/ajnr.A4173",
 		"pmcid": "PMC4464797"
+	},
+	"25443754": {
+		"authors": "Lipman GS, et al",
+		"title": "A prospective randomized blister prevention trial assessing paper tape in endurance distances (Pre-TAPED).",
+		"journal": "Wilderness Environ Med",
+		"year": "2014",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2014.06.013"
 	},
 	"25455398": {
 		"authors": "Prucz RB, et al",
@@ -1675,6 +1765,15 @@
 		"medline": true,
 		"doi": "10.1007/s00464-016-4863-4"
 	},
+	"27070112": {
+		"authors": "Lipman GS, et al",
+		"title": "Paper Tape Prevents Foot Blisters: A Randomized Prevention Trial Assessing Paper Tape in Endurance Distances II (Pre-TAPED II).",
+		"journal": "Clin J Sport Med",
+		"year": "2016",
+		"types": ["Journal Article", "Randomized Controlled Trial"],
+		"medline": true,
+		"doi": "10.1097/JSM.0000000000000319"
+	},
 	"27162233": {
 		"authors": "Grindem H, et al",
 		"title": "Simple decision rules can reduce reinjury risk by 84% after ACL reconstruction: the Delaware-Oslo ACL cohort study.",
@@ -1777,6 +1876,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1249/JSR.0000000000000292"
+	},
+	"27618242": {
+		"authors": "Hoffman MD",
+		"title": "Etiological Foundation for Practical Strategies to Prevent Exercise-Related Foot Blisters.",
+		"journal": "Curr Sports Med Rep",
+		"year": "2016",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1249/JSR.0000000000000297"
 	},
 	"27627991": {
 		"authors": "Priego Quesada JI, et al",
@@ -2240,6 +2348,13 @@
 		"medline": true,
 		"doi": "10.1136/bmj.k186",
 		"pmcid": "PMC6074604"
+	},
+	"29494114": {
+		"authors": "Sequeira Campos MB, et al",
+		"title": "Subungual Hematoma Drainage.",
+		"journal": "",
+		"year": "2025",
+		"types": ["Study Guide"]
 	},
 	"29510653": {
 		"authors": "Thorborg K, et al",
@@ -3451,6 +3566,15 @@
 		"medline": true,
 		"doi": "10.1111/edt.12625"
 	},
+	"33197435": {
+		"authors": "García-Malinis AJ, et al",
+		"title": "Sun Protection Behaviors and Knowledge in Mountain Marathon Runners and Risk Factors for Sunburn.",
+		"journal": "Actas Dermosifiliogr (Engl Ed)",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.ad.2020.11.003"
+	},
 	"33197591": {
 		"authors": "Doarn MC, et al",
 		"title": "Exercise-induced bilateral upper-arm anterior and posterior compartment syndrome with rhabdomyolysis.",
@@ -4259,6 +4383,16 @@
 		"doi": "10.1186/s13018-022-02915-x",
 		"pmcid": "PMC8760714"
 	},
+	"35034516": {
+		"authors": "Pujalte GGA, et al",
+		"title": "More Than Skin Deep: Dermatologic Conditions in Athletes.",
+		"journal": "Sports Health",
+		"year": "2023",
+		"types": ["Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1177/19417381211065026",
+		"pmcid": "PMC9808835"
+	},
 	"35047646": {
 		"authors": "Lavoie-Gagne OZ, et al",
 		"title": "Return to Play and Player Performance After Meniscal Tear Among Elite-Level European Soccer Players: A Matched Cohort Analysis of Injuries From 2006 to 2016.",
@@ -4341,6 +4475,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2021-104539",
 		"pmcid": "PMC9163714"
+	},
+	"35252463": {
+		"authors": "Morrissey CD, et al",
+		"title": "Prevalence, Mechanisms, and Return to Sport After Isolated Popliteus Injuries in Athletes: A Systematic Review.",
+		"journal": "Orthop J Sports Med",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.1177/23259671211073617",
+		"pmcid": "PMC8894959"
 	},
 	"35258646": {
 		"authors": "Mercurio M, et al",
@@ -4518,6 +4661,14 @@
 		"types": ["Journal Article"],
 		"doi": "10.3389/fspor.2022.847945",
 		"pmcid": "PMC9300994"
+	},
+	"35876776": {
+		"authors": "Farrell C, et al",
+		"title": "Popliteus Tendon Injuries.",
+		"journal": "Orthopedics",
+		"year": "2023",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3928/01477447-20220719-10"
 	},
 	"35954598": {
 		"authors": "Pereira PM, et al",
@@ -4980,6 +5131,15 @@
 		"medline": true,
 		"doi": "10.1111/aos.15685"
 	},
+	"37166255": {
+		"authors": "Damoisy JB, et al",
+		"title": "Epidemiology, prevention methods, and risk factors of foot blisters in French trail ultramarathons.",
+		"journal": "J Sports Med Phys Fitness",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.23736/S0022-4707.23.14937-1"
+	},
 	"37169546": {
 		"authors": "Coventry L, et al",
 		"title": "Which clinical features best predict occult scaphoid fractures? A systematic review of diagnostic test accuracy studies.",
@@ -5016,6 +5176,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1093/jhps/hnac050",
 		"pmcid": "PMC10234389"
+	},
+	"37302121": {
+		"authors": "Bus SA, et al",
+		"title": "Guidelines on the prevention of foot ulcers in persons with diabetes (IWGDF 2023 update).",
+		"journal": "Diabetes Metab Res Rev",
+		"year": "2024",
+		"types": ["Journal Article", "Practice Guideline", "Systematic Review"],
+		"medline": true,
+		"doi": "10.1002/dmrr.3651"
 	},
 	"37314093": {
 		"authors": "Ertman B, et al",
@@ -5379,6 +5548,16 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2023-107490"
 	},
+	"38246957": {
+		"authors": "Song Y, et al",
+		"title": "Influence of changes in foot morphology and temperature on bruised toenail injury risk during running.",
+		"journal": "Sci Rep",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1038/s41598-024-51826-w",
+		"pmcid": "PMC10800341"
+	},
 	"38295551": {
 		"authors": "Kjeldsen T, et al",
 		"title": "Exercise compared to a control condition or other conservative treatment options in patients with Greater Trochanteric Pain Syndrome: a systematic review and meta-analysis of randomized controlled trials.",
@@ -5701,6 +5880,15 @@
 		"doi": "10.2147/OAJSM.S469411",
 		"pmcid": "PMC11321354"
 	},
+	"39201023": {
+		"authors": "Miele C, et al",
+		"title": "Thrombosis and Thrombotic Risk in Athletes.",
+		"journal": "J Clin Med",
+		"year": "2024",
+		"types": ["Journal Article", "Review"],
+		"doi": "10.3390/jcm13164881",
+		"pmcid": "PMC11355105"
+	},
 	"39247485": {
 		"authors": "Sanchez-Alvarado A, et al",
 		"title": "Effects of conservative treatment strategies for iliotibial band syndrome on pain and function in runners: a systematic review.",
@@ -5908,6 +6096,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1007/s10143-025-03411-6"
+	},
+	"40023404": {
+		"authors": "Ricardo JW, et al",
+		"title": "Evaluation and diagnosis of longitudinal melanonychia: A clinical review by a nail expert group.",
+		"journal": "J Am Acad Dermatol",
+		"year": "2025",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1016/j.jaad.2025.02.075"
 	},
 	"40041538": {
 		"authors": "Salamh P, et al",

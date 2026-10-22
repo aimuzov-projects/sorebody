@@ -1,0 +1,63 @@
+{
+	"title": "3D-модель колена сзади",
+	"offset": [0.000647, 0.0781112, -0.1007677],
+	"groups": [
+		{
+			"name": "femur",
+			"bp3d": ["right femur"],
+			"ratio": 0.4,
+			"layer": "bones"
+		},
+		{
+			"name": "leg",
+			"bp3d": ["right tibia", "right fibula"],
+			"ratio": 0.4,
+			"layer": "bones"
+		},
+		{
+			"name": "popliteus",
+			"bp3d": ["right popliteus"],
+			"ratio": 0.3,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Подколенная",
+				"visible": true
+			}
+		},
+		{
+			"name": "calf",
+			"bp3d": ["lateral head of right gastrocnemius", "medial head of right gastrocnemius", "right plantaris"],
+			"ratio": 0.1,
+			"parts": true,
+			"layer": "muscles",
+			"toggle": {
+				"label": "Икроножная",
+				"visible": false
+			}
+		},
+		{
+			"name": "collaterals",
+			"za": [
+				"^right fibular collateral ligament$",
+				"^right popliteofibular ligament$",
+				"^right superficial part of tibial collateral ligament$"
+			],
+			"ratio": 0.7,
+			"parts": true,
+			"layer": "ligaments",
+			"toggle": {
+				"label": "Боковые связки",
+				"visible": true
+			}
+		}
+	],
+	"joints": [],
+	"view": {
+		"focus": "popliteus",
+		"direction": [-0.4, 0.1, -1],
+		"distance": 2.2
+	},
+	"motion": null,
+	"about": "Модель: BodyParts3D, CC BY-SA 2.1 JP; связки: Z-Anatomy, CC BY-SA 4.0. Модель без движения"
+}

@@ -230,6 +230,9 @@ const RUNNING_FREQUENCY_ORDER = [
 	'plantar-fasciitis',
 	'ankle-sprain',
 	'iliotibial-band-syndrome',
+	// Кожу беговые обзоры не считают, строки у Kakouris нет: уровень -- по любителям и трейлу, в конце
+	// частых, см. «Спорные уровни» в docs/research/running-injuries-pubmed.md
+	'foot-blisters',
 	// Нечастые
 	'greater-trochanteric-pain-syndrome',
 	'meniscus-tear',
@@ -241,6 +244,7 @@ const RUNNING_FREQUENCY_ORDER = [
 	'exertional-heat-illness',
 	'exercise-associated-hyponatremia',
 	'exertional-rhabdomyolysis',
+	'popliteus-tendinopathy',
 ]
 
 /**

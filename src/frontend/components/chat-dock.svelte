@@ -688,8 +688,10 @@
 			height: 36px;
 			border: 0;
 			border-radius: 50%;
-			color: var(--bg);
-			background: var(--accent);
+			/* Заливка -- как у кнопки 3D и меню разделов: без спорта (общая страница /injuries/)
+			   это градиент бренда, а не графитовый --accent */
+			color: var(--on-accent);
+			background: var(--accent-fill);
 			transition: opacity 0.3s ease;
 
 			&:hover:not(:disabled) {

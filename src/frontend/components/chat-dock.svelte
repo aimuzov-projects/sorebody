@@ -366,7 +366,7 @@
 				<button class="article-bar__back dock__back" type="button" aria-label="Назад к статье" onclick={close}
 					>{@html ChevronLeft}</button
 				>
-				<p class="dock__title">Вопрос по справочнику</p>
+				<p class="dock__title">Ассистент</p>
 				{#if chat.turns.length}
 					<button
 						class="dock__restart"

@@ -77,7 +77,6 @@ export function knowledgeTools(knowledge: Knowledge) {
 		region: injury.region,
 		url: urlOf(injury, sport),
 		sports: injury.lenses.map((l) => l.sport),
-		draft: injury.draft,
 		summary: injury.lenses.find((l) => l.sport === sport)?.summary ?? injury.brief.map((b) => b.text).join('. '),
 	})
 

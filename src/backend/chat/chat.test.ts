@@ -85,7 +85,7 @@ test('chat: признаки, поиск, статья, ответ -- событ
 	const cards = events.find((e) => e.type === 'cards')!
 
 	assert.ok(alarms.type === 'alarms' && alarms.flags.every((f) => !('urgent' in f)), 'признаки краткие')
-	assert.ok(cards.type === 'cards' && cards.cards.every((c) => c.draft === true))
+	assert.ok(cards.type === 'cards' && cards.cards.every((c) => c.url.startsWith('https://')))
 	assert.equal(session.messages.at(-1)!.content, 'Сегодня в травмпункт.')
 	assert.equal(session.cost.toFixed(2), '0.04')
 	assert.ok(session.flagged)

@@ -13,7 +13,7 @@ type Name = (typeof NAMES)[number]
 /** Что из ответа инструмента виджет рисует сам, не дожидаясь пересказа модели. */
 export type ToolEvent =
 	| { type: 'alarms'; flags: ReturnType<Tools['getRedFlags']> }
-	| { type: 'cards'; cards: { slug: string; title: string; url: string; draft: boolean }[] }
+	| { type: 'cards'; cards: { slug: string; title: string; url: string }[] }
 
 const isName = (name: string): name is Name => (NAMES as readonly string[]).includes(name)
 
@@ -41,7 +41,7 @@ export function chatTools(tools: Tools) {
 
 		if (name === 'search_injuries') {
 			const hits = tools.searchInjuries(TOOLS.search_injuries.inputSchema.parse(args))
-			const cards = hits.map(({ slug, title, url, draft }) => ({ slug, title, url, draft }))
+			const cards = hits.map(({ slug, title, url }) => ({ slug, title, url }))
 
 			return { result: hits, event: { type: 'cards', cards } }
 		}

@@ -4,10 +4,11 @@
 	диалог. Переписка живёт только в памяти страницы, а вебвизор её не видит: в ней симптомы
 -->
 <script lang="ts">
-	import { ArrowUp, RotateCcw, X } from 'lucide-static'
+	import { ArrowUp, ChevronLeft, RotateCcw } from 'lucide-static'
 	import { onMount } from 'svelte'
 
 	import ChatAnswer from '#frontend/components/chat-answer.svelte'
+	import SiteHeader from '#frontend/components/site-header.svelte'
 	import { chatStatus, forgetSession, sendReply, type ChatEvent } from '#frontend/lib/chat-client.ts'
 	import { chatAvailable } from '#frontend/lib/chat-flag.ts'
 	import { CHAT_FAILURES, CHAT_TURNS, type ChatTurn } from '#frontend/lib/chat-texts.ts'
@@ -223,6 +224,34 @@
 	}
 </script>
 
+{#snippet intro()}
+	<div class="dock__intro">
+		<p class="dock__para">
+			Опишите своими словами, что болит и&nbsp;как это случилось, или спросите про «{injury.title}». Ассистент
+			сначала проверит тревожные признаки, потом ответит по&nbsp;статьям справочника&nbsp;— только по&nbsp;ним.
+		</p>
+		<p class="dock__para dock__para--note">
+			Это справка, а&nbsp;не&nbsp;диагноз. Сильная боль, деформация, онемение, удар по&nbsp;голове&nbsp;— сразу
+			103 или&nbsp;112.
+		</p>
+		<p class="dock__para dock__para--note">
+			Не пишите имя и&nbsp;контакты. Для ответа текст уходит через OpenRouter (США) к&nbsp;модели Claude,
+			у&nbsp;нас он не&nbsp;сохраняется. Отправляя вопрос, вы с&nbsp;этим соглашаетесь.
+		</p>
+		{#if closed}
+			<p class="dock__notice">{CHAT_FAILURES.closed}</p>
+		{:else if !turns.length}
+			<ul class="dock__examples" aria-label="Примеры вопросов">
+				{#each EXAMPLES as example (example)}
+					<li>
+						<button class="dock__example" type="button" onclick={() => send(example)}>{example}</button>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</div>
+{/snippet}
+
 <svelte:window onkeydown={(event) => open && event.key === 'Escape' && close()} />
 
 {#if available}
@@ -233,59 +262,38 @@
 		style:--dock-width="{place.width}px"
 		{@attach portal}
 	>
-		<!-- Нажатие мимо колонки сворачивает диалог обратно в строку -->
-		<div
-			class="dock__veil"
-			role="presentation"
-			onclick={(event) => event.target === event.currentTarget && close()}
-		>
+		<div class="dock__veil">
+			<!-- Шапка та же, что у статьи: стрелка "Назад" сворачивает чат обратно в строку -->
+			<SiteHeader>
+				<button class="article-bar__back dock__back" type="button" aria-label="Назад к статье" onclick={close}
+					>{@html ChevronLeft}</button
+				>
+				<p class="dock__title">Вопрос по справочнику</p>
+				{#if turns.length}
+					<button
+						class="dock__restart"
+						type="button"
+						aria-label="Новый диалог"
+						data-hint="Новый диалог"
+						onclick={restart}><span class="dock__icon" aria-hidden="true">{@html RotateCcw}</span></button
+					>
+				{/if}
+			</SiteHeader>
+
+			<!-- Пояснение -- слева, на месте оглавления статьи; на узком экране оно над диалогом -->
+			<aside class="dock__aside" aria-label="Как это работает">
+				{@render intro()}
+			</aside>
+
 			<section
 				class="dock__feed ym-hide-content"
 				aria-label="Вопрос по статье"
 				aria-live="polite"
 				bind:this={feed}
-				onclick={(event) => event.target === event.currentTarget && close()}
-				role="presentation"
 			>
-				<header class="dock__intro">
-					<div class="dock__intro-head">
-						<p class="dock__intro-title">Вопрос по справочнику</p>
-						{#if turns.length}
-							<button class="dock__icon-button" type="button" aria-label="Новый диалог" onclick={restart}
-								><span class="dock__icon" aria-hidden="true">{@html RotateCcw}</span></button
-							>
-						{/if}
-						<button class="dock__icon-button" type="button" aria-label="Вернуться к статье" onclick={close}
-							><span class="dock__icon" aria-hidden="true">{@html X}</span></button
-						>
-					</div>
-					<p class="dock__para">
-						Опишите своими словами, что болит и&nbsp;как это случилось, или спросите про «{injury.title}».
-						Ассистент сначала проверит тревожные признаки, потом ответит по&nbsp;статьям справочника&nbsp;—
-						только по&nbsp;ним.
-					</p>
-					<p class="dock__para dock__para--note">
-						Это справка, а&nbsp;не&nbsp;диагноз, статьи пока не&nbsp;проверены врачом. Сильная боль,
-						деформация, онемение, удар по&nbsp;голове&nbsp;— сразу 103 или&nbsp;112.
-					</p>
-					<p class="dock__para dock__para--note">
-						Не пишите имя и&nbsp;контакты. Для ответа текст уходит через OpenRouter (США) к&nbsp;модели
-						Claude, у&nbsp;нас он не&nbsp;сохраняется. Отправляя вопрос, вы с&nbsp;этим соглашаетесь.
-					</p>
-					{#if closed}
-						<p class="dock__notice">{CHAT_FAILURES.closed}</p>
-					{:else if !turns.length}
-						<ul class="dock__examples" aria-label="Примеры вопросов">
-							{#each EXAMPLES as example (example)}
-								<li>
-									<button class="dock__example" type="button" onclick={() => send(example)}
-										>{example}</button
-									>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				</header>
+				<div class="dock__intro-inline">
+					{@render intro()}
+				</div>
 
 				{#each turns as turn, index (index)}
 					<ChatAnswer {turn} />
@@ -370,39 +378,104 @@
 			}
 		}
 
+		/* Шапка -- как у статьи, лента и сайдбар начинаются под ней */
+		/* Значки темы в углу остаются под размытием: место под них в шапке отдаём заголовку */
+		&__veil > :global(.site-header) {
+			position: absolute;
+			top: 0;
+			left: 0;
+			padding-right: var(--frame-x);
+		}
+
+		&__back {
+			cursor: pointer;
+			padding: 0;
+			border: 0;
+			background: none;
+		}
+
+		&__restart {
+			cursor: pointer;
+			display: inline-grid;
+			flex: none;
+			place-items: center;
+			width: var(--back-size);
+			height: var(--back-size);
+			margin-left: auto;
+			padding: 0;
+			border: 0;
+			border-radius: 50%;
+			color: var(--muted);
+			background: none;
+			transition:
+				color 0.3s ease,
+				background 0.3s ease;
+
+			&:hover {
+				color: var(--fg);
+				background: color-mix(in srgb, var(--fg) 7%, transparent);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: -2px;
+			}
+		}
+
+		&__title {
+			overflow: hidden;
+			min-width: 0;
+			margin: 0;
+			font-size: 17px;
+			font-weight: 600;
+			text-overflow: ellipsis;
+			letter-spacing: -0.02em;
+			white-space: nowrap;
+		}
+
 		&__feed {
 			scrollbar-width: none;
 			position: absolute;
-			top: 0;
+			top: var(--header-clear);
 			bottom: 0;
 			left: var(--dock-left);
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			width: var(--dock-width);
-			padding: calc(24px + env(safe-area-inset-top)) 0 calc(var(--chat-dock-lift, 80px) + 24px);
+			padding: 8px 0 calc(var(--chat-dock-lift, 80px) + 24px);
 			font-size: 16px;
 			line-height: 1.45;
+		}
+
+		/* Сайдбар -- колонка оглавления статьи: 260px и 64px до текста (styles/article.css) */
+		&__aside {
+			position: absolute;
+			top: var(--header-clear);
+			left: calc(var(--dock-left) - 64px - 260px);
+			display: none;
+			width: 260px;
+			padding-top: 8px;
+			font-size: 15px;
+			line-height: 1.45;
+
+			@media (width >= 1100px) {
+				display: block;
+			}
+		}
+
+		&__intro-inline {
+			padding-bottom: 16px;
+			border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+
+			@media (width >= 1100px) {
+				display: none;
+			}
 		}
 
 		&__intro {
 			display: grid;
 			gap: 10px;
-			padding-bottom: 16px;
-			border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
-		}
-
-		&__intro-head {
-			display: flex;
-			gap: 4px;
-			align-items: center;
-		}
-
-		&__intro-title {
-			flex: 1;
-			margin: 0;
-			font-size: 20px;
-			font-weight: 650;
-			letter-spacing: -0.02em;
+			justify-items: start;
 		}
 
 		&__para {
@@ -424,24 +497,6 @@
 			& :global(svg) {
 				width: 100%;
 				height: 100%;
-			}
-		}
-
-		&__icon-button {
-			cursor: pointer;
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			width: 40px;
-			height: 40px;
-			border: 0;
-			border-radius: 50%;
-			color: var(--muted);
-			background: none;
-
-			&:hover {
-				color: var(--fg);
-				background: color-mix(in srgb, var(--fg) 6%, transparent);
 			}
 		}
 

@@ -1,6 +1,6 @@
 <!--
 	Ответ чата на один вопрос: тревожные признаки из инструмента -- карточками, а не пересказом
-	модели, потом её текст и статьи с плашкой черновика
+	модели, потом её текст и статьи
 -->
 <script lang="ts">
 	import { FileText, Siren } from 'lucide-static'
@@ -85,7 +85,6 @@
 					<a class="answer__card" href={card.url}>
 						<span class="answer__icon" aria-hidden="true">{@html FileText}</span>
 						<span class="answer__card-title">{card.title}</span>
-						{#if card.draft}<span class="answer__draft" title="Врач ещё не проверил">черновик</span>{/if}
 					</a>
 				</li>
 			{/each}
@@ -218,15 +217,6 @@
 
 		&__card-title {
 			flex: 1;
-		}
-
-		&__draft {
-			flex: none;
-			padding: 2px 8px;
-			border-radius: 999px;
-			font-size: 12px;
-			color: var(--muted);
-			background: color-mix(in srgb, var(--fg) 6%, transparent);
 		}
 
 		&__notice {

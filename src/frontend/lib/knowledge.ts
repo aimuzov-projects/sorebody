@@ -84,7 +84,6 @@ export function buildKnowledge(site: string, injuries: Entry[], lenses: Entry[])
 					slug,
 					own.map((l) => l.sport),
 				),
-				draft: data.draft,
 				brief: (data.brief ?? []).map(({ label, text }: { label: string; text: string }) => ({ label, text })),
 				takeaways: data.takeaways ?? [],
 				selfCheck: data.selfCheck ?? [],

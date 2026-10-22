@@ -28,7 +28,7 @@ const ANSWER = sse(
 			],
 		},
 	],
-	['cards', { cards: [{ slug: 'acl-tear', title: 'Разрыв ПКС', url: '/crossfit/acl-tear/', draft: true }] }],
+	['cards', { cards: [{ slug: 'acl-tear', title: 'Разрыв ПКС', url: '/crossfit/acl-tear/' }] }],
 	[
 		'text',
 		{ text: '**Сегодня в травмпункт.** Подробнее: [статья](https://sorebody.aimuzov.online/injuries/acl-tear/)' },
@@ -104,7 +104,6 @@ test('строка внизу шириной с колонку текста, ф�
 	const card = feed(page).getByRole('list', { name: 'Статьи' }).getByRole('link')
 
 	await expect(card).toContainText('Разрыв ПКС')
-	await expect(card).toContainText('черновик')
 	expect(posts).toEqual([{ message: 'хлопнуло в колене', sport: 'crossfit', article: 'acl-tear' }])
 
 	// Esc сворачивает диалог в строку, переписка ждёт следующего фокуса
@@ -120,17 +119,27 @@ test('строка внизу шириной с колонку текста, ф�
 	expect(posts[1]).toMatchObject({ session: 's1', article: 'acl-tear' })
 })
 
-test('пример вопроса отправляется сразу, нажатие мимо колонки сворачивает', async ({ page }) => {
+test('шапка с «Назад», пояснение слева, нажатие по размытию чат не закрывает', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 800 })
 
 	const posts = await mockChat(page, answer)
 
 	await page.goto(ARTICLE)
 	await input(page).click()
-	await feed(page).getByRole('button', { name: 'К какому врачу идти?' }).click()
+
+	// На широком экране пояснение -- в сайдбаре на месте оглавления, слева от колонки ответа
+	const aside = page.getByRole('complementary', { name: 'Как это работает' })
+
+	await expect(aside).toContainText('Ассистент сначала проверит тревожные признаки')
+	expect((await aside.boundingBox())!.x).toBeLessThan((await page.locator('.dock__feed').boundingBox())!.x)
+
+	await aside.getByRole('button', { name: 'К какому врачу идти?' }).click()
 	await expect.poll(() => posts.length).toBe(1)
 
-	await page.mouse.click(40, 400)
+	await page.mouse.click(1240, 400)
+	await expect(feed(page)).toBeVisible()
+
+	await page.getByRole('button', { name: 'Назад к статье' }).click()
 	await expect(feed(page)).toBeHidden()
 })
 

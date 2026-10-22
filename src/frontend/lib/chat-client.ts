@@ -3,7 +3,7 @@ export type ChatAlarm = { text: string; urgency: 'call' | 'today' | 'soon'; acti
 
 export type ChatFlags = { slug: string; title: string; url: string; alarms: ChatAlarm[] }[]
 
-export type ChatCard = { slug: string; title: string; url: string; draft: boolean }
+export type ChatCard = { slug: string; title: string; url: string }
 
 /** Почему ответа нет: у каждой причины свой текст в виджете. */
 export type ChatFailure = 'rate' | 'closed' | 'turns' | 'cost' | 'expired' | 'busy' | 'unavailable'

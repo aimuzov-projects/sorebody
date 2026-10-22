@@ -28,8 +28,6 @@ export type KnowledgeInjury = {
 	titleEn: string
 	region: string
 	url: string
-	/** Врач текст ещё не проверил. */
-	draft: boolean
 	brief: { label: string; text: string }[]
 	takeaways: string[]
 	selfCheck: KnowledgeAlarm[]

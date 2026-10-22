@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.1](https://github.com/aimuzov-projects/sorebody/compare/v1.27.0...v1.27.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* **content:** align knee red-flag urgency across ACL, meniscus and MCL ([4ae894f](https://github.com/aimuzov-projects/sorebody/commit/4ae894f4ef67bb8e52feaaa1e651e7f426eee63a))
+
 ## [1.27.0](https://github.com/aimuzov-projects/sorebody/compare/v1.26.1...v1.27.0) (2026-10-22)
 
 

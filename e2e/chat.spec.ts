@@ -370,3 +370,27 @@ test('статья поверх модели на узком экране: кн�
 
 	expect(top).toBe(true)
 })
+
+test('пустое поле само набирает вопросы и стирает их, а в фокусе -- обычная подсказка', async ({ page }) => {
+	await mockChat(page, answer)
+	await page.goto(ARTICLE)
+
+	await expect(input(page)).toHaveAttribute('placeholder', 'Спросите о боли')
+	await expect
+		.poll(async () => input(page).getAttribute('placeholder'), { timeout: 8000 })
+		.not.toBe('Спросите о боли')
+
+	await input(page).focus()
+	await expect(input(page)).toHaveAttribute('placeholder', 'Спросите о боли')
+})
+
+test.describe('без анимаций', () => {
+	test.use({ reducedMotion: 'reduce' })
+
+	test('подсказка в поле стоит на месте', async ({ page }) => {
+		await mockChat(page, answer)
+		await page.goto(ARTICLE)
+		await page.waitForTimeout(4000)
+		await expect(input(page)).toHaveAttribute('placeholder', 'Спросите о боли')
+	})
+})

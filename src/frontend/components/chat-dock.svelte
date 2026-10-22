@@ -64,6 +64,71 @@
 		host?.()?.prepend(node)
 	}
 
+	/** Подсказка в пустом поле, пока в нём ничего не происходит. */
+	const PROMPT = 'Спросите о боли'
+	/** Что печатает подсказка: как будто кто-то описывает свою боль -- так проще начать самому. */
+	const DRAFTS = [
+		'Болит колено после приседа',
+		'Хрустнуло в плече на рывке, теперь ноет',
+		'Можно ли тренироваться через боль?',
+		'Тянет под коленом, когда бегу',
+		'Какому врачу показать запястье?',
+	]
+
+	let hint = $state(PROMPT)
+
+	// Пустое поле будто кто-то заполняет: печатает с запинками, задумывается, стирает и пробует
+	// другой вопрос. Начинает и заканчивает своей подсказкой. Пока поле в фокусе, в нём текст или
+	// анимации выключены -- обычная подсказка
+	$effect(() => {
+		if (!available || open || draft || chat.closed || over) return
+
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+		let timer: ReturnType<typeof setTimeout>
+		let stopped = false
+		const wait = (ms: number) => new Promise((resolve) => (timer = setTimeout(resolve, ms)))
+		const type = async (text: string) => {
+			for (let n = hint.length + 1; n <= text.length && !stopped; n++) {
+				hint = text.slice(0, n)
+
+				// Между словами -- подольше, иногда задумывается посреди фразы
+				await wait(
+					text[n - 1] === ' '
+						? 120 + Math.random() * (Math.random() < 0.2 ? 700 : 120)
+						: 45 + Math.random() * 70,
+				)
+			}
+		}
+		const erase = async () => {
+			while (hint && !stopped) {
+				hint = hint.slice(0, -1)
+				await wait(28)
+			}
+		}
+
+		;(async () => {
+			await wait(2500)
+
+			for (let i = 0; !stopped; i = (i + 1) % DRAFTS.length) {
+				await erase()
+				await wait(400)
+				await type(DRAFTS[i]!)
+				await wait(1800)
+				await erase()
+				await wait(500)
+				await type(PROMPT)
+				await wait(4000)
+			}
+		})()
+
+		return () => {
+			stopped = true
+			clearTimeout(timer)
+			hint = PROMPT
+		}
+	})
+
 	// Клавиатура телефона: строка статьи поднимается над ней, а не прячется под неё
 	$effect(() => {
 		const viewport = window.visualViewport
@@ -351,7 +416,7 @@
 				rows="1"
 				maxlength="1000"
 				enterkeyhint="send"
-				placeholder={chat.closed ? 'Ассистент вернётся завтра' : 'Спросите о боли'}
+				placeholder={chat.closed ? 'Ассистент вернётся завтра' : hint}
 				aria-label="Вопрос по справочнику"
 				disabled={!available || chat.closed || over}
 				bind:value={draft}

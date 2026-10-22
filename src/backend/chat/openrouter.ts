@@ -42,13 +42,16 @@ export class OpenRouterError extends Error {
 	}
 }
 
-/** Модель по умолчанию; другую задаёт `CHAT_MODEL`, slug модели в OpenRouter. */
-export const MODEL = 'anthropic/claude-opus-5.5'
+/**
+ * Модель по умолчанию; другую задаёт `CHAT_MODEL`, slug модели в OpenRouter. Haiku на eval
+ * держит срочное и правила не хуже Opus, а жалоба обходится в $0,002 вместо $0,03-0,05.
+ */
+export const MODEL = 'anthropic/claude-haiku-5.5'
 
 /**
  * Клиент OpenRouter для чата, по итогам eval (docs/superpowers/specs, «Результаты eval»):
- * Opus 5.5 с `effort: "low"`, только ZDR-эндпоинты, кэш промпта включён явно -- сам он
- * для Claude не включается. Без стриминга: `reasoning_details` приходят целыми.
+ * `effort: "low"`, только ZDR-эндпоинты, кэш промпта включён явно -- сам он для Claude
+ * не включается. Без стриминга: `reasoning_details` приходят целыми.
  */
 export function openRouter({
 	key,

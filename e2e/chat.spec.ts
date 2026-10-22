@@ -396,6 +396,7 @@ test('пустое поле само набирает вопросы этой с
 			{ timeout: 10000 },
 		)
 		.toBe(true)
+
 	expect(prompts.some((prompt) => prompt.startsWith(typed))).toBe(true)
 
 	await input(page).focus()

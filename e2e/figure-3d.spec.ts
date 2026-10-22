@@ -143,6 +143,7 @@ for (const width of [375, 800, 1000, 1100, 1280]) {
 		})
 
 		expect(corners).toEqual([true, true, true, true, true])
+
 		expect(
 			await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
 		).toBeLessThanOrEqual(0)

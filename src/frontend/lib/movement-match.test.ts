@@ -119,3 +119,15 @@ test('hiking: exercises and household words with the same roots get no situation
 	assert.equal(movementIn('жаропонижающих', 'hiking'), undefined)
 	assert.equal(movementIn('дневника боли', 'hiking'), undefined)
 })
+
+test('hiking: the forms the lenses use -- a lift, a rest day, a stone and a risk are not situations', () => {
+	assert.equal(movementIn('такой, где спуститься можно на подъёмнике', 'hiking'), 'descent')
+	assert.equal(movementIn('спуститься ниже', 'hiking'), 'descent')
+	assert.equal(movementIn('короткий день или днёвка', 'hiking'), 'multi-day')
+	assert.equal(movementIn('поднять его на колено или на камень', 'hiking'), undefined)
+	assert.equal(movementIn('смена на привале, если ноги промокли', 'hiking'), undefined)
+	assert.equal(movementIn('приложить холод на 15 минут', 'hiking'), undefined)
+	assert.equal(movementIn('короче маршрут, чтобы снизить риск второго падения', 'hiking'), undefined)
+	assert.equal(movementIn('идти дальше по морозу', 'hiking'), 'cold')
+	assert.equal(movementIn('идти по камням', 'hiking'), 'rocky-terrain')
+})

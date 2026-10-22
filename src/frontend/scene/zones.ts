@@ -163,8 +163,9 @@ const INJURY_FOCUS: Record<string, { offset: Vec3; normal?: Vec3; view?: View; z
 		normal: [0.4, -0.2, 1],
 		view: { azimuth: 25, polar: 76 },
 	},
-	// Плечевое сплетение -- над ключицей, где на него давит лямка: ближе к шее и выше подключичной вены
-	'rucksack-palsy': { offset: [-0.06, 0.05, 0.03], normal: [0, 0.6, 1], view: { azimuth: 15, polar: 66 } },
+	// Стволы плечевого сплетения над ключицей, где на них давит лямка: медиальнее и глубже подключичной
+	// вены, по нервам в shoulder-left.nerves.glb
+	'rucksack-palsy': { offset: [-0.09, 0.045, 0.014], normal: [0, 0.6, 1], view: { azimuth: 15, polar: 66 } },
 	'upper-limb-stress-fractures': {
 		offset: [-0.06, -0.03, -0.09],
 		normal: [0, 0, -1],

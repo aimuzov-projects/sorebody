@@ -103,6 +103,7 @@ test('catches hiking gear and the trail, but not gait, troponin or the tropics',
 		'по тропе',
 		'горная тропинка',
 		'спуск с перевала',
+		'на перевалах',
 	])
 		assert.notDeepEqual(sportWordsIn(text), [], text)
 
@@ -114,6 +115,8 @@ test('catches hiking gear and the trail, but not gait, troponin or the tropics',
 		'изотропный',
 		'туристы в исследовании',
 		'переваливаться с ноги на ногу',
+		'поход к врачу',
+		'трекинг сна',
 	])
 		assert.deepEqual(sportWordsIn(text), [], text)
 })

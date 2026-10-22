@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.27.0](https://github.com/aimuzov-projects/sorebody/compare/v1.26.1...v1.27.0) (2026-10-22)
+
+
+### Features
+
+* **chat:** add a chat with the injury guide on the site ([66da25e](https://github.com/aimuzov-projects/sorebody/commit/66da25e4e95130e7a9bb6cddb08370f9a9f63187))
+* **chat:** send the question on Enter everywhere ([350ebca](https://github.com/aimuzov-projects/sorebody/commit/350ebcaee67e3d4813bc2dff958cf0b9ad577fc1))
+* **chat:** type questions about the article into the empty field ([b831419](https://github.com/aimuzov-projects/sorebody/commit/b8314192a8e9d1ce9fb349616f5d2c583be31368))
+* **chat:** type sample questions into the empty field ([8735080](https://github.com/aimuzov-projects/sorebody/commit/87350808fde3d64db5c4e620aff32de0e36728a8))
+
+
+### Bug Fixes
+
+* **article:** stop clipping the 3D button at the edge of the article ([a357c66](https://github.com/aimuzov-projects/sorebody/commit/a357c6620badc1d068496973cea3dcb4fb154597))
+* **chat:** fill the send button like the other accent buttons ([1f5d726](https://github.com/aimuzov-projects/sorebody/commit/1f5d72639efbec65946c2d6520cff943db85bc4e))
+* **chat:** keep the underlay under the field in the open chat ([d1b3e86](https://github.com/aimuzov-projects/sorebody/commit/d1b3e86694569ac08979011e63e21771f0ba8985))
+* **chat:** show that the urgent signs fold out ([6585b11](https://github.com/aimuzov-projects/sorebody/commit/6585b1193856a7893bc9346c2047998c7eed6b39))
+* **chat:** style site links as plaques and open other sports as pages ([42cab78](https://github.com/aimuzov-projects/sorebody/commit/42cab78e32b428192c082b5ee5fd6cb1b388e129))
+
 ## [1.26.1](https://github.com/aimuzov-projects/sorebody/compare/v1.26.0...v1.26.1) (2026-10-22)
 
 

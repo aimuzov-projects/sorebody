@@ -1,7 +1,7 @@
 // e2e-пресет infra-site-kit: Chromium против `astro build && astro preview`.
 import { createServer } from 'node:net'
 import preset from '@aimuzov-projects/infra-site-kit/playwright'
-import { defineConfig } from '@playwright/test'
+import { defineConfig, type ReporterDescription } from '@playwright/test'
 
 const server = preset.webServer
 
@@ -55,6 +55,8 @@ export default defineConfig({
 	...preset,
 	// Тяжёлые тесты сами поднимают себе лимит через test.slow()
 	timeout: 45_000,
+	// `--shard` раскладывает e2e/shard.ts, а не встроенный: тот слепил бы обход sitemap в один шард
+	reporter: [...(preset.reporter as ReporterDescription[]), ['./e2e/shard.ts']],
 	use: { ...preset.use, baseURL },
 	webServer: {
 		...server,

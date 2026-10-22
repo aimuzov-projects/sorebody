@@ -60,6 +60,14 @@
 		return () => node.remove()
 	}
 
+	// Подложка под строкой -- в одном слое со статьёй. Ридер главной -- свой слой (z-index 2),
+	// и подложка из <body> накрыла бы его целиком, вместе с кнопкой оглавления внутри
+	const underlay = (node: HTMLElement) => {
+		;(column?.()?.closest<HTMLElement>('.reader') ?? document.body).append(node)
+
+		return () => node.remove()
+	}
+
 	/** Кнопка оглавления статьи на узком экране, как в styles/toc-menu.css: той же величины, что отправка. */
 	const TOC_SIZE = 36
 	const TOC_GAP = 8
@@ -395,7 +403,7 @@
 			</section>
 		</div>
 
-		<div class="dock__shade" aria-hidden="true"></div>
+		<div class="dock__shade" class:dock__shade--hidden={open} aria-hidden="true" {@attach underlay}></div>
 
 		<form
 			class="dock__bar"
@@ -649,7 +657,7 @@
 			backdrop-filter: blur(6px);
 			mask-image: linear-gradient(to top, #000000 55%, transparent);
 
-			.dock--open & {
+			&--hidden {
 				display: none;
 			}
 		}

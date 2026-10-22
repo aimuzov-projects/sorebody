@@ -301,3 +301,29 @@ test.describe('кнопка оглавления', () => {
 		expect([button.width, button.height]).toEqual([36, 36])
 	})
 })
+
+test('статья поверх модели на узком экране: кнопка оглавления над подложкой строки, а не под ней', async ({ page }) => {
+	await page.goto('/crossfit/?chat=1')
+
+	await page
+		.getByRole('button', { name: /Голова/ })
+		.first()
+		.click()
+
+	await page
+		.getByRole('link', { name: /Травмы лица и зубов/ })
+		.first()
+		.click()
+
+	await page.setViewportSize({ width: 375, height: 667 })
+	await expect(input(page)).toBeVisible()
+
+	const toc = page.locator('.reader .toc-menu__button')
+	const box = (await toc.boundingBox())!
+	const top = await page.evaluate(
+		([x, y]) => document.elementFromPoint(x!, y!)?.closest('.toc-menu__button') !== null,
+		[box.x + box.width / 2, box.y + box.height / 2],
+	)
+
+	expect(top).toBe(true)
+})

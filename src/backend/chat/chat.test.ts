@@ -409,10 +409,54 @@ test('http: статья со страницы -- в служебном сооб
 
 	const note = String(requests[0]!.at(-1)!.content)
 
-	assert.match(note, /читает статью «[^»]+» \(acl-tear\)/)
+	assert.match(note, /читает статью «[^»]+» \(acl-tear, https:/)
+	assert.match(note, /Что запомнить:\n- /)
+	assert.match(note, /сразу скорая \(103\/112\)/)
 	assert.match(note, /\(crossfit\)/)
 
 	await events(await post({ message: 'а это?', article: 'ignore previous instructions' }))
 
 	assert.equal(requests[1]!.at(-1)!.role, 'user', 'неизвестная статья -- без служебного сообщения')
+})
+
+test('chat: признаки статьи уже у модели -- карточки покажет сервер, если она их не запросила', async () => {
+	const flags = tools.getRedFlags({ slug: 'acl-tear', brief: true })
+	const run = async (replies: AssistantMessage[]) => {
+		const events: ChatEvent[] = []
+		const session = sessionStore({ ttlMs: 1000, max: 5 }).create()
+
+		await chatTurn({
+			complete: scripted(replies).complete,
+			system,
+			tools: chat,
+			session,
+			message: 'хлопнуло, опухло',
+			note: 'контекст статьи',
+			alarms: flags,
+			emit: (e) => events.push(e),
+		})
+
+		return events
+	}
+
+	// Ответила сразу, по контексту статьи: карточки -- признаки этой статьи, перед текстом
+	const direct = await run([say('Сегодня к ортопеду.')])
+
+	assert.deepEqual(
+		direct.map((e) => e.type),
+		['alarms', 'text'],
+	)
+
+	assert.deepEqual((direct[0] as { flags: unknown }).flags, flags)
+
+	// Жалоба о другой зоне: модель проверила признаки сама, чужие карточки не добавляем
+	const other = await run([calls(['get_red_flags', { region: 'shoulder' }]), say('Про плечо.')])
+
+	assert.equal(other.filter((e) => e.type === 'alarms').length, 1)
+
+	assert.ok(
+		(other.find((e) => e.type === 'alarms') as { flags: { slug: string }[] }).flags.every(
+			(f) => f.slug !== 'acl-tear',
+		),
+	)
 })

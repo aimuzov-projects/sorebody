@@ -39,8 +39,13 @@ type Options = {
 	tools: ReturnType<typeof chatTools>
 	session: Session
 	message: string
-	/** Служебное сообщение о выбранном на сайте спорте, только к первой реплике. */
+	/** Служебное сообщение о странице, с которой спрашивают, только к первой реплике. */
 	note?: string
+	/**
+	 * Признаки статьи, которые модель уже получила в служебном сообщении. Сама она их тогда не
+	 * запросит, поэтому карточки показывает сервер, если за реплику признаков не было.
+	 */
+	alarms?: Extract<ToolEvent, { type: 'alarms' }>['flags']
 	emit: (event: ChatEvent) => void
 	limits?: typeof LIMITS
 }
@@ -50,7 +55,17 @@ type Options = {
  * дописывается -- так требуют рассуждения Claude, -- поэтому напоминание о признаках
  * не дописывает ответ, а повторяет тот же запрос с напоминанием в конце.
  */
-export async function chatTurn({ complete, system, tools, session, message, note, emit, limits = LIMITS }: Options) {
+export async function chatTurn({
+	complete,
+	system,
+	tools,
+	session,
+	message,
+	note,
+	alarms,
+	emit,
+	limits = LIMITS,
+}: Options) {
 	if (session.turns >= limits.turns) throw new ChatLimitError('turns')
 
 	if (session.cost >= limits.cost) throw new ChatLimitError('cost')
@@ -60,7 +75,10 @@ export async function chatTurn({ complete, system, tools, session, message, note
 
 	if (note) session.messages.push({ role: 'system', content: note })
 
+	if (alarms) session.flagged = true
+
 	let calls = 0
+	let alarmed = false
 
 	// Запас сверх потолка вызовов: ответ после отказа в вызове и напоминание
 	for (let step = 0; step < limits.toolCalls + 3; step++) {
@@ -95,7 +113,7 @@ export async function chatTurn({ complete, system, tools, session, message, note
 				const { content, event } = over ? { content: TOOL_LIMIT } : tools.run(name, args)
 
 				if (event) {
-					if (event.type === 'alarms') session.flagged = true
+					if (event.type === 'alarms') session.flagged = alarmed = true
 
 					if (event.type === 'cards') session.searched = true
 
@@ -107,6 +125,8 @@ export async function chatTurn({ complete, system, tools, session, message, note
 
 			continue
 		}
+
+		if (alarms?.length && !alarmed) emit({ type: 'alarms', flags: alarms })
 
 		const text = reply.content?.trim()
 		const known = new Set(session.messages.flatMap((m) => (m.role === 'tool' ? urlsIn(m.content) : [])))

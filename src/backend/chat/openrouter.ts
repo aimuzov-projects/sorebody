@@ -42,6 +42,7 @@ export class OpenRouterError extends Error {
 	}
 }
 
+/** Модель по умолчанию; другую задаёт `CHAT_MODEL`, slug модели в OpenRouter. */
 export const MODEL = 'anthropic/claude-opus-5.5'
 
 /**
@@ -51,11 +52,13 @@ export const MODEL = 'anthropic/claude-opus-5.5'
  */
 export function openRouter({
 	key,
+	model = MODEL,
 	maxTokens = 1200,
 	timeoutMs = 90_000,
 	fetch = globalThis.fetch,
 }: {
 	key: string
+	model?: string
 	maxTokens?: number
 	timeoutMs?: number
 	fetch?: typeof globalThis.fetch
@@ -76,7 +79,7 @@ export function openRouter({
 	return async ({ messages, tools }) => {
 		const res = await post(
 			JSON.stringify({
-				model: MODEL,
+				model,
 				messages,
 				tools,
 				tool_choice: 'auto',

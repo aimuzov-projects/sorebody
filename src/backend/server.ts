@@ -21,7 +21,7 @@ const key = process.env.OPENROUTER_API_KEY
 const chat =
 	process.env.CHAT_ENABLED === '1' && key
 		? chatHandler({
-				complete: openRouter({ key }),
+				complete: openRouter({ key, model: process.env.CHAT_MODEL || undefined }),
 				tools,
 				origins: (process.env.CHAT_ORIGINS ?? 'https://sorebody.aimuzov.online').split(','),
 				quota: {

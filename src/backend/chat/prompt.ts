@@ -32,19 +32,40 @@ ${JSON.stringify(tools.catalog())}`
 export const RED_FLAGS_REMINDER =
 	'Служебное напоминание от сайта: прежде чем отвечать о симптомах, вызови get_red_flags по зоне тела или по травме.'
 
-/** Что человек открыл на сайте: спорт -- модель подставит его в фильтры, статья -- вопрос, скорее всего, о ней. */
-export function pageNote({
-	sport,
-	article,
-}: {
-	sport?: { title: string; slug: string }
-	article?: { title: string; slug: string }
-}) {
-	const lines = [
-		sport && `человек выбрал на сайте спорт «${sport.title}» (${sport.slug})`,
-		article &&
-			`человек читает статью «${article.title}» (${article.slug}); вопрос, скорее всего, о ней, но тревожные признаки всё равно проверь первыми`,
-	].filter(Boolean)
+/** Статья, со страницы которой спрашивают: кратко и её тревожные признаки. */
+export type ArticleContext = {
+	title: string
+	slug: string
+	url: string
+	summary: string
+	brief: { label: string; text: string }[]
+	takeaways: string[]
+	alarms: { text: string; action: string }[]
+}
 
-	return lines.length ? `Служебное сообщение от сайта: ${lines.join('; ')}.` : undefined
+/**
+ * Что человек открыл на сайте. Спорт модель подставит в фильтры. Статью отдаём сразу кратко и с
+ * признаками: вопрос, скорее всего, о ней, и первый ответ обходится без вызова инструментов.
+ */
+export function pageNote({ sport, article }: { sport?: { title: string; slug: string }; article?: ArticleContext }) {
+	if (!sport && !article) return undefined
+
+	const lines = ['Служебное сообщение от сайта.']
+
+	if (sport) lines.push(`Человек выбрал на сайте спорт «${sport.title}» (${sport.slug}).`)
+
+	if (article)
+		lines.push(
+			`Человек читает статью «${article.title}» (${article.slug}, ${article.url}); вопрос, скорее всего, о ней.`,
+			`Кратко: ${article.summary}`,
+			...article.brief.map((fact) => `- ${fact.label}: ${fact.text}`),
+			'Что запомнить:',
+			...article.takeaways.map((item) => `- ${item}`),
+			'Тревожные признаки этой статьи, сайт покажет их человеку карточками:',
+			...article.alarms.map((alarm) => `- ${alarm.text} -- ${alarm.action}`),
+			'Если описание совпадает с признаком, прямо скажи, что делать. Если жалоба о другой зоне или травме -- ' +
+				'сначала get_red_flags по ней. Подробности статьи -- get_article с нужными sections.',
+		)
+
+	return lines.join('\n')
 }

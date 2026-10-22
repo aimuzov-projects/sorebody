@@ -3,7 +3,7 @@
  * Claude Opus 5.5 в OpenRouter. Проверяем качество, безопасность и цену того кода, что
  * пойдёт в прод; итоги -- в docs/superpowers/specs, «Результаты eval».
  *
- * Запуск: OPENROUTER_API_KEY=… node scripts/chat-eval/run.ts <папка отчёта> [id случаев…]
+ * Запуск: OPENROUTER_API_KEY=… [CHAT_MODEL=…] node scripts/chat-eval/run.ts <папка отчёта> [id случаев…]
  * Тратит деньги: останавливается, когда расход по `usage.cost` дошёл до BUDGET.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -34,7 +34,8 @@ const tools = knowledgeTools(knowledge)
 const system = chatSystem(tools)
 const chat = chatTools(tools)
 const sessions = sessionStore({ ttlMs: 60 * 60_000, max: 1000 })
-const client = openRouter({ key })
+const model = process.env.CHAT_MODEL || MODEL
+const client = openRouter({ key, model })
 const site = new URL(knowledge.site).host
 
 let spent = 0
@@ -175,7 +176,7 @@ const single = symptom.filter((r) => r.test.turns.length === 1)
 const avg = (list: Result[], pick: (r: Result) => number) => list.reduce((s, r) => s + pick(r), 0) / (list.length || 1)
 
 const report = [
-	`# Eval чата: ${MODEL}`,
+	`# Eval чата: ${model}`,
 	'',
 	`Случаев: ${results.length}, расход: $${spent.toFixed(2)}, провайдеры: ${[...new Set(results.flatMap((r) => r.providers))].join(', ')}`,
 	`Жалоба в одну реплику: $${avg(single, (r) => r.usage.cost).toFixed(3)} в среднем, $${Math.max(...single.map((r) => r.usage.cost)).toFixed(3)} максимум`,

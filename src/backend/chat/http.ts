@@ -7,7 +7,7 @@ import { clientOf, readBody, send } from '#backend/request.ts'
 
 import { dailyCounter } from './daily.ts'
 import { OpenRouterError, type Complete } from './openrouter.ts'
-import { chatSystem, pageNote } from './prompt.ts'
+import { chatSystem, pageNote, type ArticleContext } from './prompt.ts'
 import { sessionStore, type SessionStore } from './sessions.ts'
 import { chatTools } from './tools.ts'
 import { ChatLimitError, chatTurn, LIMITS, type ChatEvent } from './turn.ts'
@@ -81,6 +81,32 @@ export function chatHandler({
 	const chat = chatTools(tools)
 	const sports = new Map(tools.catalog().sports.map((s) => [s.slug, s.title]))
 	const articles = new Map(tools.listInjuries().map((i) => [i.slug, i.title]))
+
+	/** Статья кратко и её признаки -- для первой реплики со страницы статьи. */
+	function articleContext(slug: string, sport?: string) {
+		const brief = (lens?: string) => tools.getArticle({ slug, sport: lens, sections: [] })
+		// У травмы может не быть разбора этого спорта: тогда общая часть
+		let article: ReturnType<typeof brief>
+
+		try {
+			article = brief(sport)
+		} catch {
+			article = brief()
+		}
+
+		const flags = tools.getRedFlags({ slug, brief: true })
+		const context: ArticleContext = {
+			title: articles.get(slug)!,
+			slug,
+			url: article.url,
+			summary: article.summary,
+			brief: article.brief,
+			takeaways: article.takeaways,
+			alarms: flags.flatMap((f) => f.alarms),
+		}
+
+		return { context, flags }
+	}
 	const perMinute = rateLimit({ limit: quota.perMinute, windowMs: 60_000, now })
 	const perDay = rateLimit({ limit: quota.perDay, windowMs: 86_400_000, now })
 	const dialogs = dailyCounter({ limit: quota.dialogs, now })
@@ -161,10 +187,14 @@ export function chatHandler({
 		const fail = (reason: Failure) => write('error', { reason })
 		// Чужие slug не доходят до модели: в служебное сообщение -- только то, что есть в базе
 		const sport = parsed.sport && sports.get(parsed.sport)
-		const article = parsed.article && articles.get(parsed.article)
+		const first = session.turns === 0
+		const article =
+			first && parsed.article && articles.has(parsed.article)
+				? articleContext(parsed.article, sport ? parsed.sport : undefined)
+				: undefined
 		const note = pageNote({
 			sport: sport ? { title: sport, slug: parsed.sport! } : undefined,
-			article: article ? { title: article, slug: parsed.article! } : undefined,
+			article: article?.context,
 		})
 
 		write('session', { id: session.id })
@@ -177,7 +207,8 @@ export function chatHandler({
 				tools: chat,
 				session,
 				message: parsed.message,
-				note: session.turns === 0 ? note : undefined,
+				note: first ? note : undefined,
+				alarms: article?.flags,
 				emit,
 				limits,
 			})

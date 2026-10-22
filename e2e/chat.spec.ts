@@ -371,14 +371,32 @@ test('статья поверх модели на узком экране: кн�
 	expect(top).toBe(true)
 })
 
-test('пустое поле само набирает вопросы и стирает их, а в фокусе -- обычная подсказка', async ({ page }) => {
+test('пустое поле само набирает вопросы этой статьи и стирает их, а в фокусе -- обычная подсказка', async ({
+	page,
+}) => {
 	await mockChat(page, answer)
 	await page.goto(ARTICLE)
 
 	await expect(input(page)).toHaveAttribute('placeholder', 'Спросите о боли')
+
+	// Вопросы -- из данных статьи про ПКС (content/injuries/acl-tear.md)
+	const prompts = JSON.parse((await page.locator('.article__dock').getAttribute('data-prompts'))!) as string[]
+
+	expect(prompts).toContain('Как понять, что порвал ПКС?')
+	// Набранное -- начало одного из них, а не остаток стираемой подсказки
+	let typed = ''
+
 	await expect
-		.poll(async () => input(page).getAttribute('placeholder'), { timeout: 8000 })
-		.not.toBe('Спросите о боли')
+		.poll(
+			async () => {
+				typed = (await input(page).getAttribute('placeholder'))!
+
+				return typed.length >= 3 && !'Спросите о боли'.startsWith(typed)
+			},
+			{ timeout: 10000 },
+		)
+		.toBe(true)
+	expect(prompts.some((prompt) => prompt.startsWith(typed))).toBe(true)
 
 	await input(page).focus()
 	await expect(input(page)).toHaveAttribute('placeholder', 'Спросите о боли')

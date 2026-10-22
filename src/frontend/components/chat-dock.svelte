@@ -66,24 +66,21 @@
 
 	/** Подсказка в пустом поле, пока в нём ничего не происходит. */
 	const PROMPT = 'Спросите о боли'
-	/** Что печатает подсказка: как будто кто-то описывает свою боль -- так проще начать самому. */
-	const DRAFTS = [
-		'Болит колено после приседа',
-		'Хрустнуло в плече на рывке, теперь ноет',
-		'Можно ли тренироваться через боль?',
-		'Тянет под коленом, когда бегу',
-		'Какому врачу показать запястье?',
-	]
 
 	let hint = $state(PROMPT)
 
 	// Пустое поле будто кто-то заполняет: печатает с запинками, задумывается, стирает и пробует
-	// другой вопрос. Начинает и заканчивает своей подсказкой. Пока поле в фокусе, в нём текст или
-	// анимации выключены -- обычная подсказка
+	// другой вопрос. Вопросы -- про эту статью: строке статьи их дают данные травмы (prompts).
+	// Начинает и заканчивает своей подсказкой. Пока поле в фокусе, в нём текст или анимации
+	// выключены -- обычная подсказка
 	$effect(() => {
 		if (!available || open || draft || chat.closed || over) return
 
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+		const drafts: string[] = JSON.parse(bar?.closest<HTMLElement>('.article__dock')?.dataset.prompts ?? '[]')
+
+		if (!drafts.length) return
 
 		let timer: ReturnType<typeof setTimeout>
 		let stopped = false
@@ -110,10 +107,10 @@
 		;(async () => {
 			await wait(2500)
 
-			for (let i = 0; !stopped; i = (i + 1) % DRAFTS.length) {
+			for (let i = 0; !stopped; i = (i + 1) % drafts.length) {
 				await erase()
 				await wait(400)
-				await type(DRAFTS[i]!)
+				await type(drafts[i]!)
 				await wait(1800)
 				await erase()
 				await wait(500)

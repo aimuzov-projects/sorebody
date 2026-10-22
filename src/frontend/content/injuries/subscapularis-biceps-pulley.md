@@ -2,6 +2,11 @@
 title: Повреждение подлопаточной мышцы и pulley сухожилия бицепса
 titleEn: Subscapularis partial tear and biceps pulley lesion
 region: shoulder
+prompts:
+    - 'Болит плечо спереди'
+    - 'Щёлкает бицепс в плече'
+    - 'Больно в отжиманиях на брусьях'
+    - 'Это сухожилие бицепса?'
 images:
     - src: /injuries/subscapularis-biceps-pulley-01.webp
       alt: 'Правое плечо спереди: подлопаточная мышца крепится к малому бугорку, рядом в борозде сухожилие бицепса, у входа в борозду его удерживает зелёная петля'

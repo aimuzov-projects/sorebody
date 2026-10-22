@@ -44,6 +44,7 @@ const article = {
 	title: 'Разрыв мениска',
 	titleEn: 'Meniscus tear',
 	region: 'knee',
+	prompts: ['Колено заклинило в приседе', 'Щелчок в колене на развороте', 'Нужна ли операция на мениске?'],
 	images: [],
 	draft: true,
 }

@@ -456,7 +456,7 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).dig
 		</footer>
 
 		{/* Ридер главной берёт main целиком, но строку чата ставит в эту строку свою */}
-		<div class="article__dock">
+		<div class="article__dock" data-prompts={JSON.stringify(data.prompts)}>
 			<ChatDock
 				client:load
 				injury={{ slug: injury.id, title: name }}

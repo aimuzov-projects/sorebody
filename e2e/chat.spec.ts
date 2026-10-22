@@ -59,7 +59,7 @@ const answer = (route: Route) =>
 const input = (page: Page) => page.getByRole('textbox', { name: 'Вопрос по справочнику' })
 const feed = (page: Page) => page.getByRole('region', { name: 'Вопрос по статье' })
 
-/** Строка с кнопкой оглавления выезжают через 2 с после открытия статьи: ждём их на месте. */
+/** Строка с кнопкой оглавления выезжают через 1 с после открытия статьи: ждём их на месте. */
 async function settled(page: Page) {
 	await expect(page.locator('html')).toHaveAttribute('data-chat-dock', 'shown', { timeout: 5000 })
 	await page.waitForTimeout(600)
@@ -186,7 +186,7 @@ test('сервис не ответил -- понятный текст, а не �
 	await expect(feed(page).getByRole('alert')).toContainText('Не получилось ответить')
 })
 
-test('статья поверх модели главной: строка чата есть и там', async ({ page }) => {
+test('статья поверх модели главной: строка чата внутри статьи и уходит вместе с ней', async ({ page }) => {
 	await page.goto('/crossfit/?chat=1')
 
 	await page
@@ -202,6 +202,11 @@ test('статья поверх модели главной: строка чат
 	await expect(page.getByRole('heading', { level: 1, name: /Травмы лица и зубов/ })).toBeVisible()
 	await expect(input(page)).toBeVisible()
 	await settled(page)
+	await expect(page.locator('.reader .dock__bar')).toBeInViewport()
+
+	await page.locator('.reader__back').click()
+	await expect(page.locator('.reader')).toHaveCount(0)
+	await expect(page.locator('.dock')).toHaveCount(0)
 })
 
 test.describe('телефон', () => {
@@ -346,7 +351,7 @@ test('статья поверх модели на узком экране: кн�
 test.describe('выезд строки', () => {
 	test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true })
 
-	test('строка и кнопка оглавления выезжают снизу через 2 секунды, а не вместе со статьёй', async ({ page }) => {
+	test('строка и кнопка оглавления выезжают снизу через секунду, а не вместе со статьёй', async ({ page }) => {
 		await mockChat(page, answer)
 		await page.goto(ARTICLE)
 

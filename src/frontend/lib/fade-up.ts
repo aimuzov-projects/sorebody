@@ -14,7 +14,9 @@ export function fadeUp(node: HTMLElement, { rise = 24, instant = false, reduceMo
 		easing: (t: number) => 1 - (1 - t) ** 4,
 		tick: (t: number) => {
 			node.style.opacity = String(t)
-			node.style.transform = reduceMotion || t === 1 ? '' : `translateY(${(1 - t) * rise}px)`
+			// Без сдвига transform не ставим: с ним fixed-потомки (строка чата в ридере)
+			// встали бы от ридера, а не от окна, и уехали бы вместе с прокруткой
+			node.style.transform = reduceMotion || !rise || t === 1 ? '' : `translateY(${(1 - t) * rise}px)`
 		},
 	}
 }

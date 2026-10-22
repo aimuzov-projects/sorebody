@@ -54,16 +54,8 @@
 		available = chatAvailable({ root: document.documentElement, search: location.search, storage })
 	})
 
-	// Строка и диалог живут в <body>: так им не мешают transform и overflow
-	// ридера на главной
-	const portal = (node: HTMLElement) => {
-		document.body.append(node)
-
-		return () => node.remove()
-	}
-
 	/** Через сколько после открытия статьи строка и кнопка оглавления выезжают снизу. */
-	const ENTER_DELAY = 2000
+	const ENTER_DELAY = 1000
 
 	// Статья проявляется в своём темпе: в ридере главной -- по частям. Строка с кнопкой
 	// оглавления выезжают позже, когда статья уже на месте. Кнопка -- часть статьи,
@@ -85,14 +77,6 @@
 			delete root.dataset.chatDock
 		}
 	})
-
-	// Подложка под строкой -- в одном слое со статьёй. Ридер главной -- свой слой (z-index 2),
-	// и подложка из <body> накрыла бы его целиком, вместе с кнопкой оглавления внутри
-	const underlay = (node: HTMLElement) => {
-		;(column?.()?.closest<HTMLElement>('.reader') ?? document.body).append(node)
-
-		return () => node.remove()
-	}
 
 	/** Кнопка оглавления статьи на узком экране, как в styles/toc-menu.css: той же величины, что отправка. */
 	const TOC_SIZE = 36
@@ -192,7 +176,8 @@
 	$effect(() => {
 		if (!open) return
 
-		const root = document.documentElement
+		// Прокручивается ридер главной, а на отдельной странице -- сам документ
+		const root = column?.()?.closest<HTMLElement>('.reader') ?? document.documentElement
 		const overflow = root.style.overflow
 
 		root.style.overflow = 'hidden'
@@ -374,13 +359,7 @@
 <svelte:window onkeydowncapture={escape} />
 
 {#if available}
-	<div
-		class="dock"
-		class:dock--open={open}
-		style:--dock-left="{place.left}px"
-		style:--dock-width="{place.width}px"
-		{@attach portal}
-	>
+	<div class="dock" class:dock--open={open} style:--dock-left="{place.left}px" style:--dock-width="{place.width}px">
 		<div class="dock__veil">
 			<!-- Шапка та же, что у статьи: стрелка "Назад" сворачивает чат обратно в строку -->
 			<SiteHeader>
@@ -434,7 +413,6 @@
 			class:dock__shade--hidden={open}
 			class:dock__shade--away={!shown}
 			aria-hidden="true"
-			{@attach underlay}
 		></div>
 
 		<form

@@ -75,17 +75,15 @@ test('chat: признаки, поиск, статья, ответ -- событ
 
 	assert.deepEqual(
 		events.map((e) => (e.type === 'status' ? e.step : e.type)),
-		['red-flags', 'alarms', 'search', 'cards', 'article', 'text'],
+		['red-flags', 'alarms', 'search', 'article', 'text'],
 	)
 
 	assert.deepEqual(requests[1]![0], { role: 'system', content: system })
 	assert.deepEqual(requests[1]![2], flags, 'ответ с рассуждениями уходит обратно без изменений')
 
 	const alarms = events.find((e) => e.type === 'alarms')!
-	const cards = events.find((e) => e.type === 'cards')!
 
 	assert.ok(alarms.type === 'alarms' && alarms.flags.every((f) => !('urgent' in f)), 'признаки краткие')
-	assert.ok(cards.type === 'cards' && cards.cards.every((c) => c.url.startsWith('https://')))
 	assert.equal(session.messages.at(-1)!.content, 'Сегодня в травмпункт.')
 	assert.equal(session.cost.toFixed(2), '0.04')
 	assert.ok(session.flagged)
@@ -459,4 +457,35 @@ test('chat: признаки статьи уже у модели -- карточ
 			(f) => f.slug !== 'acl-tear',
 		),
 	)
+})
+
+test('chat: карточки -- только статьи, на которые модель сослалась, а не весь поиск', async () => {
+	const { complete } = scripted([
+		calls(['get_red_flags', { region: 'knee' }]),
+		calls(['search_injuries', { query: 'болит сзади колена после бега', region: 'knee' }]),
+		say(
+			'Похоже на [тендинопатию подколенной мышцы](https://sorebody.aimuzov.online/injuries/popliteus-tendinopathy/).',
+		),
+	])
+	const { events } = await turn(complete, 'болит сзади колена после бега')
+	const cards = events.filter((e) => e.type === 'cards')
+
+	assert.equal(cards.length, 1)
+
+	assert.deepEqual(
+		(cards[0] as { cards: { slug: string }[] }).cards.map((c) => c.slug),
+		['popliteus-tendinopathy'],
+	)
+
+	// Модель только уточняет -- карточек нет совсем
+	const asking = await turn(
+		scripted([
+			calls(['get_red_flags', { region: 'knee' }]),
+			calls(['search_injuries', { query: 'болит колено' }]),
+			say('Как это началось?'),
+		]).complete,
+		'болит колено',
+	)
+
+	assert.ok(!asking.events.some((e) => e.type === 'cards'))
 })

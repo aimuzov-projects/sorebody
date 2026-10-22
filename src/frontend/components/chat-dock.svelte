@@ -201,9 +201,17 @@
 		field?.blur()
 	}
 
-	function keydown(event: KeyboardEvent) {
-		if (event.key === 'Escape') return close()
+	// Esc при открытом чате сворачивает его. Дальше событие не идёт: сайт считает Esc кнопкой
+	// "Назад" (lib/back-link.ts) и увёл бы со статьи, если фокус не в поле ввода
+	function escape(event: KeyboardEvent) {
+		if (!open || event.key !== 'Escape') return
 
+		event.preventDefault()
+		event.stopPropagation()
+		close()
+	}
+
+	function keydown(event: KeyboardEvent) {
 		// На телефоне Enter -- перенос строки, отправка кнопкой; с клавиатурой Enter отправляет
 		if (event.key === 'Enter' && !event.shiftKey && matchMedia('(hover: hover)').matches) {
 			event.preventDefault()
@@ -224,19 +232,11 @@
 	}
 </script>
 
-{#snippet intro()}
-	<div class="dock__intro">
+{#snippet welcome()}
+	<div class="dock__welcome">
 		<p class="dock__para">
 			Опишите своими словами, что болит и&nbsp;как это случилось, или спросите про «{injury.title}». Ассистент
 			сначала проверит тревожные признаки, потом ответит по&nbsp;статьям справочника&nbsp;— только по&nbsp;ним.
-		</p>
-		<p class="dock__para dock__para--note">
-			Это справка, а&nbsp;не&nbsp;диагноз. Сильная боль, деформация, онемение, удар по&nbsp;голове&nbsp;— сразу
-			103 или&nbsp;112.
-		</p>
-		<p class="dock__para dock__para--note">
-			Не пишите имя и&nbsp;контакты. Для ответа текст уходит через OpenRouter (США) к&nbsp;модели Claude,
-			у&nbsp;нас он не&nbsp;сохраняется. Отправляя вопрос, вы с&nbsp;этим соглашаетесь.
 		</p>
 		{#if closed}
 			<p class="dock__notice">{CHAT_FAILURES.closed}</p>
@@ -252,7 +252,20 @@
 	</div>
 {/snippet}
 
-<svelte:window onkeydown={(event) => open && event.key === 'Escape' && close()} />
+{#snippet disclaimer()}
+	<div class="dock__disclaimer">
+		<p class="dock__para dock__para--note">
+			Это справка, а&nbsp;не&nbsp;диагноз. Сильная боль, деформация, онемение, удар по&nbsp;голове&nbsp;— сразу
+			103 или&nbsp;112.
+		</p>
+		<p class="dock__para dock__para--note">
+			Не пишите имя и&nbsp;контакты. Для ответа текст уходит через OpenRouter (США) к&nbsp;модели Claude,
+			у&nbsp;нас он не&nbsp;сохраняется. Отправляя вопрос, вы с&nbsp;этим соглашаетесь.
+		</p>
+	</div>
+{/snippet}
+
+<svelte:window onkeydowncapture={escape} />
 
 {#if available}
 	<div
@@ -280,9 +293,9 @@
 				{/if}
 			</SiteHeader>
 
-			<!-- Пояснение -- слева, на месте оглавления статьи; на узком экране оно над диалогом -->
-			<aside class="dock__aside" aria-label="Как это работает">
-				{@render intro()}
+			<!-- Дисклеймер -- слева, на месте оглавления статьи; на узком экране он над диалогом -->
+			<aside class="dock__aside" aria-label="Важно">
+				{@render disclaimer()}
 			</aside>
 
 			<section
@@ -291,8 +304,10 @@
 				aria-live="polite"
 				bind:this={feed}
 			>
+				{@render welcome()}
+
 				<div class="dock__intro-inline">
-					{@render intro()}
+					{@render disclaimer()}
 				</div>
 
 				{#each turns as turn, index (index)}
@@ -464,18 +479,23 @@
 		}
 
 		&__intro-inline {
-			padding-bottom: 16px;
-			border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+			margin-top: 12px;
 
 			@media (width >= 1100px) {
 				display: none;
 			}
 		}
 
-		&__intro {
+		&__welcome,
+		&__disclaimer {
 			display: grid;
 			gap: 10px;
 			justify-items: start;
+		}
+
+		&__welcome {
+			padding-bottom: 16px;
+			border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
 		}
 
 		&__para {

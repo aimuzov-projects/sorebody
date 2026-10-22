@@ -1,6 +1,6 @@
 <!--
-	Ответ чата на один вопрос: тревожные признаки из инструмента -- карточками, а не пересказом
-	модели, потом её текст и статьи
+	Ответ чата на один вопрос: реплика модели, под ней свёрнутый список тревожных признаков из
+	инструмента -- подходящие к описанию модель называет сама, полный список под рукой -- и статьи
 -->
 <script lang="ts">
 	import { FileText, Siren } from 'lucide-static'
@@ -12,8 +12,6 @@
 	let { turn }: { turn: ChatTurn } = $props()
 
 	const alarms = $derived(mergeAlarms(turn.flags))
-	const urgent = $derived(alarms.filter((a) => a.urgency !== 'soon'))
-	const later = $derived(alarms.filter((a) => a.urgency === 'soon'))
 
 	const external = (href: string) => new URL(href).origin !== location.origin
 </script>
@@ -33,31 +31,6 @@
 
 <p class="answer__question">{turn.question}</p>
 <div class="answer">
-	{#if urgent.length}
-		<ul class="answer__alarms" aria-label="Когда сразу к врачу">
-			{#each urgent as alarm (alarm.text)}
-				<li class="answer__alarm answer__alarm--{alarm.urgency}">
-					<span class="answer__alarm-action"
-						><span class="answer__icon" aria-hidden="true">{@html Siren}</span>{CHAT_URGENCY[
-							alarm.urgency
-						]}</span
-					>
-					<span>{alarm.text}</span>
-				</li>
-			{/each}
-		</ul>
-	{/if}
-	{#if later.length}
-		<details class="answer__later">
-			<summary class="answer__later-toggle">{CHAT_URGENCY.soon}: ещё {later.length}</summary>
-			<ul class="answer__later-list">
-				{#each later as alarm (alarm.text)}
-					<li>{alarm.text}</li>
-				{/each}
-			</ul>
-		</details>
-	{/if}
-
 	{#if turn.text}
 		<div class="answer__text">
 			{#each chatMarkdown(turn.text) as block, b (b)}
@@ -76,6 +49,24 @@
 		</div>
 	{:else if turn.pending}
 		<p class="answer__status" role="status">{turn.step ? CHAT_STEPS[turn.step] : 'Думаю…'}</p>
+	{/if}
+
+	{#if alarms.length && !turn.pending}
+		<details class="answer__alarms">
+			<summary class="answer__alarms-toggle"
+				><span class="answer__icon" aria-hidden="true">{@html Siren}</span>Когда сразу к врачу · {alarms.length}</summary
+			>
+			<ul class="answer__alarms-list">
+				{#each alarms as alarm (alarm.text)}
+					<li class="answer__alarm">
+						<span class="answer__alarm-action answer__alarm-action--{alarm.urgency}"
+							>{CHAT_URGENCY[alarm.urgency]}</span
+						>
+						{alarm.text}
+					</li>
+				{/each}
+			</ul>
+		</details>
 	{/if}
 
 	{#if turn.cards.length && !turn.pending}
@@ -126,7 +117,6 @@
 			}
 		}
 
-		&__alarms,
 		&__cards {
 			display: grid;
 			gap: 6px;
@@ -135,41 +125,44 @@
 			list-style: none;
 		}
 
-		&__alarm {
-			display: grid;
-			gap: 2px;
-			padding: 10px 12px;
-			border-left: 3px solid var(--danger);
-			border-radius: 10px;
+		&__alarms {
+			border-radius: 12px;
 			font-size: 15px;
-			background: color-mix(in srgb, var(--fg) 5%, transparent);
-
-			&--call {
-				background: color-mix(in srgb, var(--danger) 14%, transparent);
-			}
+			background: color-mix(in srgb, var(--fg) 4%, transparent);
 		}
 
-		&__alarm-action {
-			display: inline-flex;
-			gap: 6px;
+		&__alarms-toggle {
+			cursor: pointer;
+			display: flex;
+			gap: 8px;
 			align-items: center;
-			font-size: 13px;
+			padding: 10px 12px;
 			font-weight: 600;
 			color: var(--danger);
 		}
 
-		&__later {
-			font-size: 15px;
+		&__alarms-list {
+			display: grid;
+			gap: 8px;
+			margin: 0;
+			padding: 0 12px 12px;
+			list-style: none;
+		}
+
+		&__alarm {
+			display: grid;
+			gap: 2px;
+		}
+
+		&__alarm-action {
+			font-size: 13px;
+			font-weight: 600;
 			color: var(--muted);
-		}
 
-		&__later-toggle {
-			cursor: pointer;
-		}
-
-		&__later-list {
-			margin: 6px 0 0;
-			padding-left: 18px;
+			&--call,
+			&--today {
+				color: var(--danger);
+			}
 		}
 
 		&__text {

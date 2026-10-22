@@ -93,13 +93,17 @@ test('строка внизу шириной с колонку текста, ф�
 	await input(page).fill('хлопнуло в колене')
 	await page.keyboard.press('Enter')
 
-	const alarms = feed(page).getByRole('list', { name: 'Когда сразу к врачу' })
-
-	await expect(alarms).toContainText('Скорая 103 или 112')
-	await expect(alarms).toContainText('Сегодня в травмпункт')
-	await expect(alarms).not.toContainText('Болит ночью')
-	await expect(feed(page).locator('.answer__later')).toContainText('ещё 1')
+	// Сначала реплика модели; признаки из инструмента -- свёрнутым списком под ней, самые срочные первыми
 	await expect(feed(page).locator('.answer__text strong')).toHaveText('Сегодня в травмпункт.')
+
+	const alarms = feed(page).locator('.answer__alarms')
+
+	await expect(alarms.locator('summary')).toHaveText('Когда сразу к врачу · 3')
+	await expect(alarms.getByText('Стопа холодная и бледная')).toBeHidden()
+
+	await alarms.locator('summary').click()
+	await expect(alarms.locator('.answer__alarm').first()).toContainText('Скорая 103 или 112')
+	await expect(alarms.locator('.answer__alarm').last()).toContainText('Болит ночью')
 
 	const card = feed(page).getByRole('list', { name: 'Статьи' }).getByRole('link')
 
@@ -127,14 +131,23 @@ test('шапка с «Назад», пояснение слева, нажати�
 	await page.goto(ARTICLE)
 	await input(page).click()
 
-	// На широком экране пояснение -- в сайдбаре на месте оглавления, слева от колонки ответа
-	const aside = page.getByRole('complementary', { name: 'Как это работает' })
+	// На широком экране слева, на месте оглавления, -- дисклеймер; что умеет и примеры -- справа, в ленте
+	const aside = page.getByRole('complementary', { name: 'Важно' })
 
-	await expect(aside).toContainText('Ассистент сначала проверит тревожные признаки')
+	await expect(aside).toContainText('Это справка, а не диагноз')
+	await expect(aside).not.toContainText('Ассистент сначала проверит')
 	expect((await aside.boundingBox())!.x).toBeLessThan((await page.locator('.dock__feed').boundingBox())!.x)
 
-	await aside.getByRole('button', { name: 'К какому врачу идти?' }).click()
+	await feed(page).getByRole('button', { name: 'К какому врачу идти?' }).click()
 	await expect.poll(() => posts.length).toBe(1)
+	await expect(feed(page).getByRole('list', { name: 'Примеры вопросов' })).toBeHidden()
+
+	// Esc с фокусом не в поле сворачивает чат, а не уводит со статьи, как "Назад"
+	await feed(page).locator('.answer__alarms summary').focus()
+	await page.keyboard.press('Escape')
+	await expect(feed(page)).toBeHidden()
+	await expect(page).toHaveURL(/\/crossfit\/acl-tear\//)
+	await input(page).click()
 
 	await page.mouse.click(1240, 400)
 	await expect(feed(page)).toBeVisible()

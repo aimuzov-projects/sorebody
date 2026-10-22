@@ -79,6 +79,8 @@ export async function chatTurn({
 
 	let calls = 0
 	let alarmed = false
+	// Найденные статьи: под ответом показываем только те, на которые модель сослалась
+	let found: Extract<ToolEvent, { type: 'cards' }>['cards'] = []
 
 	// Запас сверх потолка вызовов: ответ после отказа в вызове и напоминание
 	for (let step = 0; step < limits.toolCalls + 3; step++) {
@@ -112,12 +114,14 @@ export async function chatTurn({
 
 				const { content, event } = over ? { content: TOOL_LIMIT } : tools.run(name, args)
 
-				if (event) {
-					if (event.type === 'alarms') session.flagged = alarmed = true
-
-					if (event.type === 'cards') session.searched = true
-
+				if (event?.type === 'alarms') {
+					session.flagged = alarmed = true
 					emit(event)
+				}
+
+				if (event?.type === 'cards') {
+					session.searched = true
+					found = [...found, ...event.cards.filter((c) => !found.some((f) => f.slug === c.slug))]
 				}
 
 				session.messages.push({ role: 'tool', tool_call_id: call.id, content })
@@ -130,14 +134,13 @@ export async function chatTurn({
 
 		const text = reply.content?.trim()
 		const known = new Set(session.messages.flatMap((m) => (m.role === 'tool' ? urlsIn(m.content) : [])))
+		const answer =
+			text && finish_reason !== 'content_filter' ? keepKnownLinks(text, { site: tools.site, known }) : FALLBACK
+		const cited = found.filter((card) => answer.includes(`/${card.slug}/`))
 
-		emit({
-			type: 'text',
-			text:
-				text && finish_reason !== 'content_filter'
-					? keepKnownLinks(text, { site: tools.site, known })
-					: FALLBACK,
-		})
+		if (cited.length) emit({ type: 'cards', cards: cited })
+
+		emit({ type: 'text', text: answer })
 
 		return
 	}

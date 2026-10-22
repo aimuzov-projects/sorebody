@@ -13,18 +13,18 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # Chromium и его системные библиотеки уже в образе Playwright: без apt прогон
+    # не зависит от зеркала Ubuntu, которое однажды отдавало пакеты 9 минут.
+    # Тег образа совпадает с @playwright/test, Renovate обновляет их одним PR.
+    container: mcr.microsoft.com/playwright:v1.64.1-noble
     timeout-minutes: 15
     steps:
       - uses: aimuzov-projects/infra-site-kit/check@v2
       # knip: неиспользуемые файлы, экспорты и зависимости. Исключения в knip.json.
       - run: npm run knip
-      # e2e из infra-site-kit: сборка в Chromium. Браузер кэшируется по версии Playwright,
-      # его системные библиотеки ставятся из apt каждый прогон.
-      - id: playwright
-        run: echo "version=$(npm ls @playwright/test --json | jq -r '.dependencies["@playwright/test"].version')" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - run: npx playwright install --with-deps chromium
+      # e2e из infra-site-kit: сборка в Chromium. Разошлись образ и @playwright/test:
+      # в образе нет браузера нужной ревизии, падаем сразу, а не после сборки сайта.
+      - run: |
+          browser=$(node -p "require('@playwright/test').chromium.executablePath()")
+          test -x "$browser" || { echo "::error::Нет $browser: подними тег образа Playwright до версии @playwright/test"; exit 1; }
       - run: npm run test:e2e

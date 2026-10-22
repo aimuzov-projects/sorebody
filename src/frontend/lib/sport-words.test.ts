@@ -91,6 +91,33 @@ test('catches basketball gear and slang, but not the anatomy with the same roots
 		assert.deepEqual(sportWordsIn(text), [], text)
 })
 
+test('catches hiking gear and the trail, but not gait, troponin or the tropics', () => {
+	for (const text of [
+		'в походе',
+		'походный темп',
+		'тяжёлый рюкзак',
+		'треккинговые палки',
+		'на трекинге',
+		'хайкинг',
+		'хайкеры',
+		'по тропе',
+		'горная тропинка',
+		'спуск с перевала',
+	])
+		assert.notDeepEqual(sportWordsIn(text), [], text)
+
+	for (const text of [
+		'изменилась походка',
+		'подход к лечению',
+		'тропонин в крови',
+		'тропический климат',
+		'изотропный',
+		'туристы в исследовании',
+		'переваливаться с ноги на ногу',
+	])
+		assert.deepEqual(sportWordsIn(text), [], text)
+})
+
 test('lets medical and everyday words through', () => {
 	for (const text of [
 		'толчок стопой',

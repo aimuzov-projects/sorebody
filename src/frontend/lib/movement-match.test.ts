@@ -98,3 +98,24 @@ test('basketball: the forms the lenses use, and a pass without a rival gets no i
 	assert.equal(movementIn('броски с места и передачи без соперника', 'basketball'), undefined)
 	assert.equal(movementIn('подбора обуви по размеру', 'basketball'), undefined)
 })
+
+test('hiking: the icon is the situation on the trail, plain walking gets none', () => {
+	assert.equal(movementIn('долгого спуска с перевала', 'hiking'), 'descent')
+	assert.equal(movementIn('крутого подъёма без остановок', 'hiking'), 'ascent')
+	assert.equal(movementIn('рюкзака на 20 кг', 'hiking'), 'backpack')
+	assert.equal(movementIn('камней и осыпи', 'hiking'), 'rocky-terrain')
+	assert.equal(movementIn('после падения на тропе', 'hiking'), 'fall')
+	assert.equal(movementIn('многодневного маршрута', 'hiking'), 'multi-day')
+	assert.equal(movementIn('ночёвки выше 3000 м без акклиматизации', 'hiking'), 'altitude')
+	assert.equal(movementIn('идти в жару в середине дня', 'hiking'), 'heat')
+	assert.equal(movementIn('промокнуть под дождём на ветру', 'hiking'), 'cold')
+	assert.equal(movementIn('новых ботинок в первый же день', 'hiking'), 'new-boots')
+	assert.equal(movementIn('спокойной ходьбы по ровному', 'hiking'), undefined)
+})
+
+test('hiking: exercises and household words with the same roots get no situation icon', () => {
+	assert.equal(movementIn('подъёмы на носки с весом', 'hiking'), undefined)
+	assert.equal(movementIn('высота ступеньки', 'hiking'), undefined)
+	assert.equal(movementIn('жаропонижающих', 'hiking'), undefined)
+	assert.equal(movementIn('дневника боли', 'hiking'), undefined)
+})

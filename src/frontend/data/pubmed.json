@@ -8,6 +8,15 @@
 		"medline": true,
 		"doi": "10.1177/036354657700500106"
 	},
+	"1483800": {
+		"authors": "Shlim DR, et al",
+		"title": "The causes of death among trekkers in Nepal.",
+		"journal": "Int J Sports Med",
+		"year": "1992",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1055/s-2007-1024601"
+	},
 	"7786216": {
 		"authors": "Zagelbaum BM, et al",
 		"title": "The National Basketball Association eye injury study.",
@@ -16,6 +25,14 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
 		"medline": true,
 		"doi": "10.1001/archopht.1995.01100060075035"
+	},
+	"8130008": {
+		"authors": "Kuster M, et al",
+		"title": "[Stress on the femoropatellar joint in downhill walking--a biomechanical study].",
+		"journal": "Z Unfallchir Versicherungsmed",
+		"year": "1993",
+		"types": ["English Abstract", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true
 	},
 	"8289145": {
 		"authors": "Olson WR, et al",
@@ -70,6 +87,24 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1007/s001670050160"
+	},
+	"10530529": {
+		"authors": "Backer HD, et al",
+		"title": "Exertional heat illness and hyponatremia in hikers.",
+		"journal": "Am J Emerg Med",
+		"year": "1999",
+		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1016/s0735-6757(99)90191-2"
+	},
+	"10622357": {
+		"authors": "Schwameder H, et al",
+		"title": "Knee joint forces during downhill walking with hiking poles.",
+		"journal": "J Sports Sci",
+		"year": "1999",
+		"types": ["Comparative Study", "Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1080/026404199365362"
 	},
 	"10751000": {
 		"authors": "Francisco AC, et al",
@@ -163,6 +198,15 @@
 		"doi": "10.1002/14651858.CD001785",
 		"pmcid": "PMC8407507"
 	},
+	"12681456": {
+		"authors": "Boulware DR, et al",
+		"title": "Medical risks of wilderness hiking.",
+		"journal": "Am J Med",
+		"year": "2003",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/s0002-9343(02)01494-8"
+	},
 	"12688829": {
 		"authors": "Petrigliano FA, et al",
 		"title": "Orbital fractures in sport: a review.",
@@ -181,6 +225,16 @@
 		"medline": true,
 		"doi": "10.1001/archopht.121.5.687"
 	},
+	"12748155": {
+		"authors": "Hearns S",
+		"title": "The Scottish mountain rescue casualty study.",
+		"journal": "Emerg Med J",
+		"year": "2003",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1136/emj.20.3.281",
+		"pmcid": "PMC1726101"
+	},
 	"12907487": {
 		"authors": "Pengel LH, et al",
 		"title": "Acute low back pain: systematic review of its prognosis.",
@@ -190,6 +244,24 @@
 		"medline": true,
 		"doi": "10.1136/bmj.327.7410.323",
 		"pmcid": "PMC169642"
+	},
+	"14518626": {
+		"authors": "Boulware DR",
+		"title": "Backpacking-induced paresthesias.",
+		"journal": "Wilderness Environ Med",
+		"year": "2003",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1580/1080-6032(2003)14[161:bp]2.0.co;2"
+	},
+	"14518629": {
+		"authors": "Leemon D, et al",
+		"title": "Wilderness injury, illness, and evacuation: National Outdoor Leadership School's incident profiles, 1999-2002.",
+		"journal": "Wilderness Environ Med",
+		"year": "2003",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1580/1080-6032(2003)14[174:wiiaen]2.0.co;2"
 	},
 	"14736763": {
 		"authors": "Vinger PF, et al",
@@ -201,6 +273,15 @@
 		"doi": "10.1136/bjo.2003.026229",
 		"pmcid": "PMC1771996"
 	},
+	"14964502": {
+		"authors": "Knapik JJ, et al",
+		"title": "Soldier load carriage: historical, physiological, biomechanical, and medical aspects.",
+		"journal": "Mil Med",
+		"year": "2004",
+		"types": ["Historical Article", "Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.7205/milmed.169.1.45"
+	},
 	"14966669": {
 		"authors": "Fankhauser F, et al",
 		"title": "The unreamed intramedullary tibial nail in tibial shaft fractures of soccer players: a prospective study.",
@@ -209,6 +290,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1007/s00167-003-0471-7"
+	},
+	"15040501": {
+		"authors": "Ela GK",
+		"title": "Epidemiology of wilderness search and rescue in New Hampshire, 1999-2001.",
+		"journal": "Wilderness Environ Med",
+		"year": "2004",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1580/1080-6032(2004)015[0011:eowsar]2.0.co;2"
 	},
 	"15508543": {
 		"authors": "Kucik CJ, et al",
@@ -264,6 +354,23 @@
 		"medline": true,
 		"doi": "10.1177/0363546505274714"
 	},
+	"16366199": {
+		"authors": "Stephens BD, et al",
+		"title": "Recreational injuries in Washington state national parks.",
+		"journal": "Wilderness Environ Med",
+		"year": "2005",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1580/1080-6032(2005)16[192:riiwsn]2.0.co;2"
+	},
+	"16856361": {
+		"authors": "Vardy J, et al",
+		"title": "Acute mountain sickness and ascent rates in trekkers above 2500 m in the Nepali Himalaya.",
+		"journal": "Aviat Space Environ Med",
+		"year": "2006",
+		"types": ["Journal Article"],
+		"medline": true
+	},
 	"16882889": {
 		"authors": "Bahr R, et al",
 		"title": "Surgical treatment compared with eccentric training for patellar tendinopathy (Jumper's Knee). A randomized, controlled trial.",
@@ -277,6 +384,15 @@
 		],
 		"medline": true,
 		"doi": "10.2106/JBJS.E.01181"
+	},
+	"16906084": {
+		"authors": "Mäkelä JP, et al",
+		"title": "Brachial plexus lesions after backpack carriage in young adults.",
+		"journal": "Clin Orthop Relat Res",
+		"year": "2006",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1097/01.blo.0000229338.29277.29"
 	},
 	"16924193": {
 		"authors": "Tanaka Y, et al",
@@ -319,6 +435,15 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1097/01.jsa.0000212307.54947.e4"
+	},
+	"17218900": {
+		"authors": "Bohne M, et al",
+		"title": "Effects of hiking downhill using trekking poles while carrying external loads.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2007",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1249/01.mss.0000240328.31276.fc"
 	},
 	"17307888": {
 		"authors": "Silbernagel KG, et al",
@@ -398,6 +523,15 @@
 		"medline": true,
 		"doi": "10.1016/j.apmr.2007.04.014",
 		"pmcid": "PMC2907104"
+	},
+	"17896848": {
+		"authors": "Johnson RM, et al",
+		"title": "Injuries sustained at Yellowstone National Park requiring emergency medical system activation.",
+		"journal": "Wilderness Environ Med",
+		"year": "2007",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1580/06-WEME-OR-046R1.1"
 	},
 	"18059987": {
 		"authors": "Casa DJ, et al",
@@ -481,6 +615,24 @@
 		"doi": "10.1136/bmj.b2684",
 		"pmcid": "PMC2714677"
 	},
+	"19737037": {
+		"authors": "Anderson LS Jr, et al",
+		"title": "The impact of footwear and packweight on injury and illness among long-distance hikers.",
+		"journal": "Wilderness Environ Med",
+		"year": "2009",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1580/08-WEME-OR-196R2.1"
+	},
+	"19775213": {
+		"authors": "Mairer K, et al",
+		"title": "Prevalence of acute mountain sickness in the Eastern Alps.",
+		"journal": "High Alt Med Biol",
+		"year": "2009",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1089/ham.2008.1091"
+	},
 	"19945984": {
 		"authors": "Werner J, et al",
 		"title": "UEFA injury study: a prospective study of hip and groin injuries in professional football over seven consecutive seasons.",
@@ -515,6 +667,15 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't", "Review"],
 		"medline": true,
 		"doi": "10.2106/JBJS.I.01229"
+	},
+	"20473229": {
+		"authors": "Howatson G, et al",
+		"title": "Trekking poles reduce exercise-induced muscle injury during mountain walking.",
+		"journal": "Med Sci Sports Exerc",
+		"year": "2011",
+		"types": ["Journal Article", "Randomized Controlled Trial", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1249/MSS.0b013e3181e4b649"
 	},
 	"20515437": {
 		"authors": "Povlsen B, et al",
@@ -586,6 +747,15 @@
 		"medline": true,
 		"doi": "10.1111/j.1600-0838.2010.01171.x"
 	},
+	"20919888": {
+		"authors": "Jackson SJ, et al",
+		"title": "Incidence and predictors of acute mountain sickness among trekkers on Mount Kilimanjaro.",
+		"journal": "High Alt Med Biol",
+		"year": "2010",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1089/ham.2010.1003"
+	},
 	"21063493": {
 		"authors": "English S, et al",
 		"title": "Posterior knee pain.",
@@ -604,6 +774,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546510384789"
 	},
+	"21248395": {
+		"authors": "Golriz S, et al",
+		"title": "Can load carriage system weight, design and placement affect pain and discomfort? A systematic review.",
+		"journal": "J Back Musculoskelet Rehabil",
+		"year": "2011",
+		"types": ["Journal Article", "Systematic Review"],
+		"medline": true,
+		"doi": "10.3233/BMR-2011-0275"
+	},
 	"21335353": {
 		"authors": "Ekstrand J, et al",
 		"title": "Epidemiology of muscle injuries in professional football (soccer).",
@@ -612,6 +791,25 @@
 		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
 		"medline": true,
 		"doi": "10.1177/0363546510395879"
+	},
+	"21377112": {
+		"authors": "Hamonko MT, et al",
+		"title": "Injuries related to hiking with a pack during National Outdoor Leadership School courses: a risk factor analysis.",
+		"journal": "Wilderness Environ Med",
+		"year": "2011",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2010.09.010"
+	},
+	"21429232": {
+		"authors": "Nylund T, et al",
+		"title": "Recovery of brachial plexus lesions resulting from heavy backpack use: a follow-up case series.",
+		"journal": "BMC Musculoskelet Disord",
+		"year": "2011",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1186/1471-2474-12-62",
+		"pmcid": "PMC3076297"
 	},
 	"21435164": {
 		"authors": "Patijn J, et al",
@@ -837,6 +1035,15 @@
 		"doi": "10.1002/14651858.CD004159.pub3",
 		"pmcid": "PMC7197425"
 	},
+	"23270445": {
+		"authors": "McIntosh SE, et al",
+		"title": "Mountaineering medical events and trauma on Denali, 1992-2011.",
+		"journal": "High Alt Med Biol",
+		"year": "2012",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1089/ham.2012.1027"
+	},
 	"23348605": {
 		"authors": "Nilsson M, et al",
 		"title": "Head and neck injuries in professional soccer.",
@@ -988,6 +1195,16 @@
 		"doi": "10.1002/14651858.CD009020.pub2",
 		"pmcid": "PMC6464715"
 	},
+	"24119571": {
+		"authors": "Noe RS, et al",
+		"title": "Exertional heat-related illnesses at the Grand Canyon National Park, 2004-2009.",
+		"journal": "Wilderness Environ Med",
+		"year": "2013",
+		"types": ["Journal Article", "Research Support, U.S. Gov't, P.H.S."],
+		"medline": true,
+		"doi": "10.1016/j.wem.2013.06.008",
+		"pmcid": "PMC4910089"
+	},
 	"24149096": {
 		"authors": "Sheen AJ, et al",
 		"title": "'Treatment of the sportsman's groin': British Hernia Society's 2014 position statement based on the Manchester Consensus Conference.",
@@ -1094,6 +1311,15 @@
 		"medline": true,
 		"doi": "10.3109/17453674.2014.920991",
 		"pmcid": "PMC4062801"
+	},
+	"24864065": {
+		"authors": "McDevitt M, et al",
+		"title": "Risk determinants of acute mountain sickness in trekkers in the Nepali Himalaya: a 24-year follow-up.",
+		"journal": "Wilderness Environ Med",
+		"year": "2014",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2013.12.027"
 	},
 	"24923269": {
 		"authors": "Nielsen RO, et al",
@@ -1312,6 +1538,15 @@
 		"medline": true,
 		"doi": "10.1177/0363546515574057"
 	},
+	"25818550": {
+		"authors": "Kim KE, et al",
+		"title": "Incidence and risk factors for backpack palsy in young Korean soldiers.",
+		"journal": "J R Army Med Corps",
+		"year": "2016",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1136/jramc-2014-000403"
+	},
 	"25841163": {
 		"authors": "Casartelli NC, et al",
 		"title": "Return to sport after hip surgery for femoroacetabular impingement: a systematic review.",
@@ -1368,6 +1603,20 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1097/JSA.0000000000000065"
+	},
+	"25935312": {
+		"authors": "Myers TM, et al",
+		"title": "Hiker Fatality From Severe Hyponatremia in Grand Canyon National Park.",
+		"journal": "Wilderness Environ Med",
+		"year": "2015",
+		"types": [
+			"Case Reports",
+			"Journal Article",
+			"Research Support, Non-U.S. Gov't",
+			"Research Support, U.S. Gov't, Non-P.H.S."
+		],
+		"medline": true,
+		"doi": "10.1016/j.wem.2015.03.001"
 	},
 	"25969366": {
 		"authors": "Grimaldi A, et al",
@@ -1501,6 +1750,15 @@
 		"types": ["Journal Article", "Review"],
 		"doi": "10.1155/2013/367169",
 		"pmcid": "PMC4590904"
+	},
+	"26476846": {
+		"authors": "Welter CR, et al",
+		"title": "Epidemiology of Search and Rescue in Baxter State Park: Dangers of Descent and Fatigue.",
+		"journal": "Wilderness Environ Med",
+		"year": "2015",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2015.08.003"
 	},
 	"26502412": {
 		"authors": "Taylor JB, et al",
@@ -1975,6 +2233,15 @@
 		"doi": "10.2106/JBJS.RVW.15.00116",
 		"pmcid": "PMC5865503"
 	},
+	"27990219": {
+		"authors": "Revord LP, et al",
+		"title": "Acute effects of walking with Nordic poles in persons with mild to moderate low-back pain.",
+		"journal": "Int J Exerc Sci",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"doi": "10.70252/CFHC5201",
+		"pmcid": "PMC5154717"
+	},
 	"28087568": {
 		"authors": "Thorborg K, et al",
 		"title": "Effect of specific exercise-based football injury prevention programmes on the overall injury rate in football: a systematic review and meta-analysis of the FIFA 11 and 11+ programmes.",
@@ -1983,6 +2250,15 @@
 		"types": ["Journal Article", "Meta-Analysis", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2016-097066"
+	},
+	"28088822": {
+		"authors": "Knapik JJ, et al",
+		"title": "Load Carriage-Related Paresthesias: Part 1: Rucksack Palsy and Digitalgia Paresthetica.",
+		"journal": "J Spec Oper Med",
+		"year": "2016",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.55460/7HEK-VMKV"
 	},
 	"28122541": {
 		"authors": "Gismervik SØ, et al",
@@ -2002,6 +2278,16 @@
 		"types": ["Journal Article", "Review"],
 		"medline": true,
 		"doi": "10.1177/0363546516676062"
+	},
+	"28143879": {
+		"authors": "Luks AM, et al",
+		"title": "Acute high-altitude sickness.",
+		"journal": "Eur Respir Rev",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.1183/16000617.0096-2016",
+		"pmcid": "PMC9488514"
 	},
 	"28179260": {
 		"authors": "Winters M, et al",
@@ -2066,6 +2352,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.1177/2325967117690002",
 		"pmcid": "PMC5317012"
+	},
+	"28285487": {
+		"authors": "Knapik JJ, et al",
+		"title": "Load Carriage-Related Paresthesias (Part 2): Meralgia Paresthetica.",
+		"journal": "J Spec Oper Med",
+		"year": "2017",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.55460/6KRP-71DF"
 	},
 	"28314419": {
 		"authors": "Micieli JA, et al",
@@ -2260,6 +2555,14 @@
 		"medline": true,
 		"doi": "10.1177/0363546517732526"
 	},
+	"29077294": {
+		"authors": "Sierra Quintana E, et al",
+		"title": "[Nontraumatic medical emergencies in mountain rescues].",
+		"journal": "Emergencias",
+		"year": "2017",
+		"types": ["Journal Article", "Observational Study"],
+		"medline": true
+	},
 	"29106811": {
 		"authors": "Khan M, et al",
 		"title": "Epidemiology and Impact on Performance of Lower Extremity Stress Injuries in Professional Basketball Players.",
@@ -2278,6 +2581,15 @@
 		"types": ["Journal Article", "Systematic Review"],
 		"medline": true,
 		"doi": "10.1016/j.jhsa.2017.10.004"
+	},
+	"29259815": {
+		"authors": "Faulhaber M, et al",
+		"title": "Fall-related accidents among hikers in the Austrian Alps: a 9-year retrospective study.",
+		"journal": "BMJ Open Sport Exerc Med",
+		"year": "2017",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjsem-2017-000304",
+		"pmcid": "PMC5728251"
 	},
 	"29269487": {
 		"authors": "Lubberts B, et al",
@@ -2458,6 +2770,15 @@
 		"doi": "10.1177/2325967118771016",
 		"pmcid": "PMC5954586"
 	},
+	"29804621": {
+		"authors": "Spano SJ, et al",
+		"title": "The Epidemiology and Medical Morbidity of Long-Distance Backpackers on the John Muir Trail in the Sierra Nevada.",
+		"journal": "Wilderness Environ Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2018.02.006"
+	},
 	"29869890": {
 		"authors": "Riff AJ, et al",
 		"title": "High Rate of Return to High-Intensity Interval Training After Arthroscopic Management of Femoroacetabular Impingement Syndrome.",
@@ -2538,6 +2859,15 @@
 		"medline": true,
 		"doi": "10.1136/bjsports-2018-099246"
 	},
+	"30067104": {
+		"authors": "Ströhle M, et al",
+		"title": "Frostbite Injuries in the Austrian Alps: A Retrospective 11-Year National Registry Study.",
+		"journal": "High Alt Med Biol",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1089/ham.2018.0060"
+	},
 	"30131332": {
 		"authors": "Lauersen JB, et al",
 		"title": "Strength training as superior, dose-dependent and safe prevention of acute and overuse sports injuries: a systematic review, qualitative analysis and meta-analysis.",
@@ -2583,6 +2913,15 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD005654.pub4",
 		"pmcid": "PMC6516955"
+	},
+	"30309827": {
+		"authors": "Wells FC, et al",
+		"title": "Medical Incidents and Evacuations on Wilderness Expeditions for the Northwest Outward Bound School.",
+		"journal": "Wilderness Environ Med",
+		"year": "2018",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2018.07.004"
 	},
 	"30312310": {
 		"authors": "Mulvad B, et al",
@@ -3010,6 +3349,16 @@
 		"medline": true,
 		"doi": "10.1080/00325481.2019.1673582"
 	},
+	"31618960": {
+		"authors": "Gatterer H, et al",
+		"title": "Mortality in Different Mountain Sports Activities Primarily Practiced in the Summer Season-A Narrative Review.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2019",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.3390/ijerph16203920",
+		"pmcid": "PMC6843304"
+	},
 	"31652234": {
 		"authors": "Luetmer MT, et al",
 		"title": "Exertional Rhabdomyolysis: A Retrospective Population-based Study.",
@@ -3064,6 +3413,15 @@
 		"types": ["Journal Article"],
 		"medline": true,
 		"doi": "10.1136/bjsports-2019-100717"
+	},
+	"31740369": {
+		"authors": "Dow J, et al",
+		"title": "Wilderness Medical Society Clinical Practice Guidelines for the Out-of-Hospital Evaluation and Treatment of Accidental Hypothermia: 2019 Update.",
+		"journal": "Wilderness Environ Med",
+		"year": "2019",
+		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2019.10.002"
 	},
 	"31775556": {
 		"authors": "Saraceni N, et al",
@@ -3127,6 +3485,16 @@
 		"doi": "10.1186/s12891-019-2988-z",
 		"pmcid": "PMC6947988"
 	},
+	"31925878": {
+		"authors": "Dorhout Mees SM, et al",
+		"title": "Backpack palsy and other brachial plexus neuropathies in the military population.",
+		"journal": "J Peripher Nerv Syst",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1111/jns.12363",
+		"pmcid": "PMC7079037"
+	},
 	"32007452": {
 		"authors": "Doiron-Cadrin P, et al",
 		"title": "Shoulder Rotator Cuff Disorders: A Systematic Review of Clinical Practice Guidelines and Semantic Analyses of Recommendations.",
@@ -3144,6 +3512,16 @@
 		"types": ["Journal Article", "Practice Guideline"],
 		"medline": true,
 		"doi": "10.1016/j.wem.2019.11.003"
+	},
+	"32050553": {
+		"authors": "Faulhaber M, et al",
+		"title": "Characteristics of Victims of Fall-Related Accidents during Mountain Hiking.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2020",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.3390/ijerph17031115",
+		"pmcid": "PMC7036860"
 	},
 	"32100894": {
 		"authors": "Vedung F, et al",
@@ -3217,6 +3595,15 @@
 		"medline": true,
 		"doi": "10.1080/17461391.2020.1746837"
 	},
+	"32203854": {
+		"authors": "Zürcher S, et al",
+		"title": "Circumstances and causes of death of hikers at different altitudes: A retrospective analysis of hiking fatalities from 2003-2018.",
+		"journal": "Forensic Sci Int",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.forsciint.2020.110252"
+	},
 	"32253193": {
 		"authors": "Crossley KM, et al",
 		"title": "Making football safer for women: a systematic review and meta-analysis of injury prevention programmes in 11 773 female football (soccer) players.",
@@ -3260,6 +3647,15 @@
 		"journal": "",
 		"year": "2023",
 		"types": ["Study Guide"]
+	},
+	"32371147": {
+		"authors": "Chicharro-Luna E, et al",
+		"title": "Prevalence and risk factors associated with the formation of dermal lesions on the foot during hiking.",
+		"journal": "J Tissue Viability",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.jtv.2020.04.002"
 	},
 	"32376673": {
 		"authors": "Kemp JL, et al",
@@ -3537,6 +3933,15 @@
 		"medline": true,
 		"doi": "10.1007/s00167-020-06345-2"
 	},
+	"33160878": {
+		"authors": "Hong IT, et al",
+		"title": "Differences in patient and injury characteristics between sports- and non-sports related distal radius fractures.",
+		"journal": "Orthop Traumatol Surg Res",
+		"year": "2020",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.otsr.2020.06.021"
+	},
 	"33167534": {
 		"authors": "Filep EM, et al",
 		"title": "Exertional Heat Stroke, Modality Cooling Rate, and Survival Outcomes: A Systematic Review.",
@@ -3784,6 +4189,16 @@
 		"doi": "10.1177/1941738121991782",
 		"pmcid": "PMC8404721"
 	},
+	"33567725": {
+		"authors": "Niebauer J, et al",
+		"title": "Sudden Cardiac Death Risk in Downhill Skiers and Mountain Hikers and Specific Prevention Strategies.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.3390/ijerph18041621",
+		"pmcid": "PMC7915124"
+	},
 	"33606579": {
 		"authors": "Toledo R, et al",
 		"title": "Joint and muscle injuries in men and women CrossFit® training participants.",
@@ -3837,6 +4252,15 @@
 		"types": ["Journal Article", "Practice Guideline"],
 		"medline": true,
 		"doi": "10.1249/JSR.0000000000000822"
+	},
+	"33675869": {
+		"authors": "Musi ME, et al",
+		"title": "Clinical staging of accidental hypothermia: The Revised Swiss System: Recommendation of the International Commission for Mountain Emergency Medicine (ICAR MedCom).",
+		"journal": "Resuscitation",
+		"year": "2021",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1016/j.resuscitation.2021.02.038"
 	},
 	"33687926": {
 		"authors": "Reijman M, et al",
@@ -4016,6 +4440,15 @@
 		"medline": true,
 		"doi": "10.1136/jisakos-2020-000495"
 	},
+	"34020885": {
+		"authors": "Fortington L, et al",
+		"title": "Exertional heat fatalities in Australian sport and recreation.",
+		"journal": "J Sci Med Sport",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.jsams.2021.04.007"
+	},
 	"34050059": {
 		"authors": "Geiss Santos RC, et al",
 		"title": "Association Between Injury Mechanisms and Magnetic Resonance Imaging Findings in Rectus Femoris Injuries in 105 Professional Football Players.",
@@ -4135,6 +4568,15 @@
 		"doi": "10.4085/1062-6050-436-20",
 		"pmcid": "PMC8293890"
 	},
+	"34301477": {
+		"authors": "Chrusch A, et al",
+		"title": "Survey of Musculoskeletal Injuries, Prehike Conditioning, and On-Trail Injury Prevention Strategies Self-Reported by Long-Distance Hikers on the Appalachian Trail.",
+		"journal": "Wilderness Environ Med",
+		"year": "2021",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2021.04.004"
+	},
 	"34397403": {
 		"authors": "Landesa-Piñeiro L, et al",
 		"title": "Physiotherapy treatment of lateral epicondylitis: A systematic review.",
@@ -4198,6 +4640,16 @@
 		"medline": true,
 		"doi": "10.3390/ijerph18189480",
 		"pmcid": "PMC8470990"
+	},
+	"34574580": {
+		"authors": "Regli IB, et al",
+		"title": "Long-Term Sequelae of Frostbite-A Scoping Review.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2021",
+		"types": ["Journal Article", "Scoping Review"],
+		"medline": true,
+		"doi": "10.3390/ijerph18189655",
+		"pmcid": "PMC8465633"
 	},
 	"34591697": {
 		"authors": "Davey MS, et al",
@@ -4354,6 +4806,16 @@
 		"medline": true,
 		"doi": "10.2519/jospt.2022.10959"
 	},
+	"35010760": {
+		"authors": "Paal P, et al",
+		"title": "Accidental Hypothermia: 2021 Update.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2022",
+		"types": ["Journal Article", "Review"],
+		"medline": true,
+		"doi": "10.3390/ijerph19010501",
+		"pmcid": "PMC8744717"
+	},
 	"35022509": {
 		"authors": "Mayer-Suess L, et al",
 		"title": "Sex-differences in psychosocial sequelae after spontaneous cervical artery dissection.",
@@ -4420,6 +4882,25 @@
 		"medline": true,
 		"doi": "10.1186/s13047-021-00507-2",
 		"pmcid": "PMC8783477"
+	},
+	"35067448": {
+		"authors": "Stoltzfus KB, et al",
+		"title": "Factors Associated with Musculoskeletal Injuries While Hiking with a Backpack at Philmont Scout Ranch.",
+		"journal": "Wilderness Environ Med",
+		"year": "2022",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2021.11.010"
+	},
+	"35115353": {
+		"authors": "Oshiro K, et al",
+		"title": "Causes of death and characteristics of non-survivors rescued during recreational mountain activities in Japan between 2011 and 2015: a retrospective analysis.",
+		"journal": "BMJ Open",
+		"year": "2022",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1136/bmjopen-2021-053935",
+		"pmcid": "PMC8814748"
 	},
 	"35146029": {
 		"authors": "Forlenza EM, et al",
@@ -5104,6 +5585,15 @@
 		"doi": "10.3390/healthcare11081190",
 		"pmcid": "PMC10138073"
 	},
+	"37130771": {
+		"authors": "Zafren K, et al",
+		"title": "Prevention and Treatment of Nonfreezing Cold Injuries and Warm Water Immersion Tissue Injuries: A Supplement to the Wilderness Medical Society Clinical Practice Guidelines.",
+		"journal": "Wilderness Environ Med",
+		"year": "2023",
+		"types": ["Practice Guideline", "Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2023.02.006"
+	},
 	"37141425": {
 		"authors": "Tzeuton S, et al",
 		"title": "Outcomes and Patient Satisfaction of Delayed Distal Biceps Repairs without Graft Augmentation: A Systematic Review.",
@@ -5276,6 +5766,16 @@
 		"doi": "10.7759/cureus.41211",
 		"pmcid": "PMC10387331"
 	},
+	"37556450": {
+		"authors": "Buttke DE, et al",
+		"title": "Predicting climate-change induced heat-related illness risk in Grand Canyon National Park visitors.",
+		"journal": "PLoS One",
+		"year": "2023",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1371/journal.pone.0288812",
+		"pmcid": "PMC10411749"
+	},
 	"37561820": {
 		"authors": "Kinsella R, et al",
 		"title": "Diagnostic Accuracy of Clinical Tests for Assessing Greater Trochanteric Pain Syndrome: A Systematic Review With Meta-analysis.",
@@ -5299,6 +5799,16 @@
 		"medline": true,
 		"doi": "10.1002/14651858.CD014461.pub2",
 		"pmcid": "PMC10448864"
+	},
+	"37647303": {
+		"authors": "Braybrook PJ, et al",
+		"title": "Types and anatomical locations of injuries among mountain bikers and hikers: A systematic review.",
+		"journal": "PLoS One",
+		"year": "2023",
+		"types": ["Systematic Review", "Journal Article"],
+		"medline": true,
+		"doi": "10.1371/journal.pone.0285614",
+		"pmcid": "PMC10468092"
 	},
 	"37648410": {
 		"authors": "Gill VS, et al",
@@ -5418,6 +5928,15 @@
 		"types": ["Systematic Review", "Journal Article"],
 		"medline": true,
 		"doi": "10.1016/j.apmr.2023.09.022"
+	},
+	"37833187": {
+		"authors": "Luks AM, et al",
+		"title": "Wilderness Medical Society Clinical Practice Guidelines for the Prevention, Diagnosis, and Treatment of Acute Altitude Illness: 2024 Update.",
+		"journal": "Wilderness Environ Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1016/j.wem.2023.05.013"
 	},
 	"37834937": {
 		"authors": "Gurau TV, et al",
@@ -5642,6 +6161,15 @@
 		"medline": true,
 		"doi": "10.23736/S0022-4707.24.15071-2"
 	},
+	"38454756": {
+		"authors": "Owen MM, et al",
+		"title": "Musculoskeletal injuries during trail sports: Sex- and age-specific analyses over 20 years from a national injury database.",
+		"journal": "Wilderness Environ Med",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/10806032241234029"
+	},
 	"38497039": {
 		"authors": "Zhong Z, et al",
 		"title": "Effect of scapular stabilization exercises on subacromial pain (impingement) syndrome: a systematic review and meta-analysis of randomized controlled trials.",
@@ -5704,6 +6232,33 @@
 		"types": ["Journal Article"],
 		"doi": "10.1136/bmjsem-2023-001766",
 		"pmcid": "PMC10982772"
+	},
+	"38577729": {
+		"authors": "McIntosh SE, et al",
+		"title": "Wilderness Medical Society Clinical Practice Guidelines for the Prevention and Treatment of Frostbite: 2024 Update.",
+		"journal": "Wilderness Environ Med",
+		"year": "2024",
+		"types": ["Journal Article", "Practice Guideline"],
+		"medline": true,
+		"doi": "10.1177/10806032231222359"
+	},
+	"38617419": {
+		"authors": "Rausch L, et al",
+		"title": "Sex-specific analysis of hiking accidents in the Austrian Alps: a follow-up from 2015 to 2021.",
+		"journal": "AIMS Public Health",
+		"year": "2024",
+		"types": ["Journal Article"],
+		"doi": "10.3934/publichealth.2024008",
+		"pmcid": "PMC11007419"
+	},
+	"38634125": {
+		"authors": "Braybrook PJ, et al",
+		"title": "Epidemiology and Severity of Medical Events for Mountain Bikers and Hikers Transported by Ambulance in Western Australia, 2015 to 2020.",
+		"journal": "Wilderness Environ Med",
+		"year": "2024",
+		"types": ["Journal Article", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.1177/10806032241245966"
 	},
 	"38641923": {
 		"authors": "de Lima LGH, et al",
@@ -6088,6 +6643,16 @@
 		"medline": true,
 		"doi": "10.1007/s00586-025-08732-0"
 	},
+	"40003509": {
+		"authors": "Omidi A, et al",
+		"title": "What Is New in Altitude- and Cold-Related Illnesses of Travel: Appraisal and Summary of the Updated Guidelines from the Wilderness Medical Society.",
+		"journal": "Int J Environ Res Public Health",
+		"year": "2025",
+		"types": ["Journal Article", "Review", "Research Support, Non-U.S. Gov't"],
+		"medline": true,
+		"doi": "10.3390/ijerph22020284",
+		"pmcid": "PMC11855094"
+	},
 	"40016533": {
 		"authors": "Finerty JT, et al",
 		"title": "Diagnostic criteria utilized for selection of patients for meralgia paresthetica surgery: a systemic review.",
@@ -6415,6 +6980,15 @@
 		"doi": "10.3390/jcm14155552",
 		"pmcid": "PMC12347289"
 	},
+	"40822867": {
+		"authors": "van der Dussen D, et al",
+		"title": "Incidence of backpack palsy and neuralgic amyotrophy in the Dutch military population.",
+		"journal": "BMJ Neurol Open",
+		"year": "2025",
+		"types": ["Journal Article"],
+		"doi": "10.1136/bmjno-2025-001218",
+		"pmcid": "PMC12352234"
+	},
 	"40862020": {
 		"authors": "Hewitt MA, et al",
 		"title": "Association of Surgical Timing With Complications and Patient-Reported Outcomes After Achilles Tendon Repair.",
@@ -6480,6 +7054,15 @@
 		"types": ["Journal Article"],
 		"doi": "10.1002/jeo2.70396",
 		"pmcid": "PMC12451472"
+	},
+	"40996419": {
+		"authors": "Cameron H, et al",
+		"title": "Risk Determinants of Acute Mountain Sickness in Trekkers in the Nepali Himalaya: A 36-Year Follow-Up.",
+		"journal": "High Alt Med Biol",
+		"year": "2026",
+		"types": ["Journal Article"],
+		"medline": true,
+		"doi": "10.1177/15578682251382432"
 	},
 	"41011098": {
 		"authors": "Ferreira RM, et al",

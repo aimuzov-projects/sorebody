@@ -20,7 +20,7 @@ const region = z.string().optional().describe('Зона тела, slug из get_
 const sport = z
 	.string()
 	.optional()
-	.describe('Спорт, slug из get_catalog: crossfit, padel, football, running, basketball')
+	.describe('Спорт, slug из get_catalog: crossfit, padel, football, running, basketball, hiking')
 
 /**
  * Названия, описания и схемы аргументов инструментов базы: одни для MCP и чата,

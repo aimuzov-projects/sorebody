@@ -6,6 +6,7 @@ import {
 	ArrowDownToLine,
 	ArrowUpFromDot,
 	ArrowUpFromLine,
+	Backpack,
 	BicepsFlexed,
 	Box,
 	BrickWall,
@@ -13,6 +14,7 @@ import {
 	ChevronsRight,
 	ChevronsUp,
 	CircleDot,
+	CloudRainWind,
 	CornerRightDown,
 	CornerUpLeft,
 	Crosshair,
@@ -28,6 +30,7 @@ import {
 	Merge,
 	Metronome,
 	Mountain,
+	MountainSnow,
 	MoveDown,
 	MoveDownRight,
 	MoveUpRight,
@@ -41,7 +44,9 @@ import {
 	Shield,
 	Spline,
 	Split,
+	Stone,
 	Swords,
+	Tent,
 	ThermometerSun,
 	Timer,
 	TrendingUp,
@@ -53,7 +58,14 @@ import {
 	Zap,
 } from 'lucide-static'
 
-import type { BasketballElement, CrossfitElement, FootballElement, PadelElement, RunningElement } from './sports.ts'
+import type {
+	BasketballElement,
+	CrossfitElement,
+	FootballElement,
+	HikingElement,
+	PadelElement,
+	RunningElement,
+} from './sports.ts'
 
 /**
  * Иконки Lucide у движений кроссфита. Пиктограмм кроссфита в наборе нет, поэтому знак -- по сути
@@ -61,7 +73,7 @@ import type { BasketballElement, CrossfitElement, FootballElement, PadelElement,
  * кольца -- `infinity`.
  */
 export const MOVEMENT_ICONS: Record<
-	CrossfitElement | PadelElement | FootballElement | RunningElement | BasketballElement,
+	CrossfitElement | PadelElement | FootballElement | RunningElement | BasketballElement | HikingElement,
 	string
 > = {
 	squat: ArrowDownToLine,
@@ -124,6 +136,16 @@ export const MOVEMENT_ICONS: Record<
 	drive: PlaneTakeoff,
 	'elbow-to-face': ScanFace,
 	'congested-schedule': CalendarRange,
+	// Хайкинг: рельеф, груз, погода и высота. Падение и жара -- общие с футболом и бегом, спуск и подъём
+	// -- те же стрелки, что у бега под гору и в гору
+	descent: MoveDownRight,
+	ascent: MoveUpRight,
+	backpack: Backpack,
+	'rocky-terrain': Stone,
+	'multi-day': Tent,
+	altitude: MountainSnow,
+	cold: CloudRainWind,
+	'new-boots': Footprints,
 }
 
 export type ElementIcon = keyof typeof MOVEMENT_ICONS

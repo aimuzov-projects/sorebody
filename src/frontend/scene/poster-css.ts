@@ -76,10 +76,12 @@ export const POSTER_CSS = [
 /**
  * Постер в разметке скрыт: без JS сцены не будет, и он лёг бы на список травм из `<noscript>`.
  * Скрипт сразу за ним открывает его до первой отрисовки, если адрес ведёт на общий план. Хеш
- * зоны или статьи и `?region=` (сцена заменит его хешем) начинают с другого кадра.
+ * зоны или статьи и `?region=` (сцена заменит его хешем) начинают с другого кадра. Там же индекс
+ * из серверного HTML прячет класс `scene-placed` на `<html>`: иначе до JS сцены он мелькал бы
+ * под зоной или статьёй. Снимает класс сцена (components/body-3d.svelte).
  */
 export const POSTER_REVEAL =
-	"if(!location.hash&&!/[?&]region=/.test(location.search))document.querySelector('.body3d__poster').hidden=false"
+	"if(!location.hash&&!/[?&]region=/.test(location.search))document.querySelector('.body3d__poster').hidden=false;else document.documentElement.classList.add('scene-placed')"
 
 const sha = (code: string): `sha256-${string}` => `sha256-${createHash('sha256').update(code).digest('base64')}`
 

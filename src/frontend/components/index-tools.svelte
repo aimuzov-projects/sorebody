@@ -8,6 +8,7 @@
 
 	import type { Frequency } from '#frontend/data/frequency.ts'
 	import { plural } from '#frontend/lib/plural.ts'
+	import { cssVars } from '#frontend/lib/css-vars.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import type { activeFilterChips, EmptySearch, zoneEntries } from '#frontend/scene/filters.ts'
 	import type { Zone } from '#frontend/scene/zones.ts'
@@ -101,7 +102,7 @@
 <div
 	class="index__tools"
 	class:index__tools--open={open}
-	style:--keyboard="{keyboard}px"
+	{@attach cssVars({ '--keyboard': `${keyboard}px` })}
 	onkeydown={onToolsKey}
 	role="presentation"
 >

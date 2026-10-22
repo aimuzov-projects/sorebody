@@ -15,6 +15,7 @@
 <script lang="ts">
 	import { Diamond } from 'lucide-static'
 
+	import { cssVars } from '#frontend/lib/css-vars.ts'
 	import { splitTitle } from '#frontend/lib/title.ts'
 	import type { Zone } from '#frontend/scene/zones.ts'
 
@@ -45,7 +46,7 @@
 	{#each rows as { injury, where }, i (injury.slug)}
 		<!-- Без другого названия в скобках: его показывает статья, а поиск ищет по полному -->
 		{@const [head, tail] = splitLastWord(splitTitle(injury.title).name)}
-		<li class="zone__row" style:--i={i}>
+		<li class="zone__row" {@attach cssVars({ '--i': i })}>
 			<a
 				class="zone__item"
 				class:zone__item--current={current === injury}

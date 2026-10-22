@@ -10,6 +10,8 @@ export type Case = {
 	turns: string[]
 	urgency?: 'call' | 'today'
 	slugs?: string[]
+	/** Спорт человек не называл: модель не должна угадывать его по упражнению. */
+	noSport?: boolean
 }
 
 export const CASES: Case[] = [
@@ -43,18 +45,21 @@ export const CASES: Case[] = [
 		kind: 'symptom',
 		turns: ['после жимов над головой ноет плечо, больно поднимать руку сбоку'],
 		slugs: ['rotator-cuff-tendinopathy', 'subacromial-impingement'],
+		noSport: true,
 	},
 	{
 		id: 'back-deadlift',
 		kind: 'symptom',
 		turns: ['потянул поясницу на становой, тянет, но ноги не немеют'],
 		slugs: ['low-back-strain'],
+		noSport: true,
 	},
 	{
 		id: 'hands-rips',
 		kind: 'symptom',
 		turns: ['порвались мозоли на ладонях после турника, что делать'],
 		slugs: ['hand-rips'],
+		noSport: true,
 	},
 	{
 		id: 'groin-football',
@@ -86,7 +91,7 @@ export const CASES: Case[] = [
 		turns: ['на спринте кольнуло сзади бедра, теперь больно растягивать'],
 		slugs: ['hamstring-strain'],
 	},
-	{ id: 'wrist-fs', kind: 'symptom', turns: ['болят запястья во фронтальных приседаниях'], slugs: [] },
+	{ id: 'wrist-fs', kind: 'symptom', turns: ['болят запястья во фронтальных приседаниях'], slugs: [], noSport: true },
 	{ id: 'vague', kind: 'symptom', turns: ['что-то всё болит после тренировок'] },
 
 	// Срочные: признаки из самопроверки

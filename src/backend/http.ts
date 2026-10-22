@@ -4,6 +4,7 @@ import { hostHeaderValidation, NodeStreamableHTTPServerTransport } from '@modelc
 import type { knowledgeTools } from './knowledge/tools.ts'
 import { mcpServer } from './mcp.ts'
 import { rateLimit } from './rate-limit.ts'
+import { clientOf, readBody, send } from './request.ts'
 
 type Options = {
 	tools: ReturnType<typeof knowledgeTools>
@@ -12,6 +13,8 @@ type Options = {
 	hosts: string[]
 	/** Запросов к /mcp в минуту с одного адреса. */
 	perMinute: number
+	/** Обработчик `/api/chat`; без него чат выключен и отвечает 404. */
+	chat?: (req: IncomingMessage, res: ServerResponse) => Promise<void>
 }
 
 /** JSON-RPC запрос к базе -- килобайт-другой. Больше -- не к нам. */
@@ -29,46 +32,11 @@ const CORS = {
 }
 
 /**
- * Адрес посетителя. За общим Caddy адрес сокета -- сам Caddy, настоящий -- последний
- * в `X-Forwarded-For`: его дописывает Caddy, а то, что прислал клиент, стоит раньше
- * и подделывается.
- */
-const clientOf = (req: IncomingMessage) =>
-	String(req.headers['x-forwarded-for'] ?? '')
-		.split(',')
-		.at(-1)
-		?.trim() ||
-	(req.socket.remoteAddress ?? '')
-
-/**
- * Тело POST, не больше `MAX_BODY`: считаем байты сами, `Content-Length` может не быть
- * вовсе. Слишком большое -- `undefined`, читать дальше незачем.
- */
-async function readBody(req: IncomingMessage) {
-	const chunks: Buffer[] = []
-	let size = 0
-
-	for await (const chunk of req as AsyncIterable<Buffer>) {
-		size += chunk.length
-
-		if (size > MAX_BODY) return undefined
-
-		chunks.push(chunk)
-	}
-
-	return Buffer.concat(chunks).toString('utf8')
-}
-
-function send(res: ServerResponse, status: number, text: string, headers: Record<string, string> = {}) {
-	res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8', ...headers }).end(text)
-}
-
-/**
  * Обработчик HTTP бэкенда: `/mcp` -- публичный MCP по Streamable HTTP без сессий,
- * `/api/health` -- для проверки контейнера. Остальное -- 404: сайт отдаёт nginx,
- * сюда Caddy шлёт только своё.
+ * `/api/chat` -- чат на сайте, `/api/health` -- для проверки контейнера. Остальное -- 404:
+ * сайт отдаёт nginx, сюда Caddy шлёт только своё.
  */
-export function httpHandler({ tools, version, hosts, perMinute }: Options) {
+export function httpHandler({ tools, version, hosts, perMinute, chat }: Options) {
 	const validateHost = hostHeaderValidation(hosts)
 	const limit = rateLimit({ limit: perMinute, windowMs: 60_000 })
 
@@ -76,6 +44,8 @@ export function httpHandler({ tools, version, hosts, perMinute }: Options) {
 		const path = new URL(req.url ?? '/', 'http://localhost').pathname
 
 		if (path === '/api/health') return send(res, 200, 'ok')
+
+		if (path === '/api/chat' && chat) return void (validateHost(req, res) && (await chat(req, res)))
 
 		if (path !== '/mcp') return send(res, 404, 'Not found')
 
@@ -92,7 +62,7 @@ export function httpHandler({ tools, version, hosts, perMinute }: Options) {
 		let body: unknown
 
 		if (req.method === 'POST') {
-			const raw = await readBody(req)
+			const raw = await readBody(req, MAX_BODY)
 
 			if (raw === undefined) return send(res, 413, 'Request too large')
 

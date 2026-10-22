@@ -43,6 +43,9 @@
 	--marker-gap: 12px;
 	--indent: calc(var(--marker) + var(--marker-gap));
 
+	/* Подложки срочных признаков (.alarm--call) выходят за колонку на 24px, а поле страницы на
+	   телефоне -- 20px: без обрезки страница ездила вбок. clip, а не hidden: липкое не ломается */
+	overflow-x: clip;
 	width: 100%;
 	max-width: calc(var(--article-column) + 260px + 64px + 48px);
 	margin: 0 auto;

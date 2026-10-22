@@ -9,7 +9,7 @@ import { diskKnowledge } from '#frontend/lib/knowledge-disk.ts'
 
 import { dailyCounter } from './daily.ts'
 import { chatHandler, QUOTA } from './http.ts'
-import { keepKnownLinks } from './links.ts'
+import { keepKnownLinks, localLinks } from './links.ts'
 import { maskContacts } from './mask.ts'
 import { OpenRouterError, type AssistantMessage, type Complete, type Message } from './openrouter.ts'
 import { chatSystem, RED_FLAGS_REMINDER } from './prompt.ts'
@@ -394,7 +394,7 @@ test('chat: чужая ссылка из ответа модели не дохо
 	const text = (events.at(-1) as { text: string }).text
 
 	assert.ok(!text.includes('evil.example'))
-	assert.ok(text.includes('https://sorebody.aimuzov.online/injuries/achilles-tendinopathy/'))
+	assert.ok(text.includes('](/injuries/achilles-tendinopathy/)'))
 })
 
 test('http: статья со страницы -- в служебном сообщении, чужой slug туда не попадает', async (t) => {
@@ -488,4 +488,26 @@ test('chat: карточки -- только статьи, на которые �
 	)
 
 	assert.ok(!asking.events.some((e) => e.type === 'cards'))
+})
+
+test('localLinks: ссылки на сайт -- относительные, вместо адреса заголовок травмы и раздела', () => {
+	const local = (text: string) => localLinks(text, chat)
+
+	assert.equal(
+		local('Статья: https://sorebody.aimuzov.online/crossfit/acl-tear/.'),
+		`Статья: [${tools.getArticle({ slug: 'acl-tear' }).title}](/crossfit/acl-tear/).`,
+	)
+
+	assert.match(
+		local(
+			'[sorebody.aimuzov.online/injuries/acl-tear/#urgent](https://sorebody.aimuzov.online/injuries/acl-tear/#urgent)',
+		),
+		/^\[[^\]]+ — когда сразу к врачу\]\(\/injuries\/acl-tear\/#urgent\)$/,
+	)
+
+	// Подпись модели не трогаем, чужой адрес тоже
+	assert.equal(
+		local('[про ПКС](https://sorebody.aimuzov.online/crossfit/acl-tear/) и https://pubmed.ncbi.nlm.nih.gov/1/'),
+		'[про ПКС](/crossfit/acl-tear/) и https://pubmed.ncbi.nlm.nih.gov/1/',
+	)
 })

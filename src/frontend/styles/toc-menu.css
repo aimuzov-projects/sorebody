@@ -1,14 +1,19 @@
-/* Меню разделов статьи на узком экране (components/toc-menu.astro). Над строкой чата
-   (components/chat-dock.svelte) кнопка поднимается на её высоту. Отдельным файлом: им же
+/* Меню разделов статьи на узком экране (components/toc-menu.astro). Со строкой чата
+   (components/chat-dock.svelte) кнопка встаёт рядом с ней, в одну линию и размером с кнопку
+   отправки: место, высоту и отступ справа задаёт строка переменными --chat-dock-toc-*. Отдельным файлом: им же
    пользуется статья поверх модели на главной, куда стили компонента сами не попадают.
    Порог тот же, что у бокового оглавления в article.css: где оно есть, кнопки нет */
 .toc-menu {
 	/* Отступ снизу: вырез экрана и системные кнопки Mini App Telegram (переменные ставит SDK) */
-	--toc-menu-bottom: calc(
-		max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
-			var(--tg-content-safe-area-inset-bottom, 0px) + var(--chat-dock-lift, 0px)
+	--toc-menu-bottom: var(
+		--chat-dock-toc-bottom,
+		calc(
+			max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
+				var(--tg-content-safe-area-inset-bottom, 0px)
+		)
 	);
-	--toc-menu-size: 52px;
+	--toc-menu-right: var(--chat-dock-toc-right, 16px);
+	--toc-menu-size: var(--chat-dock-toc-size, 52px);
 
 	display: none;
 
@@ -20,7 +25,7 @@
 		cursor: pointer;
 		position: fixed;
 		z-index: 20;
-		right: 16px;
+		right: var(--toc-menu-right);
 		bottom: var(--toc-menu-bottom);
 		display: grid;
 		place-items: center;
@@ -70,7 +75,7 @@
 	/* Над кнопкой, прижато к правому краю. Фон и тень -- как у подсказок (.tip в global.css) */
 	&__panel {
 		position: fixed;
-		inset: auto 16px calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
+		inset: auto var(--toc-menu-right) calc(var(--toc-menu-bottom) + var(--toc-menu-size) + 12px) auto;
 		translate: 0 12px;
 		overflow-y: auto;
 		overscroll-behavior: contain;

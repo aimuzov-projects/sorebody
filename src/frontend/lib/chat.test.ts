@@ -43,6 +43,21 @@ test('chatMarkdown: абзацы, списки, жирный, ссылки и г
 	])
 })
 
+test('chatMarkdown: путь на сайте -- ссылка, протокол-относительный адрес -- текст', () => {
+	assert.deepEqual(
+		chatMarkdown('[Разрыв ПКС — когда сразу к врачу](/injuries/acl-tear/#urgent) и [x](//evil.example)'),
+		[
+			{
+				type: 'paragraph',
+				inline: [
+					{ type: 'link', text: 'Разрыв ПКС — когда сразу к врачу', href: '/injuries/acl-tear/#urgent' },
+					{ type: 'text', text: ' и [x](//evil.example)' },
+				],
+			},
+		],
+	)
+})
+
 test('chatMarkdown: разметка и не-https остаются текстом', () => {
 	const [block] = chatMarkdown('<img src=x onerror=alert(1)> [жми](javascript:alert(1)) http://plain.example')
 

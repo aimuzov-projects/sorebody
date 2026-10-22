@@ -6,8 +6,9 @@ export type ChatInline =
 export type ChatBlock =
 	{ type: 'paragraph'; inline: ChatInline[] } | { type: 'list'; ordered: boolean; items: ChatInline[][] }
 
-// Ссылка в разметке, жирный и голый адрес -- в одном проходе, кто встретился раньше
-const INLINE = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)|\*\*([^*\n]+)\*\*|(https:\/\/[^\s<>()[\]"'«»]+)/g
+// Ссылка в разметке (https или путь на сайте, такие шлёт сервер), жирный и голый адрес --
+// в одном проходе, кто встретился раньше
+const INLINE = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+|\/(?!\/)[^\s)]*)\)|\*\*([^*\n]+)\*\*|(https:\/\/[^\s<>()[\]"'«»]+)/g
 const TRAILING = /[.,;:!?]+$/
 const ITEM = /^\s*(?:([-*•])|(\d+)[.)])\s+(.*)$/
 
@@ -50,7 +51,7 @@ function inline(line: string): ChatInline[] {
 
 /**
  * Ответ модели в блоки для Svelte -- без `{@html}`: что бы модель ни прислала, на странице это
- * текст. Ссылки -- только https; какие адреса разрешены, решил сервер.
+ * текст. Ссылки -- только https и пути на сайте; какие адреса разрешены, решил сервер.
  */
 export function chatMarkdown(source: string): ChatBlock[] {
 	const blocks: ChatBlock[] = []

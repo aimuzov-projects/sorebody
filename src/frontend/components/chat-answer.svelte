@@ -3,17 +3,24 @@
 	инструмента -- подходящие к описанию модель называет сама, полный список под рукой -- и статьи
 -->
 <script lang="ts">
-	import { FileText, Siren } from 'lucide-static'
+	import { FileText, Siren, Sparkles } from 'lucide-static'
 
 	import { mergeAlarms } from '#frontend/lib/chat-client.ts'
 	import { chatMarkdown, type ChatInline } from '#frontend/lib/chat-markdown.ts'
 	import { CHAT_FAILURES, CHAT_STEPS, CHAT_URGENCY, type ChatTurn } from '#frontend/lib/chat-texts.ts'
 
-	let { turn }: { turn: ChatTurn } = $props()
+	let {
+		turn,
+		onlink,
+	}: {
+		turn: ChatTurn
+		/** Клик по ссылке ответа или карточке: строка чата решает, как открыть статью. */
+		onlink?: (event: MouseEvent, href: string) => void
+	} = $props()
 
 	const alarms = $derived(mergeAlarms(turn.flags))
 
-	const external = (href: string) => new URL(href).origin !== location.origin
+	const external = (href: string) => new URL(href, location.href).origin !== location.origin
 </script>
 
 {#snippet line(inline: ChatInline[])}
@@ -22,6 +29,7 @@
 		{:else if part.type === 'link'}<a
 				class="answer__link"
 				href={part.href}
+				onclick={(event) => onlink?.(event, part.href)}
 				target={external(part.href) ? '_blank' : undefined}
 				rel="noopener">{part.text}</a
 			>
@@ -48,7 +56,11 @@
 			{/each}
 		</div>
 	{:else if turn.pending}
-		<p class="answer__status" role="status">{turn.step ? CHAT_STEPS[turn.step] : 'Думаю…'}</p>
+		<!-- Как в нейрочатах: звёздочка пульсирует, по названию шага бежит блик -->
+		<p class="answer__thinking" role="status">
+			<span class="answer__spark" aria-hidden="true">{@html Sparkles}</span>
+			<span class="answer__shimmer">{turn.step ? CHAT_STEPS[turn.step] : 'Думаю…'}</span>
+		</p>
 	{/if}
 
 	{#if alarms.length && !turn.pending}
@@ -73,7 +85,7 @@
 		<ul class="answer__cards" aria-label="Статьи">
 			{#each turn.cards as card (card.slug)}
 				<li>
-					<a class="answer__card" href={card.url}>
+					<a class="answer__card" href={card.url} onclick={(event) => onlink?.(event, card.url)}>
 						<span class="answer__icon" aria-hidden="true">{@html FileText}</span>
 						<span class="answer__card-title">{card.title}</span>
 					</a>
@@ -182,12 +194,49 @@
 			color: var(--accent);
 		}
 
-		&__status {
+		&__thinking {
+			display: flex;
+			gap: 8px;
+			align-items: center;
 			margin: 0;
-			color: var(--muted);
-			animation: answer-pulse 1.4s ease-in-out infinite;
+		}
+
+		&__spark {
+			display: inline-flex;
+			flex: none;
+			width: 18px;
+			height: 18px;
+			color: var(--accent);
+			animation: answer-spark 1.6s ease-in-out infinite;
 
 			@media (--reduced-motion) {
+				animation: none;
+			}
+
+			/* stylelint-disable-next-line selector-max-type -- SVG из lucide-static приходит без класса */
+			& :global(svg) {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		/* Блик бежит по тексту слева направо: градиент шире текста и едет по нему */
+		&__shimmer {
+			color: transparent;
+			background: linear-gradient(
+					90deg,
+					var(--muted) 0%,
+					var(--muted) 35%,
+					var(--fg) 50%,
+					var(--muted) 65%,
+					var(--muted) 100%
+				)
+				0 0 / 250% 100%;
+			background-clip: text;
+			animation: answer-shimmer 1.8s linear infinite;
+
+			@media (--reduced-motion) {
+				color: var(--muted);
 				animation: none;
 			}
 		}
@@ -221,9 +270,20 @@
 		}
 	}
 
-	@keyframes answer-pulse {
+	@keyframes answer-spark {
 		50% {
-			opacity: 0.45;
+			transform: scale(0.82) rotate(12deg);
+			opacity: 0.55;
+		}
+	}
+
+	@keyframes answer-shimmer {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -50% 0;
 		}
 	}
 </style>

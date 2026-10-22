@@ -29,3 +29,37 @@ export function keepKnownLinks(text: string, { site, known }: { site: string; kn
 			return allowed(url) ? match : match.slice(url.length)
 		})
 }
+
+/**
+ * Ссылки на сайт в ответе -- относительные и с подписью-заголовком вместо адреса: виджет
+ * открывает их на той же странице, а голый "sorebody.aimuzov.online/crossfit/acl-tear" человеку
+ * ни о чём не говорит. Подпись своей модели не трогаем, если это не адрес.
+ */
+export function localLinks(text: string, { site, title }: { site: string; title: (url: URL) => string | undefined }) {
+	const local = (raw: string) => {
+		try {
+			const url = new URL(raw)
+
+			return url.host === site ? url : undefined
+		} catch {
+			return undefined
+		}
+	}
+	const href = (url: URL) => `${url.pathname}${url.hash}`
+	const looksLikeUrl = (label: string) => /^(https?:\/\/|www\.)/i.test(label.trim()) || label.includes(site)
+
+	return text
+		.replace(MD_LINK, (whole, label: string, raw: string) => {
+			const url = local(raw)
+
+			return url ? `[${looksLikeUrl(label) ? (title(url) ?? label) : label}](${href(url)})` : whole
+		})
+		.replace(URL_RE, (match) => {
+			const raw = match.replace(TRAILING, '')
+			const url = local(raw)
+
+			return url
+				? `[${title(url) ?? `${url.host}${url.pathname}`}](${href(url)})${match.slice(raw.length)}`
+				: match
+		})
+}

@@ -1,4 +1,4 @@
-import { keepKnownLinks, urlsIn } from './links.ts'
+import { keepKnownLinks, localLinks, urlsIn } from './links.ts'
 import { maskContacts } from './mask.ts'
 import type { Complete, Message } from './openrouter.ts'
 import { RED_FLAGS_REMINDER } from './prompt.ts'
@@ -135,7 +135,9 @@ export async function chatTurn({
 		const text = reply.content?.trim()
 		const known = new Set(session.messages.flatMap((m) => (m.role === 'tool' ? urlsIn(m.content) : [])))
 		const answer =
-			text && finish_reason !== 'content_filter' ? keepKnownLinks(text, { site: tools.site, known }) : FALLBACK
+			text && finish_reason !== 'content_filter'
+				? localLinks(keepKnownLinks(text, { site: tools.site, known }), tools)
+				: FALLBACK
 		const cited = found.filter((card) => answer.includes(`/${card.slug}/`))
 
 		if (cited.length) emit({ type: 'cards', cards: cited })

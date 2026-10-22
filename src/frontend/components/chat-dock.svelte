@@ -4,13 +4,14 @@
 	диалог. Переписка живёт только в памяти страницы, а вебвизор её не видит: в ней симптомы
 -->
 <script lang="ts">
-	import { ArrowUp, ChevronLeft, RotateCcw } from 'lucide-static'
+	import { ChevronLeft, CornerDownLeft, RotateCcw } from 'lucide-static'
 	import { onMount } from 'svelte'
 
 	import ChatAnswer from '#frontend/components/chat-answer.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
 	import { chatStatus, forgetSession, sendReply, type ChatEvent } from '#frontend/lib/chat-client.ts'
 	import { chatAvailable } from '#frontend/lib/chat-flag.ts'
+	import { chat } from '#frontend/lib/chat-state.svelte.ts'
 	import { CHAT_FAILURES, CHAT_TURNS, type ChatTurn } from '#frontend/lib/chat-texts.ts'
 	import { metrikaGoal } from '#frontend/lib/metrika.ts'
 
@@ -31,18 +32,14 @@
 
 	let available = $state(false)
 	let open = $state(false)
-	let closed = $state(false)
-	let turns = $state<ChatTurn[]>([])
-	let session = $state<string>()
-	let left = $state(CHAT_TURNS)
 	let draft = $state('')
 	let field = $state<HTMLTextAreaElement>()
 	let feed = $state<HTMLElement>()
 	let bar = $state<HTMLElement>()
 	let place = $state({ left: 0, width: 0 })
 
-	const busy = $derived(turns.at(-1)?.pending ?? false)
-	const over = $derived(left <= 0)
+	const busy = $derived(chat.turns.at(-1)?.pending ?? false)
+	const over = $derived(chat.left <= 0)
 
 	onMount(() => {
 		let storage: Storage | undefined
@@ -63,8 +60,13 @@
 		return () => node.remove()
 	}
 
+	/** Кнопка оглавления статьи на узком экране -- той же величины, что кнопка отправки. */
+	const TOC_SIZE = 44
+	const TOC_GAP = 8
+
 	// Ширина и край -- как у колонки текста: на десктопе её сдвигает оглавление,
-	// на телефоне она во всю ширину
+	// на телефоне она во всю ширину. Где есть кнопка оглавления, свёрнутая строка
+	// уступает ей место справа, и кнопка встаёт в одну линию с полем
 	$effect(() => {
 		if (!available) return
 
@@ -72,25 +74,51 @@
 
 		if (!target) return
 
+		const root = document.documentElement
+		const toc = () => {
+			const menu = document.querySelector<HTMLElement>('.toc-menu')
+
+			return Boolean(menu && getComputedStyle(menu).display !== 'none')
+		}
 		const measure = () => {
 			const rect = target.getBoundingClientRect()
+			const reserve = toc() && !open ? TOC_SIZE + TOC_GAP : 0
 
-			place = { left: rect.left, width: rect.width }
+			place = { left: rect.left, width: rect.width - reserve }
+
+			if (!reserve || !bar) return clear()
+
+			const line = bar.getBoundingClientRect()
+			// Центр кнопки -- на середине строки
+			const bottom = innerHeight - line.bottom + (line.height - TOC_SIZE) / 2
+
+			root.style.setProperty('--chat-dock-toc-size', `${TOC_SIZE}px`)
+			root.style.setProperty('--chat-dock-toc-right', `${root.clientWidth - rect.right}px`)
+			root.style.setProperty('--chat-dock-toc-bottom', `${bottom}px`)
+		}
+		const clear = () => {
+			for (const name of ['--chat-dock-toc-size', '--chat-dock-toc-right', '--chat-dock-toc-bottom'])
+				root.style.removeProperty(name)
 		}
 		const observer = new ResizeObserver(measure)
 
 		measure()
 		observer.observe(target)
+
+		if (bar) observer.observe(bar)
+
 		addEventListener('resize', measure)
+		visualViewport?.addEventListener('resize', measure)
 
 		return () => {
 			observer.disconnect()
 			removeEventListener('resize', measure)
+			visualViewport?.removeEventListener('resize', measure)
+			clear()
 		}
 	})
 
-	// Под строкой страница освобождает место: кнопка оглавления встаёт выше,
-	// низ статьи не прячется
+	// Под строкой страница освобождает место: низ статьи не прячется
 	$effect(() => {
 		if (!available || !bar) return
 
@@ -133,7 +161,7 @@
 		const overflow = root.style.overflow
 
 		root.style.overflow = 'hidden'
-		chatStatus().then((status) => (closed = !status.open))
+		chatStatus().then((status) => (chat.closed = !status.open))
 		metrikaGoal('chat-open')
 
 		return () => {
@@ -144,7 +172,7 @@
 	const scrollDown = () => requestAnimationFrame(() => feed?.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }))
 
 	function apply(turn: ChatTurn, event: ChatEvent) {
-		if (event.type === 'session') session = event.id
+		if (event.type === 'session') chat.session = event.id
 		else if (event.type === 'status') turn.step = event.step
 		else if (event.type === 'alarms') {
 			turn.flags = [...turn.flags, ...event.flags]
@@ -153,33 +181,38 @@
 		} else if (event.type === 'cards')
 			turn.cards = [...turn.cards, ...event.cards.filter((c) => !turn.cards.some((k) => k.slug === c.slug))]
 		else if (event.type === 'text') turn.text = event.text
-		else if (event.type === 'done') left = event.turnsLeft
+		else if (event.type === 'done') chat.left = event.turnsLeft
 		else {
 			turn.failure = event.reason
 
-			if (event.reason === 'closed') closed = true
+			if (event.reason === 'closed') chat.closed = true
 
-			if (event.reason === 'expired') session = undefined
+			if (event.reason === 'expired') chat.session = undefined
 
-			if (event.reason === 'turns' || event.reason === 'cost') left = 0
+			if (event.reason === 'turns' || event.reason === 'cost') chat.left = 0
 		}
 	}
 
 	async function send(text = draft) {
 		const question = text.trim()
 
-		if (!question || busy || over || closed) return
+		if (!question || busy || over || chat.closed) return
 
 		open = true
 		draft = ''
-		turns.push({ question, flags: [], cards: [], pending: true })
+		chat.turns.push({ question, flags: [], cards: [], pending: true })
 
-		const turn = turns.at(-1)!
+		const turn = chat.turns.at(-1)!
 
 		metrikaGoal('chat-send')
 		scrollDown()
 
-		for await (const event of sendReply({ message: question, session, sport, article: injury.slug })) {
+		for await (const event of sendReply({
+			message: question,
+			session: chat.session,
+			sport,
+			article: injury.slug,
+		})) {
 			apply(turn, event)
 			scrollDown()
 		}
@@ -187,12 +220,50 @@
 		turn.pending = false
 	}
 
-	function restart() {
-		if (session) forgetSession(session)
+	/** Последний сегмент пути -- slug травмы: `/crossfit/acl-tear/` и `/injuries/acl-tear/` -- одна статья. */
+	const slugOf = (path: string) => path.split('/').filter(Boolean).at(-1)
 
-		turns = []
-		session = undefined
-		left = CHAT_TURNS
+	/**
+	 * Ссылка из ответа открывается на этой же странице. Раздел читаемой статьи -- плавная прокрутка
+	 * к нему. Другая статья на главной -- в ридере: сцена (body-3d.svelte) берёт её из адреса по
+	 * popstate, как при "Назад", а переписка живёт в общем состоянии. С отдельной страницы --
+	 * обычный переход в той же вкладке.
+	 */
+	function follow(event: MouseEvent, href: string) {
+		const url = new URL(href, location.href)
+
+		// Чужой сайт и клик с модификатором -- как обычно: новая вкладка, окно
+		const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
+
+		if (url.origin !== location.origin || event.button !== 0 || modified) return
+
+		event.preventDefault()
+		close()
+
+		if (slugOf(url.pathname) === slugOf(location.pathname)) {
+			const id = decodeURIComponent(url.hash.slice(1))
+
+			if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+			return
+		}
+
+		if (document.documentElement.dataset.step && !url.pathname.startsWith('/injuries/')) {
+			history.pushState(null, '', `${url.pathname}${location.search}`)
+			dispatchEvent(new PopStateEvent('popstate'))
+
+			return
+		}
+
+		location.assign(url)
+	}
+
+	function restart() {
+		if (chat.session) forgetSession(chat.session)
+
+		chat.turns = []
+		chat.session = undefined
+		chat.left = CHAT_TURNS
 		field?.focus()
 	}
 
@@ -238,9 +309,9 @@
 			Опишите своими словами, что болит и&nbsp;как это случилось, или спросите про «{injury.title}». Ассистент
 			сначала проверит тревожные признаки, потом ответит по&nbsp;статьям справочника&nbsp;— только по&nbsp;ним.
 		</p>
-		{#if closed}
+		{#if chat.closed}
 			<p class="dock__notice">{CHAT_FAILURES.closed}</p>
-		{:else if !turns.length}
+		{:else if !chat.turns.length}
 			<ul class="dock__examples" aria-label="Примеры вопросов">
 				{#each EXAMPLES as example (example)}
 					<li>
@@ -282,7 +353,7 @@
 					>{@html ChevronLeft}</button
 				>
 				<p class="dock__title">Вопрос по справочнику</p>
-				{#if turns.length}
+				{#if chat.turns.length}
 					<button
 						class="dock__restart"
 						type="button"
@@ -310,8 +381,8 @@
 					{@render disclaimer()}
 				</div>
 
-				{#each turns as turn, index (index)}
-					<ChatAnswer {turn} />
+				{#each chat.turns as turn, index (index)}
+					<ChatAnswer {turn} onlink={follow} />
 				{/each}
 
 				{#if over && !busy}
@@ -338,9 +409,9 @@
 				class="dock__input ym-disable-keys"
 				rows="1"
 				maxlength="1000"
-				placeholder={closed ? 'Ассистент вернётся завтра' : 'Спросите о боли или травме'}
+				placeholder={chat.closed ? 'Ассистент вернётся завтра' : 'Спросите о боли'}
 				aria-label="Вопрос по справочнику"
-				disabled={closed || over}
+				disabled={chat.closed || over}
 				bind:value={draft}
 				bind:this={field}
 				onfocus={() => (open = true)}
@@ -350,8 +421,8 @@
 				class="dock__send"
 				type="submit"
 				aria-label="Отправить"
-				disabled={!draft.trim() || busy || closed || over}
-				><span class="dock__icon" aria-hidden="true">{@html ArrowUp}</span></button
+				disabled={!draft.trim() || busy || chat.closed || over}
+				><span class="dock__icon" aria-hidden="true">{@html CornerDownLeft}</span></button
 			>
 		</form>
 	</div>
@@ -562,11 +633,12 @@
 			background: none;
 		}
 
-		/* Подложка под строкой: статья под ней размывается и гаснет, текст не спорит с полем */
+		/* Подложка под строкой: статья под ней размывается и гаснет, текст не спорит с полем.
+		   Ниже кнопки оглавления (20): её подложка размывала бы, а она стоит рядом со строкой */
 		&__shade {
 			pointer-events: none;
 			position: fixed;
-			z-index: calc(var(--dock-z) - 2);
+			z-index: 19;
 			right: 0;
 			bottom: 0;
 			left: 0;
@@ -625,8 +697,8 @@
 			flex: none;
 			align-items: center;
 			justify-content: center;
-			width: 40px;
-			height: 40px;
+			width: 44px;
+			height: 44px;
 			border: 0;
 			border-radius: 50%;
 			color: var(--on-accent);

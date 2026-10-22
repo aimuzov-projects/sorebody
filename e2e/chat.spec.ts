@@ -196,26 +196,93 @@ test('статья поверх модели главной: строка чат
 test.describe('телефон', () => {
 	test.use({ viewport: { width: 375, height: 663 }, hasTouch: true, isMobile: true })
 
-	test('строка по колонке, кнопка оглавления над ней, вбок не скроллится', async ({ page }) => {
+	test('кнопка оглавления в одну линию со строкой, в чате строка во всю колонку, вбок не скроллится', async ({
+		page,
+	}) => {
 		await mockChat(page, answer)
 		await page.goto(ARTICLE)
 
 		const column = (await page.locator('.article__body').boundingBox())!
-		const bar = (await page.locator('.dock__bar').boundingBox())!
+		const box = async () => (await page.locator('.dock__bar').boundingBox())!
+		const bar = await box()
 		const toc = (await page.locator('.toc-menu__button').boundingBox())!
 
+		// Строка от левого края колонки, справа от неё кнопка оглавления: по центру строки,
+		// размером с кнопку отправки, правым краем -- по колонке
 		expect(Math.round(bar.x)).toBe(Math.round(column.x))
-		expect(Math.round(bar.width)).toBe(Math.round(column.width))
-		expect(toc.y + toc.height).toBeLessThanOrEqual(bar.y)
+		expect(toc.x).toBeGreaterThan(bar.x + bar.width)
+		expect(Math.round(toc.x + toc.width)).toBe(Math.round(column.x + column.width))
+		expect(Math.abs(toc.y + toc.height / 2 - (bar.y + bar.height / 2))).toBeLessThan(1.5)
+		expect(toc.width).toBe((await page.getByRole('button', { name: 'Отправить' }).boundingBox())!.width)
 
 		await input(page).tap()
+		await expect.poll(async () => Math.round((await box()).width)).toBe(Math.round(column.width))
+
 		await input(page).fill('подвернул ногу')
 		await page.getByRole('button', { name: 'Отправить' }).tap()
 		await expect(feed(page).getByRole('list', { name: 'Статьи' })).toBeVisible()
 		await expect(page.getByRole('button', { name: 'Отправить' })).toBeInViewport()
 
-		const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+		// innerWidth растягивается вместе со страницей, поэтому сравниваем с clientWidth
+		const overflow = await page.evaluate(
+			() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+		)
 
 		expect(overflow).toBeLessThanOrEqual(0)
 	})
+})
+
+/** Ответ со ссылкой, как её присылает сервер: путь на сайте и заголовок вместо адреса. */
+const linked = (label: string, href: string) => (route: Route) =>
+	route.fulfill({
+		status: 200,
+		headers: { 'Content-Type': 'text/event-stream' },
+		body: sse(
+			['session', { id: 's1' }],
+			['text', { text: `Подробнее: [${label}](${href})` }],
+			['done', { turnsLeft: 3 }],
+		),
+	})
+
+test('ссылка на раздел этой статьи: чат сворачивается, страница едет к разделу', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 })
+	await mockChat(page, linked('Разрыв ПКС — когда сразу к врачу', '/injuries/acl-tear/#urgent'))
+	await page.goto(ARTICLE)
+
+	await input(page).fill('когда к врачу?')
+	await page.keyboard.press('Enter')
+	await feed(page).getByRole('link', { name: 'Разрыв ПКС — когда сразу к врачу' }).click()
+
+	await expect(feed(page)).toBeHidden()
+	await expect(page).toHaveURL(/\/crossfit\/acl-tear\/\?chat=1$/)
+	await expect(page.locator('#urgent')).toBeInViewport()
+})
+
+test('ссылка на другую статью на главной: открывается в ридере без перезагрузки, переписка на месте', async ({
+	page,
+}) => {
+	await mockChat(page, linked('Разрыв мениска', '/crossfit/meniscus-tear/'))
+	await page.goto('/crossfit/?chat=1')
+
+	await page
+		.getByRole('button', { name: /Колено/ })
+		.first()
+		.click()
+
+	await page
+		.getByRole('link', { name: /крестообразной/ })
+		.first()
+		.click()
+
+	await page.evaluate(() => ((window as unknown as { marker: number }).marker = 1))
+	await input(page).fill('а мениск?')
+	await page.keyboard.press('Enter')
+	await feed(page).getByRole('link', { name: 'Разрыв мениска' }).click()
+
+	await expect(page).toHaveURL(/\/crossfit\/meniscus-tear\//)
+	await expect(page.getByRole('heading', { level: 1, name: /мениска/ })).toBeVisible()
+	expect(await page.evaluate(() => (window as unknown as { marker?: number }).marker)).toBe(1)
+
+	await input(page).click()
+	await expect(feed(page).locator('.answer__question')).toHaveText('а мениск?')
 })

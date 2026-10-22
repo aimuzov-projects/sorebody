@@ -75,6 +75,33 @@ export function chatTools(tools: Tools) {
 
 	/** Хост сайта: ссылки на него в ответе разрешены всегда. */
 	const site = new URL(tools.catalog().site).host
+	const titles = new Map(tools.listInjuries().map((i) => [i.slug, i.title]))
 
-	return { definitions, run, site }
+	/**
+	 * Подпись ссылки на статью: заголовок травмы, а для раздела -- ещё и его название.
+	 * Адрес -- `/<спорт или injuries>/<slug>/#<раздел>`; чужой адрес -- без подписи.
+	 */
+	function title(url: URL) {
+		const [first, slug] = url.pathname.split('/').filter(Boolean)
+		const name = slug && titles.get(slug)
+		const id = url.hash.slice(1)
+
+		if (!name || !id) return name || undefined
+
+		const sport = first === 'injuries' ? undefined : first
+		let article: ReturnType<Tools['getArticle']>
+
+		// У травмы может не быть разбора этого спорта: тогда разделы общей части
+		try {
+			article = tools.getArticle({ slug, sport })
+		} catch {
+			article = tools.getArticle({ slug })
+		}
+
+		const section = [...article.sections, ...(article.lens?.sections ?? [])].find((s) => s.id === id)
+
+		return section ? `${name} — ${section.title.charAt(0).toLowerCase()}${section.title.slice(1)}` : name
+	}
+
+	return { definitions, run, site, title }
 }

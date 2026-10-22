@@ -7,7 +7,7 @@ import { clientOf, readBody, send } from '#backend/request.ts'
 
 import { dailyCounter } from './daily.ts'
 import { OpenRouterError, type Complete } from './openrouter.ts'
-import { chatSystem, sportNote } from './prompt.ts'
+import { chatSystem, pageNote } from './prompt.ts'
 import { sessionStore, type SessionStore } from './sessions.ts'
 import { chatTools } from './tools.ts'
 import { ChatLimitError, chatTurn, LIMITS, type ChatEvent } from './turn.ts'
@@ -21,6 +21,8 @@ const Request = z.object({
 	message: z.string().trim().min(1).max(1000),
 	/** Спорт, выбранный на сайте, slug. */
 	sport: z.string().max(32).optional(),
+	/** Статья, со страницы которой спрашивают, slug. */
+	article: z.string().max(80).optional(),
 })
 
 /** Почему реплика не получила ответа: виджет показывает на это свой текст. */
@@ -78,6 +80,7 @@ export function chatHandler({
 	const system = chatSystem(tools)
 	const chat = chatTools(tools)
 	const sports = new Map(tools.catalog().sports.map((s) => [s.slug, s.title]))
+	const articles = new Map(tools.listInjuries().map((i) => [i.slug, i.title]))
 	const perMinute = rateLimit({ limit: quota.perMinute, windowMs: 60_000, now })
 	const perDay = rateLimit({ limit: quota.perDay, windowMs: 86_400_000, now })
 	const dialogs = dailyCounter({ limit: quota.dialogs, now })
@@ -156,7 +159,13 @@ export function chatHandler({
 		}
 		const emit = ({ type, ...data }: ChatEvent) => write(type, data)
 		const fail = (reason: Failure) => write('error', { reason })
+		// Чужие slug не доходят до модели: в служебное сообщение -- только то, что есть в базе
 		const sport = parsed.sport && sports.get(parsed.sport)
+		const article = parsed.article && articles.get(parsed.article)
+		const note = pageNote({
+			sport: sport ? { title: sport, slug: parsed.sport! } : undefined,
+			article: article ? { title: article, slug: parsed.article! } : undefined,
+		})
 
 		write('session', { id: session.id })
 		session.busy = true
@@ -168,7 +177,7 @@ export function chatHandler({
 				tools: chat,
 				session,
 				message: parsed.message,
-				note: sport && session.turns === 0 ? sportNote(sport, parsed.sport!) : undefined,
+				note: session.turns === 0 ? note : undefined,
 				emit,
 				limits,
 			})

@@ -1,7 +1,9 @@
 import { expect, test, type Page, type Route } from '@playwright/test'
 
-// Чат на сайте с подменённым бэкендом: сборка e2e идёт с CHAT=preview (playwright.config.ts),
-// поэтому кнопка есть только с ?chat=1. Настоящий /api/chat в e2e не поднимается
+// Чат по статье с подменённым бэкендом: сборка e2e идёт с CHAT=preview (playwright.config.ts),
+// поэтому строка чата есть только с ?chat=1. Настоящий /api/chat в e2e не поднимается
+
+const ARTICLE = '/crossfit/acl-tear/?chat=1'
 
 const sse = (...events: [string, object][]) =>
 	events.map(([type, data]) => `event: ${type}\ndata: ${JSON.stringify(data)}\n\n`).join('')
@@ -51,130 +53,147 @@ async function mockChat(page: Page, reply: (route: Route) => Promise<void> | voi
 	return posts
 }
 
-const sheet = (page: Page) => page.getByRole('dialog', { name: 'Описать своими словами' })
+const answer = (route: Route) =>
+	route.fulfill({ status: 200, headers: { 'Content-Type': 'text/event-stream' }, body: ANSWER })
 
-async function openChat(page: Page) {
-	await page.goto('/crossfit/?chat=1')
-	await page.getByRole('button', { name: 'Описать своими словами' }).first().click()
-	await expect(sheet(page)).toBeVisible()
-}
+const input = (page: Page) => page.getByRole('textbox', { name: 'Вопрос по справочнику' })
+const feed = (page: Page) => page.getByRole('region', { name: 'Вопрос по статье' })
 
-test('без метки ?chat=1 кнопки чата нет', async ({ page }) => {
-	await page.goto('/crossfit/')
-	await expect(page.locator('.index__panel')).toBeAttached()
-	await expect(page.getByRole('button', { name: 'Описать своими словами' })).toHaveCount(0)
+test('без метки ?chat=1 строки чата нет', async ({ page }) => {
+	await page.goto('/crossfit/acl-tear/')
+	await expect(page.locator('.article__body')).toBeVisible()
+	await expect(input(page)).toHaveCount(0)
 })
 
-test('чат: согласие, вопрос, признаки, текст, статья с плашкой черновика', async ({ page }) => {
-	const posts = await mockChat(page, (route) =>
-		route.fulfill({ status: 200, headers: { 'Content-Type': 'text/event-stream' }, body: ANSWER }),
-	)
+test('строка внизу шириной с колонку текста, фокус накрывает статью диалогом', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 })
 
-	await openChat(page)
+	const posts = await mockChat(page, answer)
 
-	const input = sheet(page).getByRole('textbox', { name: 'Ваш вопрос' })
+	await page.goto(ARTICLE)
+	await expect(input(page)).toBeVisible()
 
-	await expect(input).toBeDisabled()
-	await sheet(page).getByRole('button', { name: 'Понятно' }).click()
-	await expect(input).toBeFocused()
+	const column = (await page.locator('.article__body').boundingBox())!
+	const bar = (await page.locator('.dock__bar').boundingBox())!
+
+	expect(Math.round(bar.x)).toBe(Math.round(column.x))
+	expect(Math.round(bar.width)).toBe(Math.round(column.width))
+	expect(bar.y + bar.height).toBeGreaterThan(760)
+	await expect(feed(page)).toBeHidden()
+
+	await input(page).click()
+	await expect(feed(page)).toBeVisible()
+	await expect(feed(page)).toContainText('Ассистент сначала проверит тревожные признаки')
+	await expect(feed(page)).toContainText('Отправляя вопрос, вы с этим соглашаетесь')
 
 	// Вебвизор не пишет ни ввод, ни ленту: в них симптомы
-	await expect(input).toHaveClass(/ym-disable-keys/)
-	await expect(sheet(page).locator('.chat__feed')).toHaveClass(/ym-hide-content/)
+	await expect(input(page)).toHaveClass(/ym-disable-keys/)
+	await expect(feed(page)).toHaveClass(/ym-hide-content/)
 
-	await input.fill('хлопнуло в колене')
-	await sheet(page).getByRole('button', { name: 'Отправить' }).click()
+	await input(page).fill('хлопнуло в колене')
+	await page.keyboard.press('Enter')
 
-	const alarms = sheet(page).getByRole('list', { name: 'Когда сразу к врачу' })
+	const alarms = feed(page).getByRole('list', { name: 'Когда сразу к врачу' })
 
 	await expect(alarms).toContainText('Скорая 103 или 112')
 	await expect(alarms).toContainText('Сегодня в травмпункт')
 	await expect(alarms).not.toContainText('Болит ночью')
-	await expect(sheet(page).locator('.chat__later')).toContainText('ещё 1')
+	await expect(feed(page).locator('.answer__later')).toContainText('ещё 1')
+	await expect(feed(page).locator('.answer__text strong')).toHaveText('Сегодня в травмпункт.')
 
-	await expect(sheet(page).locator('.chat__text strong')).toHaveText('Сегодня в травмпункт.')
-
-	await expect(sheet(page).getByRole('link', { name: 'статья' })).toHaveAttribute(
-		'href',
-		'https://sorebody.aimuzov.online/injuries/acl-tear/',
-	)
-
-	const card = sheet(page).getByRole('list', { name: 'Статьи' }).getByRole('link')
+	const card = feed(page).getByRole('list', { name: 'Статьи' }).getByRole('link')
 
 	await expect(card).toContainText('Разрыв ПКС')
 	await expect(card).toContainText('черновик')
-	expect(posts).toEqual([{ message: 'хлопнуло в колене', sport: 'crossfit' }])
+	expect(posts).toEqual([{ message: 'хлопнуло в колене', sport: 'crossfit', article: 'acl-tear' }])
 
-	// Второй вопрос идёт в тот же диалог
-	await input.fill('а если не опухло?')
-	await sheet(page).getByRole('button', { name: 'Отправить' }).click()
-	await expect.poll(() => posts.length).toBe(2)
-	expect(posts[1]).toMatchObject({ session: 's1', message: 'а если не опухло?' })
-})
-
-test('чат: Esc закрывает, переписка дожидается следующего открытия', async ({ page }) => {
-	await mockChat(page, (route) =>
-		route.fulfill({ status: 200, headers: { 'Content-Type': 'text/event-stream' }, body: ANSWER }),
-	)
-
-	await openChat(page)
-	await sheet(page).getByRole('button', { name: 'Понятно' }).click()
-	await sheet(page).getByRole('button', { name: 'Болит колено после бега' }).click()
-	await expect(sheet(page).locator('.chat__question')).toHaveText('Болит колено после бега')
-
+	// Esc сворачивает диалог в строку, переписка ждёт следующего фокуса
 	await page.keyboard.press('Escape')
-	await expect(sheet(page)).toBeHidden()
+	await expect(feed(page)).toBeHidden()
+	await input(page).click()
+	await expect(feed(page).locator('.answer__question')).toHaveText('хлопнуло в колене')
 
-	await page.getByRole('button', { name: 'Описать своими словами' }).first().click()
-	await expect(sheet(page).locator('.chat__question')).toHaveText('Болит колено после бега')
+	// Второй вопрос -- в тот же диалог
+	await input(page).fill('а если не опухло?')
+	await page.keyboard.press('Enter')
+	await expect.poll(() => posts.length).toBe(2)
+	expect(posts[1]).toMatchObject({ session: 's1', article: 'acl-tear' })
 })
 
-test('чат: на сегодня закрыт -- заглушка «вернётся завтра», поле выключено', async ({ page }) => {
+test('пример вопроса отправляется сразу, нажатие мимо колонки сворачивает', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 800 })
+
+	const posts = await mockChat(page, answer)
+
+	await page.goto(ARTICLE)
+	await input(page).click()
+	await feed(page).getByRole('button', { name: 'К какому врачу идти?' }).click()
+	await expect.poll(() => posts.length).toBe(1)
+
+	await page.mouse.click(40, 400)
+	await expect(feed(page)).toBeHidden()
+})
+
+test('чат на сегодня закрыт -- «вернётся завтра», поле выключено', async ({ page }) => {
 	await page.route('**/api/chat*', (route) =>
 		route.fulfill({ json: { open: false, reopensAt: '2026-10-22T21:00:00.000Z' } }),
 	)
 
-	await openChat(page)
-	await expect(sheet(page)).toContainText('вернётся завтра')
-	await expect(sheet(page).getByRole('textbox', { name: 'Ваш вопрос' })).toBeDisabled()
+	await page.goto(ARTICLE)
+	await input(page).click()
+	await expect(feed(page)).toContainText('вернётся завтра')
+	await expect(input(page)).toBeDisabled()
 })
 
-test('чат: сервис не ответил -- понятный текст, а не пустой экран', async ({ page }) => {
+test('сервис не ответил -- понятный текст, а не пустой экран', async ({ page }) => {
 	await mockChat(page, (route) => route.fulfill({ status: 502, body: 'Bad gateway' }))
 
-	await openChat(page)
-	await sheet(page).getByRole('button', { name: 'Понятно' }).click()
-	await sheet(page).getByRole('textbox', { name: 'Ваш вопрос' }).fill('болит плечо')
-	await sheet(page).getByRole('button', { name: 'Отправить' }).click()
-	await expect(sheet(page).getByRole('alert')).toContainText('Не получилось ответить')
+	await page.goto(ARTICLE)
+	await input(page).fill('болит плечо')
+	await page.getByRole('button', { name: 'Отправить' }).click()
+	await expect(feed(page).getByRole('alert')).toContainText('Не получилось ответить')
+})
+
+test('статья поверх модели главной: строка чата есть и там', async ({ page }) => {
+	await page.goto('/crossfit/?chat=1')
+
+	await page
+		.getByRole('button', { name: /Голова/ })
+		.first()
+		.click()
+
+	await page
+		.getByRole('link', { name: /Травмы лица и зубов/ })
+		.first()
+		.click()
+
+	await expect(page.getByRole('heading', { level: 1, name: /Травмы лица и зубов/ })).toBeVisible()
+	await expect(input(page)).toBeVisible()
 })
 
 test.describe('телефон', () => {
 	test.use({ viewport: { width: 375, height: 663 }, hasTouch: true, isMobile: true })
 
-	test('лист на весь экран, поле ввода видно, страница не скроллится вбок', async ({ page }) => {
-		await mockChat(page, (route) =>
-			route.fulfill({ status: 200, headers: { 'Content-Type': 'text/event-stream' }, body: ANSWER }),
-		)
+	test('строка по колонке, кнопка оглавления над ней, вбок не скроллится', async ({ page }) => {
+		await mockChat(page, answer)
+		await page.goto(ARTICLE)
 
-		await page.goto('/crossfit/?chat=1')
-		await page.locator('.index__island-open').tap()
-		await page.getByRole('button', { name: 'Описать своими словами' }).first().tap()
-		await sheet(page).getByRole('button', { name: 'Понятно' }).tap()
+		const column = (await page.locator('.article__body').boundingBox())!
+		const bar = (await page.locator('.dock__bar').boundingBox())!
+		const toc = (await page.locator('.toc-menu__button').boundingBox())!
 
-		const box = await sheet(page).boundingBox()
+		expect(Math.round(bar.x)).toBe(Math.round(column.x))
+		expect(Math.round(bar.width)).toBe(Math.round(column.width))
+		expect(toc.y + toc.height).toBeLessThanOrEqual(bar.y)
 
-		expect(box).toMatchObject({ x: 0, y: 0, width: 375 })
-		expect(Math.round(box!.height)).toBe(663)
-
-		await sheet(page).getByRole('textbox', { name: 'Ваш вопрос' }).fill('подвернул ногу')
-		await sheet(page).getByRole('button', { name: 'Отправить' }).tap()
-		await expect(sheet(page).getByRole('list', { name: 'Статьи' })).toBeVisible()
-		await expect(sheet(page).getByRole('button', { name: 'Отправить' })).toBeInViewport()
+		await input(page).tap()
+		await input(page).fill('подвернул ногу')
+		await page.getByRole('button', { name: 'Отправить' }).tap()
+		await expect(feed(page).getByRole('list', { name: 'Статьи' })).toBeVisible()
+		await expect(page.getByRole('button', { name: 'Отправить' })).toBeInViewport()
 
 		const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
 
 		expect(overflow).toBeLessThanOrEqual(0)
-		await page.screenshot({ path: 'test-results/chat-mobile.png' })
 	})
 })

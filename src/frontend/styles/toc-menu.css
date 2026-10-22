@@ -1,11 +1,12 @@
-/* Меню разделов статьи на узком экране (components/toc-menu.astro). Отдельным файлом: им же
+/* Меню разделов статьи на узком экране (components/toc-menu.astro). Над строкой чата
+   (components/chat-dock.svelte) кнопка поднимается на её высоту. Отдельным файлом: им же
    пользуется статья поверх модели на главной, куда стили компонента сами не попадают.
    Порог тот же, что у бокового оглавления в article.css: где оно есть, кнопки нет */
 .toc-menu {
 	/* Отступ снизу: вырез экрана и системные кнопки Mini App Telegram (переменные ставит SDK) */
 	--toc-menu-bottom: calc(
 		max(16px, env(safe-area-inset-bottom)) + var(--tg-safe-area-inset-bottom, 0px) +
-			var(--tg-content-safe-area-inset-bottom, 0px)
+			var(--tg-content-safe-area-inset-bottom, 0px) + var(--chat-dock-lift, 0px)
 	);
 	--toc-menu-size: 52px;
 

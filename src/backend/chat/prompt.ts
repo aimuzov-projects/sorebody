@@ -32,6 +32,19 @@ ${JSON.stringify(tools.catalog())}`
 export const RED_FLAGS_REMINDER =
 	'Служебное напоминание от сайта: прежде чем отвечать о симптомах, вызови get_red_flags по зоне тела или по травме.'
 
-/** Какой спорт выбран на сайте: модель подставит его в фильтры. */
-export const sportNote = (title: string, slug: string) =>
-	`Служебное сообщение от сайта: человек выбрал на сайте спорт «${title}» (${slug}).`
+/** Что человек открыл на сайте: спорт -- модель подставит его в фильтры, статья -- вопрос, скорее всего, о ней. */
+export function pageNote({
+	sport,
+	article,
+}: {
+	sport?: { title: string; slug: string }
+	article?: { title: string; slug: string }
+}) {
+	const lines = [
+		sport && `человек выбрал на сайте спорт «${sport.title}» (${sport.slug})`,
+		article &&
+			`человек читает статью «${article.title}» (${article.slug}); вопрос, скорее всего, о ней, но тревожные признаки всё равно проверь первыми`,
+	].filter(Boolean)
+
+	return lines.length ? `Служебное сообщение от сайта: ${lines.join('; ')}.` : undefined
+}

@@ -33,6 +33,7 @@ import {
 } from '#frontend/data/sports.ts'
 import ArticleFigure from '#frontend/components/article-figure.astro'
 import BarLead from '#frontend/components/bar-lead.svelte'
+import ChatDock from '#frontend/components/chat-dock.svelte'
 import SiteHeader from '#frontend/components/site-header.svelte'
 import SportSwitch from '#frontend/components/sport-switch.svelte'
 import TocMenu from '#frontend/components/toc-menu.astro'
@@ -456,6 +457,8 @@ Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(HASH_JUMP).dig
 
 		<TocMenu {sections} />
 	</main>
+	{/* Вне main: ридер главной берёт из страницы только main и ставит строку чата сам */}
+	<ChatDock client:idle injury={{ slug: injury.id, title: name }} sport={sport?.slug} />
 </Base>
 
 <script>

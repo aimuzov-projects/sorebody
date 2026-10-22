@@ -9,6 +9,7 @@
 
 	import BarLead from '#frontend/components/bar-lead.svelte'
 	import SiteHeader from '#frontend/components/site-header.svelte'
+	import ChatDock from '#frontend/components/chat-dock.svelte'
 	import SportSwitch from '#frontend/components/sport-switch.svelte'
 	import { sportHome, sportOf, sportSwitchProps, type SportSlug } from '#frontend/data/sports.ts'
 	import { loadArticle } from '#frontend/lib/article-loader.ts'
@@ -264,6 +265,13 @@
 		{/if}
 		<div class="reader__body" bind:this={body} hidden={status !== 'ready'}></div>
 		{#if footer && status === 'ready'}{@render footer()}{/if}
+		{#if status === 'ready'}
+			<ChatDock
+				injury={{ slug: injury.slug, title: splitTitle(injury.title).name }}
+				{sport}
+				column={() => body?.querySelector<HTMLElement>('.article__body')}
+			/>
+		{/if}
 	</div>
 </article>
 
@@ -484,6 +492,8 @@
 		   из скрипта выше): там только поля, а раскладка та же, что у отдельной страницы */
 		&__page {
 			margin-right: calc(-1 * var(--reader-bar, 0px));
+			/* Под строкой чата (chat-dock.svelte) низ статьи не прячется */
+			padding-bottom: var(--chat-dock-lift, 0px);
 		}
 
 		/* Полоса прогресса чтения: тонкая, у верхнего края, рядом с "Назад". Над шапкой

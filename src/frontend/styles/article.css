@@ -3113,3 +3113,10 @@
 		opacity: 1;
 	}
 }
+
+/* Строка чата у низа экрана (components/chat-dock.svelte): низ отдельной страницы с подвалом
+   под ней не прячется. Только у страницы статьи, ридер главной освобождает место сам */
+/* stylelint-disable-next-line selector-max-type -- у body нет класса, страницу узнаём по её main */
+body:has(> .article) {
+	padding-bottom: var(--chat-dock-lift, 0px);
+}

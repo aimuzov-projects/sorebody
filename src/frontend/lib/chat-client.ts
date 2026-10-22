@@ -55,7 +55,7 @@ const FAILURES: Record<number, ChatFailure> = { 404: 'expired', 409: 'busy', 429
  * событие `error`, чтобы виджету было что показать в любом случае.
  */
 export async function* sendReply(
-	{ message, session, sport }: { message: string; session?: string; sport?: string },
+	{ message, session, sport, article }: { message: string; session?: string; sport?: string; article?: string },
 	{ fetch = globalThis.fetch, signal }: { fetch?: typeof globalThis.fetch; signal?: AbortSignal } = {},
 ): AsyncGenerator<ChatEvent> {
 	let res: Response
@@ -64,7 +64,7 @@ export async function* sendReply(
 		res = await fetch(ENDPOINT, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ message, session, sport }),
+			body: JSON.stringify({ message, session, sport, article }),
 			signal,
 		})
 	} catch {

@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 
-import { chatHandler } from './chat/http.ts'
+import { chatHandler, QUOTA } from './chat/http.ts'
 import { openRouter } from './chat/openrouter.ts'
 import { httpHandler } from './http.ts'
 import { loadKnowledge } from './knowledge/load.ts'
@@ -24,6 +24,12 @@ const chat =
 				complete: openRouter({ key }),
 				tools,
 				origins: (process.env.CHAT_ORIGINS ?? 'https://sorebody.aimuzov.online').split(','),
+				quota: {
+					perMinute: Number(process.env.CHAT_PER_MINUTE ?? QUOTA.perMinute),
+					perDay: Number(process.env.CHAT_PER_DAY ?? QUOTA.perDay),
+					dialogs: Number(process.env.CHAT_DIALOGS_PER_DAY ?? QUOTA.dialogs),
+					dollars: Number(process.env.CHAT_DOLLARS_PER_DAY ?? QUOTA.dollars),
+				},
 			})
 		: undefined
 

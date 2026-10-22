@@ -7,7 +7,8 @@ import { httpHandler } from '#backend/http.ts'
 import { knowledgeTools } from '#backend/knowledge/tools.ts'
 import { diskKnowledge } from '#frontend/lib/knowledge-disk.ts'
 
-import { chatHandler } from './http.ts'
+import { dailyCounter } from './daily.ts'
+import { chatHandler, QUOTA } from './http.ts'
 import { maskContacts } from './mask.ts'
 import { OpenRouterError, type AssistantMessage, type Complete, type Message } from './openrouter.ts'
 import { chatSystem, RED_FLAGS_REMINDER } from './prompt.ts'
@@ -197,13 +198,13 @@ test('sessionStore: живут ttl с последней реплики, лиш�
 })
 
 /** Сервер с чатом на подделанной модели; `events` -- разобранный поток SSE. */
-async function server(complete: Complete) {
+async function server(complete: Complete, extra: Partial<Parameters<typeof chatHandler>[0]> = {}) {
 	const handler = httpHandler({
 		tools,
 		version: '0',
 		hosts: ['127.0.0.1'],
 		perMinute: 100,
-		chat: chatHandler({ complete, tools, origins: ['https://site.test'] }),
+		chat: chatHandler({ complete, tools, origins: ['https://site.test'], ...extra }),
 	})
 	const srv = createServer(handler)
 
@@ -287,4 +288,81 @@ test('http: без чата /api/chat -- 404', async (t) => {
 	const res = await fetch(`http://127.0.0.1:${(srv.address() as AddressInfo).port}/api/chat`, { method: 'POST' })
 
 	assert.equal(res.status, 404)
+})
+
+test('dailyCounter: сутки по Москве -- обнуляется в полночь МСК, а не UTC', () => {
+	// 2026-10-22 23:30 МСК = 20:30 UTC
+	let time = Date.UTC(2026, 9, 22, 20, 30)
+	const counter = dailyCounter({ limit: 1, now: () => time })
+
+	counter.add(0.6)
+	counter.add(0.6)
+	assert.equal(counter.open, false)
+	assert.equal(counter.resetsAt, '2026-10-22T21:00:00.000Z')
+
+	time = Date.UTC(2026, 9, 22, 21, 0)
+	assert.equal(counter.open, true)
+	assert.equal(counter.used, 0)
+})
+
+test('http: частит один адрес -- 429 с Retry-After, суточный запас не тратится', async (t) => {
+	const { post, close } = await server(scripted([say('Ответ.')]).complete, {
+		quota: { ...QUOTA, perMinute: 2, perDay: 3 },
+	})
+
+	t.after(close)
+
+	const statuses = []
+
+	for (let i = 0; i < 4; i++) statuses.push((await post({ message: 'колено' })).status)
+
+	assert.deepEqual(statuses, [200, 200, 429, 429])
+
+	const limited = await post({ message: 'колено' })
+
+	assert.ok(Number(limited.headers.get('retry-after')) > 0)
+	assert.deepEqual(await limited.json(), { reason: 'rate' })
+})
+
+test('http: деньги на сегодня кончились -- 503 до полуночи, GET это показывает', async (t) => {
+	let time = Date.UTC(2026, 9, 22, 9, 0)
+	const { base, post, events, close } = await server(scripted([say('Ответ.')], { cost: 0.2 }).complete, {
+		quota: { ...QUOTA, dollars: 0.3 },
+		now: () => time,
+	})
+
+	t.after(close)
+
+	assert.deepEqual(await (await fetch(base)).json(), { open: true })
+
+	const first = await events(await post({ message: 'колено' }))
+	const id = first[0]!.data.id
+
+	assert.equal(
+		(await events(await post({ session: id, message: 'а ещё?' }))).at(-1)!.type,
+		'done',
+		'реплика, начатая до потолка, доживает',
+	)
+
+	const refused = await post({ session: id, message: 'и ещё' })
+
+	assert.equal(refused.status, 503)
+	assert.deepEqual(await refused.json(), { reason: 'closed', reopensAt: '2026-10-22T21:00:00.000Z' })
+	assert.deepEqual(await (await fetch(base)).json(), { open: false, reopensAt: '2026-10-22T21:00:00.000Z' })
+
+	time = Date.UTC(2026, 9, 22, 21, 1)
+	assert.equal((await post({ message: 'колено' })).status, 200, 'после полуночи по Москве снова открыт')
+})
+
+test('http: новые диалоги на сегодня кончились -- начатые продолжаются', async (t) => {
+	const { post, events, close } = await server(scripted([say('Ответ.')]).complete, {
+		quota: { ...QUOTA, dialogs: 1 },
+	})
+
+	t.after(close)
+
+	const id = (await events(await post({ message: 'колено' })))[0]!.data.id
+
+	assert.equal((await post({ message: 'плечо' })).status, 503)
+	assert.equal((await post({ session: id, message: 'а ещё?' })).status, 200)
 })

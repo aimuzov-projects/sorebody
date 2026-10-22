@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.24.0](https://github.com/aimuzov-projects/sorebody/compare/v1.23.0...v1.24.0) (2026-10-22)
+
+
+### Features
+
+* **knowledge:** export the article base and add search tools for the agent ([98c67b2](https://github.com/aimuzov-projects/sorebody/commit/98c67b2159ed804e2059fa283e337f752b666021))
+* **mcp:** serve the injury base as a public MCP server ([9608e4b](https://github.com/aimuzov-projects/sorebody/commit/9608e4b052563fbd83066a1cf9caa4a9dea2516f))
+
+
+### Bug Fixes
+
+* **knowledge:** rank acute injuries with a pop and swelling above overuse ([dfb9183](https://github.com/aimuzov-projects/sorebody/commit/dfb9183d8d5225afaf957c5391a38dc042d05c83))
+
 ## [1.23.0](https://github.com/aimuzov-projects/sorebody/compare/v1.22.0...v1.23.0) (2026-10-21)
 
 

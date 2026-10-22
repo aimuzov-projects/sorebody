@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.26.0](https://github.com/aimuzov-projects/sorebody/compare/v1.25.0...v1.26.0) (2026-10-22)
+
+
+### Features
+
+* **sport-switch:** roll the drum to the chosen sport ([2f8c6d1](https://github.com/aimuzov-projects/sorebody/commit/2f8c6d1e9386985503398ebbb58d14b5792df36c))
+* **sport-switch:** show the sport phrase as a drum ([a619a19](https://github.com/aimuzov-projects/sorebody/commit/a619a1944ba9a30216c9aeb29838dcad63522685))
+* **sport-switch:** turn the sport phrase into a drum ([1738692](https://github.com/aimuzov-projects/sorebody/commit/17386922eb176249c58ebc848096959d66231bd6))
+
 ## [1.25.0](https://github.com/aimuzov-projects/sorebody/compare/v1.24.0...v1.25.0) (2026-10-22)
 
 

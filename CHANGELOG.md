@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.28.1](https://github.com/aimuzov-projects/sorebody/compare/v1.28.0...v1.28.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* **deploy:** send the chat to OpenRouter through the shared VPN exit ([a1f15cd](https://github.com/aimuzov-projects/sorebody/commit/a1f15cd4ed217cc5b332d365770233cd7cf44062))
+* **deploy:** send the chat to OpenRouter through the shared VPN exit ([dccdcb7](https://github.com/aimuzov-projects/sorebody/commit/dccdcb70a2fcc64f28a6090eecf11dc838cfaf32))
+
 ## [1.28.0](https://github.com/aimuzov-projects/sorebody/compare/v1.27.1...v1.28.0) (2026-10-22)
 
 

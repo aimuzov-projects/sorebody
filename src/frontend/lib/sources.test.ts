@@ -95,6 +95,7 @@ test('sourcesSummary counts mountain statistics apart from guidelines', () => {
 	const oekas = { url: OEKAS, label: 'ÖKAS' }
 
 	assert.equal(sourcesSummary([oekas]), '1 отчёт горной статистики')
+
 	assert.equal(
 		sourcesSummary([paper, uiaa, oekas, oekas]),
 		'1 работа из PubMed, 1 клиническая рекомендация и 2 отчёта горной статистики',

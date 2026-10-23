@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.29.0](https://github.com/aimuzov-projects/sorebody/compare/v1.28.1...v1.29.0) (2026-10-23)
+
+
+### Features
+
+* **about:** describe chat data handling and shorten the chat disclaimer ([f7bf417](https://github.com/aimuzov-projects/sorebody/commit/f7bf417787ada5aa9f3349e4253a9b9c26d134bd))
+* **about:** describe chat data handling and shorten the chat disclaimer ([b19ec8b](https://github.com/aimuzov-projects/sorebody/commit/b19ec8ba5d7b82324d1ae924c90d4feb2afe021c))
+* **sources:** accept mountain rescue statistics and UIAA papers ([#204](https://github.com/aimuzov-projects/sorebody/issues/204)) ([0b0c503](https://github.com/aimuzov-projects/sorebody/commit/0b0c503d0838afc520377df088a6448f50667e11))
+
+
+### Bug Fixes
+
+* **basketball:** proofread the basketball lenses ([e61eb19](https://github.com/aimuzov-projects/sorebody/commit/e61eb19d96e18748cef18aa47733239fe58e3186))
+* **basketball:** proofread the basketball lenses ([3828db4](https://github.com/aimuzov-projects/sorebody/commit/3828db428764d98648132aebd124706e081cdd73))
+* **basketball:** typeset non-breaking spaces ([b58b205](https://github.com/aimuzov-projects/sorebody/commit/b58b205b5e4a2747b1cab3273b8bd0e2d7e54197))
+* **crossfit:** proofread the crossfit lenses ([7c89eb0](https://github.com/aimuzov-projects/sorebody/commit/7c89eb049e8727e3811015ee2daef0a3608d64f4))
+* **crossfit:** proofread the crossfit lenses ([a8fe142](https://github.com/aimuzov-projects/sorebody/commit/a8fe142a38225800ac94992153dad99f7b34e4c6))
+* **crossfit:** typeset non-breaking spaces ([d30db42](https://github.com/aimuzov-projects/sorebody/commit/d30db42d55c3b81e2e597d01499a95e609a348e4))
+* **football:** proofread the football lenses ([b15be28](https://github.com/aimuzov-projects/sorebody/commit/b15be28da3757c798e4cd93f4f5f301367617552))
+* **football:** proofread the football lenses ([70653f3](https://github.com/aimuzov-projects/sorebody/commit/70653f3e8a287e2a706dc47b7a42a7909e7b49c8))
+* **football:** typeset non-breaking spaces ([20a6886](https://github.com/aimuzov-projects/sorebody/commit/20a6886009df97f5c2eefbce67d0906230986daf))
+* **hiking:** proofread the hiking lenses ([e375ae4](https://github.com/aimuzov-projects/sorebody/commit/e375ae4e8c1fd01b75d85f0557b55b59c7678d0f))
+* **hiking:** typeset non-breaking spaces ([5cf3ebb](https://github.com/aimuzov-projects/sorebody/commit/5cf3ebb6da869f50eb529eaa88009fa0565ef540))
+* **injuries:** proofread the common injury articles ([42383cf](https://github.com/aimuzov-projects/sorebody/commit/42383cf66906527c1d57bf28aa3bf27a86470483))
+* **injuries:** proofread the common injury articles ([ebf7482](https://github.com/aimuzov-projects/sorebody/commit/ebf7482de851f04f41e415dc4a4514322d988963))
+* **injuries:** typeset non-breaking spaces ([bb8dc0c](https://github.com/aimuzov-projects/sorebody/commit/bb8dc0ccaf9e6b547821e473ffe373ca6c31832a))
+* **padel:** proofread the padel lenses ([0841ec7](https://github.com/aimuzov-projects/sorebody/commit/0841ec71147095221a1f7595b52d1e745264b997))
+* **padel:** proofread the padel lenses ([3a6ff87](https://github.com/aimuzov-projects/sorebody/commit/3a6ff87a143bab125148cc454c0e16bd333cc6d6))
+* **padel:** typeset non-breaking spaces ([2be039d](https://github.com/aimuzov-projects/sorebody/commit/2be039d2deda29b0a9714208d6f492e7dc6cbb73))
+* **running:** proofread the running lenses ([2aeaedd](https://github.com/aimuzov-projects/sorebody/commit/2aeaedd0ac4a536bed29eb0cf84a0cfc71e7f136))
+* **running:** proofread the running lenses ([ae51af5](https://github.com/aimuzov-projects/sorebody/commit/ae51af50092058d4491a3fec95ed48d33b237747))
+* **running:** typeset non-breaking spaces ([258a0dd](https://github.com/aimuzov-projects/sorebody/commit/258a0dd56946caf953e70ed9232e4dc1b669bda0))
+
 ## [1.28.1](https://github.com/aimuzov-projects/sorebody/compare/v1.28.0...v1.28.1) (2026-10-23)
 
 

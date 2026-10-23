@@ -35,6 +35,11 @@ services:
     env_file:
       - path: ../api.env
         required: false
+    # Из РФ OpenRouter отвечает 403, поэтому чат ходит наружу через общий VPN-выход
+    # из infra-server.
+    environment:
+      HTTPS_PROXY: http://vpn:3128
+      NODE_USE_ENV_PROXY: '1'
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8787/api/health']
       interval: 30s
@@ -43,6 +48,7 @@ services:
       start_period: 10s
     networks:
       - edge
+      - vpn
     logging: *logging
 
 # Переменные сборки лежат в `/srv/wodcare/.env`, образец -- `.env.example`. Переменные
@@ -54,4 +60,7 @@ secrets:
 networks:
   edge:
     name: edge
+    external: true
+  vpn:
+    name: vpn
     external: true

@@ -120,7 +120,7 @@ draft: true
 
 <div data-compare="heat-or-sodium"></div>
 
-Гипонатриемию связывают ещё и с [рабдомиолизом](/injuries/exertional-rhabdomyolysis/), разрушением мышц от нагрузки: связь описана в обе стороны ([2](https://pubmed.ncbi.nlm.nih.gov/28316971/)).
+Гипонатриемию связывают ещё и с [рабдомиолизом](/injuries/exertional-rhabdomyolysis/), разрушением мышц от нагрузки: предполагают, что связь действует в обе стороны ([2](https://pubmed.ncbi.nlm.nih.gov/28316971/)).
 
 ## Лечение
 

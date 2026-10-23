@@ -19,7 +19,7 @@ sources:
     - pmid: '20473229'
       label: Howatson 2011, контролируемое исследование палок при восхождении и спуске, 37 человек
     - url: https://www.theuiaa.org/documents/mountainmedicine/English_UIAA_MedCom_RecNo11_Hikingsticks2021_V1-1.pdf
-      label: 'UIAA MedCom, рекомендация № 11, треккинговые палки в горах, 2021, с. 2–4'
+      label: 'UIAA MedCom, рекомендация № 11, треккинговые палки в горах, 2021, с. 2–4'
 stats:
     - id: load
       value: 'в 3–4 раза'

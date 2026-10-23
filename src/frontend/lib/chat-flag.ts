@@ -1,4 +1,4 @@
-const PREVIEW_KEY = 'wodcare:chat'
+const PREVIEW_KEY = 'sorebody:chat'
 
 type Env = {
 	root: { dataset: DOMStringMap }

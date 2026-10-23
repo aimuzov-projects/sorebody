@@ -16,7 +16,7 @@ import {
 export type { Theme }
 
 /** Ключ выбора в localStorage, тот же у ThemeBoot. */
-export const THEME_KEY = 'wodcare:theme'
+export const THEME_KEY = 'sorebody:theme'
 
 const LABEL: Record<Theme, string> = { auto: 'как в системе', light: 'светлая', dark: 'тёмная' }
 const ENABLE: Record<Scheme, string> = { light: 'Включить светлую', dark: 'Включить тёмную' }

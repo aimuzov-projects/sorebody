@@ -3,7 +3,7 @@
  * переписывает сама сцена (body-3d.svelte, onHistory), а между страницами помнит sessionStorage:
  * «Назад» на главную с другой страницы, если браузер грузит её заново, открывает выбранный спорт.
  */
-const SPORT_KEY = 'wodcare:sport'
+const SPORT_KEY = 'sorebody:sport'
 
 /** Атрибут `<html>` у главной, которая уходит из `<head>` на главную выбранного спорта. */
 export const SPORT_LEAVING = 'data-sport-leaving'
@@ -12,7 +12,7 @@ export const SPORT_LEAVING = 'data-sport-leaving'
  * Событие на `document`: уход не случился (его отменили Esc или кнопкой "Стоп", вебвью не
  * пустил), и главная осталась. Её снова видно, Метрика включается по нему (components/metrika.astro).
  */
-export const SPORT_STAY = 'wodcare:sport-stay'
+export const SPORT_STAY = 'sorebody:sport-stay'
 
 /** Через сколько миллисекунд считать, что уход не случился. */
 const STAY_AFTER = 3000

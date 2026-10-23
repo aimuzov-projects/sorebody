@@ -47,10 +47,19 @@ const { title, description = site.description, index = true, bare = false, bodyC
  * Inline-скрипты Astro в CSP не хеширует, поэтому хеш считаем сами.
  */
 const TELEGRAM_FLAG =
-	"try{if(/tgWebApp(Data|Platform)=/.test(location.hash)||sessionStorage.getItem('wodcare:tg'))" +
+	"try{if(/tgWebApp(Data|Platform)=/.test(location.hash)||sessionStorage.getItem('sorebody:tg'))" +
 	"document.documentElement.dataset.telegram=''}catch{if(/tgWebApp(Data|Platform)=/.test(location.hash))" +
 	"document.documentElement.dataset.telegram=''}"
 
+/**
+ * Ключи хранилищ до переименования звались `wodcare:*`. Переносим их на `sorebody:*` раньше
+ * ThemeBoot и флага Telegram, чтобы не сбросились тема и подсказка. Убрать через пару месяцев.
+ */
+const STORAGE_RENAME =
+	"try{for(const s of[localStorage,sessionStorage])for(const k of Object.keys(s))if(k.startsWith('wodcare:')){" +
+	"const n='sorebody:'+k.slice(8);if(s.getItem(n)===null)s.setItem(n,s.getItem(k));s.removeItem(k)}}catch{}"
+
+Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(STORAGE_RENAME).digest('base64')}`)
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(TELEGRAM_FLAG).digest('base64')}`)
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(SPORT_RETURN).digest('base64')}`)
 Astro.csp?.insertScriptHash(`sha256-${createHash('sha256').update(SPORT_TRANSITION).digest('base64')}`)
@@ -97,6 +106,7 @@ const canonical = new URL(Astro.props.canonical ?? Astro.url.pathname, Astro.sit
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<style is:inline set:html={BRAND_GRADIENT_CSS}></style>
+		<script is:inline set:html={STORAGE_RENAME} />
 		<script is:inline set:html={TELEGRAM_FLAG} />
 		{sport && <script is:inline set:html={SPORT_RETURN} />}
 		<script is:inline set:html={SPORT_TRANSITION} />

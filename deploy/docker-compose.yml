@@ -1,7 +1,7 @@
 # Сайт на сервере проектов. Порты 80/443 занимает общий Caddy
 # из aimuzov-projects/infra-server, он проксирует сюда домен через сеть `edge`.
 
-name: wodcare
+name: sorebody
 
 x-logging: &logging
   driver: json-file
@@ -15,8 +15,8 @@ services:
       context: ..
       dockerfile: deploy/frontend.Dockerfile
       secrets: [env]
-    image: wodcare
-    container_name: wodcare
+    image: sorebody
+    container_name: sorebody
     restart: unless-stopped
     networks:
       - edge
@@ -27,8 +27,8 @@ services:
     build:
       context: ..
       dockerfile: deploy/backend.Dockerfile
-    image: wodcare-api
-    container_name: wodcare-api
+    image: sorebody-api
+    container_name: sorebody-api
     restart: unless-stopped
     # Ключ OpenRouter и настройки чата, образец -- `api.env.example`. Файла нет -- чат
     # выключен, MCP работает как раньше.
@@ -51,8 +51,8 @@ services:
       - vpn
     logging: *logging
 
-# Переменные сборки лежат в `/srv/wodcare/.env`, образец -- `.env.example`. Переменные
-# бэкенда -- в `/srv/wodcare/api.env`, образец -- `api.env.example`.
+# Переменные сборки лежат в `/srv/sorebody/.env`, образец -- `.env.example`. Переменные
+# бэкенда -- в `/srv/sorebody/api.env`, образец -- `api.env.example`.
 secrets:
   env:
     file: ../.env

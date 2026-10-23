@@ -60,7 +60,7 @@ export default defineConfig({
 		},
 	},
 	// Astro кладёт в `<meta>` страницы CSP с хешами своих скриптов и стилей.
-	// `frame-ancestors` в `<meta>` не работает: его ставит Caddy (infra-server, sites/wodcare.caddy),
+	// `frame-ancestors` в `<meta>` не работает: его ставит Caddy (infra-server, sites/sorebody.caddy),
 	// там разрешено встраивание только Метрике для вебвизора и карты кликов.
 	// Источники Яндекса добавляет только components/metrika.astro, на страницы со счётчиком.
 	security: {

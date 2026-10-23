@@ -179,7 +179,7 @@ for (const [bars, launchOptions] of Object.entries(SCROLLBARS))
 				const page = await (own ?? browser).newPage({ viewport: { width, height: 800 }, baseURL })
 
 				// В Mini App своей «‹» нет: логотип везде на краю колонки, как поле шапки
-				if (telegram) await page.addInitScript(() => sessionStorage.setItem('wodcare:tg', '1'))
+				if (telegram) await page.addInitScript(() => sessionStorage.setItem('sorebody:tg', '1'))
 
 				const { home, reader, article } = await logoXs(page)
 

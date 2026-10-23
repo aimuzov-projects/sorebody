@@ -1,5 +1,5 @@
 ---
-title: Переломы и вывихи кисти и пальцев
+title: Переломы и вывихи кисти и пальцев
 titleEn: Hand and finger fractures and dislocations
 region: wrist-hand
 prompts:
@@ -53,7 +53,7 @@ sources:
 brief:
     - kind: alert
       label: Тревожно
-      text: 'Палец деформирован, повёрнут или вывихнут — в травмпункт в тот же день'
+      text: 'Палец деформирован, повёрнут или вывихнут — в травмпункт в тот же день'
     - kind: doctor
       label: Врач
       text: 'Травматолог-ортопед, в сложных случаях — хирург кисти'

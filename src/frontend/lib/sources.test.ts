@@ -78,3 +78,26 @@ test('sourcesSummary counts PubMed papers and guidelines with Russian plural for
 		'5 работ из PubMed и 5 клинических рекомендаций',
 	)
 })
+
+const OEKAS = 'https://alpinesicherheit.at/wp-content/uploads/2025/04/OeKAS-PA-Jahresrueckblick-2024_korrigiert-2.pdf'
+const UIAA = 'https://www.theuiaa.org/documents/mountainmedicine/English_UIAA_MedCom_RecNo11_Hikingsticks2021_V1-1.pdf'
+
+test('mountain rescue statistics and UIAA are accepted sources', () => {
+	assert.equal(guidelineSite(OEKAS), 'ÖKAS')
+	assert.equal(guidelineSite('https://www.sac-cas.ch/fileadmin/x.pdf'), 'SAC')
+	assert.equal(guidelineSite(UIAA), 'UIAA')
+	assert.equal(citeKey(OEKAS), OEKAS)
+})
+
+test('sourcesSummary counts mountain statistics apart from guidelines', () => {
+	const paper = { pmid: '35278328', label: 'x' }
+	const uiaa = { url: UIAA, label: 'UIAA' }
+	const oekas = { url: OEKAS, label: 'ÖKAS' }
+
+	assert.equal(sourcesSummary([oekas]), '1 отчёт горной статистики')
+
+	assert.equal(
+		sourcesSummary([paper, uiaa, oekas, oekas]),
+		'1 работа из PubMed, 1 клиническая рекомендация и 2 отчёта горной статистики',
+	)
+})

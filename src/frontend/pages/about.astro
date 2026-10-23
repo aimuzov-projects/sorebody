@@ -1,5 +1,5 @@
 ---
-import { BookOpen, ChevronLeft, FlaskConical, PersonStanding, Sparkles, Stethoscope } from 'lucide-static'
+import { BookOpen, ChevronLeft, FlaskConical, PersonStanding, ShieldCheck, Sparkles, Stethoscope } from 'lucide-static'
 
 import BarLead from '#frontend/components/bar-lead.svelte'
 import SiteHeader from '#frontend/components/site-header.svelte'
@@ -16,6 +16,7 @@ const SECTIONS = [
 	{ id: 'ai', title: 'Тексты и иллюстрации', icon: Sparkles },
 	{ id: 'model', title: '3D-модель', icon: PersonStanding },
 	{ id: 'doctor', title: 'Это не консультация', icon: Stethoscope },
+	{ id: 'data', title: 'Данные', icon: ShieldCheck },
 ]
 const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 ---
@@ -192,9 +193,27 @@ const section = Object.fromEntries(SECTIONS.map((s) => [s.id, s]))
 						травматологу или спортивному врачу. Иллюстрации сгенерированы нейросетью, анатомия на них
 						упрощена.
 					</p>
+				</section>
+
+				<section class="article-section" id="data" aria-labelledby="data-title">
+					<h2 class="article-section__title" id="data-title">
+						<span class="article-section__icon" aria-hidden="true" set:html={section.data.icon} />
+						{section.data.title}
+					</h2>
 					<p>
 						Посещения сайт считает Яндекс Метрикой. Статистика обезличена, а то, что вы вводите в поиск,
 						в записи Метрики не попадает.
+					</p>
+					<p>
+						На вопросы в чате отвечает модель Claude компании Anthropic. Вопрос уходит к ней через сервис
+						OpenRouter в США, а обрабатывают его только серверы, которые не хранят запросы. Хранение
+						запросов в OpenRouter выключено.
+					</p>
+					<p>
+						У нас переписка не сохраняется: ни в логах, ни на диске. Она живёт в памяти сервера 30 минут
+						и стирается кнопкой «Очистить». Аккаунтов и кук нет, IP-адрес нужен только для лимитов и дальше
+						не передаётся. Телефоны и e-mail в тексте вопроса маскируются до отправки, но имя и контакты
+						лучше не писать вовсе.
 					</p>
 				</section>
 			</div>

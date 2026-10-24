@@ -1,5 +1,5 @@
 # Сайт на сервере проектов. Порты 80/443 занимает общий Caddy
-# из aimuzov-projects/infra-server, он проксирует сюда домен через сеть `edge`.
+# из aimuzov/infra-server, он проксирует сюда домен через сеть `edge`.
 
 name: sorebody
 

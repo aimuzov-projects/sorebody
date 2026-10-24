@@ -1,4 +1,4 @@
-import { themePeek } from '@aimuzov-projects/infra-site-kit/theme-peek.js'
+import { themePeek } from '@aimuzov/infra-site-kit/theme-peek.js'
 import {
 	currentTheme,
 	nextTheme,
@@ -7,7 +7,7 @@ import {
 	watchTheme,
 	type Scheme,
 	type Theme,
-} from '@aimuzov-projects/infra-site-kit/theme.js'
+} from '@aimuzov/infra-site-kit/theme.js'
 
 /**
  * Тема сайта: как в системе, светлая или тёмная, логика в infra-site-kit. До отрисовки выбор

@@ -1,4 +1,4 @@
-import { visibleReleases, type Release } from '@aimuzov-projects/infra-site-kit/changelog.js'
+import { visibleReleases, type Release } from '@aimuzov/infra-site-kit/changelog.js'
 import * as lucide from 'lucide-static'
 
 import { PADEL_RACKET } from '#frontend/lib/icons.ts'

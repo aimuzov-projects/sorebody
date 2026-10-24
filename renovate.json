@@ -1,6 +1,6 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["github>aimuzov-projects/infra-site-kit"],
+	"extends": ["github>aimuzov/infra-site-kit"],
 	"packageRules": [
 		{
 			"description": "CI runs in the Playwright image, whose browser must match @playwright/test, so both move in one PR",

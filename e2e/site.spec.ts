@@ -5,7 +5,7 @@ import {
 	expectStableWidth,
 	siteChecks,
 	sitemapPaths,
-} from '@aimuzov-projects/infra-site-kit/playwright/checks'
+} from '@aimuzov/infra-site-kit/playwright/checks'
 import { expect, test, type APIRequestContext } from '@playwright/test'
 
 // Проверки, общие для всех сайтов: кнопка темы с подсмотром другой схемы и 404 из кита.

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { existsSync } from 'node:fs'
 import { test } from 'node:test'
-import { itemLinks } from '@aimuzov-projects/infra-site-kit/changelog.js'
+import { itemLinks } from '@aimuzov/infra-site-kit/changelog.js'
 
 import { RELEASES } from '#frontend/data/changelog.ts'
 import { SPORTS } from '#frontend/data/sports.ts'

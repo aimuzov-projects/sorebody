@@ -61,4 +61,5 @@ jobs:
         with:
           ssh-key: ${{ secrets.DEPLOY_SSH_KEY }}
           url: https://sorebody.aimuzov.online
+          health-url: https://sorebody.aimuzov.online/api/health
           ref: ${{ needs.release.outputs.tag || inputs.tag }}

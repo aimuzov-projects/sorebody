@@ -8,12 +8,12 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/aimuzov-projects/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://github.com/aimuzov/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://sorebody.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fsorebody.aimuzov.online&label=site" alt="Site status"></a>
-	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
-	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
-	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
-	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/sorebody" alt="License"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov/sorebody" alt="License"></a>
 </p>
 
 <h3 align="center">Sorebody, a sports pain reference: how common each kind of pain is in CrossFit, padel, football, running, basketball and hiking, its symptoms, when to see a doctor and how to adapt training, with links to the research.</h3>
@@ -38,7 +38,7 @@ The site is in Russian, so the names below are translated.
 - **About**, **What's new** and **404** have no sport, their accent is graphite.
 - **Brand**: the "pain point" mark in [`logo.svelte`](src/frontend/components/logo.svelte); the favicon, icons, OG image and README banner are rendered by [`scripts/brand/render.mjs`](scripts/brand/render.mjs). The name and descriptor live in [`site.ts`](src/frontend/data/site.ts).
 - **Public MCP** at `/mcp` (Streamable HTTP, no sessions, read-only): search over the articles, an article by sections, red flags, the catalog. The base is `/knowledge.json`, which the site build emits; the server is [`src/backend/mcp.ts`](src/backend/mcp.ts).
-- **Footer**: the author credit from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) with a link to the source code, `repo` in [`site.ts`](src/frontend/data/site.ts).
+- **Footer**: the author credit from [infra-site-kit](https://github.com/aimuzov/infra-site-kit) with a link to the source code, `repo` in [`site.ts`](src/frontend/data/site.ts).
 
 ## How it is built
 
@@ -47,13 +47,13 @@ Everything lives in `src/`:
 - [`src/frontend`](src/frontend): the Astro site, it is the `srcDir` in `astro.config.mjs`. Imports go through `#frontend/*`.
 - [`src/backend`](src/backend): the API next to the site, the way shkatova-psychologist and prestige-logist do it: plain Node running TypeScript, no build, imports through `#backend/*`. Code both sides need is in [`src/shared`](src/shared) (`#shared/*`), the image is [`deploy/backend.Dockerfile`](deploy/backend.Dockerfile), the `api` service in `deploy/docker-compose.yml`. The site never imports from `src/backend`.
 
-Everything about the server is in [`deploy`](deploy): the Dockerfile, compose and nginx. The deploy script is shared by all sites and lives in [infra-server](https://github.com/aimuzov-projects/infra-server).
+Everything about the server is in [`deploy`](deploy): the Dockerfile, compose and nginx. The deploy script is shared by all sites and lives in [infra-server](https://github.com/aimuzov/infra-server).
 
 Every file, components included, is named in kebab-case: `base.astro`, `section-photo.astro`. The name used in markup comes from the import (`import Base from '#frontend/layouts/base.astro'`), and the `unicorn/filename-case` rule in oxlint keeps file names in line.
 
 ## Running
 
-Stack and layout follow [infra-site-template](https://github.com/aimuzov-projects/infra-site-template): Astro + Svelte 5, Prettier, oxlint, stylelint (BEM), `node --test` for unit tests, Playwright for e2e. The Prettier, stylelint, oxlint and Playwright configs and the CI steps come from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit). Node comes from [`mise.toml`](mise.toml), the same version is pinned in `package.json` and [`deploy/frontend.Dockerfile`](deploy/frontend.Dockerfile).
+Stack and layout follow [infra-site-template](https://github.com/aimuzov/infra-site-template): Astro + Svelte 5, Prettier, oxlint, stylelint (BEM), `node --test` for unit tests, Playwright for e2e. The Prettier, stylelint, oxlint and Playwright configs and the CI steps come from [infra-site-kit](https://github.com/aimuzov/infra-site-kit). Node comes from [`mise.toml`](mise.toml), the same version is pinned in `package.json` and [`deploy/frontend.Dockerfile`](deploy/frontend.Dockerfile).
 
 ```sh
 cp .env.example .env   # may stay empty, but the file has to exist
@@ -95,7 +95,7 @@ The build puts a CSP with hashes of Astro's scripts and styles into every page (
 
 ## Deployment
 
-The projects server from [infra-server](https://github.com/aimuzov-projects/infra-server): merging the release PR that release-please keeps open runs `deploy.yml`, which runs the checks and logs in over SSH. The steps of both come from [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), which also holds the server address and its `known_hosts` line. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) of infra-server, which checks out the release tag and rebuilds the `sorebody` container (nginx with the static site) from [`deploy/docker-compose.yml`](deploy/docker-compose.yml). The build runs in a systemd unit, so a dropped SSH connection does not cut it short. The domain and TLS are handled by the shared Caddy. `.env` (build variables) and `api.env` (the OpenRouter key and settings of the site chat, see `api.env.example`) live on the server in `/srv/sorebody`.
+The projects server from [infra-server](https://github.com/aimuzov/infra-server): merging the release PR that release-please keeps open runs `deploy.yml`, which runs the checks and logs in over SSH. The steps of both come from [infra-site-kit](https://github.com/aimuzov/infra-site-kit), which also holds the server address and its `known_hosts` line. There the key runs the shared [`deploy/site.sh`](https://github.com/aimuzov/infra-server/blob/main/deploy/site.sh) of infra-server, which checks out the release tag and rebuilds the `sorebody` container (nginx with the static site) from [`deploy/docker-compose.yml`](deploy/docker-compose.yml). The build runs in a systemd unit, so a dropped SSH connection does not cut it short. The domain and TLS are handled by the shared Caddy. `.env` (build variables) and `api.env` (the OpenRouter key and settings of the site chat, see `api.env.example`) live on the server in `/srv/sorebody`.
 
 The deploy job runs only when the repository variable `DEPLOY_ENABLED` is `true`, and the SSH key is the `DEPLOY_SSH_KEY` secret. Until the server is set up, a release only runs the checks.
 

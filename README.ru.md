@@ -8,12 +8,12 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/aimuzov-projects/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov-projects/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
+	<a href="https://github.com/aimuzov/sorebody/actions/workflows/deploy.yml"><img src="https://img.shields.io/github/actions/workflow/status/aimuzov/sorebody/deploy.yml?branch=main&label=deploy" alt="Deploy"></a>
 	<a href="https://sorebody.aimuzov.online"><img src="https://img.shields.io/website?url=https%3A%2F%2Fsorebody.aimuzov.online&label=site" alt="Site status"></a>
-	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov-projects%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
-	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
-	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov-projects/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
-	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov-projects/sorebody" alt="License"></a>
+	<a href="package.json"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faimuzov%2Fsorebody%2Fmain%2Fpackage.json&query=%24.engines.node&label=node&logo=nodedotjs&logoColor=white&color=5fa04e" alt="Node"></a>
+	<a href="https://astro.build"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov/sorebody/astro?logo=astro&logoColor=white&color=bc52ee" alt="Astro"></a>
+	<a href="https://svelte.dev"><img src="https://img.shields.io/github/package-json/dependency-version/aimuzov/sorebody/svelte?logo=svelte&logoColor=white&color=ff3e00" alt="Svelte"></a>
+	<a href="LICENSE"><img src="https://img.shields.io/github/license/aimuzov/sorebody" alt="License"></a>
 </p>
 
 <h3 align="center">Sorebody — справочник спортивной боли: как часто она бывает в кроссфите, паделе, футболе, беге, баскетболе и хайкинге, симптомы, когда к врачу и как адаптировать тренировки, со ссылками на исследования.</h3>
@@ -36,7 +36,7 @@
 - **О справочнике**, **Что нового** и **404** — страницы без спорта, их акцент графитовый.
 - **Бренд**: знак «точка боли» в [`logo.svelte`](src/frontend/components/logo.svelte), фавикон, иконки, OG-картинку и баннер README собирает [`scripts/brand/render.mjs`](scripts/brand/render.mjs). Название и дескриптор — в [`site.ts`](src/frontend/data/site.ts).
 - **Публичный MCP** на `/mcp` (Streamable HTTP без сессий, только чтение): поиск по статьям, статья по разделам, тревожные признаки, каталог. База — `/knowledge.json`, её собирает сборка сайта; сервер — [`src/backend/mcp.ts`](src/backend/mcp.ts).
-- **Футер**: подпись автора из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit) со ссылкой на исходный код, `repo` в [`site.ts`](src/frontend/data/site.ts).
+- **Футер**: подпись автора из [infra-site-kit](https://github.com/aimuzov/infra-site-kit) со ссылкой на исходный код, `repo` в [`site.ts`](src/frontend/data/site.ts).
 
 ## Как устроено
 
@@ -45,13 +45,13 @@
 - [`src/frontend`](src/frontend): сайт на Astro, это `srcDir` в `astro.config.mjs`. Импорты — через `#frontend/*`.
 - [`src/backend`](src/backend): API рядом с сайтом, как в shkatova-psychologist и prestige-logist: голый Node без сборки, импорты через `#backend/*`. Общий для обеих сторон код — в [`src/shared`](src/shared) (`#shared/*`), образ — [`deploy/backend.Dockerfile`](deploy/backend.Dockerfile), сервис `api` в `deploy/docker-compose.yml`. Сайт из `src/backend` ничего не импортирует.
 
-Всё про сервер — в [`deploy`](deploy): Dockerfile, compose и nginx. Скрипт выкладки общий для всех сайтов и лежит в [infra-server](https://github.com/aimuzov-projects/infra-server).
+Всё про сервер — в [`deploy`](deploy): Dockerfile, compose и nginx. Скрипт выкладки общий для всех сайтов и лежит в [infra-server](https://github.com/aimuzov/infra-server).
 
 Все файлы, компоненты тоже, называются в kebab-case: `base.astro`, `section-photo.astro`. Имя в разметке задаёт импорт (`import Base from '#frontend/layouts/base.astro'`), а за файлами следит правило `unicorn/filename-case` в oxlint.
 
 ## Запуск
 
-Стек и раскладка — из [infra-site-template](https://github.com/aimuzov-projects/infra-site-template): Astro + Svelte 5, Prettier, oxlint, stylelint (BEM), `node --test` для unit-тестов, Playwright для e2e. Конфиги Prettier, stylelint, oxlint и Playwright и шаги CI берутся из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit). Node берётся из [`mise.toml`](mise.toml), эта же версия закреплена в `package.json` и в [`deploy/frontend.Dockerfile`](deploy/frontend.Dockerfile).
+Стек и раскладка — из [infra-site-template](https://github.com/aimuzov/infra-site-template): Astro + Svelte 5, Prettier, oxlint, stylelint (BEM), `node --test` для unit-тестов, Playwright для e2e. Конфиги Prettier, stylelint, oxlint и Playwright и шаги CI берутся из [infra-site-kit](https://github.com/aimuzov/infra-site-kit). Node берётся из [`mise.toml`](mise.toml), эта же версия закреплена в `package.json` и в [`deploy/frontend.Dockerfile`](deploy/frontend.Dockerfile).
 
 ```sh
 cp .env.example .env   # может остаться пустым, но файл должен быть
@@ -93,7 +93,7 @@ Safari на iPhone сам приближает страницу, когда вс
 
 ## Выкладка
 
-Сервер проектов из [infra-server](https://github.com/aimuzov-projects/infra-server): мерж релизного PR, который ведёт release-please, запускает `deploy.yml`, он гоняет проверки и заходит по SSH. Шаги обоих берутся из [infra-site-kit](https://github.com/aimuzov-projects/infra-site-kit), там же адрес сервера и его строка `known_hosts`. Там ключ запускает общий [`deploy/site.sh`](https://github.com/aimuzov-projects/infra-server/blob/main/deploy/site.sh) из infra-server, который переключается на релизный тег и пересобирает контейнер `sorebody` (nginx со статикой) из [`deploy/docker-compose.yml`](deploy/docker-compose.yml). Сборка идёт в юните systemd, так что оборванное SSH-соединение её не прерывает. Домен и TLS держит общий Caddy. `.env` (переменные сборки) и `api.env` (ключ OpenRouter и настройки чата на сайте, образец — `api.env.example`) лежат на сервере в `/srv/sorebody`.
+Сервер проектов из [infra-server](https://github.com/aimuzov/infra-server): мерж релизного PR, который ведёт release-please, запускает `deploy.yml`, он гоняет проверки и заходит по SSH. Шаги обоих берутся из [infra-site-kit](https://github.com/aimuzov/infra-site-kit), там же адрес сервера и его строка `known_hosts`. Там ключ запускает общий [`deploy/site.sh`](https://github.com/aimuzov/infra-server/blob/main/deploy/site.sh) из infra-server, который переключается на релизный тег и пересобирает контейнер `sorebody` (nginx со статикой) из [`deploy/docker-compose.yml`](deploy/docker-compose.yml). Сборка идёт в юните systemd, так что оборванное SSH-соединение её не прерывает. Домен и TLS держит общий Caddy. `.env` (переменные сборки) и `api.env` (ключ OpenRouter и настройки чата на сайте, образец — `api.env.example`) лежат на сервере в `/srv/sorebody`.
 
 Job выкладки запускается, только когда переменная репозитория `DEPLOY_ENABLED` равна `true`, а SSH-ключ лежит в секрете `DEPLOY_SSH_KEY`. Пока сервер не готов, релиз гоняет одни проверки.
 

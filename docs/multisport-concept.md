@@ -56,7 +56,7 @@
 ### 2. Один сайт под зонтичным брендом
 
 Спорт — первый сегмент адреса: `/crossfit/…`, `/padel/…`. Wodcare становится **Sorebody**:
-домен `sorebody.aimuzov.online`, репозиторий `aimuzov-projects/sorebody`, новый логотип.
+домен `sorebody.aimuzov.online`, репозиторий `aimuzov/sorebody`, новый логотип.
 Старый домен убран вместе с A-записью, 301 с него не делали.
 
 Имя читается как _somebody_, а значит «ноющее тело». Пишется одним словом с одной заглавной:
@@ -315,7 +315,7 @@ draft: true
 
 Имя Sorebody, домен `sorebody.aimuzov.online`, графит для общих страниц (позже его сменил градиент бренда, решение 8), логотип «точка боли»
 (`src/frontend/components/logo.svelte`, постер `scripts/poster`, OG-картинки), `data/site.ts`,
-`astro.config.mjs`, README и README.ru, about. Переименование репозитория в `aimuzov-projects/sorebody`, сайт в Caddy
+`astro.config.mjs`, README и README.ru, about. Переименование репозитория в `aimuzov/sorebody`, сайт в Caddy
 (infra-server), deploy-workflow, 301 со старого домена.
 
 Сделано. 301 не понадобился: старый домен убран вместе с A-записью. Знак идёт в фавикон, иконки,

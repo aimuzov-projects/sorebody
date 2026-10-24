@@ -1,6 +1,6 @@
 // e2e-пресет infra-site-kit: Chromium против `astro build && astro preview`.
 import { createServer } from 'node:net'
-import preset from '@aimuzov-projects/infra-site-kit/playwright'
+import preset from '@aimuzov/infra-site-kit/playwright'
 import { defineConfig, type ReporterDescription } from '@playwright/test'
 
 const server = preset.webServer

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.29.1](https://github.com/aimuzov/sorebody/compare/v1.29.0...v1.29.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **deps:** move to infra-site-kit v3 under the personal aimuzov account ([6858c1f](https://github.com/aimuzov/sorebody/commit/6858c1fc6f0074630d17f8e078a57d787754caea))
+* **deps:** move to infra-site-kit v3 under the personal aimuzov account ([3e11e94](https://github.com/aimuzov/sorebody/commit/3e11e943003ea53516c3f9ded4d0ea4c9173d9de))
+
 ## [1.29.0](https://github.com/aimuzov-projects/sorebody/compare/v1.28.1...v1.29.0) (2026-10-23)
 
 
